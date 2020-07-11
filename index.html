@@ -11,18 +11,16 @@
       gtag('config', 'UA-145799979-1');
     </script>
     <!-- Include pre-loads to reduce/optimize page load time-->
-    <link rel="preload" href="https://shortcutIV.com/includes/baseSiteStyling.css" as="style">
-    <link rel="preload" href="https://shortcutIV.com/includes/httpsRedirect.js" as="script">
-    <link rel="preload" href="https://shortcutIV.com/includes/escapedFooter.js" as="script">
-    <link rel="preload" href="https://shortcutIV.com/includes/sortingHat.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
+    <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/sortingHat.min.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
-    <link rel="preload" href="https://shortcutIV.com/includes/pokeListMegas.js" as="script">
-    <title>PvP IV Rankings - ShortcutIV</title>
+    <link rel="preload" href="https://pvpivs.com/includes/pokeListMega.js" as="script">
+    <title>PvP IVs - Rankings</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="PvP IV Pok&eacute;mon Go&trade; Rankings lookup tool for comparing your Pok&eacute;mon's IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
-    <script async src="https://shortcutIV.com/includes/httpsRedirect.js"></script>
+    <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
     <!-- Includes for FavIcon support-->
     <link rel="apple-touch-icon" sizes="57x57" href="/favIcon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/favIcon/apple-icon-60x60.png">
@@ -42,7 +40,7 @@
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
     <!-- End Includes for favIcon support-->
-    <link rel="stylesheet" href="https://shortcutIV.com/includes/baseSiteStyling.css">
+    <link rel="stylesheet" href="https://pvpivs.com/includes/baseSiteStyling.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
     <style>
       /*https://www.w3schools.com/css/css_table.asp*/
@@ -174,7 +172,7 @@
     <br />
     <section><input id="pokeList" onfocus="this.value=''" placeholder="Pok&eacute;mon"/>
       <table id="inputTable">
-        <tr><td><img src="https://www.shortcutiv.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td><td title="Your Attack IV">Atk</td><td title="Your Defense IV">Def</td><td title="Your Stamina IV">Sta</td><td id="plusCell"><button class="circle plus" onclick="doTheInsert()"></button></td></tr>
+        <tr><td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td><td title="Your Attack IV">Atk</td><td title="Your Defense IV">Def</td><td title="Your Stamina IV">Sta</td><td id="plusCell"><button class="circle plus" onclick="doTheInsert()"></button></td></tr>
         <tr>
           <td><input class='shadowCB' id="shdw[0]" type="checkbox" oninput="checkAllBoxes()"></td>
           <td><select title="Your Attack IV" class="aIV" id="aIV[0]" onchange="start()">
@@ -241,10 +239,10 @@
       <div style="overflow-x:auto;" id="outputBox"><i><br/>Please select a Pok&eacute;mon above to continue...</i></div>
     
       <!-- Footer Code Below -->
-      <script src="https://shortcutIV.com/includes/escapedFooter.js"></script>
-      <script src="https://shortcutIV.com/includes/sortingHat.js"></script>
+      <script src="https://pvpivs.com/includes/escapedFooter.js"></script>
+      <script src="https://pvpivs.com/includes/sortingHat.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
-      <script src="https://shortcutIV.com/includes/pokeListMegas.js"></script>
+      <script src="https://pvpivs.com/includes/pokeListMega.js"></script>
         
       <script>
       
@@ -671,9 +669,9 @@
             trades = tradePcnts(numRanks, ranks, keys, statProd, floor, aIV.length, aIV[aIV.length-1], dIV[aIV.length-1], sIV[aIV.length-1]);
           }
           /*Generate Search String links for each IV set*/
-          /*https://shortcutiv.com/searchStr.html?mon=Medicham&r=10&cp=1500&o=1011100&l=en*/
+          /*https://pvpivs.com/searchStr.html?mon=Medicham&r=10&cp=1500&o=1011100&l=en*/
           for (i=0; i<rIV.length; i++) {
-            searchLink += "<p><a href='https://www.shortcutiv.com/searchStr.html?mon="+selected+"&r="+rIV[i]+"&cp="+league+"&o=1011100&l=en'>Generate "+selected+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
+            searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+selected+"&r="+rIV[i]+"&cp="+league+"&o=1011100&l=en'>Generate "+selected+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
           }
         }
         
@@ -697,7 +695,7 @@
           uri += "&IVs="+IVs;
         }
         uri = encodeURI(uri);
-        var newTitle = "PvP IV Rankings - " + "Rank " + limit + " " + selected + " ("+leagueName+")" + " - ShortcutIV";
+        var newTitle = "PvP IVs - Rankings " + limit + " " + selected + " ("+leagueName+")";
         window.history.pushState(null, newTitle, uri);
         
         
@@ -705,7 +703,7 @@
           /*https://stackoverflow.com/questions/13735247/changing-the-href-of-a-link-tag-using-javascript*/
           var newLink = document.createElement('link');
           newLink.rel = "canonical";
-          newLink.href = "https://shortcutiv.com/index.html";
+          newLink.href = "https://pvpivs.com/index.html";
           document.getElementsByTagName("head")[0].appendChild(newLink);
           canonicalLink = false;
         }
