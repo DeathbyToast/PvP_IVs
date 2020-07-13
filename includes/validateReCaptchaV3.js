@@ -51,18 +51,17 @@ exports.validateReCaptchaV3 = (req, res) => {
     //console.log("req.headersINSPECT:"+util.inspect(req.headers, {depth: null}));
     //console.log("req.headers.x-appengine-user-ipINSPECT:"+util.inspect(req.headers['x-appengine-user-ip'], {depth: null}));
     //console.log("req.bodyINSPECT:"+util.inspect(req.body, {depth: null}));
-    console.log("req.bodySFY:"+JSON.stringify(req.body));
+    console.log("54: req.bodySFY:"+JSON.stringify(req.body));
     if (req.body.token === undefined) {
       console.error("56: Token undefined");
       // This is an error case, as "message" is required.
-      console.error("Request missing token, exiting with 400");
+      console.error("58: Request missing token, exiting with 400");
       return res.status(400).send('No token received!');
     } else {
-      console.log("61: Token defined");
-      console.log("Token received:"+req.body.token);
+      console.log("61: Token received:"+req.body.token);
       let startVerificationURL = "https://www.google.com/recaptcha/api/siteverify?secret=";
       let endVerificationURL = "&response="+req.body.token+"&remoteip="+req.headers['x-appengine-user-ip'];
-      console.log("65: Asking for reply...");
+      console.log("64: Asking for reply...");
       accessSecretVersion(startVerificationURL, endVerificationURL, res);
     }
   } catch (error) {
