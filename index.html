@@ -2,13 +2,13 @@
 <html lang="en">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-145799979-1"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5ZKBP0DZS5"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      
-      gtag('config', 'UA-145799979-1');
+    
+      gtag('config', 'G-5ZKBP0DZS5');
     </script>
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
@@ -222,7 +222,7 @@
     
       <!-- Footer Code Below -->
       <script src="https://pvpivs.com/includes/escapedFooter.js"></script>
-      <script src="https://pvpivs.com/includes/sortingHat.js"></script>
+      <script src="https://pvpivs.com/includes/sortingHat.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
       <script src="https://pvpivs.com/includes/pokeListMega.js"></script>
         
@@ -452,7 +452,7 @@
           /*console.log("Updated aIV["+i+"]:'"+aIV[i]+"', dIV["+i+"]:'"+dIV[i]+"', sIV["+i+"]:'"+sIV[i]+"' aIV.length:"+aIV.length);*/
         }
 
-        /*validate reCaptcha v3--code reference: https://www.simoahava.com/analytics/improve-google-analytics-bot-detection-with-recaptcha/*/
+        /*validate reCaptcha v3--code ref: https://www.simoahava.com/analytics/improve-google-analytics-bot-detection-with-recaptcha/*/
         grecaptcha.ready(function() {
           grecaptcha.execute('6Lf8XLAZAAAAABe0LJhirdeLIxLIP1VHFZjB9Ws1', {action: 'validStart'}).then(function(token) {
             
@@ -473,7 +473,7 @@
             xhr.open('POST', 'https://us-central1-ag-sbx.cloudfunctions.net/validateReCaptchaV3', true);
             xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             /*xhr.send('token=ERROR');*/
-            xhr.send('token=' + token + '&request=' + JSON.stringify(request));
+            xhr.send('token=' + token);
           });
         });
         
