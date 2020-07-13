@@ -25,14 +25,12 @@ async function accessSecretVersion(startVerificationURL, endVerificationURL, res
     } */
     if (body.success !== undefined && body.success && (body.action === "validStart" || body.action === "searchStr")) {
       //Verified reCAPTCHA v3 success response!
-      console.log("32:" + body.action+": Returning 'Success' (score:"+body.score+")");
+      console.log("28:" + body.action+": Returning 'Success' (score:"+body.score+")");
       return res.status(200).send('Success');
     } else {
       // "success": false || invalid body.action
-      console.error("32: Bot found? success:"+body.success);
-      console.error("33: Bot found? action:"+body.action);
-      console.error("34: Bot found? score:"+body.score);
-      console.error("35: Bot found? 'Error code':"+body['error-codes']);
+      console.error("32: invalid? success:"+body.success+", action:"+body.action+", score:"+body.score);
+      console.error("33: 'Error code':"+body['error-codes']);
       return res.status(418).send('Error');
     }
   } catch (error) {
@@ -46,22 +44,22 @@ exports.validateReCaptchaV3 = (req, res) => {
   try {
     res.set('Access-Control-Allow-Origin', 'https://pvpivs.com');
     res.set('Access-Control-Allow-Methods', 'POST');
-    console.log("49: Headers working");
+    //console.log("49: Headers working");
     //console.log("reqINSPECT:"+util.inspect(req, {depth: 0}));
     //console.log("req.headersINSPECT:"+util.inspect(req.headers, {depth: null}));
     //console.log("req.headers.x-appengine-user-ipINSPECT:"+util.inspect(req.headers['x-appengine-user-ip'], {depth: null}));
     //console.log("req.bodyINSPECT:"+util.inspect(req.body, {depth: null}));
-    console.log("54: req.bodySFY:"+JSON.stringify(req.body));
+    console.log("52: req.bodySFY:"+JSON.stringify(req.body));
     if (req.body.token === undefined) {
-      console.error("56: Token undefined");
+      //console.error("56: Token undefined");
       // This is an error case, as "message" is required.
-      console.error("58: Request missing token, exiting with 400");
+      console.error("56: Request missing token, exiting with 400");
       return res.status(400).send('No token received!');
     } else {
-      console.log("61: Token received:"+req.body.token);
+      //console.log("61: Token received:"+req.body.token);
       let startVerificationURL = "https://www.google.com/recaptcha/api/siteverify?secret=";
       let endVerificationURL = "&response="+req.body.token+"&remoteip="+req.headers['x-appengine-user-ip'];
-      console.log("64: Asking for reply...");
+      //console.log("64: Asking for reply...");
       accessSecretVersion(startVerificationURL, endVerificationURL, res);
     }
   } catch (error) {
