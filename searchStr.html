@@ -2,14 +2,15 @@
 <html lang="en">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5ZKBP0DZS5"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-172530206-1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
     
-      gtag('config', 'G-5ZKBP0DZS5');
+      gtag('config', 'UA-172530206-1');
     </script>
+    <meta charset="UTF-8">
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
@@ -18,13 +19,12 @@
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListMega.js" as="script">
     <title>PvP IVs - Search Strings</title>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Pok&eacute;mon Go&trade; PvP IVs search string generator to find your best (or trash the rest). By copy+pasting PvP IVs search strings into PoGo, you can quicky figure out what to power up and what to send to Professor Willow!"/>
     <link rel=icon href=/includes/favicon.png>
     <link rel="stylesheet" href="https://pvpivs.com/includes/baseSiteStyling.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
-    <script src="https://www.google.com/recaptcha/api.js?render=6LfY-KYUAAAAAIYnP89WU5GWU-MMg_uy0z_7t9c2"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lf8XLAZAAAAABe0LJhirdeLIxLIP1VHFZjB9Ws1"></script>
     <style>
     .evoLimits{
       display:none;
@@ -492,31 +492,30 @@
       /*console.log("evoVals["+j+"] is now: "+JSON.stringify(evoVals[j]));*/
     }
     
-    /* validate reCaptcha v3 */
-    /* code reference: https://www.simoahava.com/analytics/improve-google-analytics-bot-detection-with-recaptcha/ */
-    grecaptcha.ready(function() {
-      grecaptcha.execute('6LfY-KYUAAAAAIYnP89WU5GWU-MMg_uy0z_7t9c2', {action: 'searchStr'}).then(function(token) {
-        
-        /* Make xhr POST request to validate reCAPTCHA v3 */
-        console.log("Validating reCAPTCHA...");
-        var xhr = new XMLHttpRequest();
-        xhr.onload = function() {
-          if ((xhr.response !== 'noChange') && (xhr.response === 'Success')) {
-            console.log("Success!");
-          } else if (xhr.response === 'Error') {
-            output.value = "ERROR";
-            console.log("Error! xhr.status:"+xhr.status+" xhr.responseText:"+JSON.stringify(xhr.responseText));
-            return false;
-          } else {
-            console.log("Unknown Response! xhr.status:"+xhr.status+" xhr.responseText:"+JSON.stringify(xhr.responseText));
-          }
-        };
-        xhr.open('POST', 'https://us-central1-sandbox-of-alex-gronbach-2.cloudfunctions.net/validateReCaptchaV3', true);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        /* xhr.send('token=ERROR'); */
-        xhr.send('token=' + token + '&bqInsert=' + false + '&request=' + null);
-      });
-    });
+    /*validate reCaptcha v3--code ref: https://www.simoahava.com/analytics/improve-google-analytics-bot-detection-with-recaptcha/*/
+        grecaptcha.ready(function() {
+          grecaptcha.execute('6Lf8XLAZAAAAABe0LJhirdeLIxLIP1VHFZjB9Ws1', {action: 'searchStr'}).then(function(token) {
+            
+            /*Make xhr POST request to validate reCAPTCHA v3*/
+            console.log("Validating reCAPTCHA...");
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+              if ((xhr.response !== 'noChange') && (xhr.response === 'Success')) {
+                console.log("Success!");
+              } else if (xhr.response === 'Error') {
+                document.getElementById('outputBox').innerHTML = "<table align=center><tr><th>ERROR</th></tr></table>";
+                console.log("Error! xhr.status:"+xhr.status+" xhr.responseText:"+JSON.stringify(xhr.responseText));
+                return false;
+              } else {
+                console.log("Unknown Response! xhr.status:"+xhr.status+" xhr.responseText:"+JSON.stringify(xhr.responseText));
+              }
+            };
+            xhr.open('POST', 'https://us-central1-ag-sbx.cloudfunctions.net/validateReCaptchaV3', true);
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            /*xhr.send('token=ERROR');*/
+            xhr.send('token=' + token);
+          });
+        });
     
     /* build binary encoding of settings */
     var binary = "";

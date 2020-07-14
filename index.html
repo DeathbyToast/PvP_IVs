@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5ZKBP0DZS5"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-172530206-1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
     
-      gtag('config', 'G-5ZKBP0DZS5');
+      gtag('config', 'UA-172530206-1');
     </script>
+    <meta charset="UTF-8">
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
@@ -18,7 +19,6 @@
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListMega.js" as="script">
     <title>PvP IVs - Rankings</title>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
     <link rel=icon href=/includes/favicon.png>
@@ -158,7 +158,7 @@
         <tr>
           <td><input class='shadowCB' id="shdw[0]" type="checkbox" oninput="checkAllBoxes()"></td>
           <td><select title="Your Attack IV" class="aIV" id="aIV[0]" onchange="start()">
-            <option value=""></option>
+            <option value="">&nbsp;</option>
             <option value="15">15</option>
             <option value="14">14</option>
             <option value="13">13</option>
@@ -212,7 +212,7 @@
             <option value="1">1</option>
             <option value="0">0</option>
           </select></td>
-          <td id="plusCell"><button class="circle minus" onclick="doTheRemoval()"></button></td>
+          <td id="minusCell"><button class="circle minus" onclick="doTheRemoval()"></button></td>
         </tr>
       </table>
       
@@ -454,7 +454,7 @@
 
         /*validate reCaptcha v3--code ref: https://www.simoahava.com/analytics/improve-google-analytics-bot-detection-with-recaptcha/*/
         grecaptcha.ready(function() {
-          grecaptcha.execute('6Lf8XLAZAAAAABe0LJhirdeLIxLIP1VHFZjB9Ws1', {action: 'validStart'}).then(function(token) {
+          grecaptcha.execute('6Lf8XLAZAAAAABe0LJhirdeLIxLIP1VHFZjB9Ws1', {action: 'indexRanks'}).then(function(token) {
             
             /*Make xhr POST request to validate reCAPTCHA v3*/
             console.log("Validating reCAPTCHA...");

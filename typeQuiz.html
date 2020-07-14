@@ -2,13 +2,13 @@
 <html lang="en">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5ZKBP0DZS5"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-172530206-1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
     
-      gtag('config', 'G-5ZKBP0DZS5');
+      gtag('config', 'UA-172530206-1');
     </script>
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
@@ -16,7 +16,7 @@
     <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/typeChartStyling.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/typeColors.css" as="style">
-    <title>ShortcutIV - Type Quiz</title>
+    <title>PvP IVs - Type Quiz</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Pokemon Go Type Quiz, built to help Trainers test their mastery of Resistances, Weaknesses, SE, and NVE matchups. How many types have you mastered? How about dual-types?"/>
@@ -269,11 +269,11 @@
   	/*check if we are outputting one type or two*/
   	if (typeof type2 === 'undefined') {
   	  /*we are outputting one type only*/
-  	  document.title = 'ShortcutIV - Type Quiz - '+type1;
+  	  document.title = 'PvP IVs - Type Quiz - '+type1;
       $("#resultsContainer").append('<tr><td>' + typeBox("W","0") + '</td><td style="color:green">' + multBox("W","0") + '</td><td style="vertical-align:middle" rowspan=' + (topRow + bottomRow + 1) + '>' + type1 + '</td><td style="color:green">' + multBox("SE","0") + '</td><td>' + typeBox("SE","0") + '</td></tr>');
   	} else {
   	  /*We have dual types, no SuperEff to output*/
-  	  document.title = 'ShortcutIV - Type Quiz - '+type1+'/'+type2;
+  	  document.title = 'PvP IVs - Type Quiz - '+type1+'/'+type2;
   	  $("#resultsContainer").append('<tr><td>' + typeBox("W","0") + '</td><td style="color:green">' + multBox("W","0") + '</td><td rowspan=' + (topRow + bottomRow + 1) + '>' + type1 + '</td><td rowspan=' + (topRow + bottomRow + 1) + '>' + type2 + '</td><td> </td><td> </td></tr>');
   	}
   
