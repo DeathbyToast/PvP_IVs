@@ -1,0 +1,19 @@
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 350px;
+  table-layout: auto;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+td, th {
+  border: 0 solid #dddddd;
+  text-align: center;
+  padding: 8px;
+}
+  
+select {
+display: block;
+margin: 0 auto;
+}

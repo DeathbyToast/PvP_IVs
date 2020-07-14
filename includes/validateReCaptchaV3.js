@@ -23,7 +23,7 @@ async function accessSecretVersion(startVerificationURL, endVerificationURL, res
     "hostname": string,         // the hostname of the site where the reCAPTCHA was solved
     "error-codes": [...]        // optional
     } */
-    if (body.success !== undefined && body.success && (body.action === "validStart" || body.action === "searchStr")) {
+    if (body.success !== undefined && body.success && (body.action === "indexRanks" || body.action === "searchStr")) {
       //Verified reCAPTCHA v3 success response!
       console.log("28:" + body.action+": Returning 'Success' (score:"+body.score+")");
       return res.status(200).send('Success');

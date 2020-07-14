@@ -433,9 +433,9 @@ function collectInputs() {
 	var secondType = $("#type2 option:selected").text();
 	if (secondType == "None") {
 		secondType = "";
-		document.title = "ShortcutIV - " + selectedType + " Type Chart";
+		document.title = "PvP IVs - " + selectedType + " Type Chart";
 	} else {
-		document.title = "ShortcutIV - " + selectedType + "/" + secondType + " Type Chart";
+		document.title = "PvP IVs - " + selectedType + "/" + secondType + " Type Chart";
 	}
 	console.log("Second Type selected is :" + secondType);
 
@@ -625,7 +625,7 @@ function outputTable(prop, type1, type2) {
 	for (i = 0; i < bottomRow; i++) {
 		var Resist = Object.keys(prop.R)[i];
 		var xResist = prop.R[Resist];
-		var NotVeryEff = Object.keys(prop.NVE)[i]
+		var NotVeryEff = Object.keys(prop.NVE)[i];
 		var xNotVeryEff = prop.NVE[NotVeryEff];
 
 		if (Resist && NotVeryEff) {
@@ -661,6 +661,6 @@ function stylizeTable() {
 			$("td:contains('Rock')").addClass('Rock');
 			$("td:contains('Steel')").addClass('Steel');
 			$("td:contains('Water')").addClass('Water');
-		})
-	})
-};
+		});
+	});
+}

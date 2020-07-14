@@ -1,0 +1,80 @@
+/* Color reference: http://www.epidemicjohto.com/t882-type-colors-hex-colors */
+.Bug {
+    background: #A6B91A;
+}
+.Dark {
+    background: #705746;
+    color: WhiteSmoke;
+}
+.Dragon {
+    background: #6F35FC;
+    color: WhiteSmoke;
+}
+.Electric {
+    background: #F7D02C;
+}
+.Fairy {
+    background: #D685AD;
+}
+.Fighting {
+    background: #C22E28;
+    color: WhiteSmoke;
+}
+.Fire {
+    background: #EE8130;
+}
+.Flying {
+    background: #A98FF3;
+}
+.Ghost {
+    background: #735797;
+    color: WhiteSmoke;
+}
+.Grass {
+    background: #7AC74C;
+}
+.Ground {
+    background: #E2BF65;
+}
+.Ice {
+    background: #96D9D6;
+}
+.Normal {
+    background: #A8A77A;
+}
+.Poison {
+    background: #A33EA1;
+    color: WhiteSmoke;
+}
+.Psychic {
+    background: #F95587;
+}
+.Rock {
+    background: #B6A136;
+}
+.Steel {
+    background: #B7B7CE;
+}
+.Water {
+    background: #6390F0;
+}
+.x16 {
+    background: #006400;
+    color: WhiteSmoke;
+}
+.x256 {
+    background: #006400;
+    color: WhiteSmoke;
+}
+.x0625 {
+    background: #8B0000;
+    color: WhiteSmoke;
+}
+.x0391 {
+    background: #8B0000;
+    color: WhiteSmoke;
+}
+.x0244 {
+    background: #8B0000;
+    color: WhiteSmoke;
+}
