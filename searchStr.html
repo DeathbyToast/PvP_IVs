@@ -945,10 +945,10 @@
     
     /*console.log("Checking output length...");*/
     if (origOut.length > 2000) {
-      document.getElementById('overflow1').value = output.value.slice(0, 2000);
-      document.getElementById('overflow2').value = output.value.slice(2001, 4000);
-      document.getElementById('overflow3').value = output.value.slice(4001, 6000);
-      document.getElementById('overflow4').value = output.value.slice(6001, output.value.length);
+      document.getElementById('overflow1').value = output.value.slice(0, 2001);
+      document.getElementById('overflow2').value = output.value.slice(2001, 4001);
+      document.getElementById('overflow3').value = output.value.slice(4001, 6001);
+      document.getElementById('overflow4').value = output.value.slice(6001);
     }
     /*console.log("outputStr: First output length - origOut.length="+origOut.length);*/
     
