@@ -943,14 +943,27 @@
     outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], cpstr, hpstr, trash, hundo, onlyZero);
     var origOut = output.value;
     
-    /*console.log("Checking output length...");*/
-    if (origOut.length > 2000) {
-      document.getElementById('overflow1').value = output.value.slice(0, 2001);
-      document.getElementById('overflow2').value = output.value.slice(2001, 4001);
-      document.getElementById('overflow3').value = output.value.slice(4001, 6001);
-      document.getElementById('overflow4').value = output.value.slice(6001);
+    if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
+      let cut1 = (output.value.slice(0, 2001).lastIndexOf(",")+0*2000+1)/1;
+      document.getElementById('overflow1').value = output.value.slice(0, cut1);
+      console.log("TotalLen:"+origOut.length+", cut1:"+cut1);
+      
+      if (origOut.length < (cut1+1*2000+1)/1) {document.getElementById('overflow2').value = output.value.slice(cut1);}
+      else {
+        let cut2 = (output.value.slice(cut1, (cut1+2000+1)/1).lastIndexOf(",")+1*2000+1)/1;
+        document.getElementById('overflow2').value = output.value.slice(cut1, cut2);
+        console.log("TotalLen:"+origOut.length+", cut1:"+cut1+", cut2:"+cut2);
+        
+        if (origOut.length < (cut2+2*2000+1)/1) {document.getElementById('overflow3').value = output.value.slice(cut2);}
+        else {
+          let cut3 = (output.value.slice(cut2, (cut2+2000+1)/1).lastIndexOf(",")+2*2000+1)/1;
+          document.getElementById('overflow3').value = output.value.slice(cut2, cut3);
+          console.log("TotalLen:"+origOut.length+", cut1:"+cut1+", cut2:"+cut2+", cut3:"+cut3);
+          
+          if (origOut.length > (cut3)/1) {document.getElementById('overflow4').value = output.value.slice(cut3);}
+        }
+      }
     }
-    /*console.log("outputStr: First output length - origOut.length="+origOut.length);*/
     
     if (evoVals[0][4] == "Burmy") {
       if (finalVals[4] == "Mothim") {
@@ -1209,7 +1222,7 @@
     		<option value="ko,cp,hp">Korean</option>
     		<option value="zh,cp,hp">Chinese</option>
     		<option value="pt,pc,ps">Portuguese</option></select>
-    </label><br /><br /><i style="font-size:0.6em">Boxes below break output into 2000 character strings to stay under iOS Text Replacement limit:</i><br />
+    </label><br /><br /><i style="font-size:0.6em">Boxes below break output into &lt;2000 character strings to stay under iOS Text Replacement limit:</i><br />
     <textarea id="overflow1" rows="1" style="width: 50%; height: 50%;" onclick="autocopy(this)"></textarea>
     <textarea id="overflow2" rows="1" style="width: 50%; height: 50%;" onclick="autocopy(this)"></textarea>
     <textarea id="overflow3" rows="1" style="width: 50%; height: 50%;" onclick="autocopy(this)"></textarea>
