@@ -237,7 +237,7 @@
       var mythNoTrade = [151,251,385];
       var raidNoTrade = [386,491,647];
       var lastTime = undefined;
-      var usrAtk = 0; /* globa1 for user attack stat*/
+      /*TODO Delete? var usrAtk = 0;*/ /* globa1 for user attack stat*/
       var perfTiming = false; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
       var mxlMod = false; /*track if max Lvl was adjusted*/
@@ -246,6 +246,7 @@
       let dIV=[document.getElementById('dIV[0]').value];
       let sIV=[document.getElementById('sIV[0]').value];
       let rIV=[];
+      let mA = 0, mD = 0, mHP = 0; /* min stat filter vars */
 
       var awesomplete = new Awesomplete(input, {list: pokeList,
         /*insert label instead of value into the input*/
@@ -262,6 +263,8 @@
             aIV.splice(0, aIV.length);
             dIV.splice(0, dIV.length);
             sIV.splice(0, sIV.length);
+            /* clear min stat filters */
+            mA = 0; mD = 0; mHP = 0;
             /* Re-Add default IV Input Row */
             doTheInsert();
           }
@@ -496,16 +499,15 @@
         
         /*prepare max stat html output*/
         var URL = window.location.href.split("?")[0];
-        var maxAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
-        var maxDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
-        var maxHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
-        var minAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
-        var minDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
+        var maxAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV+"&mA="+mA+"&mD="+mD+"&mHP="+mHP);
+        var maxDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV+"&mA="+mA+"&mD="+mD+"&mHP="+mHP);
+        var maxHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV+"&mA="+mA+"&mD="+mD+"&mHP="+mHP);
+        var minAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV+"&mA="+mA+"&mD="+mD+"&mHP="+mHP);
+        var minDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV+"&mA="+mA+"&mD="+mD+"&mHP="+mHP);
         var minHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
-        var histData = [["IVs","Atk","Atk","Atk"]];
         document.getElementById('feedbackBox').innerHTML = "";
 
         for (var i=0; i<aIV.length; i++) {
@@ -547,7 +549,7 @@
                       var evoMon = pokeList[f].label;
                       /*create link for evo table entry*/
                       IVs = aIV[i] + "_" + dIV[i] + "_" + sIV[i];
-                      uri = URL + "?mon="+evoMon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs;
+                      uri = URL + "?mon="+evoMon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
                       /*console.log("About to pass IVs:"+aIV[i]+", "+dIV[i]+", "+sIV[i]+" to getMonRank");*/
                       var evoGMRhtml = getMonRank(evoNumRanks, evoRanks, evoKeys, shdw, cmp, evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evoMon, uri);
                       if (evoGMRhtml) {
@@ -588,57 +590,68 @@
         }
         evoHtml += "</table>";
         evoFeedback += "<br />";
-        
         /*console.log("Finished creating output for IVs, now printing main table...");*/
+        
         /*print main table output and count actual outputted rows/ranks*/
-        var actualRank = 1;
+        var actualRank = 1; var rowsOutput = 0;
         /*console.log("Full output:"+JSON.stringify(ranks, null, 2));*/
-        for (var i=0; actualRank<=numRanks; i++) {
+        for (var i=0; ((actualRank/1<=numRanks/1) && (actualRank/1 <= limit/1)); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
-
-            /*console.log("Attempting to print row:"+i+" (actualRank:"+actualRank/1+"<=limit:"+limit/1+") with ranks[keys["+i+"]]["+j+"]="+JSON.stringify(ranks[keys[i]][j], null, 2));*/
-            if (actualRank/1 <= limit/1) {
-              html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
-              html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
-              html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
-              html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
-              html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
-              html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
-              html+="<td>"+ranks[keys[i]][j].IVs.star+"</td>"; /*Star Appraisal*/
-              html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"+"</td>"; /*Perfection*/
-              if (cmp) {
-                html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
-                if (ranks.numRanks/1 < 100) { /*account for when there aren't 100 numRanks*/
-                  html+="<td>"+Math.round(((ranks[keys[i]][j].IVs.T100)/ranks.numRanks)*100)+"%"+"</td>"; /*T100 CMP*/
-                } else {
-                  html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
+            
+            if ((mA <= numOut(ranks[keys[i]][j].battle.A,1)) && (mD <= numOut(ranks[keys[i]][j].battle.D,1)) && (mHP <= ranks[keys[i]][j].battle.S)) {
+              /* All three stats are above filter cutoffs, proceed with printing this row */
+              /*console.log("Attempting to print row:"+i+" (actualRank:"+actualRank/1+"<=limit:"+limit/1+") with ranks[keys["+i+"]]["+j+"]="+JSON.stringify(ranks[keys[i]][j], null, 2));*/
+              if (actualRank/1 <= limit/1) {
+                html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
+                html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
+                html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
+                html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
+                html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
+                html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
+                html+="<td>"+ranks[keys[i]][j].IVs.star+"</td>"; /*Star Appraisal*/
+                html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"+"</td>"; /*Perfection*/
+                if (cmp) {
+                  html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
+                  if (ranks.numRanks/1 < 100) { /*account for when there aren't 100 numRanks*/
+                    html+="<td>"+Math.round(((ranks[keys[i]][j].IVs.T100)/ranks.numRanks)*100)+"%"+"</td>"; /*T100 CMP*/
+                  } else {
+                    html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
+                  }
                 }
+                if (shdw) { /*apply shadow mon 20% attack buff and 20% defense debuff*/
+                  html+="<td style='color:red'>"+numOut(ranks[keys[i]][j].battle.A*1.2,1)+"</td>"; /*GL Atk Total*/
+                  html+="<td style='color:blue'>"+numOut(ranks[keys[i]][j].battle.D*0.83333331,1)+"</td>"; /*GL Def Total*/
+                } else {
+                  html+="<td>"+numOut(ranks[keys[i]][j].battle.A,1)+"</td>"; /*GL Atk Total*/
+                  html+="<td>"+numOut(ranks[keys[i]][j].battle.D,1)+"</td>"; /*GL Def Total*/
+                }
+                html+="<td>"+ranks[keys[i]][j].battle.S+"</td>"; /*GL HP*/
+                html+="<td>"+keys[i].split(".")[0]+"</td>"; /*Stat Product*/
+                html+="</tr>";
+                rowsOutput = rowsOutput/1 + 1;
               }
-              if (shdw) { /*apply shadow mon 20% attack buff and 20% defense debuff*/
-                html+="<td style='color:red'>"+numOut(ranks[keys[i]][j].battle.A*1.2,1)+"</td>"; /*GL Atk Total*/
-                html+="<td style='color:blue'>"+numOut(ranks[keys[i]][j].battle.D*0.83333331,1)+"</td>"; /*GL Def Total*/
-              } else {
-                html+="<td>"+numOut(ranks[keys[i]][j].battle.A,1)+"</td>"; /*GL Atk Total*/
-                html+="<td>"+numOut(ranks[keys[i]][j].battle.D,1)+"</td>"; /*GL Def Total*/
-              }
-              html+="<td>"+ranks[keys[i]][j].battle.S+"</td>"; /*GL HP*/
-              html+="<td>"+keys[i].split(".")[0]+"</td>"; /*Stat Product*/
-              html+="</tr>";
-            }
-            if (cmp) {
-              /*make sure we plot all possible IV combinations!*/
-              histData.push([ranks[keys[i]][j].IVs.A + "/" + ranks[keys[i]][j].IVs.D + "/" + ranks[keys[i]][j].IVs.S,numOut(ranks[keys[i]][j].battle.A,1),null,null]);
+            } else {
+              /* Skip printing row, but ensure we still print a total of <limit> rows */
+              limit = (limit/1 + 1)/1;
+              /*console.log("Skipping row, but updated limit to:"+(limit/1+1)/1+", actualRank:"+actualRank+", <= numRanks:"+numRanks);*/
             }
             actualRank = actualRank + 1;
           }
         }
         /*console.log("Finished loop with i:"+i+", actualRank:"+actualRank+" >= limit:"+limit);*/
         html+="</table>"; /*finish building the whole table*/
-        var printLimit = Math.min(limit, numRanks);
+        var printLimit = Math.min(rowsOutput, limit, numRanks);
         var minAtk = ranks.minAtk.value, maxAtk = ranks.maxAtk.value;
         var minDef = ranks.minDef.value, maxDef = ranks.maxDef.value;
         if (shdw) {minAtk=minAtk*1.2;maxAtk=maxAtk*1.2;minDef=minDef*0.83333331;maxDef=maxDef*0.83333331;} /*apply shadow buffs/debuffs*/
-        var maxes = "<p><i>Atk(<a href="+minAtkurl+">"+numOut(minAtk,1)+"</a>-<a href="+maxAtkurl+">"+numOut(maxAtk,1)+"</a>), Def(<a href="+minDefurl+">"+numOut(minDef,1)+"</a>-<a href="+maxDefurl+">"+numOut(maxDef,1)+"</a>), HP(<a href="+minHPurl+">"+ranks.minHP.value+"</a>-<a href="+maxHPurl+">"+ranks.maxHP.value+"</a>)</i><br><br>Top "+printLimit+" "+leagueName+" PvP "+selected+" of "+numRanks+":</p>";
+        html = "<br><br>Top "+printLimit+" "+leagueName+" PvP "+selected+" of "+numRanks+":"+html;
+        
+        console.log("min stat filters are mA:"+mA+", mD:"+mD+", mHP:"+mHP);
+        /* Initialize min stat filters if blank */
+        if ((mA+mD+mHP)/1 == 0) {mA = numOut(minAtk,1);mD = numOut(minDef,1);mHP = ranks.minHP.value;}
+        var ranges = "Atk &ge; <input type='number' step='0.1' id='atkVal' min="+numOut(minAtk,1)+" max="+numOut(maxAtk,1)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;start();'> <a href="+minAtkurl+">"+numOut(minAtk,1)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,1)+" max="+numOut(maxAtk,1)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;start();'><a href="+maxAtkurl+">"+numOut(maxAtk,1)+"</a><br>";
+        ranges += "Def &ge; <input type='number' step='0.1' id='defVal' min="+numOut(minDef,1)+" max="+numOut(maxDef,1)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;start();'> <a href="+minDefurl+">"+numOut(minDef,1)+"</a><input type='range' id='defRange' min="+numOut(minDef,1)+" max="+numOut(maxDef,1)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;start();'><a href="+maxDefurl+">"+numOut(maxDef,1)+"</a><br>";
+        ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;start();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;start();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a>";
         
         /*compute trade percentages*/
         var trades = "";
@@ -662,13 +675,13 @@
           document.getElementById('feedbackBox').innerHTML = "<p><i>Your IVs are not eligible for the "+league+" CP cap<br>Please check the Min Level in Settings and try again</i></p>";
         }
         
-        output.innerHTML = evoHtml + megaNote + evoFeedback + maxes + html + searchLink + "<br>" + trades;
+        output.innerHTML = evoHtml + megaNote + evoFeedback + ranges + html + searchLink + "<br>" + trades;
         
         /*update the URL with search parameters*/
         /*URL = "mon=Gyarados&r=5&cp=2500&f=1&lvl=10&IVs=0_15_15";*/
         /*pokeList limit league floor minLvl maxLvl aIV dIV sIV*/
         /*mon      r     cp     f     min    max    IVs*/
-        uri = URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw;
+        uri = URL + "?mon="+selected+"&r="+printLimit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
         if (aIV[0] && dIV[0] && sIV[0]) {
           for (var i=0; i<aIV.length; i++) {
             if (i > 0) {IVs += "-";} else {IVs = "";}
@@ -724,7 +737,7 @@
         if (perfTiming) {var checkURIt0 = performance.now();}
         
         var URL = window.location.href.split("?")[1];
-        /*URL = "mon=Whiscash&r=10&cp=1500&f=0&min=1&max=40&dti=false&cmp=false&shdw=false&IVs=3_15_15-5_15_15-7_15_15";*/
+        /*URL = "mon=Whiscash&r=10&cp=1500&f=0&min=1&max=40&dti=false&cmp=false&shdw=false&IVs=3_15_15-5_15_15-7_15_15&mA=0&mD=0&mHP=0*/
         /*Need:*/
         /*pokeList limit aIV dIV sIV league floor minLvl maxLvl*/
         /*mon      r     IVs         cp     f     min    max*/
@@ -782,6 +795,15 @@
                   document.getElementById('sIV['+j+']').value = userIVs[2];
                   /*console.log("j:"+j+" Set IVs to:"+aIV[j]+dIV[j]+sIV[j]);*/
                 }
+                break;
+              case "mA":
+                mA = values[i].split("=")[1];
+                break;
+              case "mD":
+                mD = values[i].split("=")[1];
+                break;
+              case "mHP":
+                mHP = values[i].split("=")[1];
                 break;
             }
           }
@@ -1044,7 +1066,7 @@
               if ((!mon) && (cmp)) {
                   html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
                   html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
-                  usrAtk = numOut(ranks[keys[i]][j].battle.A,1);
+                  /*usrAtk = numOut(ranks[keys[i]][j].battle.A,1);*/
               }
               if (shdw) { /*apply shadow mon 20% attack buff and 20% defense debuff*/
                 html+="<td style='color:red'>"+numOut(ranks[keys[i]][j].battle.A*1.2,1)+"</td>"; /*GL Atk Total*/
