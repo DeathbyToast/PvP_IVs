@@ -943,10 +943,10 @@
     if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
       let excessOut = output.value.substring(0); /* ensure we don't mutilate actual output */
       let div = document.getElementById("overflowArea"); /* div where overflows are created */
-      div.innerHTML = "<i style='font-size:0.6em'>Boxes below break output into &lt;2000 character strings to stay under iOS Text Replacement limit:</i><br />";
+      div.innerHTML = "<i style='font-size:0.6em'>&lt;2000 character strings for iOS Text Replacement compatibility:</i><br />";
       for (i=1;excessOut.length>0;i++) {
         let newOverflow = document.createElement("textarea"); /*<textarea id="overflow1" rows="1" style="width: 50%; height: 50%;" onclick="autocopy(this)"></textarea>*/
-        newOverflow.id = "overflow"+i; newOverflow.rows = 1; newOverflow.style="width: 50%; height: 50%;"; newOverflow.onclick="autocopy(this)"; div.appendChild(newOverflow);
+        newOverflow.id = "overflow"+i; newOverflow.rows=1; newOverflow.style="width: 50%; height: 50%;"; newOverflow.setAttribute('onclick', "autocopy(this)"); div.appendChild(newOverflow);
         let cut = excessOut.slice(0, 2001).lastIndexOf(",")+1; /*correct for 0 index with + 1*/
         document.getElementById("overflow"+i).value = (excessOut.length>2000) ? excessOut.slice(0, cut) : excessOut;
         console.log("TotalLen:"+origOut.length+", cut:"+cut+", excessOut.length:"+excessOut.length);
@@ -974,7 +974,7 @@
     /*console.log("--outputCPsHPsBuckets: maxCP:"+JSON.stringify(maxCP)+", maxHP:"+JSON.stringify(maxHP)+", trash:"+trash+" hundo:"+hundo+", onlyZero:"+onlyZero);*/
     var emptyBuf = "";
     output.value = id; /* add dex num */
-    var maxLoops = (onlyZero) ? 1:5; /* only process 0* if onlyZero is true */
+    var maxLoops = 5/* Even for onlyZero=true need all 5 appraisals */
     
     /* output cps and hps */
     for (var i=0; i<maxLoops; i++) {
