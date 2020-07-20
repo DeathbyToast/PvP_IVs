@@ -59,7 +59,7 @@
   font-weight: bold;
   }
   
-  .active, .accordion:hover {
+  .activeFAQ, .accordion:hover {
     background-color: #ccc;
   }
   
@@ -71,7 +71,7 @@
     margin-left: 5px;
   }
   
-  .active:after {
+  .activeFAQ:after {
     content: "\2212";
   }
   
@@ -82,6 +82,41 @@
     overflow: hidden;
     overflow-y: auto; /*scrollbar*/
     transition: max-height 0.2s ease-out;
+  }
+  
+  /*https://stackoverflow.com/a/49532796*/
+  figure {
+    margin: 0;
+    float: left;
+    padding-top: 11px;
+    padding-bottom: 11px;
+    padding-left: 1px;
+    padding-right: 1px;
+    vertical-align: top
+  }
+  
+  @media only screen and (min-width: 600px) {
+    figure {width:33%;} /* Desktop/Tablet */
+  }
+  
+  @media only screen and (max-width: 600px) {
+    figure {width:42%;} /* Phone */
+  }
+  
+  .container img {
+      max-width:100%;
+  }
+  
+  figcaption {
+      clear: right;
+      display: flex;
+      flex-flow: row;
+  }
+  
+  .clearfix::after {
+      content: “”;
+      display: table;
+      clear: both;
   }
   
   </style>
@@ -111,19 +146,55 @@
     <h3>Search Strings:</h3>
     <button class="accordion">Do Search Strings find what to keep or trash?</button>
     <div class="panel"><div class="flex-container">
-      <div><p>Search Strings help to locate high PvP IVs, as demonstrated by the gif to the right which finds the Rank 3 Venonat for Great League.<br><br>The <a href="/searchStr.html">Search String Generator</a> first compiles all possible IV combinations (up to 4096), sorts them by PvP Rank, and then keeps only the Top X Ranks, which are output as the Search String. For Trashing Strings, this output is then inverted to create the Trash Strings.</p></div>
+      <div><p id="searchHow">Search Strings help to locate high PvP IVs, as demonstrated by the gif to the right which finds the Rank 3 Venonat for Great League.<br><br>The <a href="/searchStr.html">Search String Generator</a> first compiles all possible IV combinations (up to 4096), sorts them by PvP Rank, and then keeps only the Top X Ranks, which are output as the Search String. For Trashing Strings, this output is then inverted to create the Trash Strings.</p></div>
       <div><img src="https://pvpivs.com/includes/croppedAnnotatedSearchString.gif" alt="Search String Animated Gif"></div>
     </div></div>
     
     <button class="accordion">What do Trash Strings do?</button>
     <div class="panel"><div class="flex-container">
-      <div><p>Trashing strings are the inverse of Search Strings. First the Search String is generated, and then it is inverted to create the Trashing String (meaning high PvP IVs are <i>excluded</i> with Trash Strings).<br><br>This is demonstrated with the gif on the right showing the Rank 3 Venonat disappearing when the Trash String is pasted in, revealing only safe to trash Venonat (below the match threshold).</p></div>
+      <div><p id="trashHow">Trashing strings are the inverse of Search Strings. First the Search String is generated, and then it is inverted to create the Trashing String (meaning high PvP IVs are <i>excluded</i> with Trash Strings).<br><br>This is demonstrated with the gif on the right showing the Rank 3 Venonat disappearing when the Trash String is pasted in, revealing only safe to trash Venonat (below the match threshold).</p></div>
       <div><img src="https://pvpivs.com/includes/croppedAnnotatedTrashString.gif" alt="Trash String Animated Gif"></div>
     </div></div>
     
     <button class="accordion">Search/Trash String isn't working; it found a lower rank than I set!</button>
     <div class="panel">
-      <p>This expected behavior. The Search Strings are designed to find all <i>possible</i> high Rank PvP IVs, which can then be appraised to find the <i>actual</i> high PvP IVs. They will <b>ALWAYS</b> find the actual high-ranking IVs (along with false positives).<br><br>Trash Strings have the opposite guarantee: they will <b>NEVER</b> idenify high ranking mon, and all that are matched by a Trash String will be worse than the rank specified. However, there will be additional IVs that should also be trashed but are not matched (to ensure that high ranks will always be excluded).</p>
+      <p id="strBroke">This expected behavior. The Search Strings are designed to find all <i>possible</i> high Rank PvP IVs, which can then be appraised to find the <i>actual</i> high PvP IVs. They will <b>ALWAYS</b> find the actual high-ranking IVs (along with false positives).<br><br>Trash Strings have the opposite guarantee: they will <b>NEVER</b> identify high ranking mon, and all that are matched by a Trash String will be worse than the rank specified. However, there will be additional IVs that should also be trashed but are not matched (to ensure that high ranks will always be excluded).</p>
+    </div>
+    
+    <button class="accordion">iOS Error: "The phrase must contain at least two characters"</button>
+    <div class="panel" id="iOSerror">
+      <div class="container clearfix">
+        <figure class="imgcol">
+          <figcaption>The error message "The phrase must contain at least two characters." on iOS is triggered when a Text Replacement phrase over 2000 characters is entered and then the "Save" button is tapped.</figcaption><img src="https://pvpivs.com/includes/iOSerror.jpg" alt="iOS 2000 char limit error message" /><figcaption>The solution is either to copy+paste the strings directly from our Search String generator into the PoGo search bar, or split them into multiple Text Replacement phrases, each under the 2000 character limit as shown in the following 5 images:<br /><br /></figcaption>
+        </figure>
+        
+        <figure class="imgcol">
+          <figcaption><h5>Step 1: Locate Output Split Boxes (bottom)</h5></figcaption>
+          <img src="https://pvpivs.com/includes/exRhyStr.jpg" alt="Example Rhyhorn Search String" />
+        </figure>
+        
+        <figure class="imgcol">
+          <figcaption><h5>Step 2: Create Text Replacements for Each Split Box</h5></figcaption>
+          <img src="https://pvpivs.com/includes/textReplSetup.jpg" alt="Example Text Replacement Phrases" />
+        </figure>
+        
+        <div style="height:20px; clear:both;"></div>
+            	
+        <figure class="imgcol">
+          <figcaption><h5>Step 3: Load First Text Replacement into PoGo Search</h5></figcaption>
+          <img src="https://pvpivs.com/includes/Rhy1.jpg" alt="Entering first Text Replacement into PoGo" />
+        </figure>
+          
+        <figure class="imgcol">
+          <figcaption><h5>Step 4: Load Second (and remaining) Text Replacements...</h5></figcaption>
+          <img src="https://pvpivs.com/includes/Rhy2.jpg" alt="Entering Remaining Text Replacements..." />
+        </figure>
+        
+        <figure class="imgcol">
+          <figcaption><h5>Step 5: Full Search String Loaded into PoGo!</h5></figcaption>
+          <img src="https://pvpivs.com/includes/comboStr.jpg" alt="Combined Full Search String" />
+        </figure>
+      </div>
     </div>
   </section>
   <section>
@@ -140,7 +211,7 @@
   
   for (i = 0; i < acc.length; i++) {
     acc[i].addEventListener("click", function() {
-      this.classList.toggle("active");
+      this.classList.toggle("activeFAQ");
       var panel = this.nextElementSibling;
       if (panel.style.maxHeight) {
         panel.style.maxHeight = null;
