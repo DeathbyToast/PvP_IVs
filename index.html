@@ -236,7 +236,7 @@
       var raidOnly = [384,480,481,482,483,484,485,487,638,639,640];
       var mythNoTrade = [151,251,385];
       var raidNoTrade = [386,491,647];
-      var lastTime = undefined;
+      var lastLeague = undefined;
       /*TODO Delete? var usrAtk = 0;*/ /* globa1 for user attack stat*/
       var perfTiming = false; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
@@ -263,9 +263,9 @@
             aIV.splice(0, aIV.length);
             dIV.splice(0, dIV.length);
             sIV.splice(0, sIV.length);
-            /* clear min stat filters */
-            mA = 0; mD = 0; mHP = 0;
             /* Re-Add default IV Input Row */
+            mA = 0; mD = 0; mHP = 0; lastLeague = undefined;
+            /* clear min stat filters and lastLeague */
             doTheInsert();
           }
           selected = suggestion.label;
@@ -427,6 +427,8 @@
         var maxLvl = document.getElementById('maxLvl').value;
         var league = document.getElementById('league').value;
         var leagueName = (league/1 == 1500) ? "Great League" : (league/1 <= 2500) ? "Ultra League" : "Master League";
+        if ((lastLeague) && (leagueName !== lastLeague)){ /* Reset if new League */mA = 0; mD = 0; mHP = 0;}
+        lastLeague = leagueName; /* Store League for next run */
         var limit = document.getElementById('limit').value;
         var dti = document.getElementById("dti").checked;
         var cmp = document.getElementById("cmp").checked;
@@ -646,9 +648,10 @@
         if (shdw) {minAtk=minAtk*1.2;maxAtk=maxAtk*1.2;minDef=minDef*0.83333331;maxDef=maxDef*0.83333331;} /*apply shadow buffs/debuffs*/
         html = "<br><br>Top "+printLimit+" "+leagueName+" PvP "+selected+" of "+numRanks+":"+html;
         
-        console.log("min stat filters are mA:"+mA+", mD:"+mD+", mHP:"+mHP);
+        console.log("min stat filters were mA:"+mA+", mD:"+mD+", mHP:"+mHP);
         /* Initialize min stat filters if blank */
         if ((mA+mD+mHP)/1 == 0) {mA = numOut(minAtk,1);mD = numOut(minDef,1);mHP = ranks.minHP.value;}
+        console.log("min stat filters now are mA:"+mA+", mD:"+mD+", mHP:"+mHP);
         var ranges = "Atk &ge; <input type='number' step='0.1' id='atkVal' min="+numOut(minAtk,1)+" max="+numOut(maxAtk,1)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;start();'> <a href="+minAtkurl+">"+numOut(minAtk,1)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,1)+" max="+numOut(maxAtk,1)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;start();'><a href="+maxAtkurl+">"+numOut(maxAtk,1)+"</a><br>";
         ranges += "Def &ge; <input type='number' step='0.1' id='defVal' min="+numOut(minDef,1)+" max="+numOut(maxDef,1)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;start();'> <a href="+minDefurl+">"+numOut(minDef,1)+"</a><input type='range' id='defRange' min="+numOut(minDef,1)+" max="+numOut(maxDef,1)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;start();'><a href="+maxDefurl+">"+numOut(maxDef,1)+"</a><br>";
         ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;start();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;start();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a>";
