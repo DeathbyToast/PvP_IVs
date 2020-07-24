@@ -383,7 +383,6 @@
     if ((evoVals[0][0]) && (!(['106', '107', '237'].includes(value[0]))))  {
       /*console.log("Finding base evo, (['106', '107', '237'].includes(value):"+(['106', '107', '237'].includes(value[0]))) */
       var strippedDex = value[0].split("&")[0];
-      console.log("Initialized strippedDex to:"+strippedDex);
       
       /* j:1 is finalEvo, start at j=2 */
       for (i=4, j=2; i<value.length; i++)
@@ -395,7 +394,7 @@
           /* Update base evo to baby form if checked */
           if (document.getElementById('baby').checked) {
             evoVals[0][0] = value[i];
-            console.log("Updated evoVals[0][0] to baby form:"+evoVals[0][0]);
+            console.log("Using baby form for evoVals[0][0]:"+evoVals[0][0]);
             break;
           }
         }
@@ -408,13 +407,13 @@
             /* update base evolution */
             evoVals[0][0] = value[i];
             strippedDex = value[i].split("&")[0];
-            console.log("Updated evoVals[0][0] to pre-evolution:"+evoVals[0][0]);
+            /*console.log("Updated evoVals[0][0] to pre-evolution:"+evoVals[0][0]);*/
           }
           else { /* This is a higher dex number evolution */
             document.getElementById('evoName['+j+']').innerHTML = value[i];
             document.getElementById('evoName['+j+']').style="display: inline-block;";
             document.getElementById('evoLimits['+j+']').style="display: inline-block;";
-            console.log("Added "+value[i]+" to list, un-hid evoLimits["+j+"]");
+            /*console.log("Added "+value[i]+" to list, un-hid evoLimits["+j+"]");*/
             j++;
           }
         }
@@ -425,7 +424,7 @@
       evoVals[0][0] = value[0];
     }
     
-    console.log("evoVals[0][0] set to:"+evoVals[0][0]);
+    /*console.log("evoVals[0][0] set to:"+evoVals[0][0]);*/
     
     var league = document.getElementById('league').value;
     var limit = document.getElementById('limit').value;
@@ -600,7 +599,7 @@
   
   function findMonName(toFind, matches, offset, checked, value) {
     var results = [], startIndex = 0, dexToFind = 0;
-    console.log("::findMonName: Received toFind:"+toFind+", offset:"+offset+", checked:"+checked+", value:"+value);
+    /*console.log("::findMonName: Received toFind:"+toFind+", offset:"+offset+", checked:"+checked+", value:"+value);*/
     
     if (value) {
       dexToFind = value[0].split(",")[0].split("&")[0]/1; startIndex = dexToFind/1 + offset/1;
@@ -703,6 +702,9 @@
           leagueLim = evoVals[i][8]/1;
         }
       }
+      else { /* league == "All" */
+        leagueLim = evoVals[i][6]/1;
+      }
       switch(i) {
         
         case 0: /* base mon */
@@ -715,6 +717,7 @@
             if (evoVals[i][5]/1 > 1350) {
               console.log("Base evo ("+evoVals[i][4]+") Max CP is:"+evoVals[i][5]/1+", adding to evo list...");
               baseRanks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 1500, 0, 0, 40);
+              console.log("leagueLim:"+leagueLim);
               message += "PvP "+evoVals[i][4]+" for Top "+leagueLim/1+ " GL,<br>and ";
               GLkeys = Object.keys(baseRanks);
               for (j=leagueLim/1; j<GLkeys.length; j++) {delete baseRanks[GLkeys[j]];}
@@ -734,26 +737,33 @@
             numRanks += leagueLim/1;
           } else {
             
+            message += "PvP "+evoVals[i][4]+" for";
             if (evoVals[i][6]/1 > 0) { /* Be sure the user wants this league before building anything! */
               /* Run Great League Calculations first, always need to be done for all Leagues */
               GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 1500, 0, 0, 40);
-              message += "PvP "+evoVals[i][4]+" for Top "+evoVals[i][6]+ " GL";
+              message += " Top "+evoVals[i][6]+ " GL";
               GLkeys = Object.keys(GLranks);
               for (j=evoVals[i][6]/1; j<GLkeys.length; j++) {delete GLranks[GLkeys[j]];}
               numRanks += evoVals[i][6]/1;
+              if ((evoVals[i][5]/1 > 1500) && ((evoVals[i][7]/1 > 0) || (evoVals[i][8]/1 > 0))) {
+                message += ", and"; /* ensure we have correct grammar on output string */
+              }
             }
 
             if ((evoVals[i][5]/1 > 1500) && (evoVals[i][7]/1 > 0)) {
               ULranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 2500, 0, 0, 40);
-              message += ", and Top "+evoVals[i][7]+ " UL";
+              message += " Top "+evoVals[i][7]+ " UL";
               ULkeys = Object.keys(ULranks);
               for (j=evoVals[i][7]/1; j<ULkeys.length; j++) {delete ULranks[ULkeys[j]];}
               numRanks += evoVals[i][7]/1;
+              if ((evoVals[i][5]/1 > 2500) && (evoVals[i][8]/1 > 0)) {
+                message += ", and"; /* ensure we have correct grammar on output string */
+              }
             }
             
             if ((evoVals[i][5]/1 > 2500) && (evoVals[i][8]/1 > 0)) {
               MLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 5000, 0, 0, 40);
-              message += ", and Top "+evoVals[i][8]+ " ML";
+              message += " Top "+evoVals[i][8]+ " ML";
               MLkeys = Object.keys(MLranks);
               for (j=evoVals[i][8]/1; j<MLkeys.length; j++) {delete MLranks[MLkeys[j]];}
               numRanks += evoVals[i][8]/1;
