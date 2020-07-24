@@ -57,18 +57,16 @@
   <section>
     <br />
     <input id="pokeList" onfocus="this.value=''" placeholder="Final Mon"/>
-    <label>
-    	Top # Ranks:
-    	<input type="number" value="10" id="limit" min="1" max="4096" oninput="start()">
-    </label>
-    <br />
     <label>League:<select id="league" onfocus="saveLast()" oninput="start()">
       <option value="1500">Great League</option>
 	  	<option value="2500">Ultra League</option>
   		<option value="5000">Master League</option>
   		<option value="All">All Leagues</option></select>
-  	</label>
-    <label>Trash String:<input id="trash" type="checkbox" oninput="start()"></label><br />
+  	</label><br />
+    <label id="topRanks">
+    	Top # Ranks:
+    	<input type="number" value="10" id="limit" min="1" max="4096" oninput="start()">
+    <br /></label>
     <div class="evoLimits" id="evoLimits[1]"><div id="evoName[1]"></div>
       <label id="labelGLlimit[1]" for="GLlimit[1]">GL:</label><input type="number" value="10" id="GLlimit[1]" min="1" max="4096" oninput="updateRank()">
       <label id="labelULlimit[1]" for="ULlimit[1]">UL:</label><input type="number" value="10" id="ULlimit[1]" min="1" max="4096" oninput="updateRank()">
@@ -115,7 +113,7 @@
       <label id="labelMLlimit[9]" for="MLlimit[9]">ML:</label><input type="number" value="10" id="MLlimit[9]" min="1" max="4096" oninput="updateRank()">
     <br /></div>
     <br /><br />
-      <textarea id="output" rows="10" style="width: 100%; height: 50%;" onclick="autocopy(this)"></textarea>
+      <textarea id="output" rows="10" style="width: 95%; height: 50%;" onclick="autocopy(this)"></textarea>
       <div id="outputSummaryBox"></div>
       <div id="feedbackBox"></div>
       <!-- Footer Code Below -->
@@ -201,6 +199,8 @@
                       document.getElementById('GLlimit['+(j+1)+']').value = limits[0];
                       document.getElementById('ULlimit['+(j+1)+']').value = limits[1];
                       document.getElementById('MLlimit['+(j+1)+']').value = limits[2];
+                      document.getElementById('topRanks').style.display = "none";
+                      document.getElementById('limit').style.display = "none";
 
                       document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";
                       document.getElementById('ULlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: inline-block;";
@@ -303,6 +303,7 @@
       /* https://stackoverflow.com/questions/4866229/check-element-css-display-with-javascript */
       document.getElementById("evoLimits[1]").style.display = (getComputedStyle(document.getElementById("evoLimits[1]"), null).display == "inline-block") ? "none":"inline-block";
       
+      
       /* if we are now displaying evoLimits[1] div, ensure new rank box aligns with lastLeague selected */
       if (document.getElementById('league').value == "All") {
         switch (lastLeague) {
@@ -322,6 +323,17 @@
         document.getElementById('MLlimit[1]').value = 10;
       }
     }
+    
+    /* Hide/Show advanced Settings as appropriate */
+    if (document.getElementById('league').value == "All") {
+      document.getElementById('topRanks').style.display = "none";
+      document.getElementById('limit').style.display = "none";
+    } else {
+      document.getElementById('topRanks').style.display = "inline-block";
+      document.getElementById('limit').style.display = "inline-block";
+    }
+    if (document.getElementById('trash').checked) {document.getElementById('trashAdv').style.display = "block";}
+    else {document.getElementById('trashAdv').style.display = "none";}
     
     /* exit if we haven't selected a mon yet */
     if ((awesomplete.suggestions === undefined) && (selected === undefined)) {
@@ -360,7 +372,7 @@
       }
     }
 
-    var value = mon.split(',');
+    var value = mon.split(','); console.log("Value:"+JSON.stringify(value));
     var output = document.getElementById('output');
     var evoVals = [];
     evoVals[0] = new Array(7).fill(0);
@@ -370,34 +382,41 @@
     /* ignore base for Hitmons */
     if ((evoVals[0][0]) && (!(['106', '107', '237'].includes(value[0]))))  {
       /*console.log("Finding base evo, (['106', '107', '237'].includes(value):"+(['106', '107', '237'].includes(value[0]))) */
-      var baseID = 10000;
-      evoVals[0][0] = value[0];
-      baseID = value[0].split("&")[0];
-      /*console.log("Using baseID of:"+baseID);*/
+      var strippedDex = value[0].split("&")[0];
+      console.log("Initialized strippedDex to:"+strippedDex);
       
       /* j:1 is finalEvo, start at j=2 */
       for (i=4, j=2; i<value.length; i++)
       {
-        if (value[i].indexOf("&") > 0) {
-          console.log("Found an '&' in an evolved form ("+value[i]+")!");
+        if (value[i].split("&")[1] === "eggsonly") {
+          /* Found a baby, unhide baby option */
+          document.getElementById("babyLbl").style.display = "block";
           
-          /* skip baby forms unless checked (baby=true) */
-          if ((value[i].split("&")[1] === "eggsonly") && (!baby)) continue;
-          if (baseID/1 > value[i].split("&")[0]/1) {
+          /* Update base evo to baby form if checked */
+          if (document.getElementById('baby').checked) {
             evoVals[0][0] = value[i];
-            baseID = value[i].split("&")[0];
+            console.log("Updated evoVals[0][0] to baby form:"+evoVals[0][0]);
+            break;
           }
         }
-        /* find base evolution */
-        if (baseID/1 > value[i]/1) {
-          evoVals[0][0] = value[i];
-          baseID = value[i];
-        } else {
-          document.getElementById('evoName['+j+']').innerHTML = value[i];
-          document.getElementById('evoName['+j+']').style="display: inline-block;";
-          document.getElementById('evoLimits['+j+']').style="display: inline-block;";
-          /*console.log("Added "+value[i]+" to list, un-hid evoLimits["+j+"]");*/
-          j++;
+        else {
+          /* Check if selected mon (evoVals[0][0]) is higher dex than evo in value[i], or same (megas) */
+          if ((strippedDex)/1 >= (value[i].split("&")[0])/1) {
+            /* Found a pre-evolution of Final Mon */
+            document.getElementById("baseLbl").style.display = "block";
+            
+            /* update base evolution */
+            evoVals[0][0] = value[i];
+            strippedDex = value[i].split("&")[0];
+            console.log("Updated evoVals[0][0] to pre-evolution:"+evoVals[0][0]);
+          }
+          else { /* This is a higher dex number evolution */
+            document.getElementById('evoName['+j+']').innerHTML = value[i];
+            document.getElementById('evoName['+j+']').style="display: inline-block;";
+            document.getElementById('evoLimits['+j+']').style="display: inline-block;";
+            console.log("Added "+value[i]+" to list, un-hid evoLimits["+j+"]");
+            j++;
+          }
         }
       }
     } else {
@@ -405,6 +424,9 @@
       console.log("Skipping finding base evo, (['106', '107', '237'].includes(value):"+(['106', '107', '237'].includes(value[0])));
       evoVals[0][0] = value[0];
     }
+    
+    console.log("evoVals[0][0] set to:"+evoVals[0][0]);
+    
     var league = document.getElementById('league').value;
     var limit = document.getElementById('limit').value;
     var trash = document.getElementById('trash').checked;
@@ -412,24 +434,7 @@
     var zero = document.getElementById('zero').checked;
     var onlyZero = document.getElementById('onlyZero').checked;
     var lang = document.getElementById('lang').value.split(',');
-    var cpstr = lang[1], hpstr = lang[2];
-    var baby = document.getElementById('baby').checked;
-    if (baby)
-    {
-      baby = value[0];
-      for (i=4; i<value.length; i++)
-      {
-        if (value[i].indexOf("&") > 0) {
-          if (value[i].split("&")[1] === "eggsonly") {
-            /*console.log("Found baby form! "+value[i]); */
-            evoVals[0][0] = value[i];
-            console.log("Updated base evo to "+evoVals[0][0]);
-            break;
-          }
-        }
-      }
-      /*console.log("Overwrote base evo with baby form:"+evoVals[0][0]); */
-    }
+
     
     /* get base stats of whatever form we are outputting string for */
     var offset = 0;
@@ -568,7 +573,7 @@
     /*console.log("Binary:"+binary); */
     
     /* output the user's request! */
-    outputStr(evoVals, trash, hundo, zero, onlyZero, league, binary, output, lang[1], lang[2]);
+    outputStr(evoVals, trash, hundo, zero, onlyZero, league, binary, output, lang);
     
     /* update the URL with search parameters */
     var uri = window.location.href.split("?")[0];
@@ -595,7 +600,7 @@
   
   function findMonName(toFind, matches, offset, checked, value) {
     var results = [], startIndex = 0, dexToFind = 0;
-    /*console.log("::findMonName: Received toFind:"+toFind+", offset:"+offset+", checked:"+checked+", value:"+value);*/
+    console.log("::findMonName: Received toFind:"+toFind+", offset:"+offset+", checked:"+checked+", value:"+value);
     
     if (value) {
       dexToFind = value[0].split(",")[0].split("&")[0]/1; startIndex = dexToFind/1 + offset/1;
@@ -636,8 +641,8 @@
       /* (!(matches[i].value.split(',')[0]).match(/[A-Za-z]/)) checks for &galar or &eggsonly, etc  */
       if ((!(matches[i].value.split(',')[0]).match(/[A-Za-z]/)) && (dexToFind/1 < (matches[i].value.split(',')[0].split('&')[0]/1))) {
         
-        console.log("Stopping comparing as we overshot the dexToFind("+dexToFind+"), matches["+i+"].value.split(',')[0]:"+matches[i].value.split(',')[0]);
-        console.log("(i("+i+") >= matches.length("+matches.length+")) || (results[4]("+results[4]+") == 0)");
+        /*console.log("Stopping comparing as we overshot the dexToFind("+dexToFind+"), matches["+i+"].value.split(',')[0]:"+matches[i].value.split(',')[0]);
+        console.log("(i("+i+") >= matches.length("+matches.length+")) || (results[4]("+results[4]+") == 0)");*/
         break;
       }
       
@@ -815,9 +820,9 @@
     return finalRanks;
   }
   
-  function outputStr(evoVals, trash, hundo, zero, onlyZero, league, binary, output, cpstr, hpstr) {
+  function outputStr(evoVals, trash, hundo, zero, onlyZero, league, binary, output, lang) {
     if (perfTiming) {var outputStrT0 = performance.now();}
-    /*console.log("outputStr: evoVals:"+JSON.stringify(evoVals)+", limit:"+limit+", trash:"+trash+", hundo:"+hundo+", zero:"+zero+", onlyZero:"+onlyZero+", league:"+league+", cpstr:"+cpstr+", hpstr:"+hpstr);*/
+    /*console.log("outputStr: evoVals:"+JSON.stringify(evoVals)+", limit:"+limit+", trash:"+trash+", hundo:"+hundo+", zero:"+zero+", onlyZero:"+onlyZero+", league:"+league+", lang:"+lang);*/
 
     /* create our rank object to compute cps/hps from for output string */
     const mergedRanks = getRanks(evoVals, trash, hundo, zero, onlyZero, league);
@@ -853,7 +858,7 @@
       hps[0] = results[1];
       maxCP = results[2];
       maxHP = results[3];
-      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], cpstr, hpstr, trash, hundo, onlyZero);
+      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], lang, trash, hundo, onlyZero);
       message = "String finds only potential 0% IV (0/0/0) "+evoVals[0][4]+", not PvP ranks";
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       return output;
@@ -937,7 +942,7 @@
       
     /* output the CPs and HPs */
     /*console.log("outputStr: First call to outputCPsHPsBuckets...");*/
-    outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], cpstr, hpstr, trash, hundo, onlyZero);
+    outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], lang, trash, hundo, onlyZero);
     var origOut = output.value;
     
     if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
@@ -968,13 +973,13 @@
     return output;
   }
   
-  function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, output, id, cpstr, hpstr, trash, hundo, onlyZero) {
+  function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, output, id, lang, trash, hundo, onlyZero) {
     if (perfTiming) {var outputCPsHPsBucketsT0 = performance.now();}
 
     /*console.log("--outputCPsHPsBuckets: maxCP:"+JSON.stringify(maxCP)+", maxHP:"+JSON.stringify(maxHP)+", trash:"+trash+" hundo:"+hundo+", onlyZero:"+onlyZero);*/
     var emptyBuf = "";
     output.value = id; /* add dex num */
-    var maxLoops = 5/* Even for onlyZero=true need all 5 appraisals */
+    var maxLoops = 5;/* Even for onlyZero=true need all 5 appraisals */
     
     /* output cps and hps */
     for (var i=0; i<maxLoops; i++) {
@@ -1004,7 +1009,7 @@
         cps[i] = Array.from(cps[i]);
         cps[i].sort((a, b) => a - b);
         /*console.log("--outputCPsHPsBuckets: cps["+i+"]: "+JSON.stringify(cps[i]));*/
-        output.value += '&!'+i+'*,' + get_matching_string(cps[i], cpstr);
+        output.value += '&!'+i+'*,' + get_matching_string(cps[i], lang[1]);
         
         if (!trash) {
           output.value += '&!'+i+'*';
@@ -1015,7 +1020,7 @@
         if (hps[i].size > 0) {
           hps[i] = Array.from(hps[i]);
           hps[i].sort((a, b) => a - b);
-          output.value += ',' + get_matching_string(hps[i], hpstr);
+          output.value += ',' + get_matching_string(hps[i], lang[2]);
         }
       } else if (!trash) { /* skip empty appraisal sets in search string */
         emptyBuf += '&!'+i+'*';
@@ -1025,78 +1030,26 @@
     output.value += emptyBuf; /* add trash stuff */
     /*console.log("output.value is now:"+output.value);*/
     /*console.log("--outputCPsHPsBuckets: Generated string is "+output.value.length+" characters long");*/
+    
+    /* Ensure additional regional search terms are translated as needed*/
+    if (lang[0] !== "en")
+    {
+      /* lang : cpstr,  hpstr,  mega,   alola,  eggsonly, galar,  ground, steel,  grass,  psychic, fire */
+      /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11] */
+      /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
+      output.value = output.value.replace(/mega/gi,    lang[3]);
+      output.value = output.value.replace(/alola/gi,   lang[4]);
+      output.value = output.value.replace(/eggsonly/gi,lang[5]);
+      output.value = output.value.replace(/galar/gi,   lang[6]);
+      output.value = output.value.replace(/ground/gi,  lang[7]);
+      output.value = output.value.replace(/steel/gi,   lang[8]);
+      output.value = output.value.replace(/grass/gi,   lang[9]);
+      output.value = output.value.replace(/psychic/gi, lang[10]);
+      output.value = output.value.replace(/fire/gi,    lang[11]);
+    }
+    
     if (perfTiming) {var outputCPsHPsBucketsT1 = performance.now();
     console.log("outputCPsHPsBuckets: Execution took "+(outputCPsHPsBucketsT1-outputCPsHPsBucketsT0).toFixed(1)+"ms");}
-    return true;
-  }
-  
-  function outputCPsHPsCombined(cps, maxCP, hps, maxHP, output, id, cpstr, hpstr, trash, hundo, onlyZero, league) {
-    if (perfTiming) {var outputCPsHPsCombinedT0 = performance.now();}
-
-    var allCPs, allHPs, allMaxCP, allMaxHP, hpBuf;
-    var tempCPs = [], tempHPs = [];
-    
-    /* merge all CPs and HPs into one set */
-    for (var i=0; i<4; i++) { /* skip 4* */
-      tempCPs = tempCPs.concat(Array.from(cps[i]));
-      tempHPs = tempHPs.concat(Array.from(hps[i]));
-    } /* https://stackoverflow.com/a/9229821 */
-    allCPs = new Set([...new Set(tempCPs)]);
-    allHPs = new Set([...new Set(tempHPs)]);
-    allMaxCP = Math.max(...maxCP);
-    allMaxHP = Math.max(...maxHP);
-    
-    console.log("--outputCPsHPsCombined: Regenerating string to try to be under 2000 character limit...");
-    /* fall back to old system to save characters */
-    output.value = ""; /* clear the old and too long output */
-    
-    if (trash) {
-      /* flip CPs and HPs for trashing */
-      allCPs = trashFlip(allCPs, allMaxCP);
-      allHPs = trashFlip(allHPs, allMaxHP);
-      
-      /* output CPs and HPs */
-      allCPs = Array.from(allCPs);
-      allCPs.sort((a, b) => a - b);
-      output.value += id + '&' + get_matching_string(allCPs, cpstr);
-      
-      hpBuf = "";
-      if (output.value.length < 2000) {
-        allHPs = Array.from(allHPs);
-        allHPs.sort((a, b) => a - b);
-        hpBuf = ',' + get_matching_string(allHPs, hpstr);
-        if ((output.value.length + hpBuf.length) <= 2000) {
-          output.value += hpBuf;
-        } else {
-          console.log("--outputCPsHPsCombined: output.value.length:"+output.value.length+" + hpBuf.length:"+hpBuf.length+" will be over 2000 char limit, dropping hpBuf");
-        }
-      } else {
-        console.log("--outputCPsHPsCombined: output.value.length:"+output.value.length+" is over 2000 char limit, skipped hpBuf");
-      }
-    } else {
-      /* output CPs and HPs */
-      allCPs = Array.from(allCPs);
-      allCPs.sort((a, b) => a - b);
-      output.value += id + '&' + get_matching_string(allCPs, cpstr);
-      
-      hpBuf = "";
-      if (output.value.length < 2000) {
-        allHPs = Array.from(allHPs);
-        allHPs.sort((a, b) => a - b);
-        allHPs = '&' + get_matching_string(allHPs, hpstr);
-        if ((output.value.length + hpBuf.length) <= 2000) {
-          output.value += hpBuf;
-        } else {
-          /*console.log("--outputCPsHPsCombined: output.value.length:"+output.value.length+" + hpBuf.length:"+hpBuf.length+" will be over 2000 char limit, dropping hpBuf");*/
-        }
-      }
-    }
-    if ((trash) && (!hundo) && (!onlyZero)) {
-      output.value += '&!4*';
-    }
-    console.log("--outputCPsHPsCombined: Final length:"+output.value.length);
-    if (perfTiming) {var outputCPsHPsCombinedT1 = performance.now();
-    console.log("outputCPsHPsCombined: Execution took "+(outputCPsHPsCombinedT1-outputCPsHPsCombinedT0).toFixed(1)+"ms");}
     return true;
   }
   
@@ -1196,21 +1149,23 @@
   }
   </script>
     <h3>Settings:</h3>
-    <label>Trash Perfect IVs:<input id="hundo" type="checkbox" oninput="start()"></label><br />
-    <label>Trash Zero IVs:<input id="zero" type="checkbox" checked oninput="start()"></label><br />
-    <label>Only Find 0% IVs:<input id="onlyZero" type="checkbox" oninput="start()"></label><br />
-    <label>Use Base Evolution:<input id="base" type="checkbox" checked oninput="start()"></label><br />
-    <label>Use Baby Form:<input id="baby" type="checkbox" oninput="start()"></label><br />
+    <label>Trash String:<input id="trash" type="checkbox" oninput="start()"><br /></label>
+    <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="hundo" type="checkbox" oninput="start()"></label><br />
+    <label>Trash Zero IVs:<input id="zero" type="checkbox" checked oninput="start()"></label><br /></div>
+    <label>Only Find 0% IVs:<input id="onlyZero" type="checkbox" oninput="start()"><br /></label>
+    <label id="baseLbl" style="display: none;">Use Base Evolution:<input id="base" type="checkbox" checked oninput="start()"></label>
+    <label id="babyLbl" style="display: none;">Use Baby Form:<input id="baby" type="checkbox" oninput="start()"></label>
     <label>Language:<select id="lang" oninput="start()">
-    		<option value="en,cp,hp">English</option>
-    		<option value="ja,cp,hp">Japanese</option>
-    		<option value="fr,pc,pv">French</option>
-    		<option value="es,pc,puntos de salud">Spanish</option>
-    		<option value="de,wp,kp">German</option>
-    		<option value="il,pl,punti salute">Italian</option>
-    		<option value="ko,cp,hp">Korean</option>
-    		<option value="zh,cp,hp">Chinese</option>
-    		<option value="pt,pc,ps">Portuguese</option></select>
+    		<option value="en,cp,hp,mega,alola,eggsonly,galar,ground,steel,grass,psychic,fire">English</option>
+    		<option value="fr,pc,pv,mega,alola,oeufseulement,galar,sol,acier,plante,psy,feu">French</option>
+    		<option value="de,wp,kp,mega,alola,nurausEiern,galar,boden,stahl,pflanze,psycho,feuer">German</option>
+    		<option value="es,pc,ps,mega,alola,huevosolo,galar,tierra,acero,planta,ps&#xed;quico,fuego">Spanish</option>
+    		<option value="it,pl,ps,mega,dialola,solouovo,galar,terra,acciaio,erba,psico,fuoco">Italian</option>
+    		<option value="ja,cp,hp,mega,&#x3042;&#x308d;&#x30fc;&#x3089;,&#x305f;&#x307e;&#x3054;&#x306e;&#x307f;,&#x30ac;&#x30e9;&#x30eb;,&#x3058;&#x3081;&#x3093;,&#x306f;&#x304c;&#x306d;,&#x304f;&#x3055;,&#x30a8;&#x30b9;&#x30d1;&#x30fc;,&#x307b;&#x306e;&#x304a;">Japanese</option>
+    		<option value="ko,cp,hp,mega,&#xc54c;&#xb85c;&#xb77c;,&#xc54c;,&#xd558;&#xb098;,&#xb545;,&#xac15;&#xcca0;,&#xd480;,&#xc5d0;&#xc2a4;&#xd37c;,&#xbd88;&#xaf43;">Korean</option>
+    		<option value="pt,pc,ps,mega,alola,apenasovos,galar,terrestre,A&#xe7;o,planta,Ps&#xed;quico,fogo">Portuguese</option>
+    		<option value="zh,cp,hp,mega,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;">Chinese</option>
+    </select>
     </label><br /><br /><div id=overflowArea></div>
     <div style="overflow-x:auto;"><br />
       <p style="color:silver;font-size:0.6em">This site is protected by reCAPTCHA and the Google
