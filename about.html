@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" itemscope itemtype="https://schema.org/FAQPage">
 <head>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-172530206-1"></script>
@@ -13,7 +13,15 @@
   <!-- Include pre-loads to reduce/optimize page load time-->
   <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
   <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
-  <title>PvP IVs - About</title>
+  <title itemprop="name">PvP IVs - About + FAQ</title>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "https://pvpivs.com",
+      "logo": "https://pvpivs.com/includes/favicon.png"
+    }
+    </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Welcome Trainers! PvPIVs.com hosts our PvP IVs Rank Checker, PvP IVs Search String generator, Type Charts, and Type Quiz. Questions? Comments? Say hi on Discord"/>
@@ -143,58 +151,69 @@
   </header>
   <section>
     <h2>Frequently Asked Questions</h2><br>
-    <h3>Search Strings:</h3>
-    <button class="accordion">Do Search Strings find what to keep or trash?</button>
-    <div class="panel"><div class="flex-container">
-      <div><p id="searchHow">Search Strings help to locate high PvP IVs, as demonstrated by the gif to the right which finds the Rank 3 Venonat for Great League.<br><br>The <a href="/searchStr.html">Search String Generator</a> first compiles all possible IV combinations (up to 4096), sorts them by PvP Rank, and then keeps only the Top X Ranks, which are output as the Search String. For Trashing Strings, this output is then inverted to create the Trash Strings.</p></div>
-      <div><img src="https://pvpivs.com/includes/croppedAnnotatedSearchString.gif" alt="Search String Animated Gif"></div>
-    </div></div>
-    
-    <button class="accordion">What do Trash Strings do?</button>
-    <div class="panel"><div class="flex-container">
-      <div><p id="trashHow">Trashing strings are the inverse of Search Strings. First the Search String is generated, and then it is inverted to create the Trashing String (meaning high PvP IVs are <i>excluded</i> with Trash Strings).<br><br>This is demonstrated with the gif on the right showing the Rank 3 Venonat disappearing when the Trash String is pasted in, revealing only safe to trash Venonat (below the match threshold).</p></div>
-      <div><img src="https://pvpivs.com/includes/croppedAnnotatedTrashString.gif" alt="Trash String Animated Gif"></div>
-    </div></div>
-    
-    <button class="accordion">Search/Trash String isn't working; it found a lower rank than I set!</button>
-    <div class="panel">
-      <p id="strBroke">This expected behavior. The Search Strings are designed to find all <i>possible</i> high Rank PvP IVs, which can then be appraised to find the <i>actual</i> high PvP IVs. They will <b>ALWAYS</b> find the actual high-ranking IVs (along with false positives).<br><br>Trash Strings have the opposite guarantee: they will <b>NEVER</b> identify high ranking mon, and all that are matched by a Trash String will be worse than the rank specified. However, there will be additional IVs that should also be trashed but are not matched (to ensure that high ranks will always be excluded).</p>
+    <h3 itemprop="name">Search Strings:</h3>
+    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <button itemprop="name" class="accordion">Do Search Strings find what to keep or trash?</button>
+    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="panel"><div class="flex-container">
+      <div><p itemprop="text" id="searchHow">Search Strings help to locate high PvP IVs, as demonstrated by the gif to the right which finds the Rank 3 Venonat for Great League.<br><br>The <a href="/searchStr.html">Search String Generator</a> first compiles all possible IV combinations (up to 4096), sorts them by PvP Rank, and then keeps only the Top X Ranks, which are output as the Search String. For Trashing Strings, this output is then inverted to create the Trash Strings.</p></div>
+      <div><img itemprop="image" src="https://pvpivs.com/includes/croppedAnnotatedSearchString.gif" alt="Search String Animated Gif"></div>
+    </div>
+    </div>
     </div>
     
-    <button class="accordion">iOS Error: "The phrase must contain at least two characters"</button>
-    <div class="panel" id="iOSerror">
+    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <button itemprop="name" class="accordion">What do Trash Strings do?</button>
+    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="panel"><div class="flex-container">
+      <div><p itemprop="text" id="trashHow">Trashing strings are the inverse of Search Strings. First the Search String is generated, and then it is inverted to create the Trashing String (meaning high PvP IVs are <i>excluded</i> with Trash Strings).<br><br>This is demonstrated with the gif on the right showing the Rank 3 Venonat disappearing when the Trash String is pasted in, revealing only safe to trash Venonat (below the match threshold).</p></div>
+      <div><img itemprop="image" src="https://pvpivs.com/includes/croppedAnnotatedTrashString.gif" alt="Trash String Animated Gif"></div>
+    </div>
+    </div>
+    </div>
+    
+    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <button itemprop="name" class="accordion">Search/Trash String isn't working; it found a lower rank than I set!</button>
+    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="panel">
+      <p itemprop="text" id="strBroke">This expected behavior. The Search Strings are designed to find all <i>possible</i> high Rank PvP IVs, which can then be appraised to find the <i>actual</i> high PvP IVs. They will <b>ALWAYS</b> find the actual high-ranking IVs (along with false positives).<br><br>Trash Strings have the opposite guarantee: they will <b>NEVER</b> identify high ranking mon, and all that are matched by a Trash String will be worse than the rank specified. However, there will be additional IVs that should also be trashed but are not matched (to ensure that high ranks will always be excluded).</p>
+    </div>
+    </div>
+    
+    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <button itemprop="name" class="accordion">iOS Error: "The phrase must contain at least two characters"</button>
+    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="panel" id="iOSerror">
       <div class="container clearfix">
-        <figure class="imgcol">
-          <figcaption>The error message "The phrase must contain at least two characters." on iOS is triggered when a Text Replacement phrase over 2000 characters is entered and then the "Save" button is tapped.</figcaption><img src="https://pvpivs.com/includes/iOSerror.jpg" alt="iOS 2000 char limit error message" /><figcaption>The solution is either to copy+paste the strings directly from our Search String generator into the PoGo search bar, or split them into multiple Text Replacement phrases, each under the 2000 character limit as shown in the following 5 images:<br /><br /></figcaption>
+        <figure itemprop="text" class="imgcol">
+          <figcaption>The error message "The phrase must contain at least two characters." on iOS is triggered when a Text Replacement phrase over 2000 characters is entered and then the "Save" button is tapped.</figcaption><img itemprop="image" src="https://pvpivs.com/includes/iOSerror.jpg" alt="iOS 2000 char limit error message" /><figcaption>The solution is either to copy+paste the strings directly from our Search String generator into the PoGo search bar, or split them into multiple Text Replacement phrases, each under the 2000 character limit as shown in the following 5 images:<br /><br /></figcaption>
         </figure>
         
-        <figure class="imgcol">
-          <figcaption><h5>Step 1: Locate Output Split Boxes (bottom)</h5></figcaption>
-          <img src="https://pvpivs.com/includes/exRhyStr.jpg" alt="Example Rhyhorn Search String" />
+        <div itemscope itemtype="http://schema.org/HowTo"><div style="display: none" itemprop="name">How to Fix iOS Error: "The phrase must contain at least two characters"</div>
+        <figure class="imgcol" itemprop="step" itemscope itemtype="http://schema.org/HowToStep">
+          <figcaption itemprop="itemListElement" itemscope itemtype="http://schema.org/HowToDirection"><h5 itemprop="text"> 1: Locate Output Split Boxes (bottom)</h5></figcaption>
+          <img itemprop="image" src="https://pvpivs.com/includes/exRhyStr.jpg" alt="Example Rhyhorn Search String" />
         </figure>
         
-        <figure class="imgcol">
-          <figcaption><h5>Step 2: Create Text Replacements for Each Split Box</h5></figcaption>
-          <img src="https://pvpivs.com/includes/textReplSetup.jpg" alt="Example Text Replacement Phrases" />
+        <figure class="imgcol" itemprop="step" itemscope itemtype="http://schema.org/HowToStep">
+          <figcaption itemprop="itemListElement" itemscope itemtype="http://schema.org/HowToDirection"><h5 itemprop="text"> 2: Create Text Replacements for Each Split Box</h5></figcaption>
+          <img itemprop="image" src="https://pvpivs.com/includes/textReplSetup.jpg" alt="Example Text Replacement Phrases" />
         </figure>
         
         <div style="height:20px; clear:both;"></div>
             	
-        <figure class="imgcol">
-          <figcaption><h5>Step 3: Load First Text Replacement into PoGo Search</h5></figcaption>
-          <img src="https://pvpivs.com/includes/Rhy1.jpg" alt="Entering first Text Replacement into PoGo" />
+        <figure class="imgcol" itemprop="step" itemscope itemtype="http://schema.org/HowToStep">
+          <figcaption itemprop="itemListElement" itemscope itemtype="http://schema.org/HowToDirection"><h5 itemprop="text"> 3: Load First Text Replacement into PoGo Search</h5></figcaption>
+          <img itemprop="image" src="https://pvpivs.com/includes/Rhy1.jpg" alt="Entering first Text Replacement into PoGo" />
         </figure>
           
-        <figure class="imgcol">
-          <figcaption><h5>Step 4: Load Second (and remaining) Text Replacements...</h5></figcaption>
-          <img src="https://pvpivs.com/includes/Rhy2.jpg" alt="Entering Remaining Text Replacements..." />
+        <figure class="imgcol" itemprop="step" itemscope itemtype="http://schema.org/HowToStep">
+          <figcaption itemprop="itemListElement" itemscope itemtype="http://schema.org/HowToDirection"><h5 itemprop="text"> 4: Load Second (and remaining) Text Replacements...</h5></figcaption>
+          <img itemprop="image" src="https://pvpivs.com/includes/Rhy2.jpg" alt="Entering Remaining Text Replacements..." />
         </figure>
         
-        <figure class="imgcol">
-          <figcaption><h5>Step 5: Full Search String Loaded into PoGo!</h5></figcaption>
-          <img src="https://pvpivs.com/includes/comboStr.jpg" alt="Combined Full Search String" />
+        <figure class="imgcol" itemprop="step" itemscope itemtype="http://schema.org/HowToStep">
+          <figcaption itemprop="itemListElement" itemscope itemtype="http://schema.org/HowToDirection"><h5 itemprop="text"> 5: Full Search String Loaded into PoGo!</h5></figcaption>
+          <img itemprop="image" src="https://pvpivs.com/includes/comboStr.jpg" alt="Combined Full Search String" />
         </figure>
-      </div>
+      </div></div>
+    </div>
     </div>
   </section>
   <section>
