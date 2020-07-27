@@ -371,60 +371,6 @@
         }
       }
     }
-
-    var value = mon.split(','); console.log("Value:"+JSON.stringify(value));
-    var output = document.getElementById('output');
-    var evoVals = [];
-    evoVals[0] = new Array(7).fill(0);
-    evoVals[0][0] = document.getElementById('base').checked;
-    evoVals[0][6] = document.getElementById('limit').value/1;
-    
-    /* ignore base for Hitmons */
-    if ((evoVals[0][0]) && (!(['106', '107', '237'].includes(value[0]))))  {
-      /*console.log("Finding base evo, (['106', '107', '237'].includes(value):"+(['106', '107', '237'].includes(value[0]))) */
-      var strippedDex = value[0].split("&")[0];
-      
-      /* j:1 is finalEvo, start at j=2 */
-      for (i=4, j=2; i<value.length; i++)
-      {
-        if (value[i].split("&")[1] === "eggsonly") {
-          /* Found a baby, unhide baby option */
-          document.getElementById("babyLbl").style.display = "block";
-          
-          /* Update base evo to baby form if checked */
-          if (document.getElementById('baby').checked) {
-            evoVals[0][0] = value[i];
-            console.log("Using baby form for evoVals[0][0]:"+evoVals[0][0]);
-            break;
-          }
-        }
-        else {
-          /* Check if selected mon (evoVals[0][0]) is higher dex than evo in value[i], or same (megas) */
-          if ((strippedDex)/1 >= (value[i].split("&")[0])/1) {
-            /* Found a pre-evolution of Final Mon */
-            document.getElementById("baseLbl").style.display = "block";
-            
-            /* update base evolution */
-            evoVals[0][0] = value[i];
-            strippedDex = value[i].split("&")[0];
-            /*console.log("Updated evoVals[0][0] to pre-evolution:"+evoVals[0][0]);*/
-          }
-          else { /* This is a higher dex number evolution */
-            document.getElementById('evoName['+j+']').innerHTML = value[i];
-            document.getElementById('evoName['+j+']').style="display: inline-block;";
-            document.getElementById('evoLimits['+j+']').style="display: inline-block;";
-            /*console.log("Added "+value[i]+" to list, un-hid evoLimits["+j+"]");*/
-            j++;
-          }
-        }
-      }
-    } else {
-      /* if we aren't using base evo, use the select mon's ID */
-      console.log("Skipping finding base evo, (['106', '107', '237'].includes(value):"+(['106', '107', '237'].includes(value[0])));
-      evoVals[0][0] = value[0];
-    }
-    
-    /*console.log("evoVals[0][0] set to:"+evoVals[0][0]);*/
     
     var league = document.getElementById('league').value;
     var limit = document.getElementById('limit').value;
@@ -433,6 +379,55 @@
     var zero = document.getElementById('zero').checked;
     var onlyZero = document.getElementById('onlyZero').checked;
     var lang = document.getElementById('lang').value.split(',');
+    var value = mon.split(',');
+    var output = document.getElementById('output');
+    var evoVals = [];
+    evoVals[0] = new Array(7).fill(0);
+    evoVals[0][0] = value[0]; /* set to selected dex num */
+    /*evoVals[0][6] = document.getElementById('limit').value/1;*/
+    
+    console.log("Value:"+JSON.stringify(value));
+    /* Find base evolution in family, ignored for Hitmon family */
+    /* Value:["1","118","111","128","2","3&!mega","3&mega"] */
+    if ((document.getElementById('base').checked) && (!(['106', '107', '237'].includes(value[0]))))  {
+      /*console.log("Finding base evo, (['106', '107', '237'].includes(value):"+(['106', '107', '237'].includes(value[0]))) */
+      
+      /* Strip out atk/def/sta stats, leave only dex numbers with &alola,etc */
+      var evoFamily = value.slice(4,value.length); evoFamily.unshift(value[0]);
+      evoFamily.sort(function(a, b){return a.split("&")[0]-b.split("&")[0]});
+      console.log("evoFamily after sort:"+evoFamily);
+      
+      /* Check if this family has a baby mon */
+      if (evoFamily.some(res => res.includes("eggsonly"))) {
+        /* Found a baby, unhide baby option */
+        document.getElementById("babyLbl").style.display = "block";
+      }
+      
+      if (evoFamily.length > 1) {
+        /* There are evolutions, unhide base option */
+        document.getElementById("baseLbl").style.display = "block";
+      }
+      
+      /* This will always be lowest dex number in family */
+      evoVals[0][0] = evoFamily[0];
+      console.log("Set evoVals[0][0] to base evo:"+evoVals[0][0]);
+      
+      /* Correct for off by 2 due to 0-index of array and 1-index of evoName[] */
+      for (i=2; i<(2+evoFamily.length); i++) {
+        document.getElementById('evoName['+i+']').innerHTML = evoFamily[i-2];
+        document.getElementById('evoName['+i+']').style="display: inline-block;";
+        document.getElementById('evoLimits['+i+']').style="display: inline-block;";
+        console.log("Added "+evoFamily[i-2]+" to list, un-hid evoLimits["+i+"]");
+      }
+    } else {
+      /* if we aren't using base evo, use selected mon's ID */
+      console.log("Skipping finding base evo, (['106', '107', '237'].includes(value):"+(['106', '107', '237'].includes(value[0])));
+      evoVals[0][0] = value[0];
+    }
+    
+    console.log("evoVals[0][0] set to:"+evoVals[0][0]);
+    
+   
 
     
     /* get base stats of whatever form we are outputting string for */
@@ -1163,8 +1158,8 @@
     <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="hundo" type="checkbox" oninput="start()"></label><br />
     <label>Trash Zero IVs:<input id="zero" type="checkbox" checked oninput="start()"></label><br /></div>
     <label>Only Find 0% IVs:<input id="onlyZero" type="checkbox" oninput="start()"><br /></label>
-    <label id="baseLbl" style="display: none;">Use Base Evolution:<input id="base" type="checkbox" checked oninput="start()"></label>
-    <label id="babyLbl" style="display: none;">Use Baby Form:<input id="baby" type="checkbox" oninput="start()"></label>
+    <label id="baseLbl" style="display: none;">Search for Base Evo:<input id="base" type="checkbox" checked oninput="start()"></label>
+    <label id="babyLbl" style="display: none;">Search for Baby Evo:<input id="baby" type="checkbox" oninput="start()"></label>
     <label>Language:<select id="lang" oninput="start()">
     		<option value="en,cp,hp,mega,alola,eggsonly,galar,ground,steel,grass,psychic,fire">English</option>
     		<option value="fr,pc,pv,mega,alola,oeufseulement,galar,sol,acier,plante,psy,feu">French</option>
