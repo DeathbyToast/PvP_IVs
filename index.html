@@ -551,7 +551,7 @@
                       var evoMon = pokeList[f].label;
                       /*create link for evo table entry*/
                       IVs = aIV[i] + "_" + dIV[i] + "_" + sIV[i];
-                      uri = URL + "?mon="+evoMon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
+                      uri = URL + "?mon="+evoMon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
                       /*console.log("About to pass IVs:"+aIV[i]+", "+dIV[i]+", "+sIV[i]+" to getMonRank");*/
                       var evoGMRhtml = getMonRank(evoNumRanks, evoRanks, evoKeys, shdw, cmp, evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evoMon, uri);
                       if (evoGMRhtml) {
