@@ -14,7 +14,7 @@
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/sortingHat.min.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListMega.js" as="script">
@@ -222,7 +222,7 @@
     
       <!-- Footer Code Below -->
       <script src="https://pvpivs.com/includes/escapedFooter.js"></script>
-      <script src="https://pvpivs.com/includes/sortingHat.min.js"></script>
+      <script src="https://pvpivs.com/includes/calculate.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
       <script src="https://pvpivs.com/includes/pokeListMega.js"></script>
         
@@ -434,7 +434,7 @@
         var cmp = document.getElementById("cmp").checked;
         var shdw = document.getElementById('shdw[0]').checked;
         var floor = document.getElementById('floor').value;
-        var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), league, floor, minLvl, maxLvl, dti);
+        var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), floor, minLvl, maxLvl, dti, league);
         var evos = monInfo.slice(4, monInfo.length);
         var evoLen = evos.length;/*console.log("evos.length:"+evoLen+", evos:"+evos);*/
         
@@ -443,7 +443,7 @@
         var numRanks = ranks.numRanks;
         if (numRanks/1 < 1) {
           /*nothing to output, print Error and exit*/
-          document.getElementById('feedbackBox').innerHTML = "<p><i>No eligible IVs found under the "+league+" CP cap<br>Please check the Min Level in Settings and try again</i></p>";
+          document.getElementById('feedbackBox').innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Settings and try again</i></p>";
           console.log("No ranks generated!");
           return false;
         }
@@ -519,7 +519,7 @@
               gmRhtml = getMonRank(numRanks, ranks, keys, shdw, cmp, maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length);
               if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml == "")) {
                 console.log("i:"+i+" Detected too high CP after getMonRank");
-                document.getElementById('feedbackBox').innerHTML = "<p><i>Your IVs (row "+(i+1)+") are over "+league+" CP for "+selected+"<br>Please check Settings: Min Level and try again</i></p>";
+                document.getElementById('feedbackBox').innerHTML = "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") & min level ("+minLvl+") is too big for "+leagueName+"<br>Please check Settings: Min Level and try again</i></p>";
                 return false;
               } else {html += gmRhtml;}
               if (evoLen) { /* valid set of IVs! Let's check evos */
@@ -543,7 +543,7 @@
                       /*ensure we don't show impossible Tyrogue evos*/
                       if (selected == "Tyrogue") {if (wrongTyroEvo(aIV[i], dIV[i], sIV[i], evos[e])) {continue;}}
                       
-                      var evoRanks = calculate(parseInt(evoMonInfo[1]), parseInt(evoMonInfo[2]), parseInt(evoMonInfo[3]), league, floor, minLvl, maxLvl, false);
+                      var evoRanks = calculate(parseInt(evoMonInfo[1]), parseInt(evoMonInfo[2]), parseInt(evoMonInfo[3]), floor, minLvl, maxLvl, false, league);
                       /*console.log("calclate returned evoRanks: "+JSON.stringify(evoRanks)+" for league:"+league+", floor:"+floor+",  minLvl:"+minLvl+", maxLvl:"+maxLvl);*/
                       var evoKeys = Object.keys(evoRanks);
                       var evoNumRanks = evoRanks.numRanks;
@@ -572,7 +572,7 @@
                           evoHtml += evoGMRhtml;
                         }
                       } else {
-                        evoFeedback += "<p><i>"+evoMon+" with your IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") & min level ("+minLvl+") is over "+league+"CP</i></p>";
+                        evoFeedback += "<p><i>"+evoMon+" with your IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") & min level ("+minLvl+") is too big for "+leagueName+"</i></p>";
                       }
                       /*console.log("getMonRank returned evoHtml: "+JSON.stringify(evoHtml));*/
                       break;
@@ -674,7 +674,8 @@
         
         if ((aIV[0] && dIV[0] && sIV[0]) && (gmRhtml == '')) {
           console.log("Detected IVs over CP limit in gmRhtml and rank check (2nd one)");
-          document.getElementById('feedbackBox').innerHTML = "<p><i>Your IVs are not eligible for the "+league+" CP cap<br>Please check the Min Level in Settings and try again</i></p>";
+          document.getElementById('feedbackBox').innerHTML = "<p><i>Your IVs with min level ("+minLvl+") is too big for "+leagueName+"<br>Please check the Min Level in Settings and try again</i></p>";
+          
         }
         
         output.innerHTML = evoHtml + megaNote + evoFeedback + ranges + html + searchLink + "<br>" + trades;
@@ -1211,7 +1212,7 @@
       <label>League:<select id="league" oninput="start()">
         <option value="1500">Great League</option>
     		<option value="2500">Ultra League</option>
-    		<option value="5000">Master League</option>
+    		<option value="false">Master League</option>
     	</select></label><br />
       <label>IV Floor:<select id="floor" oninput="start()">
         <option value="0">0: Wild Caught</option>
