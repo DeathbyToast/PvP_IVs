@@ -1,7 +1,7 @@
 function calculate(baseatk, basedef, basesta, floor, minLvl, maxLvl, invalid, league) {
   if (perfTiming) {var calculateT0 = performance.now();}
   /* returns sorted list of all (up to 4096) combinations indexed by statProd + CP */
-  console.log("calculate: Received: baseatk="+baseatk+" basedef="+basedef+" basesta="+basesta+" league="+league+" floor="+floor+" minLvl="+minLvl);
+  /*console.log("calculate: Received: baseatk="+baseatk+" basedef="+basedef+" basesta="+basesta+" league="+league+" floor="+floor+" minLvl="+minLvl);*/
   /* Each item stored by statProd.CP */
   /* Rank definition: { "12613615.1500": { "IVs": {"A":14, "D":14, "S":14, "star": "3*"}, "base": {"A":145, "D":105, "S":115}, "battle": {"A":145, "D":105, "S":115}, "L":25}, */
   var ranks = [], invalids = [];
