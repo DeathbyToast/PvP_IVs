@@ -113,12 +113,7 @@
     	awaitInputs();
         $("#button1").click(function() {
           console.log($('#type2').val());
-            if (checkAnswers($('#type').val(), $('#type2').val()))
-            {
-            	alert("Congratulations, that's correct!");
-  		} else {
-            	alert("Looks like that's not correct, try again!");
-  		}
+            checkAnswers($('#type').val(), $('#type2').val());
             return;
         });
     });
@@ -162,15 +157,19 @@
         /*check answers starting with number of keys*/
         if (Object.keys(selectValues.W).length != Object.keys(answerKey.W).length) {
         	console.log("Incorrect number of Weaknesses");
+        	alert("Looks like Weaknesses aren't all correct, try again!");
             return false;
         } else if (Object.keys(selectValues.R).length != Object.keys(answerKey.R).length) {
         	console.log("Incorrect number of Resistances");
+        	alert("Looks like Resistances aren't all correct, try again!");
             return false;
         } else if (Object.keys(selectValues.SE).length != Object.keys(answerKey.SE).length) {
         	console.log("Incorrect number of Super Effective Types");
+        	alert("Looks like Super Effective Types aren't all correct, try again!");
             return false;
         } else if (Object.keys(selectValues.NVE).length != Object.keys(answerKey.NVE).length) {
         	console.log("Incorrect number of Not Very Effective Types");
+        	alert("Looks like Not Very Effective Types aren't all correct, try again!");
             return false;
         }
         /*we know we at least have the right number of keys for all four categories*/
@@ -182,9 +181,11 @@
         {
         	if (wInputs[i] != wAnswers[i]) {
             	console.log("Incorrect weakness: " +wInputs[i]);
+            	alert("Looks like Weaknesses aren't all correct, try again!");
                 return false;
             } else if (selectValues.W[wInputs[i]] != answerKey.W[wAnswers[i]]) {
             console.log("Incorrect weakness multiplier for :"+wInputs[i]);
+            alert("Looks like Weakness Multipliers aren't all correct, try again!");
             return false;
             }
         }
@@ -194,9 +195,11 @@
         {
         	if (rInputs[i] != rAnswers[i]) {
             	console.log("Incorrect resistance: " +rInputs[i]);
+            	alert("Looks like Resistances aren't all correct, try again!");
                 return false;
             } else if (selectValues.R[rInputs[i]] != answerKey.R[rAnswers[i]]) {
             console.log("Incorrect resistance multiplier for :"+rInputs[i]);
+            alert("Looks like Resistance Multipliers aren't all correct, try again!");
             return false;
             }
         }
@@ -206,9 +209,11 @@
         {
         	if (seInputs[i] != seAnswers[i]) {
             	console.log("Incorrect super effective type: " +seInputs[i]);
+            	alert("Looks like Super Effective Types aren't all correct, try again!");
                 return false;
             } else if (selectValues.SE[seInputs[i]] != answerKey.SE[seAnswers[i]]) {
             console.log("Incorrect super effective multiplier for :"+seInputs[i]);
+            alert("Looks like Super Effective Type Multipliers aren't all correct, try again!");
             return false;
             }
         }
@@ -218,13 +223,16 @@
         {
         	if (nveInputs[i] != nveAnswers[i]) {
             	console.log("Incorrect not very effective type: " +nveInputs[i]);
+            	alert("Looks like Not Very Effective Types aren't all correct, try again!");
                 return false;
             } else if (selectValues.NVE[nveInputs[i]] != answerKey.NVE[nveAnswers[i]]) {
             console.log("Incorrect not very effective multiplier for :"+nveInputs[i]);
+            alert("Looks like Not Very Effective Type Multipliers aren't all correct, try again!");
             return false;
             }
         }
         console.log("Answers all correct!");
+        alert("Congratulations, that's correct!");
         return true;
     }
     
@@ -342,7 +350,6 @@
             	selectValues[type][$(this).val()] = typeBuffer;
             }
   	});}
-        /*Reverse Alphabetize*/
   	Object.keys(selectValues[type]).forEach(function(key) {
   		hash[type][key] = selectValues[type][key];
   	});
