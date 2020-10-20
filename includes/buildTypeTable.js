@@ -522,7 +522,7 @@ function mergeTypes(prop1, prop2) {
 		for (j = 0; j < (Object.keys(merged.R)).length; j++) {
 			if (Object.keys(merged.W)[i] === Object.keys(merged.R)[j]) {
 				var product = Math.trunc(((merged.W[Object.keys(merged.W)[i]] / 1 * merged.R[Object.keys(merged.R)[j]] / 1) + 0.00001) * 1000) / 1000;
-				console.log ("Merged "+Object.keys(merged.W)[i]+"("+merged.W[Object.keys(merged.W)[i]]/1+") and "+Object.keys(merged.R)[j]+"("+merged.R[Object.keys(merged.R)[j]]/1+") = "+product);
+				/*console.log ("Merged "+Object.keys(merged.W)[i]+"("+merged.W[Object.keys(merged.W)[i]]/1+") and "+Object.keys(merged.R)[j]+"("+merged.R[Object.keys(merged.R)[j]]/1+") = "+product);*/
 
 				/*check the results of the merge*/
 				if (product / 1 > 1) {
