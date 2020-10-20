@@ -176,8 +176,8 @@
         /*we know we at least have the right number of keys for all four categories*/
         
         /*now we need to check that types and effectiveness multipliers are correct*/
-        var wInputs = Object.keys(selectValues.W);
-        var wAnswers = Object.keys(answerKey.W);
+        var wInputs = Object.keys(selectValues.W).sort();
+        var wAnswers = Object.keys(answerKey.W).sort();
         for (i=0; i<wInputs.length; i++)
         {
         	if (wInputs[i] != wAnswers[i]) {
@@ -188,8 +188,8 @@
             return false;
             }
         }
-        var rInputs = Object.keys(selectValues.R);
-        var rAnswers = Object.keys(answerKey.R);
+        var rInputs = Object.keys(selectValues.R).sort();
+        var rAnswers = Object.keys(answerKey.R).sort();
         for (i=0; i<rInputs.length; i++)
         {
         	if (rInputs[i] != rAnswers[i]) {
@@ -200,8 +200,8 @@
             return false;
             }
         }
-        var seInputs = Object.keys(selectValues.SE);
-        var seAnswers = Object.keys(answerKey.SE);
+        var seInputs = Object.keys(selectValues.SE).sort();
+        var seAnswers = Object.keys(answerKey.SE).sort();
         for (i=0; i<seInputs.length; i++)
         {
         	if (seInputs[i] != seAnswers[i]) {
@@ -212,8 +212,8 @@
             return false;
             }
         }
-        var nveInputs = Object.keys(selectValues.NVE);
-        var nveAnswers = Object.keys(answerKey.NVE);
+        var nveInputs = Object.keys(selectValues.NVE).sort();
+        var nveAnswers = Object.keys(answerKey.NVE).sort();
         for (i=0; i<nveInputs.length; i++)
         {
         	if (nveInputs[i] != nveAnswers[i]) {
@@ -331,10 +331,6 @@
             	typeBuffer = $(this).val();
             }
   	});
-        /*Alphabetize*/
-  	Object.keys(selectValues[type]).sort().forEach(function(key) {
-  		hash[type][key] = selectValues[type][key];
-  	});
         } else {
     	$('#resultsContainer').find('.'+type).each(function() {
             if ($(this).val() == "None")
@@ -347,7 +343,7 @@
             }
   	});}
         /*Reverse Alphabetize*/
-  	Object.keys(selectValues[type]).sort().reverse().forEach(function(key) {
+  	Object.keys(selectValues[type]).forEach(function(key) {
   		hash[type][key] = selectValues[type][key];
   	});
     }
