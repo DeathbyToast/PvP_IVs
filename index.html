@@ -426,7 +426,7 @@
         var minLvl = document.getElementById('minLvl').value;
         var maxLvl = document.getElementById('maxLvl').value;
         var league = document.getElementById('league').value;
-        var leagueName = (league/1 == 1500) ? "Great League" : (league/1 <= 2500) ? "Ultra League" : "Master League";
+        var leagueName = (league/1 == 500) ? "Little Cup" : (league/1 == 1500) ? "Great League" : (league/1 <= 2500) ? "Ultra League" : "Master League";
         if ((lastLeague) && (leagueName !== lastLeague)){ /* Reset if new League */mA = 0; mD = 0; mHP = 0;}
         lastLeague = leagueName; /* Store League for next run */
         var limit = document.getElementById('limit').value;
@@ -1210,7 +1210,8 @@
       <h3>Settings:</h3>
       <label>Top # Ranks:<input type="number" value="10" id="limit" min="1" max="4096" oninput="start()"></label><br />
       <label>League:<select id="league" oninput="start()">
-        <option value="1500">Great League</option>
+        <option value="500">Little Cup</option>
+        <option value="1500" selected>Great League</option>
     		<option value="2500">Ultra League</option>
     		<option value="false">Master League</option>
     	</select></label><br />
