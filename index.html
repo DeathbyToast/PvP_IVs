@@ -596,7 +596,17 @@
         
         /*print main table output and count actual outputted rows/ranks*/
         var actualRank = 1; var rowsOutput = 0;
+        var minAtk = ranks.minAtk.value, maxAtk = ranks.maxAtk.value;
+        var minDef = ranks.minDef.value, maxDef = ranks.maxDef.value;
         /*console.log("Full output:"+JSON.stringify(ranks, null, 2));*/
+        
+        /* Initialize min stat filters if blank (first run only)*/
+        if ((mA+mD+mHP)/1 == 0) { /*console.log("Noticed mA,mD,or mHP are 0, initializing...");*/
+          mA = numOut(minAtk,1);mD = numOut(minDef,1);mHP = ranks.minHP.value;}
+        
+        /*temporarily remove shadow buffs/debuffs for filtering*/
+        if (shdw) {mA=mA/1.2;mD=mD/0.83333331;}
+        
         for (var i=0; ((actualRank/1<=numRanks/1) && (actualRank/1 <= limit/1)); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             
@@ -643,14 +653,14 @@
         /*console.log("Finished loop with i:"+i+", actualRank:"+actualRank+" >= limit:"+limit);*/
         html+="</table>"; /*finish building the whole table*/
         var printLimit = Math.min(rowsOutput, limit, numRanks);
-        var minAtk = ranks.minAtk.value, maxAtk = ranks.maxAtk.value;
-        var minDef = ranks.minDef.value, maxDef = ranks.maxDef.value;
-        if (shdw) {minAtk=minAtk*1.2;maxAtk=maxAtk*1.2;minDef=minDef*0.83333331;maxDef=maxDef*0.83333331;} /*apply shadow buffs/debuffs*/
+        
+        /*apply shadow buffs/debuffs post-filtering for correct shadow UI elements*/
+        if (shdw) {
+          mA=mA*1.2;minAtk=minAtk*1.2;maxAtk=maxAtk*1.2;
+          mD=mD*0.83333331;minDef=minDef*0.83333331;maxDef=maxDef*0.83333331;
+        }
         html = "<br><br>Top "+printLimit+" "+leagueName+" PvP "+selected+" of "+numRanks+":"+html;
-        
-        /* Initialize min stat filters if blank */
-        if ((mA+mD+mHP)/1 == 0) {mA = numOut(minAtk,1);mD = numOut(minDef,1);mHP = ranks.minHP.value;}
-        
+
         var ranges = "Atk &ge; <input type='number' step='0.1' id='atkVal' min="+numOut(minAtk,1)+" max="+numOut(maxAtk,1)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;start();'> <a href="+minAtkurl+">"+numOut(minAtk,1)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,1)+" max="+numOut(maxAtk,1)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;start();'><a href="+maxAtkurl+">"+numOut(maxAtk,1)+"</a><br>";
         ranges += "Def &ge; <input type='number' step='0.1' id='defVal' min="+numOut(minDef,1)+" max="+numOut(maxDef,1)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;start();'> <a href="+minDefurl+">"+numOut(minDef,1)+"</a><input type='range' id='defRange' min="+numOut(minDef,1)+" max="+numOut(maxDef,1)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;start();'><a href="+maxDefurl+">"+numOut(maxDef,1)+"</a><br>";
         ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;start();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;start();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a>";
@@ -1140,11 +1150,20 @@
       
       function checkAllBoxes() {
         if (perfTiming) {var checkAllBoxesT0 = performance.now();}
-        /*console.log("event.target.checked:"+JSON.stringify(event.target.checked));*/
+        console.log("event.target.checked:"+JSON.stringify(event.target.checked));
         var allCB = document.getElementsByClassName('shadowCB');
         var boxChecked = event.target.checked;
         for(var i=0; i<allCB.length; i++){
             allCB[i].checked=boxChecked;
+        }
+        /* Reset mA and mD to fix over/undershooting bug GitHub#7*/
+        if (event.target.checked) {
+          mA = mA*1.2;
+          mD = mD*0.83333331;
+        }
+        else {
+          mA = mA/1.2;
+          mD = mD/0.83333331;
         }
         if (perfTiming) {var checkAllBoxesT1 = performance.now();
         console.log("checkAllBoxes: Execution took "+(checkAllBoxesT1-checkAllBoxesT0).toFixed(1)+"ms");}
