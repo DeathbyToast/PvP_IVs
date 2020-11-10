@@ -543,7 +543,12 @@
                       /*ensure we don't show impossible Tyrogue evos*/
                       if (selected == "Tyrogue") {if (wrongTyroEvo(aIV[i], dIV[i], sIV[i], evos[e])) {continue;}}
                       
-                      var evoRanks = calculate(parseInt(evoMonInfo[1]), parseInt(evoMonInfo[2]), parseInt(evoMonInfo[3]), floor, minLvl, maxLvl, false, league);
+                      /* Variable to run Great League calculations for family evos of Little League */
+                      var evoLeague = league;
+                      if (evoLeague == 500) {
+                        evoLeague = 1500;
+                      }
+                      var evoRanks = calculate(parseInt(evoMonInfo[1]), parseInt(evoMonInfo[2]), parseInt(evoMonInfo[3]), floor, minLvl, maxLvl, false, evoLeague);
                       /*console.log("calclate returned evoRanks: "+JSON.stringify(evoRanks)+" for league:"+league+", floor:"+floor+",  minLvl:"+minLvl+", maxLvl:"+maxLvl);*/
                       var evoKeys = Object.keys(evoRanks);
                       var evoNumRanks = evoRanks.numRanks;
