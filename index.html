@@ -818,6 +818,9 @@
               case "mHP":
                 mHP = values[i].split("=")[1];
                 break;
+              case "t": /* Enable performance timing output in console for debugging */
+                perfTiming = values[i].split("=")[1];
+                break;
             }
           }
           if (perfTiming) {var checkURIt1 = performance.now();
