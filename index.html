@@ -545,8 +545,10 @@
                       
                       /* Variable to run Great League calculations for family evos of Little League */
                       var evoLeague = league;
+                      var evoLeagueName = leagueName;
                       if (evoLeague == 500) {
                         evoLeague = 1500;
+                        evoLeagueName = "Great League";
                       }
                       var evoRanks = calculate(parseInt(evoMonInfo[1]), parseInt(evoMonInfo[2]), parseInt(evoMonInfo[3]), floor, minLvl, maxLvl, false, evoLeague);
                       /*console.log("calclate returned evoRanks: "+JSON.stringify(evoRanks)+" for league:"+league+", floor:"+floor+",  minLvl:"+minLvl+", maxLvl:"+maxLvl);*/
@@ -566,13 +568,13 @@
                         } else {
                           /*if this is the first evo, add header too*/
                           if ((evoLen > 1) || (aIV.length > 1)) {
-                            evoHtml = "<p><i>"+evoLen+" "+selected+" family evos:<br>(click table headers to sort)</i></p><table id='outTable'><tr><th>Pokémon</th>";
+                            evoHtml = "<p><i>"+evoLen+" "+selected+" "+evoLeagueName+" family evos:<br>(click table headers to sort)</i></p><table id='outTable'><tr><th>Pokémon</th>";
                             if (aIV.length > 1) {
                               evoHtml += "<th>IVs</th>";
                             }
                             evoHtml += "<th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th><th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
                           } else {
-                            evoHtml = "<p><i>"+evoLen+" "+selected+" family evo:</i></p><table id='outTable'><tr><th>Pokémon</th><th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th><th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
+                            evoHtml = "<p><i>"+evoLen+" "+selected+" "+evoLeagueName+" family evo:</i></p><table id='outTable'><tr><th>Pokémon</th><th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th><th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
                           }
                           evoHtml += evoGMRhtml;
                         }
