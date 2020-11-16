@@ -218,10 +218,10 @@
             } else { document.getElementById('trash').checked = false; }
             if (options[1] == 1) { document.getElementById('onlyZero').checked = true;
             } else { document.getElementById('onlyZero').checked = false; }
-            if (options[2] == 1) { document.getElementById('hundo').checked = true;
-            } else { document.getElementById('hundo').checked = false; }
-            if (options[3] == 1) { document.getElementById('zero').checked = true;
-            } else { document.getElementById('zero').checked = false; }
+            if (options[2] == 1) { document.getElementById('trashHundo').checked = true;
+            } else { document.getElementById('trashHundo').checked = false; }
+            if (options[3] == 1) { document.getElementById('trashZero').checked = true;
+            } else { document.getElementById('trashZero').checked = false; }
             if (options[4] == 1) { document.getElementById('base').checked = true;
             } else { document.getElementById('base').checked = false; }
             if (options[5] == 1) { document.getElementById('baby').checked = true;
@@ -349,8 +349,8 @@
     
     var league = document.getElementById('league').value;
     var trash = document.getElementById('trash').checked;
-    var hundo = document.getElementById('hundo').checked;
-    var zero = document.getElementById('zero').checked;
+    var trashHundo = document.getElementById('trashHundo').checked;
+    var trashZero = document.getElementById('trashZero').checked;
     var onlyZero = document.getElementById('onlyZero').checked;
     var lang = document.getElementById('lang').value.split(',');
     var value = mon.split(',');
@@ -402,7 +402,7 @@
       var indexPL = pokeList.findIndex(e => e.value.split(",")[0] === evoFamily[i]);
       var splitValue = pokeList[indexPL].value.split(",");
 
-      /** Fill evoVals as defined:
+      /** Initialize evoVals as defined:
        * ex: ["485",251,213,209,"Heatran",3754,10,10,10]
        * evoVals[][0] = dexNum as placeholder
        * evoVals[][1] = base attack stat
@@ -421,8 +421,7 @@
       evoVals[i][4] = pokeList[indexPL].label;
       evoVals[i][5] = Math.max(10, Math.floor((evoVals[i][1]/1 + 15) * Math.sqrt(evoVals[i][2]/1 + 15) * Math.sqrt(evoVals[i][3]/1 + 15) * cpm[(40 - 1)*2] * cpm[(40 - 1)*2] / 10))/1;
     }
-    console.log("Finished initailizing evoVals[]: "+JSON.stringify(evoVals));
-    
+
     /* Sort evoVals by maxCP (evoVals[][5]) to find true base mon */
     evoVals = evoVals.sort(function(a, b) { return a[5] - b[5];});
     /*console.log("Sorted evoVals["+evoVals.length+"]: "+JSON.stringify(evoVals));*/
@@ -508,7 +507,7 @@
       /* Set Master League limits if this is the selected mon, or if CP>2500 AND the league is either All or Master League */
       evoVals[i][8] = (((evoVals[i][4] == value[0]) || (evoVals[i][5] > 2500)) && ((league == "All") || (league === "false"))) ? document.getElementById('MLlimit['+i+']').value/1:0*1;
     }
-    console.log("Finished building evoVals[]: "+JSON.stringify(evoVals));
+    /*console.log("Finished building evoVals[]: "+JSON.stringify(evoVals));*/
     
     /* Ensure that we have at least one evolution checked (evoCB) https://stackoverflow.com/a/22938796 */
     const evoCBs = [...document.getElementsByClassName("evoCBs")];
@@ -548,13 +547,13 @@
 
     if (trash) { binary = "1";} else { binary = "0";}
     if (onlyZero) { binary += "1";} else { binary += "0";}
-    if (hundo) { binary += "1";} else { binary += "0";}
-    if (zero) { binary += "1";} else { binary += "0";}
+    if (trashHundo) { binary += "1";} else { binary += "0";}
+    if (trashZero) { binary += "1";} else { binary += "0";}
     if (document.getElementById('base').checked) { binary += "1";} else { binary += "0";}
     if (document.getElementById('baby').checked) { binary += "1";} else { binary += "0";}
     
     /* output the user's request! */
-    outputStr(evoVals, trash, hundo, zero, onlyZero, league, binary, output, lang);
+    outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, binary, output, lang);
     
     /* update the URL with search parameters */
     var uri = window.location.href.split("?")[0];
@@ -577,7 +576,7 @@
     return true;
   }
   
-  function getRanks(evoVals, trash, hundo, zero, onlyZero, league) {
+  function getRanks(evoVals, trash, trashHundo, trashZero, onlyZero, league) {
     if (perfTiming) {var getRanksT0 = performance.now();}
     console.log("gR::Received evoVals:"+JSON.stringify(evoVals));
     
@@ -606,8 +605,8 @@
         case 0: /* base mon */
           if ((trash) && (!onlyZero)) {
             message += "trashes all "+evoVals[i][4]+" except ";
-            if (!hundo) {message += "perfect IV (15/15/15) and ";}
-            if (!zero) {message += "zero IV (0/0/0) and ";}
+            if (!trashHundo) {message += "perfect IV (15/15/15) and ";}
+            if (!trashZero) {message += "zero IV (0/0/0) and ";}
           } else {message += "finds "+evoVals[i][4]+" as ";}
           break;
 
@@ -655,21 +654,20 @@
     if (league == "1500") {message += " for Great League";}
     else if (league == "2500") {message += " for Ultra League";}
     else if (league != "All") {message += " for Master League";}
-    /* Find "as and Top" grammar error in message */
-    console.log("Message before: "+JSON.stringify(message));
+    /* Fix "as and Top" and "as ,<br> and PvP" message grammar errors */
     message = message.replace("as  and Top", "as Top");
-    console.log("Message after: "+JSON.stringify(message));
+    message = message.replace("as ,<br> and PvP", "as PvP");
     document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
     if (perfTiming) {var getRanksT1 = performance.now();
     console.log("getRanks: Execution took "+(getRanksT1-getRanksT0).toFixed(1)+"ms");}
     return finalRanks;
   }
   
-  function outputStr(evoVals, trash, hundo, zero, onlyZero, league, binary, output, lang) {
+  function outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, binary, output, lang) {
     if (perfTiming) {var outputStrT0 = performance.now();}
 
     /* create our rank object to compute cps/hps from for output string */
-    const mergedRanks = getRanks(evoVals, trash, hundo, zero, onlyZero, league);
+    const mergedRanks = getRanks(evoVals, trash, trashHundo, trashZero, onlyZero, league);
 
     var rKeys = Object.keys(mergedRanks), message;
     output.value = ''; /* ensure old output is cleared */
@@ -699,12 +697,12 @@
       hps[0] = results[1];
       maxCP = results[2];
       maxHP = results[3];
-      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], lang, trash, hundo, onlyZero);
+      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], lang, trash, trashHundo, onlyZero);
       message = "String finds only potential 0% IV (0/0/0) "+evoVals[0][4]+", not PvP ranks";
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       return output;
     } else {
-      if ((!zero) && (trash)) {
+      if ((!trashZero) && (trash)) {
         results = getZeroCPs(evoVals[0][1], evoVals[0][2], evoVals[0][3], cpm, maxCP, maxHP, cps[0], hps[0]);
         cps[0] = results[0];
         hps[0] = results[1];
@@ -777,7 +775,7 @@
     }
       
     /* output the CPs and HPs */
-    outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], lang, trash, hundo, onlyZero);
+    outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], lang, trash, trashHundo, onlyZero);
     var origOut = output.value;
     
     if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
@@ -809,7 +807,7 @@
     return output;
   }
   
-  function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, output, id, lang, trash, hundo, onlyZero) {
+  function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, output, id, lang, trash, trashHundo, onlyZero) {
     if (perfTiming) {var outputCPsHPsBucketsT0 = performance.now();}
     
     var emptyBuf = "";
@@ -819,7 +817,7 @@
     /* output cps and hps */
     for (var i=0; i<maxLoops; i++) {
       if (i == 4) { /* handle 4* case */
-        if ((trash) && (!hundo)) {
+        if ((trash) && (!trashHundo)) {
           emptyBuf += '&!'+i+'*';
           continue;
         } else if (cps[4].size > 0) {
@@ -968,8 +966,8 @@
   </script>
     <h3>Settings:</h3>
     <label>Trash String:<input id="trash" type="checkbox" oninput="start()"><br /></label>
-    <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="hundo" type="checkbox" oninput="start()"></label><br />
-    <label>Trash Zero IVs:<input id="zero" type="checkbox" checked oninput="start()"></label><br /></div>
+    <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="start()"></label><br />
+    <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="start()"></label><br /></div>
     <label>Only Find 0% IVs:<input id="onlyZero" type="checkbox" oninput="start()"><br /></label>
     <div id="baseDiv"><label id="baseLbl" for="base" style="display: none;">Search for Base Evo:</label><input id="base" type="checkbox" checked oninput="start(true)" style="display: none;"></div>
     <div id="babyDiv"><label id="babyLbl" for="baby" style="display: none;">Search for Baby Evo:</label><input id="baby" type="checkbox" oninput="start(true)" style="display: none;"></div>
