@@ -14,7 +14,7 @@
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/calculate.min.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/calculate2.min.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListMega.js" as="script">
@@ -434,7 +434,7 @@
         var cmp = document.getElementById("cmp").checked;
         var shdw = document.getElementById('shdw[0]').checked;
         var floor = document.getElementById('floor').value;
-        var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), floor, minLvl, maxLvl, dti, league);
+        var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), floor, minLvl, maxLvl, dti, league, mon);
         var evos = monInfo.slice(4, monInfo.length);
         var evoLen = evos.length;/*console.log("evos.length:"+evoLen+", evos:"+evos);*/
         
@@ -550,12 +550,12 @@
                         evoLeague = 1500;
                         evoLeagueName = "Great League";
                       }
-                      var evoRanks = calculate(parseInt(evoMonInfo[1]), parseInt(evoMonInfo[2]), parseInt(evoMonInfo[3]), floor, minLvl, maxLvl, false, evoLeague);
+                      var evoMon = pokeList[f].label;
+                      var evoRanks = calculate(parseInt(evoMonInfo[1]), parseInt(evoMonInfo[2]), parseInt(evoMonInfo[3]), floor, minLvl, maxLvl, false, evoLeague, evoMon);
                       /*console.log("calclate returned evoRanks: "+JSON.stringify(evoRanks)+" for league:"+league+", floor:"+floor+",  minLvl:"+minLvl+", maxLvl:"+maxLvl);*/
                       var evoKeys = Object.keys(evoRanks);
                       var evoNumRanks = evoRanks.numRanks;
                       var evoMaxStatProd = evoKeys[0].split(".")[0];
-                      var evoMon = pokeList[f].label;
                       /*create link for evo table entry*/
                       IVs = aIV[i] + "_" + dIV[i] + "_" + sIV[i];
                       uri = URL + "?mon="+evoMon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
@@ -1343,11 +1343,11 @@
         <option value="43">43</option>
         <option value="44">44</option>
         <option value="45">45</option>
-        <!--option value="46">46</option>
+        <option value="46">46</option>
         <option value="47">47</option>
         <option value="48">48</option>
         <option value="49">49</option>
-        <option value="50">50</option-->
+        <option value="50">50</option>
       </select></label><br />
       <label>Display Trade Improvement %:<input id="dti" type="checkbox" oninput="start()"></label><br />
       <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="start()"></label><br />
