@@ -217,8 +217,8 @@
       </table>
       
       <div id="feedbackBox"></div>
-      <div style="overflow-x:auto;" id="chart_div"></div>
       <div style="overflow-x:auto;" id="outputBox"><i><br/>Please select a Pok&eacute;mon above to continue...</i></div>
+      <div style="overflow-x:auto;" id="chart_div"></div>
     
       <!-- Footer Code Below -->
       <script src="https://pvpivs.com/includes/escapedFooter.js"></script>
@@ -448,6 +448,10 @@
           return false;
         }
         var maxStatProd = keys[0].split(".")[0];
+        
+        if (maxLvl > 41) {
+          chart.innerHTML = "<p><i>Please note that Levels 41-51 are speculative and subject to change!</i></p><br>";
+        }
         
         for (var i=0; i<aIV.length; i++)
         { /* Ensure we have current IVs for all input rows */
