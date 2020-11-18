@@ -140,14 +140,14 @@
     function checkURI() {
       if (perfTiming) {var checkURIT0 = performance.now();}
       var URL = window.location.href.split("?")[1];
-    /*var URL = "mon=Medicham&r=6&cp=1500&o=1011100&l=en";*/
-      console.log("URL: "+URL);
+      /*var URL = "mon=Medicham&r=6&cp=1500&o=1011100&l=en&m=51";
+      console.log("URL: "+URL);*/
       if (URL)
       {
         URL = decodeURI(URL);
         /*console.log("Read URL as: "+URL);*/
         var values = URL.split("&"), i, j;
-        console.log("Values array as: "+JSON.stringify(values));
+        /*console.log("Values array as: "+JSON.stringify(values));*/
         for (i=0; i<values.length; i++)
         {
           switch (values[i].split("=")[0]) {
@@ -158,11 +158,11 @@
               
             case "r":
               var rStr = (values[i].split("=")[1]).split("_");
-              console.log("Received rStr:"+rStr);
+              /*console.log("Received rStr:"+rStr);*/
               for (j=0; j<rStr.length; j++) {
                 if (rStr[j] != "f") {
                   var limits = (rStr[j]).split("-");
-                  console.log("Processing rStr["+j+"]: "+rStr[j]+" and limits:"+limits);
+                  /*console.log("Processing rStr["+j+"]: "+rStr[j]+" and limits:"+limits);*/
                   document.getElementById('evoCB['+(j+1)+']').checked = true;
                   
                   switch (document.getElementById('league').value) {
@@ -227,6 +227,10 @@
                   break;
                 }
               }
+              break;
+              
+            case "m": /* Enable Levels beyond 40 for Search Strings */
+              document.getElementById('maxLvl').value = values[i].split("=")[1];
               break;
               
             case "t": /* Enable performance timing output in console for debugging */
@@ -343,6 +347,7 @@
       var trashZero = document.getElementById('trashZero').checked;
       var onlyZero = document.getElementById('onlyZero').checked;
       var lang = document.getElementById('lang').value.split(',');
+      var maxLvl = document.getElementById('maxLvl').value;
       var value = mon.split(',');
       var output = document.getElementById('output');
       var evoVals = [];
@@ -409,7 +414,7 @@
         evoVals[i][2] = splitValue[2]/1;
         evoVals[i][3] = splitValue[3]/1;
         evoVals[i][4] = pokeList[indexPL].label;
-        evoVals[i][5] = Math.max(10, Math.floor((evoVals[i][1]/1 + 15) * Math.sqrt(evoVals[i][2]/1 + 15) * Math.sqrt(evoVals[i][3]/1 + 15) * cpm[(40 - 1)*2] * cpm[(40 - 1)*2] / 10))/1;
+        evoVals[i][5] = Math.max(10, Math.floor((evoVals[i][1]/1 + 15) * Math.sqrt(evoVals[i][2]/1 + 15) * Math.sqrt(evoVals[i][3]/1 + 15) * cpm[(maxLvl - 1)*2] * cpm[(maxLvl - 1)*2] / 10))/1;
       }
   
       /* Sort evoVals by maxCP (evoVals[][5]) to find true base mon */
@@ -543,7 +548,7 @@
       if (document.getElementById('baby').checked) { binary += "1";} else { binary += "0";}
       
       /* output the user's request! */
-      outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, binary, output, lang);
+      outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, binary, output, lang, maxLvl);
       
       /* update the URL with search parameters */
       var uri = window.location.href.split("?")[0];
@@ -566,13 +571,13 @@
       return true;
     }
     
-    function getRanks(evoVals, trash, trashHundo, trashZero, onlyZero, league) {
+    function getRanks(evoVals, trash, trashHundo, trashZero, onlyZero, league, maxLvl) {
       if (perfTiming) {var getRanksT0 = performance.now();}
       console.log("gR::Received evoVals:"+JSON.stringify(evoVals));
       
       var message = "String ", numRanks = 0, rKeys, GLkeys, ULkeys, MLkeys, i, j, leagueLim;
       var GLranks = {}, ULranks = {}, MLranks = {}, finalRanks = {};
-      
+
       for (i=0; i<evoVals.length; i++) {
         if (evoVals[i][0]){console.log("Loop #"+i+": evoVals["+i+"]:"+JSON.stringify(evoVals[i]));}
         if (league != "All") {
@@ -600,10 +605,10 @@
             } else {message += "finds "+evoVals[i][4]+" as ";}
             break;
   
-          default: /* all additional evos */
+          default: /* all evos */
             if (evoVals[i][0]) {
               if (league != "All") {
-                GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, 35, false, league, evoVals[i][4]);
+                GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, maxLvl, false, league, evoVals[i][4]);
                 message += " and Top "+leagueLim/1+ " PvP "+evoVals[i][4];
                 rKeys = Object.keys(GLranks);
                 for (j=leagueLim/1; j<rKeys.length; j++) {delete GLranks[rKeys[j]];}
@@ -613,7 +618,7 @@
                 
                 if (evoVals[i][6]/1 > 0) { /* Be sure the user wants this league before building anything! */
                   /* Run Great League Calculations first, always need to be done for all Leagues */
-                  GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, 35, false, 1500, evoVals[i][4]);
+                  GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, maxLvl, false, 1500, evoVals[i][4]);
                   message += ",<br> and PvP "+evoVals[i][4]+" for Top "+evoVals[i][6]+ " GL";
                   GLkeys = Object.keys(GLranks);
                   for (j=evoVals[i][6]/1; j<GLkeys.length; j++) {delete GLranks[GLkeys[j]];}
@@ -621,7 +626,7 @@
                 }
     
                 if ((evoVals.length<2) || ((evoVals[i][5]/1 > 1500) && (evoVals[i][7]/1 > 0))) {
-                  ULranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, 35, false, 2500, evoVals[i][4]);
+                  ULranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, maxLvl, false, 2500, evoVals[i][4]);
                   message += ", and Top "+evoVals[i][7]+ " UL";
                   ULkeys = Object.keys(ULranks);
                   for (j=evoVals[i][7]/1; j<ULkeys.length; j++) {delete ULranks[ULkeys[j]];}
@@ -629,7 +634,7 @@
                 }
                 
                 if ((evoVals.length<2) || ((evoVals[i][5]/1 > 2500) && (evoVals[i][8]/1 > 0))) {
-                  MLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, 35, false, false, evoVals[i][4]);
+                  MLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, maxLvl, false, false, evoVals[i][4]);
                   message += ", and Top "+evoVals[i][8]+ " ML";
                   MLkeys = Object.keys(MLranks);
                   for (j=evoVals[i][8]/1; j<MLkeys.length; j++) {delete MLranks[MLkeys[j]];}
@@ -653,11 +658,11 @@
       return finalRanks;
     }
     
-    function outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, binary, output, lang) {
+    function outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, binary, output, lang, maxLvl) {
       if (perfTiming) {var outputStrT0 = performance.now();}
   
       /* create our rank object to compute cps/hps from for output string */
-      const mergedRanks = getRanks(evoVals, trash, trashHundo, trashZero, onlyZero, league);
+      const mergedRanks = getRanks(evoVals, trash, trashHundo, trashZero, onlyZero, league, maxLvl);
   
       var rKeys = Object.keys(mergedRanks), message;
       output.value = ''; /* ensure old output is cleared */
@@ -972,7 +977,61 @@
     		<option value="pt,pc,ps,mega,alola,apenasovos,galar,terrestre,A&#xe7;o,planta,Ps&#xed;quico,fogo">Portuguese</option>
     		<option value="zh,cp,hp,mega,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;">Chinese</option>
     </select>
-    </label><br /><br /><div id=overflowArea></div>
+    </label><br />
+    <label>Max Level:<select title="What Level Ceiling to Search?" id="maxLvl" oninput="start()">
+        <option value="1">1: Wild Caught</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15: Research Reward</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20: Raid Reward</option>
+        <option value="21">21</option>
+        <option value="22">22</option>
+        <option value="23">23</option>
+        <option value="24">24</option>
+        <option value="25">25: Purified</option>
+        <option value="26">26</option>
+        <option value="27">27</option>
+        <option value="28">28</option>
+        <option value="29">29</option>
+        <option value="30">30</option>
+        <option value="31">31</option>
+        <option value="32">32</option>
+        <option value="33">33</option>
+        <option value="34">34</option>
+        <option value="35">35</option>
+        <option value="36">36</option>
+        <option value="37">37</option>
+        <option value="38">38</option>
+        <option value="39">39</option>
+        <option selected value="40">40</option>
+        <option value="41">41</option>
+        <option value="42">42</option>
+        <option value="43">43</option>
+        <option value="44">44</option>
+        <option value="45">45</option>
+        <option value="46">46</option>
+        <option value="47">47</option>
+        <option value="48">48</option>
+        <option value="49">49</option>
+        <option value="50">50</option>
+        <option value="51">51: Best Buddy</option>
+      </select></label><br />
+      <br /><div id=overflowArea></div>
     <div style="overflow-x:auto;"><br />
       <p style="color:silver;font-size:0.6em">This site is protected by reCAPTCHA and the Google
       <a style="color:#AED6F1" href="https://policies.google.com/privacy">Privacy Policy</a> and

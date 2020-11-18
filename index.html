@@ -237,7 +237,6 @@
       var mythNoTrade = [151,251,385];
       var raidNoTrade = [386,491,647];
       var lastLeague = undefined;
-      /*TODO Delete? var usrAtk = 0;*/ /* globa1 for user attack stat*/
       var perfTiming = false; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
       var mxlMod = false; /*track if max Lvl was adjusted*/
@@ -689,7 +688,7 @@
           /*Generate Search String links for each IV set*/
           /*https://pvpivs.com/searchStr.html?mon=Medicham&r=10&cp=1500&o=1011100&l=en*/
           for (i=0; i<rIV.length; i++) {
-            searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+selected+"&r="+rIV[i]+"&cp="+league+"&o=1011100&l=en'>Generate "+selected+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
+            searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+selected+"&r="+rIV[i]+"&cp="+league+"&o=1011100&l=en&m="+maxLvl+"'>Generate "+selected+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
           }
         }
         
@@ -1301,7 +1300,7 @@
         <option value="39">39</option>
         <option value="40">40</option>
       </select></label><br />
-      <label>Max Level:<select title="What Level Floor to Search?" id="maxLvl" oninput="start()">
+      <label>Max Level:<select title="What Level Ceiling to Search?" id="maxLvl" oninput="start()">
         <option value="1">1: Wild Caught</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -1352,7 +1351,7 @@
         <option value="48">48</option>
         <option value="49">49</option>
         <option value="50">50</option>
-        <option value="51">51</option>
+        <option value="51">51: Best Buddy</option>
       </select></label><br />
       <label>Display Trade Improvement %:<input id="dti" type="checkbox" oninput="start()"></label><br />
       <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="start()"></label><br />
