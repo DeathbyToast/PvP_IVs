@@ -264,7 +264,6 @@
       		document.getElementById('GLlimit['+i+']').value = "10";
       		document.getElementById('ULlimit['+i+']').value = "10";
       		document.getElementById('MLlimit['+i+']').value = "10";
-      		document.getElementById('getStarted').style.display = "none";
     		}
   		}
   		
@@ -289,6 +288,8 @@
           return;
         } else {
           console.log("start: Found mon in both:'"+awesomplete.suggestions+"' and '"+selected+"'");
+          /* We have a valid mon, hide the 'getting started' mon selection help text */
+          document.getElementById('getStarted').style.display = "none";
         }
       }
       
@@ -654,9 +655,10 @@
       if (league == "1500") {message += " for Great League";}
       else if (league == "2500") {message += " for Ultra League";}
       else if (league != "All") {message += " for Master League";}
-      /* Fix "as and Top" and "as ,<br> and PvP" message grammar errors */
+      /* Fix "as and Top", "as ,<br> and PvP", "and ,<br> and" message grammar errors */
       message = message.replace("as  and Top", "as Top");
       message = message.replace("as ,<br> and PvP", "as PvP");
+      message = message.replace(" and ,<br> and PvP", ",<br>and PvP");
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       if (perfTiming) {var getRanksT1 = performance.now();
       console.log("getRanks: Execution took "+(getRanksT1-getRanksT0).toFixed(1)+"ms");}
