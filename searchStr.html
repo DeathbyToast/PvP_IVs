@@ -2,13 +2,13 @@
 <html lang="en">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-172530206-1"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XCPSHZG93Z"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
     
-      gtag('config', 'UA-172530206-1');
+      gtag('config', 'G-XCPSHZG93Z');
     </script>
     <meta charset="UTF-8">
     <!-- Include pre-loads to reduce/optimize page load time-->
@@ -17,14 +17,13 @@
     <link rel="preload" href="https://pvpivs.com/includes/calculate.min.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/pokeListMega.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/pokeListGen6.js" as="script">
     <title>PvP IVs - Search Strings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Pok&eacute;mon Go&trade; PvP IVs search string generator finds your best PvP IVs and/or helps you send the rest to Professor Willow. Now able to search for / exclude 0% IVs!"/>
     <link rel=icon href=/includes/favicon.png>
     <link rel="stylesheet" href="https://pvpivs.com/includes/baseSiteStyling.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
-    <script src="https://www.google.com/recaptcha/api.js?render=6Lf8XLAZAAAAABe0LJhirdeLIxLIP1VHFZjB9Ws1"></script>
     <style>
     .evoLimits{
       display:none;
@@ -40,7 +39,8 @@
       <li class="dropdown active">
         <a href="javascript:void(0)" class="dropbtn active">PvP IVs</a>
         <div class="dropdown-content">
-          <a href="/">Rankings</a>
+          <a href="/">Rankings (Single)</a>
+          <a href="/leagueRanks.html">Rankings (League)</a>
           <a href="/searchStr.html" class="active">Search Strings</a>
         </div>
       </li>
@@ -118,7 +118,7 @@
     <script src="https://pvpivs.com/includes/escapedFooter.js"></script>
     <script src="https://pvpivs.com/includes/calculate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
-    <script src="https://pvpivs.com/includes/pokeListMega.js"></script>
+    <script src="https://pvpivs.com/includes/pokeListGen6.js"></script>
     <script>
     
     /* define Awesomeplete list https://leaverou.github.io/awesomplete/ */
@@ -127,15 +127,22 @@
     var canonicalLink = true;
     var perfTiming = false; /* used for timing execution */
     
-    var awesomplete = new Awesomplete(input, {list: pokeList,
-    	/* insert label instead of value into the input */
-    	replace: function(suggestion) {
-    		this.input.value = suggestion.label;
-    		selected = suggestion.label;
-    		start(true);
-    	}
-    });
-    /* end Awesomeplete definitions https://leaverou.github.io/awesomplete/ */
+    /* Ensure we've successfully loaded a pokeList */
+    if (!(pokeList.length))
+    {
+      console.log("ERROR: Failed to load pokeList!");
+    } else {
+      /* Yes we have a valid pokeList, build awesomplete search box */
+      var awesomplete = new Awesomplete(input, {list: pokeList,
+      	/* insert label instead of value into the input */
+      	replace: function(suggestion) {
+      		this.input.value = suggestion.label;
+      		selected = suggestion.label;
+      		start(true);
+      	}
+      });
+      /* end Awesomeplete definitions https://leaverou.github.io/awesomplete/ */
+    }
   
     function checkURI() {
       if (perfTiming) {var checkURIT0 = performance.now();}
@@ -316,31 +323,6 @@
           }
         }
       }
-      
-      /*validate reCaptcha v3--code ref: https://www.simoahava.com/analytics/improve-google-analytics-bot-detection-with-recaptcha/*/
-      grecaptcha.ready(function() {
-        grecaptcha.execute('6Lf8XLAZAAAAABe0LJhirdeLIxLIP1VHFZjB9Ws1', {action: 'searchStr'}).then(function(token) {
-          
-          /*Make xhr POST request to validate reCAPTCHA v3*/
-          console.log("Validating reCAPTCHA...");
-          var xhr = new XMLHttpRequest();
-          xhr.onload = function() {
-            if ((xhr.response !== 'noChange') && (xhr.response === 'Success')) {
-              console.log("Success!");
-            } else if (xhr.response === 'Error') {
-              document.getElementById('errorBox').innerHTML = "ERROR: Please try again. If this persists, please send us your Search's URL via <a href='https://discord.gg/UD4Temq'>Discord!</a>";
-              console.log("Error! xhr.status:"+xhr.status+" xhr.responseText:"+JSON.stringify(xhr.responseText));
-              return false;
-            } else {
-              console.log("Unknown Response! xhr.status:"+xhr.status+" xhr.responseText:"+JSON.stringify(xhr.responseText));
-            }
-          };
-          xhr.open('POST', 'https://us-central1-ag-sbx.cloudfunctions.net/validateReCaptchaV3', true);
-          xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-          /*xhr.send('token=ERROR');*/
-          xhr.send('token=' + token);
-        });
-      });
       
       var league = document.getElementById('league').value;
       var trash = document.getElementById('trash').checked;
@@ -1064,7 +1046,7 @@
       </select></div>
       <br /><div id=overflowArea></div>
     <div style="overflow-x:auto;"><br />
-      <p style="color:silver;font-size:0.6em">This site is protected by reCAPTCHA and the Google
+      <p style="color:silver;font-size:0.6em">This site uses Google Analytics and the Google
       <a style="color:#AED6F1" href="https://policies.google.com/privacy">Privacy Policy</a> and
       <a style="color:#AED6F1" href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
     </div>

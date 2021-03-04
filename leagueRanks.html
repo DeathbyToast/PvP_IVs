@@ -2,13 +2,13 @@
 <html lang="en-US">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-172530206-1"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XCPSHZG93Z"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
     
-      gtag('config', 'UA-172530206-1');
+      gtag('config', 'G-XCPSHZG93Z');
     </script>
     <meta charset="UTF-8">
     <!-- Include pre-loads to reduce/optimize page load time-->
@@ -77,9 +77,9 @@
         text-align: center;
         line-height: 30px;
         color: white;
+      }
      
     </style>
-    <script src="https://www.google.com/recaptcha/api.js?render=6Lf8XLAZAAAAABe0LJhirdeLIxLIP1VHFZjB9Ws1"></script>
   </head>
   <body onload="checkURI()">
     <header>
@@ -163,7 +163,7 @@
           <option value="50">50</option>
           <option selected value="51">51: Best Buddy</option>
         </select></label><br />
-      <!--label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="start()"></label><br /-->
+      <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="start()"></label><br />
       <label>Include Entire Pokedex:<input id="all" type="checkbox" oninput="start()"></label><br />
     </section>
       
@@ -208,7 +208,7 @@
       var maxLvlCPM = Math.max(0, (maxLvl - 1) * 2); /* use half-levels */
       var league = document.getElementById('league').value;
       var leagueName = document.getElementById('league').label;
-      /*var cmp = document.getElementById('cmp').checked;*/
+      var cmp = document.getElementById('cmp').checked;
       var all = document.getElementById('all').checked;
       var elem = document.getElementById("myBar");
       var feedback = document.getElementById('feedbackBox');
@@ -226,12 +226,16 @@
       tbl.setAttribute("id", "outTable");
       var header = tbl.createTHead();
       var headerRow = header.insertRow(0);
-      headerRow.innerHTML = "<tr><th>Mon</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def IV</th><th>Sta IV</th><th>Apr</th><th>Perfect</th><th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
+      var cmpHeader = "";
+      if (cmp) {cmpHeader+="<th>T100 CMP</th>";}
+      headerRow.innerHTML = "<tr><th>Mon</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def IV</th><th>Sta IV</th><th>Apr</th><th>Perfect</th>"+cmpHeader+"<th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
       
-      var skippedMons = "";
+      var tooSmallMons = "";
+      var tooBigMons = "";
       
       /*update the URL with search parameters*/
-      uri = URL + "?l="+league+"&all="+all;
+      var URL = window.location.href.split("?")[0];
+      uri = URL + "?cp="+league+"&maxLvl="+maxLvl+"&all="+all;
       uri = encodeURI(uri);
       var newTitle = "PvP IVs - League Rankings ("+leagueName+")";
       window.history.pushState(null, newTitle, uri);
@@ -256,27 +260,36 @@
            ((league == 500  && maxCP > 400)  ||
             (league == 1500 && maxCP > 1300) ||
             (league == 2500 && maxCP > 2300) ||
-            (league == 2500 && maxCP > 2500))) {
+            (maxCP > 2500))) {
           var row = document.createElement("tr");
 
+          /* Check for higher minIVs or minLvls for non-wild spawning mon */
+          const [minIVs, minLvl] = adjustFloors((pokeList[i].value.split(",")[0]).split("&")[0], monName);
           /* Do the rank calculations for each mon */
-          var ranks = calculate(parseInt(monStats[1]), parseInt(monStats[2]), parseInt(monStats[3]), false, false, maxLvl, false, league, monName);
+          var ranks = calculate(parseInt(monStats[1]), parseInt(monStats[2]), parseInt(monStats[3]), minIVs, minLvl, maxLvl, false, league, monName);
+          /*include cmp columns if checked*/
           var keys = Object.keys(ranks);
+          if (cmp) {ranks = cmpCalcs(ranks.numRanks, ranks, keys);}
           var maxStatProd = keys[0].split(".")[0];
           
-          progress(monName, Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat((100*(keys[0].split(".")[0])/maxStatProd)).toFixed(3), keys[0].split(".")[0]);
-          
-          /* add the row to the end of the table body */
-          tblBody.appendChild(row);
+          if (ranks.numRanks/1 >0) {
+            progress(monName, Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1, cmp);
+            
+            /* add the row to the end of the table body */
+            tblBody.appendChild(row);
+          } else {
+            tooBigMons += monName+"(L"+minLvl+"+), ";
+          }
         } else {
-          skippedMons += monName+"("+maxCP+"), ";
+          tooSmallMons += monName+"("+maxCP+"), ";
         }
-        
+
         /* Are we done, or keep calculating? */
         if (i<pokeList.length-1) {
           setTimeout(leagueRanks, 0);
         }
         else{
+          console.log("i: "+i);
           /* We are done calculating, time to finish */
           feedback.innerHTML = "<p><i>Complete!</i></p><br />";
 
@@ -308,7 +321,9 @@
           if (league == 1500) {skippedMessage+="1300 ";} else
           if (league == 2500) {skippedMessage+="2300 ";} else
           {skippedMessage+="2500 ";}
-          console.log(skippedMessage+skippedMons);
+          skippedMessage += tooSmallMons + " <br> <br>" + "Removed all too big mon: " + tooBigMons;
+          console.log(skippedMessage);
+          skippedMessage = "";
           
           /* Compute total execution time */
           if (true) {var startT1 = performance.now();
@@ -319,26 +334,16 @@
       })();
     }
       
-    function progress(monName, percent, feedback, elem, row, stats, perfect, statProd) {
+    function progress(monName, percent, feedback, elem, row, stats, perfect, statProd, numRanks, cmp) {
       feedback.innerHTML = "<p><i>Calculating "+monName+", please wait...</i></p>";
       
+      /* Update progress bar */
       if (percent > lastPercent+1) {
         lastPercent = percent;
         elem.style.width = percent + "%";
         elem.innerHTML = percent  + "%";
       }
-
-      /* Update HTML table */
-      /*include cmp columns if checked
-      if (cmp == true) {
-        if (ranks.numRanks/1 < 100) {
-          /*if there isn't a top 100, make it Top numRanks
-          html+="<th>R1 CMP</th><th>T"+ranks.numRanks+" CMP</th>";
-        } else {
-          html+="<th>R1 CMP</th><th>T100 CMP</th>";
-        }
-        ranks = cmpCalcs(numRanks, ranks, keys);
-      }*/
+      /* write cells for this row */
       outCell(monName, row); /*Mon*/
       outCell(stats.L, row); /*Level*/
       outCell(stats.CP, row); /*Final CP*/
@@ -347,94 +352,48 @@
       outCell(stats.IVs.S, row); /*Sta IV*/
       outCell(stats.IVs.star, row); /*Star Appraisal*/
       outCell(perfect+"%", row); /*Perfection*/
-      /*if (cmp) {
-        html+="<td>"+ranks[keys[0]][0].IVs.R1+"</td>"; /*R1 CMP
-        if (ranks.numRanks/1 < 100) { /*account for when there aren't 100 numRanks
-          html+="<td>"+Math.round(((ranks[keys[0]][0].IVs.T100)/ranks.numRanks)*100)+"%"+"</td>"; /*T100 CMP
+      if (cmp) {
+        if (numRanks/1 < 100) { /*account for when there aren't 100 numRanks*/
+          outCell(Math.round(((stats.IVs.T100)/numRanks)*100)+"%", row); /*T100 CMP*/
         } else {
-          html+="<td>"+ranks[keys[0]][0].IVs.T100+"%"+"</td>"; /*T100 CMP
+          outCell(stats.IVs.T100+"%", row); /*T100 CMP*/
         }
-      }*/
-      
+      }
       outCell(numOut(stats.battle.A,1), row); /*GL Atk Total*/
       outCell(numOut(stats.battle.D,1), row); /*GL Def Total*/
       outCell(stats.battle.S, row); /*GL HP*/
       outCell(statProd, row); /*Stat Product*/
     }
     
-    function adjustFloors() {
-      if (false) {
-        /*check if we need to adjust IV Floor or Min Level*/
-        if (boxRewrd.includes(suggestion.value.split(",")[0]/1)) {
-          console.log("Detected box reward mon:"+selected);
-          /*set min IVs to 1 and min Level to 15*/
-          if (document.getElementById('minLvl').value/1 < 15) {
-            document.getElementById('minLvl').value = 15;
-            mnlMod = true;
-          }
-          if (document.getElementById('maxLvl').value/1 < 15) {
-            document.getElementById('maxLvl').value = 15;
-            mxlMod = true;
-          }
-          if (document.getElementById('floor').value/1 < 1) {
-            document.getElementById('floor').value = 1;
-            ivMod = true;
-          }
-        } else {
-          if (raidOnly.includes(suggestion.value.split(",")[0]/1)) {
-            console.log("Detected Raid+Trade mon:"+selected);
-            /*set min IVs to 1 and min Level to 20*/
-            if (document.getElementById('minLvl').value/1 < 20) {
-              document.getElementById('minLvl').value = 20;
-              mnlMod = true;
-            }
-            if (document.getElementById('maxLvl').value/1 < 20) {
-              document.getElementById('maxLvl').value = 20;
-            }
-            if (document.getElementById('floor').value/1 < 1) {
-              document.getElementById('floor').value = 1;
-            }
-          } else {
-            if (mythNoTrade.includes(suggestion.value.split(",")[0]/1)) {
-              console.log("Detected Mythical mon:"+selected);
-              /*set min IVs to 10 and min Level to 15*/
-              if (document.getElementById('minLvl').value/1 < 15) {
-                document.getElementById('minLvl').value = 15;
-                mnlMod = true;
-              }
-              if (document.getElementById('maxLvl').value/1 < 15) {
-                document.getElementById('maxLvl').value = 15;
-                mxlMod = true;
-              }
-              if (document.getElementById('floor').value/1 < 10) {
-                document.getElementById('floor').value = 10;
-                ivMod = true;
-              }
-            } else {
-              if (raidNoTrade.includes(suggestion.value.split(",")[0]/1)) {
-                console.log("Detected Raid no Trade mon:"+selected);
-                /*set min IVs to 10 and min Level to 20*/
-                if (document.getElementById('minLvl').value/1 < 20) {
-                  document.getElementById('minLvl').value = 20;
-                  mnlMod = true;
-                }
-                if (document.getElementById('maxLvl').value/1 < 20) {
-                  document.getElementById('maxLvl').value = 20;
-                  mxlMod = true;
-                }
-                if (document.getElementById('floor').value/1 < 10) {
-                  document.getElementById('floor').value = 10;
-                  ivMod = true;
-                }
-              }
-                }
-            }
-          }
-        }
+    function adjustFloors(dexNum, monName) {
+      /*check if we need to adjust IV Floor or Min Level*/
+      if (boxRewrd.includes(dexNum/1)) {
+        console.log("Detected box reward mon:"+monName);
+        /*set min IVs to 1 and min Level to 15*/
+        return [1, 15];
+      } else
+      if (raidOnly.includes(dexNum/1)) {
+        console.log("Detected Raid+Trade mon:"+monName);
+        /*set min IVs to 1 and min Level to 20*/
+        return [1, 20];
+      } else
+      if (mythNoTrade.includes(dexNum/1)) {
+        console.log("Detected Mythical mon:"+monName);
+        /*set min IVs to 10 and min Level to 15*/
+        return [10, 15];
+      } else
+      if (raidNoTrade.includes(dexNum/1)) {
+        console.log("Detected Raid no Trade mon:"+monName);
+        /*set min IVs to 10 and min Level to 20*/
+        return [10, 20];
+      } else {
+        /* Otherwise, return zeros */
+        return [0, 0];
+      }
     }
     
     function outCell(contents, row) {
-      /* Create a <td> element and a text node, make the text node the
+      /* Create a <td> element and a text node, make the text node the */
       /* contents of the <td>, and put the <td> at the end of the table row */
       var cell = document.createElement("td");
       var cellText = document.createTextNode(contents);
@@ -454,7 +413,7 @@
     
     function checkURI() {
       if (perfTiming) {var checkURIt0 = performance.now();}
-      return;
+
       var URL = window.location.href.split("?")[1];
       
       if (URL)
@@ -472,10 +431,13 @@
             case "max":
               document.getElementById('maxLvl').value = values[i].split("=")[1];
               break;
-            /*case "cmp":
+            case "all":
+              document.getElementById('all').value = values[i].split("=")[1];
+              break;
+            case "cmp":
               if (values[i].split("=")[1] == "true") { document.getElementById('cmp').checked = true;}
               else { document.getElementById('cmp').checked = false;}
-              break;*/
+              break;
             case "t": /* Enable performance timing output in console for debugging */
               perfTiming = values[i].split("=")[1];
               break;
@@ -500,31 +462,23 @@
       /*console.log("cmpCalcs: received numRanks: "+numRanks+", ranks: "+JSON.stringify(ranks)+", keys:"+JSON.stringify(keys))*/
       var print = false;
 
-      /*walk all (4096) entries in ranks and compare*/
-      for (var i=0; (i<numRanks && (keys[i].indexOf(".")>-1)); i++) {
+      /*walk top (100) entries in ranks and compare to rank 1*/
+      for (var i=0; (i<100 && (keys[i].indexOf(".")>-1)); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             if ((ranks[keys[i]][j].IVs.A/1 == 9) && (ranks[keys[i]][j].IVs.D/1 == 13) && (ranks[keys[i]][j].IVs.S/1 == 8)) {
               print = true;
             }
             if (numOut(ranks[keys[i]][j].battle.A,1)/1 > numOut(ranks[keys[0]][0].battle.A,1)/1) {
-              /*if (print) { console.log("R1 set to W because numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" > numOut(ranks[keys[0]][0].battle.A,1): "+numOut(ranks[keys[0]][0].battle.A,1));}*/
-              ranks[keys[i]][j].IVs.R1 = "W";
               ranks[keys[i]][j].IVs.T100=1;
             } else if (numOut(ranks[keys[i]][j].battle.A,1)/1 < numOut(ranks[keys[0]][0].battle.A,1)/1) {
-              /*if (print) { console.log("R1 set to L because numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" < numOut(ranks[keys[0]][0].battle.A,1): "+numOut(ranks[keys[0]][0].battle.A,1));}*/
-              ranks[keys[i]][j].IVs.R1 = "L";
               ranks[keys[i]][j].IVs.T100=0;
             } else {
-              /*if (print) { console.log("R1 set to T because numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" = numOut(ranks[keys[0]][0].battle.A,1): "+numOut(ranks[keys[0]][0].battle.A,1));}*/
-              ranks[keys[i]][j].IVs.R1 = "T";
               ranks[keys[i]][j].IVs.T100=0;
             }
             for (var k=1,iters=1; ((iters<100) && (iters<ranks.numRanks)); k++) {
-              /*console.log("Iterating through k="+k+": "+JSON.stringify(ranks[keys[k]]));*/
               for (var l=0; ((l<ranks[keys[k]].length) && (iters<100)); l++) {
                 if (numOut(ranks[keys[i]][j].battle.A,1)/1 > numOut(ranks[keys[k]][l].battle.A,1)/1) {ranks[keys[i]][j].IVs.T100+=1;}
                 iters = iters + 1;
-                /*if (print) { console.log("T100 increased to "+ranks[keys[i]][j].IVs.T100+" with numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" > numOut(ranks[keys[k]][l].battle.A,1): "+numOut(ranks[keys[k]][l].battle.A,1));}*/
               }
             }
           if (print) {print = false;}
@@ -539,10 +493,9 @@
       
       
     <div style="overflow-x:auto;">
-      <p style="color:silver;font-size:0.6em">This site is protected by reCAPTCHA and the Google
+      <p style="color:silver;font-size:0.6em">This site uses Google Analytics and the Google
       <a style="color:#AED6F1" href="https://policies.google.com/privacy">Privacy Policy</a> and
       <a style="color:#AED6F1" href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
     </div>
-    </section>
   </body>
 </html>

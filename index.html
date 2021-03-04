@@ -2,13 +2,13 @@
 <html lang="en-US">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-172530206-1"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XCPSHZG93Z"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
     
-      gtag('config', 'UA-172530206-1');
+      gtag('config', 'G-XCPSHZG93Z');
     </script>
     <meta charset="UTF-8">
     <!-- Include pre-loads to reduce/optimize page load time-->
@@ -17,7 +17,7 @@
     <link rel="preload" href="https://pvpivs.com/includes/calculate.min.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/pokeListMega.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/pokeListGen6.js" as="script">
     <title>PvP IVs - Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
@@ -129,7 +129,6 @@
         box-shadow: 0px 1px 1px #ffffff9e;
       }
     </style>
-    <script src="https://www.google.com/recaptcha/api.js?render=6Lf8XLAZAAAAABe0LJhirdeLIxLIP1VHFZjB9Ws1"></script>
   </head>
   <body onload="checkURI()">
     <header>
@@ -137,7 +136,8 @@
         <li class="dropdown active">
           <a href="javascript:void(0)" class="dropbtn active">PvP IVs</a>
           <div class="dropdown-content">
-            <a href="/" class="active">Rankings</a>
+            <a href="/" class="active">Rankings (Single)</a>
+            <a href="/leagueRanks.html">Rankings (League)</a>
             <a href="/searchStr.html">Search Strings</a>
           </div>
         </li>
@@ -224,10 +224,9 @@
       <script src="https://pvpivs.com/includes/escapedFooter.js"></script>
       <script src="https://pvpivs.com/includes/calculate.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
-      <script src="https://pvpivs.com/includes/pokeListMega.js"></script>
+      <script src="https://pvpivs.com/includes/pokeListGen6.js"></script>
         
       <script>
-      
       /* define Awesomeplete list https://leaverou.github.io/awesomplete/ */
       var input = document.getElementById("pokeList");
       var selected = undefined;
@@ -246,121 +245,129 @@
       let sIV=[document.getElementById('sIV[0]').value];
       let rIV=[];
       let mA = 0, mD = 0, mHP = 0; /* min stat filter vars */
+      
+      /* Ensure we've successfully loaded a pokeList */
+      if (!(pokeList.length))
+      {
+        console.log("ERROR: Failed to load pokeList!");
+      } else {
+        /* Yes we have a valid pokeList, build awesomplete search box */
 
-      var awesomplete = new Awesomplete(input, {list: pokeList,
-        /*insert label instead of value into the input*/
-        replace: function(suggestion) {
-          this.input.value = suggestion.label;
-          if (selected) {
-            /* Clear all existing IV Input Rows */
-            for (var i=0; i<aIV.length; i++) {
-              /* voodoo to actually remove all the rows one by one */
-              var tr = document.getElementById('aIV['+i+']').parentNode;
-              tr.parentNode.parentNode.removeChild(tr.parentNode);
+        var awesomplete = new Awesomplete(input, {list: pokeList,
+          /*insert label instead of value into the input*/
+          replace: function(suggestion) {
+            this.input.value = suggestion.label;
+            if (selected) {
+              /* Clear all existing IV Input Rows */
+              for (var i=0; i<aIV.length; i++) {
+                /* voodoo to actually remove all the rows one by one */
+                var tr = document.getElementById('aIV['+i+']').parentNode;
+                tr.parentNode.parentNode.removeChild(tr.parentNode);
+              }
+              /* clear the value arrays */
+              aIV.splice(0, aIV.length);
+              dIV.splice(0, dIV.length);
+              sIV.splice(0, sIV.length);
+              /* Re-Add default IV Input Row */
+              mA = 0; mD = 0; mHP = 0; lastLeague = undefined;
+              /* clear min stat filters and lastLeague */
+              doTheInsert();
             }
-            /* clear the value arrays */
-            aIV.splice(0, aIV.length);
-            dIV.splice(0, dIV.length);
-            sIV.splice(0, sIV.length);
-            /* Re-Add default IV Input Row */
-            mA = 0; mD = 0; mHP = 0; lastLeague = undefined;
-            /* clear min stat filters and lastLeague */
-            doTheInsert();
-          }
-          selected = suggestion.label;
-          
-          /*reset Min Level if we adjusted it previously*/
-          if (mnlMod) {
-            if ((document.getElementById('minLvl').value/1 == 15) || (document.getElementById('minLvl').value/1 == 20)) {
-              document.getElementById('minLvl').value = 1;
+            selected = suggestion.label;
+            
+            /*reset Min Level if we adjusted it previously*/
+            if (mnlMod) {
+              if ((document.getElementById('minLvl').value/1 == 15) || (document.getElementById('minLvl').value/1 == 20)) {
+                document.getElementById('minLvl').value = 1;
+              }
+              mnlMod = false;
             }
-            mnlMod = false;
-          }
-          /*reset Max Level if we adjusted it previously*/
-          if (mxlMod) {
-            if ((document.getElementById('maxLvl').value/1 == 15) || (document.getElementById('maxLvl').value/1 == 20)) {
-              document.getElementById('maxLvl').value = 40;
+            /*reset Max Level if we adjusted it previously*/
+            if (mxlMod) {
+              if ((document.getElementById('maxLvl').value/1 == 15) || (document.getElementById('maxLvl').value/1 == 20)) {
+                document.getElementById('maxLvl').value = 40;
+              }
+              mxlMod = false;
             }
-            mxlMod = false;
-          }
-          /*reset IV Floor if we adjusted it previously*/
-          if (ivMod) {
-            if ((document.getElementById('floor').value/1 == 1) || (document.getElementById('floor').value/1 == 10)) {
-              document.getElementById('floor').value = 0;
+            /*reset IV Floor if we adjusted it previously*/
+            if (ivMod) {
+              if ((document.getElementById('floor').value/1 == 1) || (document.getElementById('floor').value/1 == 10)) {
+                document.getElementById('floor').value = 0;
+              }
+              ivMod = false;
             }
-            ivMod = false;
-          }
-          
-          /*check if we need to adjust IV Floor or Min Level*/
-          if (boxRewrd.includes(suggestion.value.split(",")[0]/1)) {
-            console.log("Detected box reward mon:"+selected);
-            /*set min IVs to 1 and min Level to 15*/
-            if (document.getElementById('minLvl').value/1 < 15) {
-              document.getElementById('minLvl').value = 15;
-              mnlMod = true;
-            }
-            if (document.getElementById('maxLvl').value/1 < 15) {
-              document.getElementById('maxLvl').value = 15;
-              mxlMod = true;
-            }
-            if (document.getElementById('floor').value/1 < 1) {
-              document.getElementById('floor').value = 1;
-              ivMod = true;
-            }
-          } else {
-            if (raidOnly.includes(suggestion.value.split(",")[0]/1)) {
-              console.log("Detected Raid+Trade mon:"+selected);
-              /*set min IVs to 1 and min Level to 20*/
-              if (document.getElementById('minLvl').value/1 < 20) {
-                document.getElementById('minLvl').value = 20;
+            
+            /*check if we need to adjust IV Floor or Min Level*/
+            if (boxRewrd.includes(suggestion.value.split(",")[0]/1)) {
+              console.log("Detected box reward mon:"+selected);
+              /*set min IVs to 1 and min Level to 15*/
+              if (document.getElementById('minLvl').value/1 < 15) {
+                document.getElementById('minLvl').value = 15;
                 mnlMod = true;
               }
-              if (document.getElementById('maxLvl').value/1 < 20) {
-                document.getElementById('maxLvl').value = 20;
+              if (document.getElementById('maxLvl').value/1 < 15) {
+                document.getElementById('maxLvl').value = 15;
+                mxlMod = true;
               }
               if (document.getElementById('floor').value/1 < 1) {
                 document.getElementById('floor').value = 1;
+                ivMod = true;
               }
             } else {
-              if (mythNoTrade.includes(suggestion.value.split(",")[0]/1)) {
-                console.log("Detected Mythical mon:"+selected);
-                /*set min IVs to 10 and min Level to 15*/
-                if (document.getElementById('minLvl').value/1 < 15) {
-                  document.getElementById('minLvl').value = 15;
+              if (raidOnly.includes(suggestion.value.split(",")[0]/1)) {
+                console.log("Detected Raid+Trade mon:"+selected);
+                /*set min IVs to 1 and min Level to 20*/
+                if (document.getElementById('minLvl').value/1 < 20) {
+                  document.getElementById('minLvl').value = 20;
                   mnlMod = true;
                 }
-                if (document.getElementById('maxLvl').value/1 < 15) {
-                  document.getElementById('maxLvl').value = 15;
-                  mxlMod = true;
+                if (document.getElementById('maxLvl').value/1 < 20) {
+                  document.getElementById('maxLvl').value = 20;
                 }
-                if (document.getElementById('floor').value/1 < 10) {
-                  document.getElementById('floor').value = 10;
-                  ivMod = true;
+                if (document.getElementById('floor').value/1 < 1) {
+                  document.getElementById('floor').value = 1;
                 }
               } else {
-                if (raidNoTrade.includes(suggestion.value.split(",")[0]/1)) {
-                  console.log("Detected Raid no Trade mon:"+selected);
-                  /*set min IVs to 10 and min Level to 20*/
-                  if (document.getElementById('minLvl').value/1 < 20) {
-                    document.getElementById('minLvl').value = 20;
+                if (mythNoTrade.includes(suggestion.value.split(",")[0]/1)) {
+                  console.log("Detected Mythical mon:"+selected);
+                  /*set min IVs to 10 and min Level to 15*/
+                  if (document.getElementById('minLvl').value/1 < 15) {
+                    document.getElementById('minLvl').value = 15;
                     mnlMod = true;
                   }
-                  if (document.getElementById('maxLvl').value/1 < 20) {
-                    document.getElementById('maxLvl').value = 20;
+                  if (document.getElementById('maxLvl').value/1 < 15) {
+                    document.getElementById('maxLvl').value = 15;
                     mxlMod = true;
                   }
                   if (document.getElementById('floor').value/1 < 10) {
                     document.getElementById('floor').value = 10;
                     ivMod = true;
                   }
+                } else {
+                  if (raidNoTrade.includes(suggestion.value.split(",")[0]/1)) {
+                    console.log("Detected Raid no Trade mon:"+selected);
+                    /*set min IVs to 10 and min Level to 20*/
+                    if (document.getElementById('minLvl').value/1 < 20) {
+                      document.getElementById('minLvl').value = 20;
+                      mnlMod = true;
+                    }
+                    if (document.getElementById('maxLvl').value/1 < 20) {
+                      document.getElementById('maxLvl').value = 20;
+                      mxlMod = true;
+                    }
+                    if (document.getElementById('floor').value/1 < 10) {
+                      document.getElementById('floor').value = 10;
+                      ivMod = true;
+                    }
+                  }
                 }
               }
             }
+            start();
           }
-          start();
-        }
-      });
-      /*end Awesomeplete definitions https://leaverou.github.io/awesomplete/*/
+        });
+        /*end Awesomeplete definitions https://leaverou.github.io/awesomplete/*/
+      }
       
       function start() {
         if (perfTiming) {var startT0 = performance.now();}
@@ -377,7 +384,7 @@
             return;
           } else {
             console.log("start: Found mon in both:'"+awesomplete.suggestions+"' and '"+selected+"'");
-            if (selected.indexOf("Mega_") > -1)  {megaNote = "<p><i>Please note Mega Evolution base stats are speculative and subject to change!</i></p>";}
+            if (selected.indexOf("_SPECULATIVE") > -1)  {megaNote = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
             /*console.log("aIV[0]:'"+aIV[0]+"', dIV[0]:'"+dIV[0]+"', sIV[0]:'"+sIV[0]+"' aIV.length:"+aIV.length);*/
           }
         }
@@ -448,8 +455,8 @@
         }
         var maxStatProd = keys[0].split(".")[0];
         
-        if (maxLvl > 41) {
-          chart.innerHTML = "<p><i>Please note that Levels 41-51 are speculative and subject to change!</i></p><br>";
+        if (maxLvl > 50) {
+          chart.innerHTML = "<p><i>Please note that Levels beyond 50 are speculative and subject to change!</i></p><br>";
         }
         
         for (var i=0; i<aIV.length; i++)
@@ -459,31 +466,6 @@
           sIV[i] = document.getElementById("sIV["+i+"]").value;
           /*console.log("Updated aIV["+i+"]:'"+aIV[i]+"', dIV["+i+"]:'"+dIV[i]+"', sIV["+i+"]:'"+sIV[i]+"' aIV.length:"+aIV.length);*/
         }
-
-        /*validate reCaptcha v3--code ref: https://www.simoahava.com/analytics/improve-google-analytics-bot-detection-with-recaptcha/*/
-        grecaptcha.ready(function() {
-          grecaptcha.execute('6Lf8XLAZAAAAABe0LJhirdeLIxLIP1VHFZjB9Ws1', {action: 'indexRanks'}).then(function(token) {
-            
-            /*Make xhr POST request to validate reCAPTCHA v3*/
-            console.log("Validating reCAPTCHA...");
-            var xhr = new XMLHttpRequest();
-            xhr.onload = function() {
-              if ((xhr.response !== 'noChange') && (xhr.response === 'Success')) {
-                console.log("Success!");
-              } else if (xhr.response === 'Error') {
-                document.getElementById('outputBox').innerHTML = "<table align=center><tr><th>ERROR</th></tr></table>";
-                console.log("Error! xhr.status:"+xhr.status+" xhr.responseText:"+JSON.stringify(xhr.responseText));
-                return false;
-              } else {
-                console.log("Unknown Response! xhr.status:"+xhr.status+" xhr.responseText:"+JSON.stringify(xhr.responseText));
-              }
-            };
-            xhr.open('POST', 'https://us-central1-ag-sbx.cloudfunctions.net/validateReCaptchaV3', true);
-            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            /*xhr.send('token=ERROR');*/
-            xhr.send('token=' + token);
-          });
-        });
         
         /*we have at least one rank to output, let's print!*/
         var evoHtml = "";
@@ -537,7 +519,7 @@
                   var searchStart = parseInt(scaling * ((evos[e]).split("&")[0]));
                   /*console.log("f starting at searchStart:"+searchStart+", iterating while f<("+pokeListLen+")pokeListLen");*/
                   for (var f=searchStart; f<=pokeListLen; f++) {
-                    if (evos[e].indexOf("&mega") > -1) {megaNote = "<i>Please note Mega Evolution base stats are speculative and subject to change!</i>";}
+                    if (evos[e].indexOf("_SPECULATIVE") > -1) {megaNote = "<i>Please note these base stats are speculative and subject to change!</i>";}
                     var evoMonInfo = pokeList[f].value.split(",");
                     /*console.log("Checking evoMonInfo("+evoMonInfo+") vs evos[e("+e+")]:"+evos[e]+", at index f="+f+":"+pokeList[f].label);*/
                     if (evoMonInfo[0].indexOf(evos[e])>-1) {
@@ -1357,7 +1339,7 @@
       <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="start()"></label><br />
       <br />
       <div style="overflow-x:auto;">
-        <p style="color:silver;font-size:0.6em">This site is protected by reCAPTCHA and the Google
+        <p style="color:silver;font-size:0.6em">This site uses Google Analytics and the Google
         <a style="color:#AED6F1" href="https://policies.google.com/privacy">Privacy Policy</a> and
         <a style="color:#AED6F1" href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
       </div>
