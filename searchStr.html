@@ -11,6 +11,7 @@
       gtag('config', 'G-XCPSHZG93Z');
     </script>
     <meta charset="UTF-8">
+    <link rel=”canonical” href=”https://pvpivs.com/searchStr.html” />
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
@@ -124,7 +125,6 @@
     /* define Awesomeplete list https://leaverou.github.io/awesomplete/ */
     var input = document.getElementById("pokeList");
     var selected = undefined;
-    var canonicalLink = true;
     var perfTiming = false; /* used for timing execution */
     
     /* Ensure we've successfully loaded a pokeList */
@@ -544,16 +544,6 @@
       var newTitle = "PvP IVs - Search String " + "Rank " + rStr + " " + selected + " ("+league+")";
       window.history.pushState(null, newTitle, uri);
       
-      console.log("Checking if canonicalLink("+canonicalLink+") is true...");
-      if (canonicalLink) {
-        /* https://stackoverflow.com/questions/13735247/changing-the-href-of-a-link-tag-using-javascript */
-        var newLink = document.createElement('link');
-        newLink.rel = "canonical";
-        newLink.href = "https://pvpivs.com/searchStr.html";
-        document.getElementsByTagName("head")[0].appendChild(newLink);
-        console.log("Added newLink("+newLink+") to head:"+document.getElementsByTagName('head'));
-        canonicalLink = false;
-      }
       if (perfTiming) {var startT1 = performance.now();
       console.log("start: Execution took "+(startT1-startT0).toFixed(1)+"ms");}
       return true;

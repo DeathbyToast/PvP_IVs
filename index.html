@@ -11,6 +11,7 @@
       gtag('config', 'G-XCPSHZG93Z');
     </script>
     <meta charset="UTF-8">
+    <link rel=”canonical” href=”https://pvpivs.com/index.html” />
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
@@ -230,7 +231,6 @@
       /* define Awesomeplete list https://leaverou.github.io/awesomplete/ */
       var input = document.getElementById("pokeList");
       var selected = undefined;
-      var canonicalLink = true;
       var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,486,488];
       var raidOnly = [384,480,481,482,483,484,485,487,638,639,640];
       var mythNoTrade = [151,251,385];
@@ -697,16 +697,6 @@
         uri = encodeURI(uri);
         var newTitle = "PvP IVs - Rankings " + limit + " " + selected + " ("+leagueName+")";
         window.history.pushState(null, newTitle, uri);
-        
-        
-        if (canonicalLink) {
-          /*https://stackoverflow.com/questions/13735247/changing-the-href-of-a-link-tag-using-javascript*/
-          var newLink = document.createElement('link');
-          newLink.rel = "canonical";
-          newLink.href = "https://pvpivs.com/index.html";
-          document.getElementsByTagName("head")[0].appendChild(newLink);
-          canonicalLink = false;
-        }
         
         /*make table sortable by clicking on any header*/
         /*https://stackoverflow.com/questions/14267781/sorting-html-table-with-javascript*/
