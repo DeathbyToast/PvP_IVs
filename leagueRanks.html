@@ -228,7 +228,7 @@
       var headerRow = header.insertRow(0);
       var cmpHeader = "";
       if (cmp) {cmpHeader+="<th>T100 CMP</th>";}
-      headerRow.innerHTML = "<tr><th>Mon</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def IV</th><th>Sta IV</th><th>Apr</th><th>Perfect</th>"+cmpHeader+"<th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
+      headerRow.innerHTML = "<tr><th>Dex</th><th>Mon</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def IV</th><th>Sta IV</th><th>Apr</th><th>Perfect</th>"+cmpHeader+"<th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
       
       var tooSmallMons = "";
       var tooBigMons = "";
@@ -264,7 +264,7 @@
           var maxStatProd = keys[0].split(".")[0];
           
           if (ranks.numRanks/1 >0) {
-            progress(monName, Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1, cmp);
+            progress(monName, (pokeList[i].value.split(",")[0]).split("&")[0], Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1, cmp);
             
             /* add the row to the end of the table body */
             tblBody.appendChild(row);
@@ -325,7 +325,7 @@
       })();
     }
       
-    function progress(monName, percent, feedback, elem, row, stats, perfect, statProd, numRanks, cmp) {
+    function progress(monName, dexNum, percent, feedback, elem, row, stats, perfect, statProd, numRanks, cmp) {
       feedback.innerHTML = "<p><i>Calculating "+monName+", please wait...</i></p>";
       
       /* Update progress bar */
@@ -335,6 +335,7 @@
         elem.innerHTML = percent  + "%";
       }
       /* write cells for this row */
+      outCell(dexNum, row); /*Dex#*/
       outCell(monName, row); /*Mon*/
       outCell(stats.L, row); /*Level*/
       outCell(stats.CP, row); /*Final CP*/
