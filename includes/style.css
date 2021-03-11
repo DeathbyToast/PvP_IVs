@@ -60,6 +60,7 @@
   --tableHeaderBg: var(--navBackground);
   --tableHeaderText: var(--black60);
   --tableDividers: var(--black12);
+  --textBoxBg: var(--white100);
 }
 
 .dark-theme {
@@ -80,6 +81,7 @@
   --tableHeaderBg: var(--navBackground);
   --tableHeaderText: var(--white60);
   --tableDividers: var(--white12);
+  --textBoxBg: var(--dg24dp);
 }
 
 .theme-toggle-switch {
@@ -166,6 +168,10 @@ img {
   vertical-align: middle;
   margin-left: 0;
   margin-right: 0;
+}
+
+textarea, select, input {
+  background: var(--textBoxBg);
 }
 
 #theme-toggle-icon {
