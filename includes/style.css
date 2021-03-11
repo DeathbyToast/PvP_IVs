@@ -54,8 +54,8 @@
   --navActiveText: var(--white100);
   --navHover: var(--secondary);
   --text: var(--black100);
-  --darkModeSlider: var(--dg16dp);
-  --darkModeSliderBg: var(--secondary);
+  --darkModeSlider: var(--secondary);
+  --darkModeSliderBg: var(--dg16dp);
   --tableSurface: var(--dg02dp);
   --tableHeaderBg: var(--navBackground);
   --tableHeaderText: var(--black60);
@@ -74,8 +74,8 @@
   --navActiveText: var(--black100);
   --navHover: var(--secondary);
   --text: var(--white100);
-  --darkModeSlider: var(--secondary);
-  --darkModeSliderBg: var(--dg16dp);
+  --darkModeSlider: var(--dg16dp);
+  --darkModeSliderBg: var(--secondary);
   --tableSurface: var(--dg02dp);
   --tableHeaderBg: var(--navBackground);
   --tableHeaderText: var(--white60);
@@ -266,7 +266,5 @@ img {
     font-size: 4vw;
   }
 }
-
-h3 {line-height: 0px;}
 
 section {text-align: center;}
