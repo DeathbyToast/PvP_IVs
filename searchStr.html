@@ -159,6 +159,7 @@
       var URL = window.location.href.split("?")[1];
       /*var URL = "mon=Medicham&r=6&cp=1500&o=1011100&l=en&m=51";
       console.log("URL: "+URL);*/
+      
       if (URL)
       {
         URL = decodeURI(URL);
@@ -268,6 +269,7 @@
         return false;
       }
     }
+    
     function start(newMon) {
       if (perfTiming) {var startT0 = performance.now();}
       
@@ -294,10 +296,18 @@
       if (document.getElementById('trash').checked) {document.getElementById('trashAdv').style.display = "block";}
       else {document.getElementById('trashAdv').style.display = "none";}
       
+      /* See if this was a request for all-mon Zero IV string */
+      if (document.getElementById('allZero').checked) {
+        document.getElementById('getStarted').style.display = "none";
+        findAllZeros();
+        return;
+      }
+      
       /* exit if we haven't selected a mon yet */
       if ((awesomplete.suggestions === undefined) && (selected === undefined)) {
         console.log("No Pok&eacute;mon found by start(), received:'"+awesomplete.suggestions+"' and '"+selected+"'");
         document.getElementById('getStarted').style.display = "block";
+        document.getElementById('output').value = "";
         return;
       } else {
         if (selected === undefined) {
@@ -546,7 +556,7 @@
       if (document.getElementById('baby').checked) { binary += "1";} else { binary += "0";}
       
       /* output the user's request! */
-      outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, binary, output, lang, maxLvl);
+      outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, output, lang, maxLvl);
       
       /* update the URL with search parameters */
       var uri = window.location.href.split("?")[0];
@@ -557,6 +567,109 @@
       if (perfTiming) {var startT1 = performance.now();
       console.log("start: Execution took "+(startT1-startT0).toFixed(1)+"ms");}
       return true;
+    }
+    
+    function findAllZeros() {
+      if (true) {var findAllZerosT0 = performance.now();}
+      
+      var lang = document.getElementById('lang').value.split(',');
+      var output = document.getElementById('output');
+      output.value = ''; /* ensure old output is cleared */
+      var segments = '';
+      var ids = '';
+      
+      var message = "This string ignores PvP rankings, and only potential 0% IV (0/0/0) mon. For PvP rankings please uncheck 'Find ALL 0% mon' (below)";
+      document.getElementById('feedbackBox').innerHTML = "<p><i>"+message+"</i></p>";
+      
+      for (var i=0; i<pokeList.length; i++) {
+        var id = (pokeList[i].value.split(",")[0]).split("&")[0]/1;
+        var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,486,488, 384];
+        var raidOnly = [481,482,483,484,485,487,638,639,640];
+        
+        /* Ensure it can spawn in the wild */
+        if ((boxRewrd.includes(id/1)) || (raidOnly.includes(id/1))) {
+          console.log("Skipping "+pokeList[i].label+", not wild spawn");
+          continue;
+        }
+        
+        var cps = [], hps = [], results;
+        var maxCP = new Array(5).fill(0), maxHP = new Array(5).fill(0);
+        var monStats = pokeList[i].value.split(',');
+        cps[0] = new Set();
+        hps[0] = new Set();
+    
+        
+        results = getZeroCPs(parseInt(monStats[1]), parseInt(monStats[2]), parseInt(monStats[3]), maxCP, maxHP, cps[0], hps[0]);
+        cps[0] = results[0];
+        hps[0] = results[1];
+        
+        /* Skip final evolved forms and raid bosses aren't common wild spawns */
+        if (results[2][0]/1 > 2100) {
+          console.log("Skipping "+pokeList[i].label+", maxCP("+results[2][0]/1+")");
+          continue;
+        }
+        segments += outputZeroCPsHPs(cps.slice(), hps.slice(), id, lang);
+        ids += id+',';
+      }
+      /* trim trailing ',' */
+      ids = ids.substring(0, ids.length - 1);
+      output.value = ids+"&0*"+segments;
+      
+      if (perfTiming) {var findAllZerosT1 = performance.now();
+      console.log("findAllZeros: Execution took "+(findAllZerosT1-findAllZerosT0).toFixed(1)+"ms");}
+      
+      return;
+    }
+        
+    /* leaner version of existing function which just spits out CPs + HPs for allZero String
+     * Formatting Goal: (https://www.reddit.com/r/TheSilphRoad/comments/hm4t6u/mass_transfer_search_string/fx4oeyw/?context=1)
+        
+        213,129&0*
+        
+        &!213,cp10,cp14,cp20,cp26,cp32,cp38,cp43,cp49,cp55,cp61,cp66,cp72,cp77,cp83,cp89,cp94,cp100,cp105,cp111,cp116,cp122,cp128,cp133,cp139,cp144,cp150,cp155,cp161,cp166
+        &!213,hp10,hp14,hp18,hp21,hp24,hp27,hp29,hp31,hp33,hp35,hp37,hp39-40,hp42-43,hp45-46,hp48-50,hp52-57,hp59-62
+                  
+        &!129,cp10-11,cp16,cp20,cp25,cp30,cp34,cp39,cp44,cp48,cp52,cp57,cp61,cp65,cp70,cp74,cp79,cp83,cp87,cp92,cp96,cp101,cp105,cp109,cp114,cp118,cp123,cp127,cp131
+        &!129,hp10,hp14,hp18,hp21,hp24,hp27,hp29,hp31,hp33,hp35,hp37,hp39-40,hp42-43,hp45-46,hp48-50,hp52-57,hp59-62
+        
+      */
+    function outputZeroCPsHPs(cps, hps, id, lang) {
+      if (perfTiming) {var outputZeroCPsHPsT0 = performance.now();}
+        
+      /* skip empty sets */
+      if (cps[0].size > 0) {
+        
+        /* output CPs */
+        cps[0] = Array.from(cps[0]);
+        cps[0].sort((a, b) => a - b);
+        var segment = '&!'+id+',' + get_matching_string(cps[0], lang[1]);
+        
+        /* skip empty hps */
+        if (hps[0].size > 0) {
+          hps[0] = Array.from(hps[0]);
+          hps[0].sort((a, b) => a - b);
+          segment += '&!'+id+',' + get_matching_string(hps[0], lang[2]);
+        }
+        /* Ensure additional regional search terms are translated as needed*/
+        if (lang[0] !== "en")
+        {
+          /* lang : cpstr,  hpstr,  mega,   alola,  eggsonly, galar,  ground, steel,  grass,  psychic, fire */
+          /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11] */
+          /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
+          output.value = output.value.replace(/mega/gi,    lang[3]);
+          output.value = output.value.replace(/alola/gi,   lang[4]);
+          output.value = output.value.replace(/eggsonly/gi,lang[5]);
+          output.value = output.value.replace(/galar/gi,   lang[6]);
+          output.value = output.value.replace(/ground/gi,  lang[7]);
+          output.value = output.value.replace(/steel/gi,   lang[8]);
+          output.value = output.value.replace(/grass/gi,   lang[9]);
+          output.value = output.value.replace(/psychic/gi, lang[10]);
+          output.value = output.value.replace(/fire/gi,    lang[11]);
+        }
+      }
+      if (perfTiming) {var outputZeroCPsHPsT1 = performance.now();
+      console.log("outputZeroCPsHPs: Execution took "+(outputZeroCPsHPsT1-outputZeroCPsHPsT0).toFixed(1)+"ms");}
+      return segment;
     }
     
     function getRanks(evoVals, trash, trashHundo, trashZero, onlyZero, league, maxLvl) {
@@ -647,7 +760,8 @@
       return finalRanks;
     }
     
-    function outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, binary, output, lang, maxLvl) {
+    /* Given valid family stats in evoVals, outputs a Search String for the user */
+    function outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, output, lang, maxLvl) {
       if (perfTiming) {var outputStrT0 = performance.now();}
   
       /* create our rank object to compute cps/hps from for output string */
@@ -678,7 +792,7 @@
           message = "This string ignores PvP rankings. For PvP rankings please uncheck 'Only Find 0% IVs' (below)";
           document.getElementById('feedbackBox').innerHTML = "<p><i>"+message+"</i></p>";
         }
-        results = getZeroCPs(evoVals[0][1], evoVals[0][2], evoVals[0][3], cpm, maxCP, maxHP, cps[0], hps[0]);
+        results = getZeroCPs(evoVals[0][1], evoVals[0][2], evoVals[0][3], maxCP, maxHP, cps[0], hps[0]);
         cps[0] = results[0];
         hps[0] = results[1];
         maxCP = results[2];
@@ -689,7 +803,7 @@
         return output;
       } else {
         if ((!trashZero) && (trash)) {
-          results = getZeroCPs(evoVals[0][1], evoVals[0][2], evoVals[0][3], cpm, maxCP, maxHP, cps[0], hps[0]);
+          results = getZeroCPs(evoVals[0][1], evoVals[0][2], evoVals[0][3], maxCP, maxHP, cps[0], hps[0]);
           cps[0] = results[0];
           hps[0] = results[1];
           maxCP = results[2];
@@ -882,17 +996,11 @@
       return true;
     }
     
-    function getZeroCPs(baseatk, basedef, basesta, cpm, maxCP, maxHP, cps, hps) {
+    function getZeroCPs(baseatk, basedef, basesta, maxCP, maxHP, cps, hps) {
       if (perfTiming) {var getZeroCPsT0 = performance.now();}
   
       /* generate all the cps and hps for matching */
       var maxLvl = (30 - 1)*2; /* highest level possible without IV boost (L30) */
-      /* see if this is a half-level (these don't spawn in the wild) */
-      if (maxLvl%2 != 0)
-      {
-        /* ensure we build search string only on "full" levels */
-        maxLvl = maxLvl - 1; /* set to non-half level */
-      }
   
       /* skip half level CPs in search strings to improve accuracy */
       for( var level = maxLvl; level >= 0; level = level - 2 ) {
@@ -972,6 +1080,7 @@
     <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="start()"></label><br />
     <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="start()"></label><br /></div>
     <label>Only Find 0% IVs:<input id="onlyZero" type="checkbox" oninput="start()"><br /></label>
+    <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="start()"><br /></label>
     <div id="baseDiv"><label id="baseLbl" for="base" style="display: none;">Search for Base Evo:</label><input id="base" type="checkbox" checked oninput="start(true)" style="display: none;"></div>
     <div id="babyDiv"><label id="babyLbl" for="baby" style="display: none;">Search for Baby Evo:</label><input id="baby" type="checkbox" oninput="start(true)" style="display: none;"></div>
     <label>Language:<select id="lang" oninput="start()">
