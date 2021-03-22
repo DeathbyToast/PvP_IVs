@@ -33,7 +33,19 @@
   --dg12dp: #333333;/*14%*/
   --dg16dp: #343434;/*15%*/
   --dg24dp: #383838;/*16%*/
-  --lightgrey: #E5E5E5; /*00dp, 0% white overlay*/
+  /* light grey color palette */
+  --lg50: #FAFAFA; /*50*/
+  --lg100: #F5F5F5;/*100*/
+  --lg200: #EEEEEE;/*200*/
+  --lg300: #E0E0E0;/*300*/
+  --lg400: #BDBDBD;/*400*/
+  --lg500: #9E9E9E;/*500*/
+  /* lg50-500 black text */
+  /* lg600-900 white text */
+  --lg600: #757575;/*600*/
+  --lg700: #616161;/*700*/
+  --lg800: #424242;/*800*/
+  --lg900: #212121;/*900*/
 }
 
 * {
@@ -45,22 +57,24 @@
 .light-theme {
   --primary: var(--gold700);
   --secondary: var(--red900);
-  --Background: var(--lightgrey);
+  --Background: var(--lg200);
   --goodResult: var(--green600); /*old: green*/
   --okResult: var(--yellow500); /*old: orange*/
   --badResult: var(--orange500); /*old: red*/
-  --navBackground: #C0C0C0;
+  --navBackground: var(--lg500);
   --navActive: var(--yellow700);
   --navActiveText: var(--white100);
   --navHover: var(--secondary);
   --text: var(--black100);
   --darkModeSlider: var(--secondary);
   --darkModeSliderBg: var(--dg16dp);
-  --tableSurface: var(--dg02dp);
+  --tableSurface: var(--lg200);
+  --tableRowOdd: var(--lg300);
+  --tableRowEven: var(--lg400);
   --tableHeaderBg: var(--navBackground);
   --tableHeaderText: var(--black60);
-  --tableDividers: var(--black12);
-  --textBoxBg: var(--white100);
+  --tableDividers: var(--lg700);
+  --textBoxBg: var(--lg100);
 }
 
 .dark-theme {
@@ -78,6 +92,8 @@
   --darkModeSlider: var(--dg16dp);
   --darkModeSliderBg: var(--secondary);
   --tableSurface: var(--dg02dp);
+  --tableRowOdd: var(--dg03dp);
+  --tableRowEven: var(--dg04dp);
   --tableHeaderBg: var(--navBackground);
   --tableHeaderText: var(--white60);
   --tableDividers: var(--white12);
@@ -296,6 +312,51 @@ textarea, select, input {
     width: 80%;
     font-size: 4vw;
   }
+}
+
+/* Table CSS for Rankings Pages */
+/*https://www.w3schools.com/css/css_table.asp*/
+
+#outTable, #inputTable, #tradeTable {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  margin-left:auto;
+  margin-right:auto;
+}
+      
+#outTable td, #outTable th {
+  border: 1px solid var(--tableDividers);
+  padding: 8px;
+  text-align: center;
+  line-height: 5px;
+}
+
+#tradeTable td, #tradeTable th {
+  border: 1px solid var(--tableDividers);
+  padding: 0px;
+  text-align: center;
+}
+
+#inputTable td, #inputTable th {
+  line-height: 11px;
+}
+
+#inputTable li {
+  line-height: normal;
+}
+
+#outTable tr:nth-child(even), #tradeTable tr:nth-child(even) {background-color: var(--tableRowEven);}
+#outTable tr:nth-child(odd), #tradeTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
+#outTable tr:hover, #tradeTable tr:hover {background-color: var(--navHover);}
+
+#outTable th, #tradeTable th {
+  line-height: 15px;
+  padding: 3px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  text-align: center;
+  background-color: var(--tableHeaderBg);
+  color: var(--tableHeaderText);
 }
 
 section {text-align: center;}
