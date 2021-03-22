@@ -26,17 +26,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
-      /* control highlight of User Data row based on rank
+      /* control highlight of trading improvement rows based on % chace to improve post-trade
+       * also controls the output row highlighting for user entered IVs (#outTable)
        * 1000/4096 ~= 0.2442 and 100/4096 ~= 0.02442
        * use 0.02442 to approximate "Top 100" (green) when there are less than 4096 results
        * use 0.2442 to approximate "Top 1000" (orange) when there are less than 4096 results */
-      #outTable tr.good {background-color: var(--goodResult)}
-      #outTable tr.ok {background-color: var(--okResult)}
-      #outTable tr.rubbish {background-color: var(--badResult)}
-      /* control highlight of trading improvement rows based on % chace to improve post-trade */
-      #tradeTable tr.highMaxRow {background-color: var(--goodResult)}
-      #tradeTable tr.okMaxRow {background-color: var(--okResult)}
-      #tradeTable tr.lowMaxRow {background-color: var(--badResult)}
+      #outTable tr.good > *, #tradeTable tr.highMaxRow > * {background-color: var(--goodResult); color: var(--navActiveText);}
+      #outTable tr.ok > *, #tradeTable tr.okMaxRow > * {background-color: var(--okResult); color: var(--navActiveText);}
+      #outTable tr.rubbish > *, #tradeTable tr.lowMaxRow > * {background-color: var(--badResult); color: var(--navActiveText);}
+      /* the > * operator applies the css to all children (cells) */
+      #outTable a {
+        color: var(--navActiveText);
+      }
       
       input[type=number] {
         width: 44px;
