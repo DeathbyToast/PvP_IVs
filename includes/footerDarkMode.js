@@ -9,7 +9,6 @@ function toggleTheme() {
   document.body.classList.toggle("dark-theme");
   document.body.classList.toggle("light-theme");
   document.getElementById("theme-toggle-icon").classList.toggle("flipped-icon");
-  document.getElementById("theme-toggle").checked = !document.getElementById("theme-toggle").checked;
   
   localStorage.setItem(
     "colorTheme",
