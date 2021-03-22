@@ -72,7 +72,7 @@
   --tableRowOdd: var(--lg300);
   --tableRowEven: var(--lg400);
   --tableHeaderBg: var(--navBackground);
-  --tableHeaderText: var(--black60);
+  --tableHeaderText: var(--darkgrey);
   --tableDividers: var(--lg700);
   --textBoxBg: var(--lg100);
 }
@@ -143,13 +143,8 @@
 input:checked + .slider {
   transform: translateX(8px);
 }
-
 /* awesomplete CSS overrides for dark mode */
 /* https://github.com/LeaVerou/awesomplete/blob/gh-pages/awesomplete.css */
-textarea {
-  background: var(--textBoxBg);
-}
-
 .awesomplete > ul > li:hover {
   background: var(--navHover);
   color: var(--navActiveText);
@@ -167,7 +162,6 @@ textarea {
   background: var(--navActive);
   color: var(--navActiveText);
 }
-
 /* floating footer fix https://stackoverflow.com/a/13883285 */
       html,
 body {
@@ -357,6 +351,10 @@ textarea, select, input {
   text-align: center;
   background-color: var(--tableHeaderBg);
   color: var(--tableHeaderText);
+}
+
+textarea {
+  background: var(--textBoxBg);
 }
 
 section {text-align: center;}
