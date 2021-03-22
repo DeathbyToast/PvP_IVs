@@ -84,6 +84,7 @@
   --textBoxBg: var(--dg24dp);
 }
 
+/* dark mode toggle switch stuff */
 .theme-toggle-switch {
   height:47px;
   width: 55px;
@@ -125,6 +126,30 @@
 
 input:checked + .slider {
   transform: translateX(8px);
+}
+
+/* awesomplete CSS overrides for dark mode */
+/* https://github.com/LeaVerou/awesomplete/blob/gh-pages/awesomplete.css */
+textarea {
+  background: var(--textBoxBg);
+}
+
+.awesomplete > ul > li:hover {
+  background: var(--navHover);
+  color: var(--navActiveText);
+}
+
+.awesomplete > ul {
+  background: var(--navBackground);
+}
+
+.awesomplete mark {
+  background: var(--navHover);
+}
+
+.awesomplete li:hover mark {
+  background: var(--navActive);
+  color: var(--navActiveText);
 }
 
 /* floating footer fix https://stackoverflow.com/a/13883285 */
@@ -274,3 +299,4 @@ textarea, select, input {
 }
 
 section {text-align: center;}
+h3 {line-height: 22px;}
