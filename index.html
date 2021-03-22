@@ -406,6 +406,7 @@
         var limit = document.getElementById('limit').value;
         var dti = document.getElementById("dti").checked;
         var cmp = document.getElementById("cmp").checked;
+        var dust = false; /*document.getElementById("dust").checked;*/
         var shdw = document.getElementById('shdw[0]').checked;
         var floor = document.getElementById('floor').value;
         var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), floor, minLvl, maxLvl, dti, league, mon);
@@ -434,7 +435,16 @@
         /*we have at least one rank to output, let's print!*/
         var evoHtml = "";
         var evoFeedback = "";
-        var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def IV</th><th>Sta IV</th><th>Apr</th><th>Perfect</th>";
+        var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th><th>IVs</th><th>Perfect</th>";
+        
+        /*include XL candy costs if Max Level > 41*/
+        if (maxLvl > 41) {
+          html+="<th>XL</th>";
+        }
+        /*include stardust costs if selected*/
+        if (dust) {
+          html+="<th>Stardust</th>";
+        }
         
         /*include cmp columns if checked*/
         if (cmp == true) {
@@ -446,6 +456,7 @@
           }
           ranks = cmpCalcs(numRanks, ranks, keys);
         }
+        
         html+="<th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
         
         /*prepare max stat html output*/
@@ -465,7 +476,7 @@
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
               /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
-              gmRhtml = getMonRank(numRanks, ranks, keys, shdw, cmp, maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length);
+              gmRhtml = getMonRank(numRanks, ranks, keys, shdw, cmp, maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, false, false, maxLvl, dust);
               if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml == "")) {
                 console.log("i:"+i+" Detected too high CP after getMonRank");
                 document.getElementById('feedbackBox').innerHTML = "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") & min level ("+minLvl+") is too big for "+leagueName+"<br>Please check Settings: Min Level and try again</i></p>";
@@ -573,11 +584,14 @@
                 html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
                 html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
                 html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
-                html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
-                html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
-                html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
-                html+="<td>"+ranks[keys[i]][j].IVs.star+"</td>"; /*Star Appraisal*/
+                html+="<td>"+ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S+"</td>"; /*IVs*/
                 html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"+"</td>"; /*Perfection*/
+                if (maxLvl > 41) { /* XL Candy costs */
+                  html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";
+                }
+                if (dust) { /* stardust powerup costs go here */
+                  html+="<td></td>";
+                }
                 if (cmp) {
                   html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
                   if (ranks.numRanks/1 < 100) { /*account for when there aren't 100 numRanks*/
@@ -985,7 +999,7 @@
         return outHTML;
       }
       
-      function getMonRank(numRanks, ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, numIVs, mon, uri) {
+      function getMonRank(numRanks, ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, numIVs, mon, uri, maxLvl, dust) {
         if (perfTiming) {var getMonRankT0 = performance.now();}
         /*console.log("gMR: received numRanks:"+numRanks+", ranks:"+ranks+", keys[0]:"+keys[0]+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mon:"+mon+", uri:"+uri);*/
         var html = "";
@@ -1018,17 +1032,25 @@
               html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
               html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
               if (!mon) { /*skip if this is an evoTable print*/
-                html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
-                html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
-                html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
+                html+="<td>"+ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S+"</td>"; /*IVs*/
                 rIV.push(actualRank); /*Save rank for trash string links*/
-                html+="<td>"+ranks[keys[i]][j].IVs.star+"</td>"; /*Star Appraisal*/
               }
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
-              if ((!mon) && (cmp)) {
-                  html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
-                  html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
-                  /*usrAtk = numOut(ranks[keys[i]][j].battle.A,1);*/
+              
+              if(!mon) {
+                if (maxLvl) { /* XL Candy costs */
+                  html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";
+                }
+                if (dust) { /* stardust powerup costs go here */
+                  html+="<td>"+stardust(ranks[keys[i]][j].L/1)+"</td>";
+                }
+              
+              
+                if (cmp) {
+                    html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
+                    html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
+                    /*usrAtk = numOut(ranks[keys[i]][j].battle.A,1);*/
+                }
               }
               if (shdw) { /*apply shadow mon 20% attack buff and 20% defense debuff*/
                 html+="<td style='color:red'>"+numOut(ranks[keys[i]][j].battle.A*1.2,1)+"</td>"; /*GL Atk Total*/
@@ -1048,6 +1070,64 @@
         if (perfTiming) {var getMonRankT1 = performance.now();
         console.log("getMonRank: Execution took "+(getMonRankT1-getMonRankT0).toFixed(1)+"ms");}
         return html;
+      }
+      
+      /* Returns calculated XL candy costs based on https://i.redd.it/kb4pu1kxu9061.png */
+      function XLcandy(xlev) {
+        switch (xlev) {
+          case 11:
+            return 296;
+          case 10.5:
+            return 296;
+          case 10:
+            return 296;
+          case 9.5:
+            return 276;
+          case 9:
+            return 256;
+          case 8.5:
+            return 236;
+          case 8:
+            return 216;
+          case 7.5:
+            return 199;
+          case 7:
+            return 182;
+          case 6.5:
+            return 165;
+          case 6:
+            return 148;
+          case 5.5:
+            return 133;
+          case 5:
+            return 118;
+          case 4.5:
+            return 103;
+          case 4:
+            return 88;
+          case 3.5:
+            return 76;
+          case 3:
+            return 64;
+          case 2.5:
+            return 52;
+          case 2:
+            return 40;
+          case 1.5:
+            return 30;
+          case 1:
+            return 20;
+          case 0.5:
+            return 10;
+          default:
+            return 0;
+            break;
+        }
+      }
+      
+      /* Returns calculated stardust power-up costs */
+      function stardust(lvl) {
+        return;
       }
       
       function wrongTyroEvo(aIV, dIV, sIV, eNum) {
