@@ -672,10 +672,10 @@
   
       if (onlyZero) {
         if (trash) {
-          message = "This string only finds 0% IVs, and is NOT a trash string. Please uncheck 'Trash String' (top)";
+          message = "This string only finds 0% IVs, and is NOT a trash string. Please uncheck 'Trash String' (below)";
         document.getElementById('feedbackBox').innerHTML = "<p><i>"+message+"</i></p>";
         } else {
-          message = "This string ignores PvP rankings. For PvP rankings please uncheck 'Only Find 0% IVs' (bottom)";
+          message = "This string ignores PvP rankings. For PvP rankings please uncheck 'Only Find 0% IVs' (below)";
           document.getElementById('feedbackBox').innerHTML = "<p><i>"+message+"</i></p>";
         }
         results = getZeroCPs(evoVals[0][1], evoVals[0][2], evoVals[0][3], cpm, maxCP, maxHP, cps[0], hps[0]);
@@ -712,12 +712,12 @@
               if (mergedRanks[rKeys[i]][j].L < searchLvl[k])
               {
                 /* Need to skip these levels when outputting, they're too high for PvP */
-                console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") < ("+searchLvl[k]+")searchLvl["+k+"], skipping L"+searchLvl[k]+" in final Search String");
+                /*console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") < ("+searchLvl[k]+")searchLvl["+k+"], skipping L"+searchLvl[k]+" in final Search String");*/
               }
               else
               {
                 /* We either found or skipped over the level we needed to start at, exit loop */
-                console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") >= ("+searchLvl[k]+")searchLvl["+k+"], stopping search! Starting output at L"+searchLvl[k]+" in final Search String");
+                /*console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") >= ("+searchLvl[k]+")searchLvl["+k+"], stopping search! Starting output at L"+searchLvl[k]+" in final Search String");*/
                 maxSearchLvl = k;
                 break;
               }
@@ -727,7 +727,7 @@
             for(k=maxSearchLvl; k<searchLvl.length; k++) {
               lookupLvl = (searchLvl[k]-1)*2;
               var cp = Math.max(10, Math.floor((evoVals[0][1]/1 + mergedRanks[rKeys[i]][j].IVs.A) * Math.sqrt(evoVals[0][2]/1 + mergedRanks[rKeys[i]][j].IVs.D) * Math.sqrt(evoVals[0][3]/1 + mergedRanks[rKeys[i]][j].IVs.S) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
-              console.log("Generated cp("+cp+") at lookupLvl("+lookupLvl+"), searchLvl["+k+"]:"+searchLvl[k]);
+              /*console.log("Generated cp("+cp+") at lookupLvl("+lookupLvl+"), searchLvl["+k+"]:"+searchLvl[k]);*/
               
               /* generate hps for more accurate search string matching */
               var hp = Math.max(10, Math.floor((evoVals[0][3]/1 + mergedRanks[rKeys[i]][j].IVs.S) * cpm[lookupLvl]));
@@ -843,7 +843,7 @@
           cps[i].sort((a, b) => a - b);
           output.value += '&!'+i+'*,' + get_matching_string(cps[i], lang[1]);
           
-          if (!trash) {
+          if ((!trash) || (onlyZero)) {
             output.value += '&!'+i+'*';
           }
           
@@ -853,9 +853,10 @@
             hps[i].sort((a, b) => a - b);
             output.value += ',' + get_matching_string(hps[i], lang[2]);
           }
-        } else if (!trash) { /* skip empty appraisal sets in search string */
+        } else if ((!trash) || (onlyZero)) { /* skip empty appraisal sets in search string */
           emptyBuf += '&!'+i+'*';
         }
+
       }
       output.value += emptyBuf; /* add trash stuff */
       
