@@ -9,6 +9,7 @@ function toggleTheme() {
   document.body.classList.toggle("dark-theme");
   document.body.classList.toggle("light-theme");
   document.getElementById("theme-toggle-icon").classList.toggle("flipped-icon");
+  document.getElementById("theme-toggle").checked = !document.getElementById("theme-toggle").checked;
   
   localStorage.setItem(
     "colorTheme",
@@ -18,6 +19,7 @@ function toggleTheme() {
 
 /* Initialize the theme */
 if (localStorage.getItem("colorTheme") === "dark-theme") {
+  document.getElementById("theme-toggle").checked = true;
   toggleTheme();
 } else if (
     localStorage.getItem("colorTheme") !== "light-theme" &&
