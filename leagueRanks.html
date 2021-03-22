@@ -13,96 +13,64 @@
     <meta charset="UTF-8">
     <link rel=”canonical” href=”https://pvpivs.com/leagueRanks.html” />
     <!-- Include pre-loads to reduce/optimize page load time-->
-    <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
-    <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/calculate.min.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
+    <link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListGen6.js" as="script">
     <title>PvP IVs - League Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
     <link rel=icon href=/includes/favicon.png>
-    <link rel="stylesheet" href="https://pvpivs.com/includes/baseSiteStyling.css">
+    <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
-      /*https://www.w3schools.com/css/css_table.asp*/
-      
-      #outTable, #inputTable, #tradeTable {
-        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-        border-collapse: collapse;
-        margin-left:auto;
-        margin-right:auto;
-      }
-      
-      #outTable td, #outTable th {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: center;
-        line-height: 5px;
-      }
-      
-      #tradeTable td, #tradeTable th {
-        border: 1px solid #ddd;
-        padding: 0px;
-        text-align: center;
-      }
-
-      #inputTable td, #inputTable th {
-        line-height: 11px;
-      }
-      
-      #inputTable li {
-        line-height: normal;
-      }
-      
-      #outTable tr:nth-child(even), #tradeTable tr:nth-child(even) {background-color: #f2f2f2;}
-      #outTable tr:hover, #tradeTable tr:hover {background-color: #ddd;}
-      
-      #outTable th, #tradeTable th {
-        line-height: 15px;
-        padding: 3px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        text-align: center;
-        background-color: #C0C0C0;
-        color: black;
-      }
-      
       #myProgress {
         width: 100%;
-        background-color: #ddd;
+        background-color: var(--navBackground);
       }
       
       #myBar {
         width: 0%;
         height: 30px;
-        background-color: #4CAF50;
+        background-color: var(--navActive);
         text-align: center;
         line-height: 30px;
-        color: white;
+        color: var(--navActiveText);
       }
      
     </style>
   </head>
-  <body onload="checkURI()">
-    <header>
-      <ul class="header">
-        <li class="dropdown active">
-          <a href="javascript:void(0)" class="dropbtn active">PvP IVs</a>
-          <div class="dropdown-content">
-            <a href="/">Rankings (Single)</a>
-            <a href="/leagueRanks.html" class="active">Rankings (League)</a>
-            <a href="/searchStr.html">Search Strings</a>
-          </div>
+  <body class="light-theme" onload="checkURI()">
+  <header>
+    <ul class="header">
+      <li class="dropdown active left">
+        <a href="javascript:void(0)" class="dropbtn active">PvP IVs</a>
+        <div class="dropdown-content">
+          <a href="/">Rankings (Single)</a>
+          <a href="/leagueRanks.html" class="active">Rankings (League)</a>
+          <a href="/searchStr.html">Search Strings</a>
+        </div>
+      </li>
+      <li class="dropdown left">
+        <a href="javascript:void(0)" class="dropbtn">Typing</a>
+        <div class="dropdown-content">
+          <a href="/typeLookup.html">Chart</a>
+          <a href="/typeQuiz.html">Quiz</a>
+        </div>
+      </li>
+      <li class="flat right">
+        <a href="/about.html">About</a>
+      </li>
+      <li class="flat right">
+          <label class="theme-toggle-switch">
+            <img id="theme-toggle-icon" src="https://pvpivs.com/includes/dark_mode_icon_white-fill.png" alt="Dark Mode" width="22" height="22">
+            <div>
+              <input id="theme-toggle" type="checkbox" />
+              <span class="slider round"></span>
+            </div>
+          </label>
         </li>
-        <li class="dropdown">
-          <a href="javascript:void(0)" class="dropbtn">Typing</a>
-          <div class="dropdown-content">
-            <a href="/typeLookup.html">Chart</a>
-            <a href="/typeQuiz.html">Quiz</a>
-          </div>
-        </li>
-        <li class="header" style="float:right"><a href="/about.html">About</a></li>
-      </ul>
-    </header>
+    </ul>
+  </header>
     <br />
     <section>
       <label>League:<select id="league" oninput="start()">
@@ -177,8 +145,8 @@
     </div>
     
     <!-- Footer Code Below -->
-    <script src="https://pvpivs.com/includes/escapedFooter.js"></script>
-    <script src="https://pvpivs.com/includes/calculate.min.js"></script>
+    <script src="https://pvpivs.com/includes/footer.js"></script>
+    <script src="https://pvpivs.com/includes/calculate.js"></script>
     <script src="https://pvpivs.com/includes/pokeListGen6.js"></script>
         
     <script>

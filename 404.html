@@ -12,19 +12,19 @@
     </script>
     <link rel=”canonical” href=”https://pvpivs.com/404.html” />
     <!-- Include pre-loads to reduce/optimize page load time-->
-  	<link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
-  	<link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
+  	<link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
+  	<link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
     <title>Page Not Found (404)</title>
     <meta charset="UTF-8">
   	<meta name="viewport" content="width=device-width, initial-scale=1">
   	<meta name="description" content="Welcome Trainers! PvPIVs.com hosts our PvP IVs Rank Checker, PvP IVs Search String generator, Type Charts, and Type Quiz. Questions? Comments? Say hi on Discord"/>
   	<link rel=icon href=/includes/favicon.png>
-  	<link rel="stylesheet" href="https://pvpivs.com/includes/baseSiteStyling.css">
+  	<link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
   </head>
-  <body>
+  <body class="light-theme">
     <header>
       <ul class="header">
-        <li class="dropdown">
+        <li class="dropdown left">
           <a href="javascript:void(0)" class="dropbtn">PvP IVs</a>
           <div class="dropdown-content">
             <a href="/">Rankings (Single)</a>
@@ -32,18 +32,29 @@
             <a href="/searchStr.html">Search Strings</a>
           </div>
         </li>
-        <li class="dropdown">
+        <li class="dropdown left">
           <a href="javascript:void(0)" class="dropbtn">Typing</a>
           <div class="dropdown-content">
             <a href="/typeLookup.html">Chart</a>
             <a href="/typeQuiz.html">Quiz</a>
           </div>
         </li>
-        <li class="header" style="float:right"><a href="/about.html">About</a></li>
+        <li class="flat right">
+          <a href="/about.html">About</a>
+        </li>
+        <li class="flat right">
+            <label class="theme-toggle-switch">
+              <img id="theme-toggle-icon" src="https://pvpivs.com/includes/dark_mode_icon_white-fill.png" alt="Dark Mode" width="22" height="22">
+              <div>
+                <input id="theme-toggle" type="checkbox" />
+                <span class="slider round"></span>
+              </div>
+            </label>
+          </li>
       </ul>
     </header>
     <br><h1 align="center">This isn't supposed to happen...you're not supposed to be here! Please get in contact via our discord <a href="https://discord.gg/UD4Temq"><strong>https://discord.gg/UD4Temq</strong></a> and report what happened so we can fix it ASAP.</h1>
   <!-- Footer Code Below -->
-  <script src="https://pvpivs.com/includes/escapedFooter.js"></script>
+  <script src="https://pvpivs.com/includes/footer.js"></script>
   </body>
 </html>

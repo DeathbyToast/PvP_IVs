@@ -13,9 +13,9 @@
     <meta charset="UTF-8">
     <link rel=”canonical” href=”https://pvpivs.com/searchStr.html” />
     <!-- Include pre-loads to reduce/optimize page load time-->
-    <link rel="preload" href="https://pvpivs.com/includes/baseSiteStyling.css" as="style">
-    <link rel="preload" href="https://pvpivs.com/includes/escapedFooter.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/calculate.min.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
+    <link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListGen6.js" as="script">
@@ -23,8 +23,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Pok&eacute;mon Go&trade; PvP IVs search string generator finds your best PvP IVs and/or helps you send the rest to Professor Willow. Now able to search for / exclude 0% IVs!"/>
     <link rel=icon href=/includes/favicon.png>
-    <link rel="stylesheet" href="https://pvpivs.com/includes/baseSiteStyling.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
+    <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
     .evoLimits{
       display:none;
@@ -34,10 +34,10 @@
     }
     </style>
   </head>
-<body onload="checkURI()">
+<body class="light-theme" onload="checkURI()">
   <header>
     <ul class="header">
-      <li class="dropdown active">
+      <li class="dropdown active left">
         <a href="javascript:void(0)" class="dropbtn active">PvP IVs</a>
         <div class="dropdown-content">
           <a href="/">Rankings (Single)</a>
@@ -45,14 +45,25 @@
           <a href="/searchStr.html" class="active">Search Strings</a>
         </div>
       </li>
-      <li class="dropdown">
+      <li class="dropdown left">
         <a href="javascript:void(0)" class="dropbtn">Typing</a>
         <div class="dropdown-content">
           <a href="/typeLookup.html">Chart</a>
           <a href="/typeQuiz.html">Quiz</a>
         </div>
       </li>
-      <li class="header" style="float:right"><a href="/about.html">About</a></li>
+      <li class="flat right">
+        <a href="/about.html">About</a>
+      </li>
+      <li class="flat right">
+          <label class="theme-toggle-switch">
+            <img id="theme-toggle-icon" src="https://pvpivs.com/includes/dark_mode_icon_white-fill.png" alt="Dark Mode" width="22" height="22">
+            <div>
+              <input id="theme-toggle" type="checkbox" />
+              <span class="slider round"></span>
+            </div>
+          </label>
+        </li>
     </ul>
   </header>
   <section>
@@ -114,14 +125,13 @@
     <br /><br />
       <textarea id="output" rows="10" style="width: 95%; height: 50%;" onclick="autocopy(this)"></textarea>
       <div id="outputSummaryBox"></div>
-      <div id="feedbackBox"></div>
+      <div id="feedbackBox"></div><br />
       <!-- Footer Code Below -->
-    <script src="https://pvpivs.com/includes/escapedFooter.js"></script>
-    <script src="https://pvpivs.com/includes/calculate.min.js"></script>
+    <script src="https://pvpivs.com/includes/footer.js"></script>
+    <script src="https://pvpivs.com/includes/calculate.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
     <script src="https://pvpivs.com/includes/pokeListGen6.js"></script>
     <script>
-    
     /* define Awesomeplete list https://leaverou.github.io/awesomplete/ */
     var input = document.getElementById("pokeList");
     var selected = undefined;
