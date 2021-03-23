@@ -299,8 +299,19 @@
       /* See if this was a request for all-mon Zero IV string */
       if (document.getElementById('allZero').checked) {
         document.getElementById('getStarted').style.display = "none";
-        findAllZeros();
+        var cpLimit = document.getElementById('cpLimit').value;
+        var dexSkips = document.getElementById('dexSkips').value;
+        document.getElementById("cpLimit").style.display = "inline-block";
+        document.getElementById("cpLimitLbl").style.display = "inline-block";
+        document.getElementById("dexSkips").style.display = "inline-block";
+        document.getElementById("dexSkipsLbl").style.display = "inline-block";
+        findAllZeros(cpLimit, dexSkips)
         return;
+      } else {
+        document.getElementById("cpLimit").style.display = "none";
+        document.getElementById("cpLimitLbl").style.display = "none";
+        document.getElementById("dexSkips").style.display = "none";
+        document.getElementById("dexSkipsLbl").style.display = "none";
       }
       
       /* exit if we haven't selected a mon yet */
@@ -569,7 +580,7 @@
       return true;
     }
     
-    function findAllZeros() {
+    function findAllZeros(cpLimit, dexSkips) {
       if (true) {var findAllZerosT0 = performance.now();}
       
       var lang = document.getElementById('lang').value.split(',');
@@ -577,18 +588,18 @@
       output.value = ''; /* ensure old output is cleared */
       var segments = '';
       var ids = '';
+      dexSkips = dexSkips.substring(0, dexSkips.length).split`,`.map(x=>+x);
+      /*console.log("fAZ:: cpLimit: "+cpLimit+", dexSkips: "+JSON.stringify(dexSkips));*/
       
       var message = "This string ignores PvP rankings, and only potential 0% IV (0/0/0) mon. For PvP rankings please uncheck 'Find ALL 0% mon' (below)";
       document.getElementById('feedbackBox').innerHTML = "<p><i>"+message+"</i></p>";
       
       for (var i=0; i<pokeList.length; i++) {
         var id = (pokeList[i].value.split(",")[0]).split("&")[0]/1;
-        var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,486,488, 384];
-        var raidOnly = [481,482,483,484,485,487,638,639,640];
         
         /* Ensure it can spawn in the wild */
-        if ((boxRewrd.includes(id/1)) || (raidOnly.includes(id/1))) {
-          console.log("Skipping "+pokeList[i].label+", not wild spawn");
+        if (dexSkips.includes(id/1)) {
+          console.log("Skipped #"+id+"("+pokeList[i].label+")");
           continue;
         }
         
@@ -604,8 +615,8 @@
         hps[0] = results[1];
         
         /* Skip final evolved forms and raid bosses aren't common wild spawns */
-        if (results[2][0]/1 > 1500) {
-          console.log("Skipping "+pokeList[i].label+", maxCP("+results[2][0]/1+")");
+        if (results[2][0]/1 > cpLimit/1) {
+          console.log("Skipped #"+id+"("+pokeList[i].label+"), maxCP("+results[2][0]/1+")");
           continue;
         }
         segments += outputZeroCPsHPs(cps.slice(), hps.slice(), id, lang);
@@ -616,6 +627,7 @@
       ids.sort((a, b) => a - b);
       ids = get_matching_string(ids,"");
       output.value = ids+"&0*"+segments;
+        document.getElementById('feedbackBox').innerHTML += "<p><i>Output Search String Length: "+output.value.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+" characters</i></p>";
       
       if (perfTiming) {var findAllZerosT1 = performance.now();
       console.log("findAllZeros: Execution took "+(findAllZerosT1-findAllZerosT0).toFixed(1)+"ms");}
@@ -1086,6 +1098,8 @@
     <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="start()"></label><br /></div>
     <label>Only Find 0% IVs:<input id="onlyZero" type="checkbox" oninput="start()"><br /></label>
     <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="start()"><br /></label>
+    <div id="cpLimitDiv"><label id="cpLimitLbl" for="cpLimit" style="display: none;">CP Limit:</label><input type="number" id="cpLimit" oninput="start(true)" value="1500" style="display: none;"></div>
+    <div id="dexSkipsDiv"><label id="dexSkipsLbl" for="dexSkips" style="display: none;">Dex Skips:</label><input id="dexSkips" oninput="start(true)" value="144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,481,482,483,484,485,486,487,488,638,639,640" style="display: none;"></div>
     <div id="baseDiv"><label id="baseLbl" for="base" style="display: none;">Search for Base Evo:</label><input id="base" type="checkbox" checked oninput="start(true)" style="display: none;"></div>
     <div id="babyDiv"><label id="babyLbl" for="baby" style="display: none;">Search for Baby Evo:</label><input id="baby" type="checkbox" oninput="start(true)" style="display: none;"></div>
     <label>Language:<select id="lang" oninput="start()">
