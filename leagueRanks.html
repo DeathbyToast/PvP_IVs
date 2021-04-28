@@ -386,24 +386,28 @@
       if (perfTiming) {var checkURIt0 = performance.now();}
 
       var URL = window.location.href.split("?")[1];
+      var validParams = false;
       
       if (URL)
       {
         URL = decodeURI(URL);
-        /*console.log("Read URL as: "+URL);*/
+        console.log("Read URL as: "+URL);
         var values = URL.split("&");
-        /*console.log("Values array as: "+JSON.stringify(values));*/
+        console.log("Values array as: "+JSON.stringify(values));
         for (var i=0; i<values.length; i++)
         {
           switch (values[i].split("=")[0]) {
             case "cp":
               document.getElementById('league').value = values[i].split("=")[1];
+              validParams = true;
               break;
             case "max":
               document.getElementById('maxLvl').value = values[i].split("=")[1];
+              validParams = true;
               break;
             case "all":
               document.getElementById('all').value = values[i].split("=")[1];
+              validParams = true;
               break;
             case "cmp":
               if (values[i].split("=")[1] == "true") { document.getElementById('cmp').checked = true;}
@@ -416,7 +420,12 @@
         }
         if (perfTiming) {var checkURIt1 = performance.now();
         console.log("checkURI: Execution took "+(checkURIt1-checkURIt0).toFixed(1)+"ms");}
-        //start();
+        if (validParams == true) {
+          console.log("Found at least one valid URL parameter, starting calculations...");
+          start();
+        } else {
+          console.log("Only found invalid URL parameters, waiting for user to click Calculate button to start");
+        }
         return true;
       }
       else
