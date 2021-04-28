@@ -36,6 +36,12 @@
         line-height: 30px;
         color: var(--navActiveText);
       }
+      button {
+        font-size: large;
+        background-color: var(--navActive);
+        color: var(--navActiveText);
+        padding: 5px 5px;
+      }
      
     </style>
   </head>
@@ -73,13 +79,13 @@
   </header>
     <br />
     <section>
-      <label>League:<select id="league" oninput="start()">
+      <label>League:<select id="league">
         <option value="500">Little Cup</option>
         <option value="1500" selected>Great League</option>
     		<option value="2500">Ultra League</option>
     		<option value="false">Master League</option>
     	</select></label><br />
-    	<label>Max Level:<select title="What Level Ceiling to Search?" id="maxLvl" oninput="start()">
+    	<label>Max Level:<select title="What Level Ceiling to Search?" id="maxLvl">
           <option value="1">1: Wild Caught</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -132,12 +138,13 @@
           <option value="50">50</option>
           <option selected value="51">51: Best Buddy</option>
         </select></label><br />
-      <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="start()"></label><br />
-      <label>Include Entire Pokedex:<input id="all" type="checkbox" oninput="start()"></label><br />
+      <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox"></label><br />
+      <label>Include Entire Pokedex:<input id="all" type="checkbox"></label><br />
+      <br /><button onclick="start()">Calculate</button>
     </section>
       
     <div id="feedbackBox"></div>
-    <div style="overflow-x:auto;" id="outputBox"><i><br/>Loading...</i></div>
+    <div style="overflow-x:auto;" id="outputBox"><i><br/>Press Calculate Button to Begin...</i></div>
     <div style="overflow-x:auto;" id="chart_div"></div>
     
     <div id="myProgress">
@@ -157,17 +164,15 @@
     var perfTiming = false; /* used for timing execution */
     var lastPercent;
     
-    /* Ensure we've successfully loaded a pokeList */
-    if (!(pokeList.length))
-    {
-      console.log("ERROR: Failed to load pokeList!");
-    } else {
-      /* Yes we have a valid pokeList, build results */
-      start();
-    }
-    
     function start() {
       if (true) {var startT0 = performance.now();}
+      
+      /* Ensure we've successfully loaded a pokeList */
+      if (!(pokeList.length))
+      {
+        console.log("ERROR: Failed to load pokeList!");
+      }
+      /* Yes we have a valid pokeList, build results */
       
       var output = document.getElementById('outputBox');
       output.innerHTML = ""; /*ensure we clear the prior output between runs*/
@@ -215,7 +220,8 @@
         var maxCP = Math.max(10, Math.floor((parseInt(monStats[1]) + 15) * Math.sqrt(parseInt(monStats[2]) + 15) * Math.sqrt(parseInt(monStats[3]) + 15) * cpm[maxLvlCPM] * cpm[maxLvlCPM] / 10));
 
         /* Filter out too low of max CP values to increase calculation speed */
-        if ((all) || /* Skip filter if user checks box for ALL results */
+        if ((all) || (maxLvl == 1) ||
+           /* Skip filter if user checks box for ALL results or Level 1 */
            ((league == 500  && maxCP > 400)  ||
             (league == 1500 && maxCP > 1300) ||
             (league == 2500 && maxCP > 2300) ||
@@ -223,7 +229,7 @@
           var row = document.createElement("tr");
 
           /* Check for higher minIVs or minLvls for non-wild spawning mon */
-          const [minIVs, minLvl] = adjustFloors((pokeList[i].value.split(",")[0]).split("&")[0], monName);
+          const [minIVs, minLvl] = adjustFloors((pokeList[i].value.split(",")[0]).split("&")[0], monName, maxLvl);
           /* Do the rank calculations for each mon */
           var ranks = calculate(parseInt(monStats[1]), parseInt(monStats[2]), parseInt(monStats[3]), minIVs, minLvl, maxLvl, false, league, monName);
           /*include cmp columns if checked*/
@@ -280,7 +286,7 @@
           if (league == 1500) {skippedMessage+="1300 ";} else
           if (league == 2500) {skippedMessage+="2300 ";} else
           {skippedMessage+="2500 ";}
-          skippedMessage += tooSmallMons + " <br> <br>" + "Removed all too big mon: " + tooBigMons;
+          skippedMessage += tooSmallMons + ". Removed all too big mon: " + tooBigMons;
           console.log(skippedMessage);
           skippedMessage = "";
           
@@ -325,7 +331,8 @@
       outCell(statProd, row); /*Stat Product*/
     }
     
-    function adjustFloors(dexNum, monName) {
+    /*returns minIVs, minLvl*/
+    function adjustFloors(dexNum, monName, maxLvl) {
       /*check if we need to adjust IV Floor or Min Level*/
       if (boxRewrd.includes(dexNum/1)) {
         console.log("Detected box reward mon:"+monName);
@@ -346,6 +353,10 @@
         console.log("Detected Raid no Trade mon:"+monName);
         /*set min IVs to 10 and min Level to 20*/
         return [10, 20];
+      } else
+      if (maxLvl/1 == 1) {
+        /*support Level One league*/
+        return [15,1];
       } else {
         /* Otherwise, return zeros */
         return [0, 0];
@@ -405,7 +416,7 @@
         }
         if (perfTiming) {var checkURIt1 = performance.now();
         console.log("checkURI: Execution took "+(checkURIt1-checkURIt0).toFixed(1)+"ms");}
-        start();
+        //start();
         return true;
       }
       else
