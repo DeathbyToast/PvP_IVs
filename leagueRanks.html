@@ -340,22 +340,22 @@
     function adjustFloors(dexNum, monName, maxLvl) {
       /*check if we need to adjust IV Floor or Min Level*/
       if (boxRewrd.includes(dexNum/1)) {
-        console.log("Detected box reward mon:"+monName);
+        console.log("Detected box reward mon:"+monName+" ("+dexNum+")");
         /*set min IVs to 1 and min Level to 15*/
         return [1, 15];
       } else
       if (raidOnly.includes(dexNum/1)) {
-        console.log("Detected Raid+Trade mon:"+monName);
+        console.log("Detected Raid+Trade mon:"+monName+" ("+dexNum+")");
         /*set min IVs to 1 and min Level to 20*/
         return [1, 20];
       } else
       if (mythNoTrade.includes(dexNum/1)) {
-        console.log("Detected Mythical mon:"+monName);
+        console.log("Detected Mythical mon:"+monName+" ("+dexNum+")");
         /*set min IVs to 10 and min Level to 15*/
         return [10, 15];
       } else
       if (raidNoTrade.includes(dexNum/1)) {
-        console.log("Detected Raid no Trade mon:"+monName);
+        console.log("Detected Raid no Trade mon:"+monName+" ("+dexNum+")");
         /*set min IVs to 10 and min Level to 20*/
         return [10, 20];
       } else
@@ -407,7 +407,6 @@
               validParams = true;
               break;
             case "max":
-              console.log
               document.getElementById('maxLvl').value = values[i].split("=")[1];
               validParams = true;
               break;
