@@ -138,7 +138,7 @@
           <option value="50">50</option>
           <option selected value="51">51: Best Buddy</option>
         </select></label><br />
-      <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox"></label><br />
+      <label>Include Mega Evolutions:<input id="mega" type="checkbox"></label><br />
       <label>Include Entire Pokedex:<input id="all" type="checkbox"></label><br />
       <br /><button onclick="start()">Calculate</button>
     </section>
@@ -157,10 +157,11 @@
     <script src="https://pvpivs.com/includes/pokeListGen6.js"></script>
         
     <script>
-    var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,486,488, 384];
-    var raidOnly = [481,482,483,484,485,487,638,639,640];
-    var mythNoTrade = [151,251,385];
-    var raidNoTrade = [386,491,647];
+    var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,486,488];
+    /*480,481,482 are wild-spawning legendaries and 808,809 are wild-spawning mythicals*/
+    var raidOnly = [483,484,485,487,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898];
+    var boxMyth = [151,251,385,489,490,492,493,494,647,648,719,720,721,801,802,807,893];
+    var raidMyth = [386,491,649];
     var perfTiming = false; /* used for timing execution */
     var lastPercent;
     
@@ -186,7 +187,7 @@
       var maxLvlCPM = Math.max(0, (maxLvl - 1) * 2); /* use half-levels */
       var league = document.getElementById('league').value;
       var leagueName = document.getElementById('league').label;
-      var cmp = document.getElementById('cmp').checked;
+      var mega = document.getElementById('mega').checked;
       var all = document.getElementById('all').checked;
       var elem = document.getElementById("myBar");
       var feedback = document.getElementById('feedbackBox');
@@ -204,9 +205,7 @@
       tbl.setAttribute("id", "outTable");
       var header = tbl.createTHead();
       var headerRow = header.insertRow(0);
-      var cmpHeader = "";
-      if (cmp) {cmpHeader+="<th>T100 CMP</th>";}
-      headerRow.innerHTML = "<tr><th>Dex</th><th>Mon</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def IV</th><th>Sta IV</th><th>Apr</th><th>Perfect</th>"+cmpHeader+"<th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
+      headerRow.innerHTML = "<tr><th>Dex</th><th>Mon</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def IV</th><th>Sta IV</th><th>Apr</th><th>Perfect</th><th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
       
       var tooSmallMons = "";
       var tooBigMons = "";
@@ -221,37 +220,41 @@
       /* Function that is called recursively to create cells and update progress of rank calculations */
       (function leagueRanks() {
         var monName = pokeList[i].label;
-        var monStats = pokeList[i].value.split(',');
-        var maxCP = Math.max(10, Math.floor((parseInt(monStats[1]) + 15) * Math.sqrt(parseInt(monStats[2]) + 15) * Math.sqrt(parseInt(monStats[3]) + 15) * cpm[maxLvlCPM] * cpm[maxLvlCPM] / 10));
 
-        /* Filter out too low of max CP values to increase calculation speed */
-        if ((all) || (maxLvl == 1) ||
-           /* Skip filter if user checks box for ALL results or Level 1 */
-           ((league == 500  && maxCP > 400)  ||
-            (league == 1500 && maxCP > 1300) ||
-            (league == 2500 && maxCP > 2300) ||
-            (maxCP > 2500))) {
-          var row = document.createElement("tr");
-
-          /* Check for higher minIVs or minLvls for non-wild spawning mon */
-          const [minIVs, minLvl] = adjustFloors((pokeList[i].value.split(",")[0]).split("&")[0], monName, maxLvl);
-          /* Do the rank calculations for each mon */
-          var ranks = calculate(parseInt(monStats[1]), parseInt(monStats[2]), parseInt(monStats[3]), minIVs, minLvl, maxLvl, false, league, monName);
-          /*include cmp columns if checked*/
-          var keys = Object.keys(ranks);
-          if (cmp) {ranks = cmpCalcs(ranks.numRanks, ranks, keys);}
-          var maxStatProd = keys[0].split(".")[0];
-          
-          if (ranks.numRanks/1 >0) {
-            progress(monName, (pokeList[i].value.split(",")[0]).split("&")[0], Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1, cmp);
-            
-            /* add the row to the end of the table body */
-            tblBody.appendChild(row);
-          } else {
-            tooBigMons += monName+"(L"+minLvl+"+), ";
-          }
+        /* Skip all Megas if box is checked */
+        if (monName.includes("Mega_") && !mega) {
+          console.log("Skipping "+monName);
         } else {
-          tooSmallMons += monName+"("+maxCP+"), ";
+          var monStats = pokeList[i].value.split(',');
+          var maxCP = Math.max(10, Math.floor((parseInt(monStats[1]) + 15) * Math.sqrt(parseInt(monStats[2]) + 15) * Math.sqrt(parseInt(monStats[3]) + 15) * cpm[maxLvlCPM] * cpm[maxLvlCPM] / 10));
+  
+          /* Skip filter if user checks box for ALL results or Level 1 */
+          if ((all) || (maxLvl == 1) ||
+             /* Filter out too low of max CP values to increase calculation speed */
+             ((league == 500  && maxCP > 400)  ||
+              (league == 1500 && maxCP > 1300) ||
+              (league == 2500 && maxCP > 2300) ||
+              (maxCP > 2500))) {
+            var row = document.createElement("tr");
+  
+            /* Check for higher minIVs or minLvls for non-wild spawning mon */
+            const [minIVs, minLvl] = adjustFloors((pokeList[i].value.split(",")[0]).split("&")[0], monName, maxLvl);
+            /* Do the rank calculations for each mon */
+            var ranks = calculate(parseInt(monStats[1]), parseInt(monStats[2]), parseInt(monStats[3]), minIVs, minLvl, maxLvl, false, league, monName);
+            var keys = Object.keys(ranks);
+            var maxStatProd = keys[0].split(".")[0];
+            
+            if (ranks.numRanks/1 >0) {
+              progress(monName, (pokeList[i].value.split(",")[0]).split("&")[0], Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1);
+              
+              /* add the row to the end of the table body */
+              tblBody.appendChild(row);
+            } else {
+              tooBigMons += monName+"(L"+minLvl+"+), ";
+            }
+          } else {
+              tooSmallMons += monName+"("+maxCP+"), ";
+          }
         }
 
         /* Are we done, or keep calculating? */
@@ -304,7 +307,7 @@
       })();
     }
       
-    function progress(monName, dexNum, percent, feedback, elem, row, stats, perfect, statProd, numRanks, cmp) {
+    function progress(monName, dexNum, percent, feedback, elem, row, stats, perfect, statProd, numRanks) {
       feedback.innerHTML = "<p><i>Calculating "+monName+", please wait...</i></p>";
       
       /* Update progress bar */
@@ -323,13 +326,6 @@
       outCell(stats.IVs.S, row); /*Sta IV*/
       outCell(stats.IVs.star, row); /*Star Appraisal*/
       outCell(perfect+"%", row); /*Perfection*/
-      if (cmp) {
-        if (numRanks/1 < 100) { /*account for when there aren't 100 numRanks*/
-          outCell(Math.round(((stats.IVs.T100)/numRanks)*100)+"%", row); /*T100 CMP*/
-        } else {
-          outCell(stats.IVs.T100+"%", row); /*T100 CMP*/
-        }
-      }
       outCell(numOut(stats.battle.A,1), row); /*GL Atk Total*/
       outCell(numOut(stats.battle.D,1), row); /*GL Def Total*/
       outCell(stats.battle.S, row); /*GL HP*/
@@ -349,12 +345,12 @@
         /*set min IVs to 1 and min Level to 20*/
         return [1, 20];
       } else
-      if (mythNoTrade.includes(dexNum/1)) {
+      if (boxMyth.includes(dexNum/1)) {
         console.log("Detected Mythical mon:"+monName+" ("+dexNum+")");
         /*set min IVs to 10 and min Level to 15*/
         return [10, 15];
       } else
-      if (raidNoTrade.includes(dexNum/1)) {
+      if (raidMyth.includes(dexNum/1)) {
         console.log("Detected Raid no Trade mon:"+monName+" ("+dexNum+")");
         /*set min IVs to 10 and min Level to 20*/
         return [10, 20];
@@ -414,9 +410,9 @@
               document.getElementById('all').value = values[i].split("=")[1];
               validParams = true;
               break;
-            case "cmp":
-              if (values[i].split("=")[1] == "true") { document.getElementById('cmp').checked = true;}
-              else { document.getElementById('cmp').checked = false;}
+            case "mega":
+              if (values[i].split("=")[1] == "true") { document.getElementById('mega').checked = true;}
+              else { document.getElementById('mega').checked = false;}
               break;
             case "t": /* Enable performance timing output in console for debugging */
               perfTiming = values[i].split("=")[1];
@@ -440,38 +436,6 @@
         console.log("start: Execution took "+(checkURIt1-checkURIt0).toFixed(1)+"ms");}
         return false;
       }
-    }
-    
-    function cmpCalcs(numRanks, ranks, keys) {
-      if (perfTiming) {var cmpCalcsT0 = performance.now();}
-      /*console.log("cmpCalcs: received numRanks: "+numRanks+", ranks: "+JSON.stringify(ranks)+", keys:"+JSON.stringify(keys))*/
-      var print = false;
-
-      /*walk top (100) entries in ranks and compare to rank 1*/
-      for (var i=0; (i<100 && (keys[i].indexOf(".")>-1)); i++) {
-          for (var j=0; j<ranks[keys[i]].length; j++) {
-            if ((ranks[keys[i]][j].IVs.A/1 == 9) && (ranks[keys[i]][j].IVs.D/1 == 13) && (ranks[keys[i]][j].IVs.S/1 == 8)) {
-              print = true;
-            }
-            if (numOut(ranks[keys[i]][j].battle.A,1)/1 > numOut(ranks[keys[0]][0].battle.A,1)/1) {
-              ranks[keys[i]][j].IVs.T100=1;
-            } else if (numOut(ranks[keys[i]][j].battle.A,1)/1 < numOut(ranks[keys[0]][0].battle.A,1)/1) {
-              ranks[keys[i]][j].IVs.T100=0;
-            } else {
-              ranks[keys[i]][j].IVs.T100=0;
-            }
-            for (var k=1,iters=1; ((iters<100) && (iters<ranks.numRanks)); k++) {
-              for (var l=0; ((l<ranks[keys[k]].length) && (iters<100)); l++) {
-                if (numOut(ranks[keys[i]][j].battle.A,1)/1 > numOut(ranks[keys[k]][l].battle.A,1)/1) {ranks[keys[i]][j].IVs.T100+=1;}
-                iters = iters + 1;
-              }
-            }
-          if (print) {print = false;}
-          }
-      }
-      if (perfTiming) {var cmpCalcsT1 = performance.now();
-      console.log("cmpCalcs: Execution took "+(cmpCalcsT1-cmpCalcsT0).toFixed(1)+"ms");}
-      return ranks;
     }
     
     </script>

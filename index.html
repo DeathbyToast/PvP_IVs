@@ -199,10 +199,12 @@
       /* define Awesomeplete list https://leaverou.github.io/awesomplete/ */
       var input = document.getElementById("pokeList");
       var selected = undefined;
-      var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,486,488];
-      var raidOnly = [384,480,481,482,483,484,485,487,638,639,640];
-      var mythNoTrade = [151,251,385];
-      var raidNoTrade = [386,491,647];
+      
+      var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,486,488];
+      /*480,481,482 are wild-spawning legendaries and 808,809 are wild-spawning mythicals*/
+      var raidOnly = [483,484,485,487,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898];
+      var boxMyth = [151,251,385,489,490,492,493,494,647,648,719,720,721,801,802,807,893];
+      var raidMyth = [386,491,649];
       var lastLeague = undefined;
       var perfTiming = false; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
@@ -296,7 +298,7 @@
                   document.getElementById('floor').value = 1;
                 }
               } else {
-                if (mythNoTrade.includes(suggestion.value.split(",")[0]/1)) {
+                if (boxMyth.includes(suggestion.value.split(",")[0]/1)) {
                   console.log("Detected Mythical mon:"+selected);
                   /*set min IVs to 10 and min Level to 15*/
                   if (document.getElementById('minLvl').value/1 < 15) {
@@ -312,7 +314,7 @@
                     ivMod = true;
                   }
                 } else {
-                  if (raidNoTrade.includes(suggestion.value.split(",")[0]/1)) {
+                  if (raidMyth.includes(suggestion.value.split(",")[0]/1)) {
                     console.log("Detected Raid no Trade mon:"+selected);
                     /*set min IVs to 10 and min Level to 20*/
                     if (document.getElementById('minLvl').value/1 < 20) {
@@ -1038,7 +1040,7 @@
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
               
               if(!mon) {
-                if (maxLvl) { /* XL Candy costs */
+                if (maxLvl > 41) { /* XL Candy costs */
                   html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";
                 }
                 if (dust) { /* stardust powerup costs go here */
