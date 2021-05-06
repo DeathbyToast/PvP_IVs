@@ -212,7 +212,7 @@
       
       /*update the URL with search parameters*/
       var URL = window.location.href.split("?")[0];
-      uri = URL + "?cp="+league+"&max="+maxLvl+"&all="+all;
+      uri = URL + "?cp="+league+"&max="+maxLvl+"&mega="+mega+"&all="+all;
       uri = encodeURI(uri);
       var newTitle = "PvP IVs - League Rankings ("+leagueName+")";
       window.history.pushState(null, newTitle, uri);
