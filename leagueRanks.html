@@ -407,12 +407,14 @@
               validParams = true;
               break;
             case "all":
-              document.getElementById('all').value = values[i].split("=")[1];
+              if (values[i].split("=")[1] == "true") { document.getElementById('all').checked = true;}
+              else { document.getElementById('all').checked = false;}
               validParams = true;
               break;
             case "mega":
               if (values[i].split("=")[1] == "true") { document.getElementById('mega').checked = true;}
               else { document.getElementById('mega').checked = false;}
+              validParams = true;
               break;
             case "t": /* Enable performance timing output in console for debugging */
               perfTiming = values[i].split("=")[1];
