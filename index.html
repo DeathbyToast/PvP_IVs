@@ -184,6 +184,7 @@
           <td id="minusCell"><button class="circle minus" onclick="doTheRemoval()"></button></td>
         </tr>
       </table>
+      <textarea id="CustomGroupExport" hidden></textarea>
       
       <div id="feedbackBox"></div>
       <div style="overflow-x:auto;" id="outputBox"><i><br/>Please select a Pok&eacute;mon above to continue...</i></div>
@@ -214,6 +215,7 @@
       let dIV=[document.getElementById('dIV[0]').value];
       let sIV=[document.getElementById('sIV[0]').value];
       let rIV=[];
+      let lvl=[];
       let mA = 0, mD = 0, mHP = 0; /* min stat filter vars */
       
       /* Ensure we've successfully loaded a pokeList */
@@ -394,9 +396,11 @@
         /*console.log("monInfo set to:"+JSON.stringify(monInfo));*/
         var output = document.getElementById('outputBox');
         var chart = document.getElementById('chart_div');
-        output.innerHTML = ""; /*ensure we clear the prior output between runs*/
-        chart.innerHTML = ""; /*ensure we clear the prior output between runs*/
-        rIV = []; /* make sure we clear the prior output between runs */
+        /*ensure we clear the prior output between runs*/
+        output.innerHTML = "";
+        chart.innerHTML = "";
+        rIV = [];
+        lvl = [];
         var uri;
         var IVs;
         /*need to adjust for raid/reward only (L15 or L20)*/
@@ -408,6 +412,7 @@
         lastLeague = leagueName; /* Store League for next run */
         var limit = document.getElementById('limit').value;
         var dti = document.getElementById("dti").checked;
+        var cge = document.getElementById("cge").checked;
         var family = document.getElementById("family").checked;
         var cmp = document.getElementById("cmp").checked;
         var dust = false; /*document.getElementById("dust").checked;*/
@@ -465,12 +470,12 @@
         
         /*prepare max stat html output*/
         var URL = window.location.href.split("?")[0];
-        var maxAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
-        var maxDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
-        var maxHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
-        var minAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
-        var minDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
-        var minHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
+        var maxAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
+        var maxDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
+        var maxHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
+        var minAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
+        var minDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
+        var minHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
@@ -521,7 +526,7 @@
                       var evoMaxStatProd = evoKeys[0].split(".")[0];
                       /*create link for evo table entry*/
                       IVs = aIV[i] + "_" + dIV[i] + "_" + sIV[i];
-                      uri = URL + "?mon="+evoMon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
+                      uri = URL + "?mon="+evoMon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
                       /*console.log("About to pass IVs:"+aIV[i]+", "+dIV[i]+", "+sIV[i]+" to getMonRank");*/
                       var evoGMRhtml = getMonRank(evoNumRanks, evoRanks, evoKeys, shdw, cmp, evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evoMon, uri);
                       if (evoGMRhtml) {
@@ -657,13 +662,31 @@
           }
         }
         
+        /*show textbox with PvPoke Custom Group Export data*/
+        if (cge == true)
+        {
+          var cgeData = "";
+          for (i=0; i<aIV.length; i++) {
+            if (i==0) {
+              cgeData = selected+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
+              document.getElementById("CustomGroupExport").cols = cgeData.length+5;
+            } else {
+              var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
+              cgeData += newline+selected+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
+            }
+          }
+          document.getElementById("CustomGroupExport").style.display = "inline-block";
+          document.getElementById("CustomGroupExport").rows = aIV.length;
+          document.getElementById("CustomGroupExport").value = cgeData;
+        }
+        
         output.innerHTML = evoHtml + megaNote + evoFeedback + ranges + html + searchLink + "<br>" + trades;
         
         /*update the URL with search parameters*/
         /*URL = "mon=Gyarados&r=5&cp=2500&f=1&lvl=10&IVs=0_15_15";*/
         /*pokeList limit league floor minLvl maxLvl aIV dIV sIV*/
         /*mon      r     cp     f     min    max    IVs*/
-        uri = URL + "?mon="+selected+"&r="+printLimit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
+        uri = URL + "?mon="+selected+"&r="+printLimit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
         if (aIV[0] && dIV[0] && sIV[0]) {
           for (i=0; i<aIV.length; i++) {
             if (i > 0) {IVs += "-";} else {IVs = "";}
@@ -744,6 +767,10 @@
               case "dti":
                 if (values[i].split("=")[1] == "true") {document.getElementById('dti').checked = true;}
                 else { document.getElementById('dti').checked = false;}
+                break;
+              case "cge":
+                if (values[i].split("=")[1] == "true") {document.getElementById('cge').checked = true;}
+                else { document.getElementById('cge').checked = false;}
                 break;
               case "fam":
                 if (values[i].split("=")[1] == "true") {document.getElementById('family').checked = true;}
@@ -1034,6 +1061,7 @@
               }
               html+="<td>"+actualRank+"</td>"; /*Rank*/
               html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
+              lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
               html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
               if (!mon) { /*skip if this is an evoTable print*/
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
@@ -1374,9 +1402,10 @@
         <option value="50">50</option>
         <option value="51">51: Best Buddy</option>
       </select></label><br />
-      <label>Display Trade Improvement %:<input id="dti" type="checkbox" oninput="start()"></label><br />
-      <label>Display Family Evolutions:<input id="family" type="checkbox" oninput="start()"></label><br />
       <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="start()"></label><br />
+      <label>Export PvPoke Custom Group:<input id="cge" type="checkbox" oninput="start()"></label><br />
+      <label>Display Family Evolutions:<input id="family" type="checkbox" oninput="start()"></label><br />
+      <label>Display Trade Improvement %:<input id="dti" type="checkbox" oninput="start()"></label><br />
       <br />
       <div style="overflow-x:auto;">
         <p style="color:silver;font-size:0.6em">This site uses Google Analytics and the Google
