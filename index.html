@@ -215,7 +215,6 @@
       let sIV=[document.getElementById('sIV[0]').value];
       let rIV=[];
       let mA = 0, mD = 0, mHP = 0; /* min stat filter vars */
-      let i=0;
       
       /* Ensure we've successfully loaded a pokeList */
       if (!(pokeList.length))
@@ -230,7 +229,7 @@
             this.input.value = suggestion.label;
             if (selected) {
               /* Clear all existing IV Input Rows */
-              for (i=0; i<aIV.length; i++) {
+              for (var i=0; i<aIV.length; i++) {
                 /* voodoo to actually remove all the rows one by one */
                 var tr = document.getElementById('aIV['+i+']').parentNode;
                 tr.parentNode.parentNode.removeChild(tr.parentNode);
@@ -361,6 +360,7 @@
         }
         
         var mon = '';
+        let i = 0;
         /*need to ensure we have the right mon selected*/
         if (awesomplete.suggestions !== undefined) {
           for (i=0; i<awesomplete.suggestions.length; i++)
@@ -439,7 +439,7 @@
         /*we have at least one rank to output, let's print!*/
         var evoHtml = "";
         var evoFeedback = "";
-        var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th><th>IVs</th><th>Perfect</th>";
+        var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def</th><th>Stam</th><th>Perfect</th>";
         
         /*include XL candy costs if Max Level > 41*/
         if (maxLvl > 41) {
@@ -461,7 +461,7 @@
           ranks = cmpCalcs(numRanks, ranks, keys);
         }
         
-        html+="<th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
+        html+="<th>PvP Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
         
         /*prepare max stat html output*/
         var URL = window.location.href.split("?")[0];
@@ -587,7 +587,9 @@
                 html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
                 html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
                 html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
-                html+="<td>"+ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S+"</td>"; /*IVs*/
+                html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
+                html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
+                html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
                 html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"+"</td>"; /*Perfection*/
                 if (maxLvl > 41) { /* XL Candy costs */
                   html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";
@@ -717,7 +719,7 @@
           /*console.log("Read URL as: "+URL);*/
           var values = URL.split("&");
           /*console.log("Values array as: "+JSON.stringify(values));*/
-          for (i=0; i<values.length; i++)
+          for (var i=0; i<values.length; i++)
           {
             switch (values[i].split("=")[0]) {
               case "mon":
@@ -804,7 +806,7 @@
         var print = false;
 
         /*walk all (4096) entries in ranks and compare*/
-        for (i=0; (i<numRanks && (keys[i].indexOf(".")>-1)); i++) {
+        for (var i=0; (i<numRanks && (keys[i].indexOf(".")>-1)); i++) {
             for (var j=0; j<ranks[keys[i]].length; j++) {
               if ((ranks[keys[i]][j].IVs.A/1 == 9) && (ranks[keys[i]][j].IVs.D/1 == 13) && (ranks[keys[i]][j].IVs.S/1 == 8)) {
                 print = true;
@@ -846,6 +848,7 @@
         /*console.log("tradePcnts: ranks:"+JSON.stringify(ranks));*/
 
         var totalMons = 0;
+        let i=0;
         for (i=0; (i<numRanks && (keys[i].indexOf(".")>-1)); i++) {
           /*console.log("tPctns: attempting to check i="+i+" and keys[i]:"+keys[i]);*/
             for (var j=0; j<ranks[keys[i]].length; j++) {
@@ -1006,7 +1009,7 @@
         var html = "";
         var actualRank = 1;
 
-        for (i=0; (i<numRanks && ranks[keys[i]].length); i++) {
+        for (var i=0; (i<numRanks && ranks[keys[i]].length); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             if ((aIV/1 == ranks[keys[i]][j].IVs.A/1) && (dIV/1 == ranks[keys[i]][j].IVs.D/1) && (sIV/1 == ranks[keys[i]][j].IVs.S/1)) {
               /*control highlight of User Data row based on rank*/
@@ -1033,7 +1036,9 @@
               html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
               html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
               if (!mon) { /*skip if this is an evoTable print*/
-                html+="<td>"+ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S+"</td>"; /*IVs*/
+                html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
+                html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
+                html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
                 rIV.push(actualRank); /*Save rank for trash string links*/
               }
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
@@ -1182,7 +1187,7 @@
         console.log("event.target.checked:"+JSON.stringify(event.target.checked));
         var allCB = document.getElementsByClassName('shadowCB');
         var boxChecked = event.target.checked;
-        for(i=0; i<allCB.length; i++){
+        for(var i=0; i<allCB.length; i++){
             allCB[i].checked=boxChecked;
         }
         /* Reset mA and mD to fix over/undershooting bug GitHub#7*/
@@ -1227,7 +1232,7 @@
         console.log("aIV before removal:"+JSON.stringify(aIV));
         console.log("dIV before removal:"+JSON.stringify(dIV));
         console.log("sIV before removal:"+JSON.stringify(sIV));*/
-        for (i=0; i<aIV.length; i++)
+        for (var i=0; i<aIV.length; i++)
         {
           if (i>=rowNum) {
             /*console.log("Fixing offset for i:"+i);*/
