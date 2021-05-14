@@ -198,14 +198,14 @@
       <script>
       /* define Awesomeplete list https://leaverou.github.io/awesomplete/ */
       var input = document.getElementById("pokeList");
-      var selected = undefined;
+      var selected;
       
       var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,486,488];
       /*480,481,482 are wild-spawning legendaries and 808,809 are wild-spawning mythicals*/
       var raidOnly = [483,484,485,487,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898];
       var boxMyth = [151,251,385,489,490,492,493,494,647,648,719,720,721,801,802,807,893];
       var raidMyth = [386,491,649];
-      var lastLeague = undefined;
+      var lastLeague;
       var perfTiming = false; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
       var mxlMod = false; /*track if max Lvl was adjusted*/
@@ -215,6 +215,7 @@
       let sIV=[document.getElementById('sIV[0]').value];
       let rIV=[];
       let mA = 0, mD = 0, mHP = 0; /* min stat filter vars */
+      let i=0;
       
       /* Ensure we've successfully loaded a pokeList */
       if (!(pokeList.length))
@@ -229,7 +230,7 @@
             this.input.value = suggestion.label;
             if (selected) {
               /* Clear all existing IV Input Rows */
-              for (var i=0; i<aIV.length; i++) {
+              for (i=0; i<aIV.length; i++) {
                 /* voodoo to actually remove all the rows one by one */
                 var tr = document.getElementById('aIV['+i+']').parentNode;
                 tr.parentNode.parentNode.removeChild(tr.parentNode);
@@ -362,7 +363,7 @@
         var mon = '';
         /*need to ensure we have the right mon selected*/
         if (awesomplete.suggestions !== undefined) {
-          for (var i=0; i<awesomplete.suggestions.length; i++)
+          for (i=0; i<awesomplete.suggestions.length; i++)
           {
             if (selected == awesomplete.suggestions[i].label)
             {
@@ -373,7 +374,7 @@
         } else {
           /*need to ensure we have the right mon selected*/
           var listLen = awesomplete.options.list.length;
-          for (var i=0; i<listLen; i++)
+          for (i=0; i<listLen; i++)
           {
             if (selected == awesomplete.options.list[i].label)
             {
@@ -407,6 +408,7 @@
         lastLeague = leagueName; /* Store League for next run */
         var limit = document.getElementById('limit').value;
         var dti = document.getElementById("dti").checked;
+        var family = document.getElementById("family").checked;
         var cmp = document.getElementById("cmp").checked;
         var dust = false; /*document.getElementById("dust").checked;*/
         var shdw = document.getElementById('shdw[0]').checked;
@@ -426,7 +428,7 @@
         }
         var maxStatProd = keys[0].split(".")[0];
         
-        for (var i=0; i<aIV.length; i++)
+        for (i=0; i<aIV.length; i++)
         { /* Ensure we have current IVs for all input rows */
           aIV[i] = document.getElementById("aIV["+i+"]").value;
           dIV[i] = document.getElementById("dIV["+i+"]").value;
@@ -463,18 +465,18 @@
         
         /*prepare max stat html output*/
         var URL = window.location.href.split("?")[0];
-        var maxAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
-        var maxDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
-        var maxHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
-        var minAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
-        var minDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
-        var minHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
+        var maxAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
+        var maxDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
+        var maxHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
+        var minAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
+        var minDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
+        var minHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
         document.getElementById('feedbackBox').innerHTML = "";
 
-        for (var i=0; i<aIV.length; i++) {
+        for (i=0; i<aIV.length; i++) {
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
               /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
@@ -483,7 +485,7 @@
                 console.log("i:"+i+" Detected too high CP after getMonRank");
                 document.getElementById('feedbackBox').innerHTML += "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") & min level ("+minLvl+") is too big for "+leagueName+"<br>Please check Settings: Min Level and try again</i></p><br>";
               } else {html += gmRhtml;}
-              if (evoLen) { /* valid set of IVs! Let's check evos */
+              if (evoLen && family == true) { /* valid set of IVs! Let's check evos */
                 /*correct for 0 index so pokeList.length is end of pokeList.js (instead of one past end)*/
                 var pokeListLen = pokeList.length-1;
                 /*scale pokeList to actual dexEnd*/
@@ -519,7 +521,7 @@
                       var evoMaxStatProd = evoKeys[0].split(".")[0];
                       /*create link for evo table entry*/
                       IVs = aIV[i] + "_" + dIV[i] + "_" + sIV[i];
-                      uri = URL + "?mon="+evoMon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
+                      uri = URL + "?mon="+evoMon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
                       /*console.log("About to pass IVs:"+aIV[i]+", "+dIV[i]+", "+sIV[i]+" to getMonRank");*/
                       var evoGMRhtml = getMonRank(evoNumRanks, evoRanks, evoKeys, shdw, cmp, evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evoMon, uri);
                       if (evoGMRhtml) {
@@ -575,7 +577,7 @@
         /*temporarily remove shadow buffs/debuffs for filtering*/
         if (shdw) {mA=mA/1.2;mD=mD/0.83333331;}
         
-        for (var i=0; ((actualRank/1<=numRanks/1) && (actualRank/1 <= limit/1)); i++) {
+        for (i=0; ((actualRank/1<=numRanks/1) && (actualRank/1 <= limit/1)); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             
             if ((mA/1 <= numOut(ranks[keys[i]][j].battle.A,1)) && (mD/1 <= numOut(ranks[keys[i]][j].battle.D,1)) && (mHP/1 <= ranks[keys[i]][j].battle.S)) {
@@ -659,9 +661,9 @@
         /*URL = "mon=Gyarados&r=5&cp=2500&f=1&lvl=10&IVs=0_15_15";*/
         /*pokeList limit league floor minLvl maxLvl aIV dIV sIV*/
         /*mon      r     cp     f     min    max    IVs*/
-        uri = URL + "?mon="+selected+"&r="+printLimit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
+        uri = URL + "?mon="+selected+"&r="+printLimit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
         if (aIV[0] && dIV[0] && sIV[0]) {
-          for (var i=0; i<aIV.length; i++) {
+          for (i=0; i<aIV.length; i++) {
             if (i > 0) {IVs += "-";} else {IVs = "";}
             IVs += aIV[i] + "_" + dIV[i] + "_" + sIV[i];
           }
@@ -705,7 +707,7 @@
         if (perfTiming) {var checkURIt0 = performance.now();}
         
         var URL = window.location.href.split("?")[1];
-        /*URL = "mon=Whiscash&r=10&cp=1500&f=0&min=1&max=40&dti=false&cmp=false&shdw=false&IVs=3_15_15-5_15_15-7_15_15&mA=0&mD=0&mHP=0*/
+        /*URL = "mon=Whiscash&r=10&cp=1500&f=0&min=1&max=40&dti=false&fam=false&cmp=false&shdw=false&IVs=3_15_15-5_15_15-7_15_15&mA=0&mD=0&mHP=0*/
         /*Need:*/
         /*pokeList limit aIV dIV sIV league floor minLvl maxLvl*/
         /*mon      r     IVs         cp     f     min    max*/
@@ -715,7 +717,7 @@
           /*console.log("Read URL as: "+URL);*/
           var values = URL.split("&");
           /*console.log("Values array as: "+JSON.stringify(values));*/
-          for (var i=0; i<values.length; i++)
+          for (i=0; i<values.length; i++)
           {
             switch (values[i].split("=")[0]) {
               case "mon":
@@ -740,6 +742,10 @@
               case "dti":
                 if (values[i].split("=")[1] == "true") {document.getElementById('dti').checked = true;}
                 else { document.getElementById('dti').checked = false;}
+                break;
+              case "fam":
+                if (values[i].split("=")[1] == "true") {document.getElementById('family').checked = true;}
+                else { document.getElementById('family').checked = false;}
                 break;
               case "cmp":
                 if (values[i].split("=")[1] == "true") { document.getElementById('cmp').checked = true;}
@@ -798,7 +804,7 @@
         var print = false;
 
         /*walk all (4096) entries in ranks and compare*/
-        for (var i=0; (i<numRanks && (keys[i].indexOf(".")>-1)); i++) {
+        for (i=0; (i<numRanks && (keys[i].indexOf(".")>-1)); i++) {
             for (var j=0; j<ranks[keys[i]].length; j++) {
               if ((ranks[keys[i]][j].IVs.A/1 == 9) && (ranks[keys[i]][j].IVs.D/1 == 13) && (ranks[keys[i]][j].IVs.S/1 == 8)) {
                 print = true;
@@ -840,7 +846,7 @@
         /*console.log("tradePcnts: ranks:"+JSON.stringify(ranks));*/
 
         var totalMons = 0;
-        for (var i=0; (i<numRanks && (keys[i].indexOf(".")>-1)); i++) {
+        for (i=0; (i<numRanks && (keys[i].indexOf(".")>-1)); i++) {
           /*console.log("tPctns: attempting to check i="+i+" and keys[i]:"+keys[i]);*/
             for (var j=0; j<ranks[keys[i]].length; j++) {
               /*1IV=lGo,hGo + 2IV=lGr,hGr + 3IV=lUf,hUf + 5IV=lBf,hBf + 12V=lLf,hLf*/
@@ -1000,7 +1006,7 @@
         var html = "";
         var actualRank = 1;
 
-        for (var i=0; (i<numRanks && ranks[keys[i]].length); i++) {
+        for (i=0; (i<numRanks && ranks[keys[i]].length); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             if ((aIV/1 == ranks[keys[i]][j].IVs.A/1) && (dIV/1 == ranks[keys[i]][j].IVs.D/1) && (sIV/1 == ranks[keys[i]][j].IVs.S/1)) {
               /*control highlight of User Data row based on rank*/
@@ -1116,7 +1122,6 @@
             return 10;
           default:
             return 0;
-            break;
         }
       }
       
@@ -1177,7 +1182,7 @@
         console.log("event.target.checked:"+JSON.stringify(event.target.checked));
         var allCB = document.getElementsByClassName('shadowCB');
         var boxChecked = event.target.checked;
-        for(var i=0; i<allCB.length; i++){
+        for(i=0; i<allCB.length; i++){
             allCB[i].checked=boxChecked;
         }
         /* Reset mA and mD to fix over/undershooting bug GitHub#7*/
@@ -1222,7 +1227,7 @@
         console.log("aIV before removal:"+JSON.stringify(aIV));
         console.log("dIV before removal:"+JSON.stringify(dIV));
         console.log("sIV before removal:"+JSON.stringify(sIV));*/
-        for (var i=0; i<aIV.length; i++)
+        for (i=0; i<aIV.length; i++)
         {
           if (i>=rowNum) {
             /*console.log("Fixing offset for i:"+i);*/
@@ -1365,6 +1370,7 @@
         <option value="51">51: Best Buddy</option>
       </select></label><br />
       <label>Display Trade Improvement %:<input id="dti" type="checkbox" oninput="start()"></label><br />
+      <label>Display Family Evolutions:<input id="family" type="checkbox" oninput="start()"></label><br />
       <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="start()"></label><br />
       <br />
       <div style="overflow-x:auto;">
