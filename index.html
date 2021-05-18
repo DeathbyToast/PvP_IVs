@@ -665,19 +665,25 @@
         /*show textbox with PvPoke Custom Group Export data*/
         if (cge == true)
         {
+          var name = selected;
+          if (shdw) {
+            name = selected + "_shadow";
+          }
           var cgeData = "";
           for (i=0; i<aIV.length; i++) {
             if (i==0) {
-              cgeData = selected+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
+              cgeData = name+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
               document.getElementById("CustomGroupExport").cols = cgeData.length+5;
             } else {
               var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
-              cgeData += newline+selected+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
+              cgeData += newline+name+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
             }
           }
           document.getElementById("CustomGroupExport").style.display = "inline-block";
           document.getElementById("CustomGroupExport").rows = aIV.length;
           document.getElementById("CustomGroupExport").value = cgeData;
+        } else if (document.getElementById("CustomGroupExport").style.display == "inline-block") { /*hide textbox if user has unchecked the option*/
+          document.getElementById("CustomGroupExport").style.display = "none";
         }
         
         output.innerHTML = evoHtml + megaNote + evoFeedback + ranges + html + searchLink + "<br>" + trades;
