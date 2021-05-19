@@ -692,7 +692,7 @@
         /*URL = "mon=Gyarados&r=5&cp=2500&f=1&lvl=10&IVs=0_15_15";*/
         /*pokeList limit league floor minLvl maxLvl aIV dIV sIV*/
         /*mon      r     cp     f     min    max    IVs*/
-        uri = URL + "?mon="+selected+"&r="+printLimit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
+        uri = URL + "?mon="+selected+"&r="+printLimit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
         if (aIV[0] && dIV[0] && sIV[0]) {
           for (i=0; i<aIV.length; i++) {
             if (i > 0) {IVs += "-";} else {IVs = "";}
@@ -738,7 +738,7 @@
         if (perfTiming) {var checkURIt0 = performance.now();}
         
         var URL = window.location.href.split("?")[1];
-        /*URL = "mon=Whiscash&r=10&cp=1500&f=0&min=1&max=40&dti=false&fam=false&cmp=false&shdw=false&IVs=3_15_15-5_15_15-7_15_15&mA=0&mD=0&mHP=0*/
+        /*URL = "mon=Honchkrow&r=10&cp=1500&f=0&min=1&max=51&cge=true&mA=0&mD=0&mHP=0&IVs=2_14_12-6_15_15-15_15_15"*/
         /*Need:*/
         /*pokeList limit aIV dIV sIV league floor minLvl maxLvl*/
         /*mon      r     IVs         cp     f     min    max*/
@@ -1067,13 +1067,13 @@
               }
               html+="<td>"+actualRank+"</td>"; /*Rank*/
               html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
-              lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
               html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
               if (!mon) { /*skip if this is an evoTable print*/
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
                 rIV.push(actualRank); /*Save rank for trash string links*/
+                lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
               }
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
               
