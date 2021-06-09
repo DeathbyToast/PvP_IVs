@@ -234,6 +234,8 @@
               } else { document.getElementById('base').checked = false; }
               if (options[5] == 1) { document.getElementById('baby').checked = true;
               } else { document.getElementById('baby').checked = false; }
+              if (options[5] == 1) { document.getElementById('allZero').checked = true;
+              } else { document.getElementById('allZero').checked = false; }
               break;
               
             case "l":
@@ -306,6 +308,8 @@
         document.getElementById("dexSkips").style.display = "inline-block";
         document.getElementById("dexSkipsLbl").style.display = "inline-block";
         findAllZeros(cpLimit, dexSkips);
+        /* Ensure we update the URL before returning */
+        updateURI(selected,document.getElementById('league').value,document.getElementById('lang').value.split(',')[0],);
         return;
       } else {
         document.getElementById("cpLimit").style.display = "none";
@@ -532,13 +536,26 @@
         return false;
       }
       
+      /* output the user's request! */
+      outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, output, lang, maxLvl);
+      
+      /* update the URL with search parameters */
+      updateURI(selected,league,rStr,binary,document.getElementById('lang').value.split(',')[0], evoVals.length);
+      
+      if (perfTiming) {var startT1 = performance.now();
+      console.log("start: Execution took "+(startT1-startT0).toFixed(1)+"ms");}
+      return true;
+    }
+    
+    function encodeSettings(evoLen)
+    {
       /* build binary encoding of settings */
-      var binary = "";
+      var binary = "", i;
       var rStr = "", tempStr = [];
   
-      for (i=1; ((i<10) && (i<evoVals.length+2)); i++) {
+      for (i=1; ((i<10) && (i<evoLen+2)); i++) {
         if ((getComputedStyle(document.getElementById("evoLimits["+i+"]"), null).display == "inline-block") && (document.getElementById('evoCB['+i+']').checked)) {
-          if (league == "All") {tempStr = [];
+          if (document.getElementById('league').value == "All") {tempStr = [];
             if (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("GLlimit["+i+"]").value/1);}
             if (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("ULlimit["+i+"]").value/1);}
             if (getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("MLlimit["+i+"]").value/1);}
@@ -549,8 +566,8 @@
               }
             } else {rStr += "_f";}
           } else {
-            if ((league == "1500") && (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("GLlimit["+i+"]").value/1;}
-            if ((league == "2500") && (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("ULlimit["+i+"]").value/1;}
+            if ((document.getElementById('league').value == "1500") && (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("GLlimit["+i+"]").value/1;}
+            if ((document.getElementById('league').value == "2500") && (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("ULlimit["+i+"]").value/1;}
             if ((document.getElementById('league').value === false) && (getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("MLlimit["+i+"]").value/1;}
           }
         } else {
@@ -559,25 +576,28 @@
         if ((i==1) && (rStr.charAt(0)) == "_") {rStr = rStr.substring(1);} /* remove leading "_" */
       }
   
-      if (trash) { binary = "1";} else { binary = "0";}
-      if (onlyZero) { binary += "1";} else { binary += "0";}
-      if (trashHundo) { binary += "1";} else { binary += "0";}
-      if (trashZero) { binary += "1";} else { binary += "0";}
+      if (document.getElementById('trash').checked) { binary = "1";} else { binary = "0";}
+      if (document.getElementById('onlyZero').checked) { binary += "1";} else { binary += "0";}
+      if (document.getElementById('trashHundo').checked) { binary += "1";} else { binary += "0";}
+      if (document.getElementById('trashZero').checked) { binary += "1";} else { binary += "0";}
       if (document.getElementById('base').checked) { binary += "1";} else { binary += "0";}
       if (document.getElementById('baby').checked) { binary += "1";} else { binary += "0";}
+      if (document.getElementById('allZero').checked) { binary += "1";} else { binary += "0";}
       
-      /* output the user's request! */
-      outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, output, lang, maxLvl);
+      return [binary,rStr];
+    }
+    
+    function updateURI(selected,league,lang,evoLen)
+    {
+      /* build binary encoding of settings for URL output */
+      const [binary, rStr] = encodeSettings(evoLen);
       
       /* update the URL with search parameters */
       var uri = window.location.href.split("?")[0];
-      uri = encodeURI(uri + "?mon="+selected+"&cp="+league+"&r="+rStr+"&o="+binary+"&l="+document.getElementById('lang').value.split(',')[0]);
+      uri = encodeURI(uri + "?mon="+selected+"&cp="+league+"&r="+rStr+"&o="+binary+"&l="+lang);
       var newTitle = "PvP IVs - Search String " + "Rank " + rStr + " " + selected + " ("+league+")";
       window.history.pushState(null, newTitle, uri);
-      
-      if (perfTiming) {var startT1 = performance.now();
-      console.log("start: Execution took "+(startT1-startT0).toFixed(1)+"ms");}
-      return true;
+      return;
     }
     
     function findAllZeros(cpLimit, dexSkips) {
