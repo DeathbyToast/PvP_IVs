@@ -1,4 +1,4 @@
-varpokeList=[
+var pokeList=[
   {
     'label': 'Bulbasaur',
     'value': '1,118,111,128,2,3&!mega,3&mega'
@@ -409,15 +409,23 @@ varpokeList=[
   },
   {
     'label': 'Slowpoke',
-    'value': '79,109,98,207,80&mega,80&!mega,199'
+    'value': '79&!galar,109,98,207,80&mega,80&!mega&!galar,199&!galar'
+  },
+  {
+    'label': 'Slowpoke_Galarian',
+    'value': '79&galar,109,98,207,80&!mega&galar,199&galar'
   },
   {
     'label': 'Slowbro',
-    'value': '80&!mega,177,180,216,79,80&mega,199'
+    'value': '80&!mega&!galar,177,180,216,79&!galar,80&mega,199&!galar'
   },
   {
-    'label': 'Mega_Slowbro_SPECULATIVE',
-    'value': '80&mega,224,259,216,79,80&!mega,199'
+    'label': 'Slowbro_Galarian',
+    'value': '80&!mega&galar,182,156,216,79&galar,199&galar'
+  },
+  {
+    'label': 'Mega_Slowbro',
+    'value': '80&mega,224,259,216,79&!galar,80&!mega&!galar'
   },
   {
     'label': 'Magnemite',
@@ -957,7 +965,11 @@ varpokeList=[
   },
   {
     'label': 'Slowking',
-    'value': '199,177,180,216,79,80&!mega,80&mega'
+    'value': '199&!galar,177,180,216,79&!galar,80&!mega&!galar'
+  },
+  {
+    'label': 'Slowking_Galarian',
+    'value': '199&galar,190,180,216,79&galar,80&!mega&galar'
   },
   {
     'label': 'Misdreavus',
