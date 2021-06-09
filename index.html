@@ -576,7 +576,7 @@
         /*console.log("Full output:"+JSON.stringify(ranks, null, 2));*/
         
         /* Initialize min stat filters if blank (first run only)*/
-        if ((mA+mD+mHP)/1 == 0) { console.log("Noticed mA,mD,or mHP are 0, initializing...");
+        if ((mA+mD+mHP)/1 == 0) { /*console.log("Noticed mA,mD,or mHP are 0, initializing...");*/
           mA = numOut(minAtk,1);mD = numOut(minDef,1);mHP = ranks.minHP.value;
         } else {
           /* If there are existing values, ensure we remove the shadow buffs/debuffs before filtering */
@@ -638,9 +638,7 @@
         /*apply shadow buffs/debuffs post-filtering for correct shadow UI elements*/
         if (shdw) {
           mA=mA*1.2;minAtk=minAtk*1.2;maxAtk=maxAtk*1.2;
-          console.log("mD before: "+mD);
           mD=mD*0.83333331;minDef=minDef*0.83333331;maxDef=maxDef*0.83333331;
-          console.log("mD after: "+mD);
         }
         html = "<br><br>Top "+printLimit+" "+leagueName+" PvP "+selected+" of "+numRanks+":"+html;
 
@@ -669,8 +667,12 @@
         if (cge == true)
         {
           var name = selected;
+          /* Game Master uses Alola, but PvPoke uses Alolan, need to fix for valid data export */
+          if (name.includes("_Alola")) {
+            name = name + "n";
+          }
           if (shdw) {
-            name = selected + "_shadow";
+            name = name + "_shadow";
           }
           var cgeData = "";
           for (i=0; i<aIV.length; i++) {
