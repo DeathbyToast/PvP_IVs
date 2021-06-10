@@ -256,8 +256,18 @@
             case "t": /* Enable performance timing output in console for debugging */
               perfTiming = values[i].split("=")[1];
               break;
+            
+            case "skips":
+              document.getElementById('dexSkips').value = values[i].split("=")[1];
+              break;
           }
         }
+        
+        /* Convert CP Limit field for All Zero mode */
+        if (document.getElementById('allZero').checked) {
+          document.getElementById('cpLimit').value = document.getElementById('league').value;
+        }
+        
         if (perfTiming) {var checkURIT1 = performance.now();
         console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
         start();
@@ -591,6 +601,13 @@
     {
       /* build binary encoding of settings for URL output */
       const [binary, rStr] = encodeSettings(evoLen);
+      
+      if (document.getElementById('allZero').checked) {
+        /* Override CP Limit for allZero mode */
+        league = document.getElementById('cpLimit').value;
+        /* Piggyback dex skips onto lang field */
+        lang = lang + "&skips="+document.getElementById('dexSkips').value;
+      }
       
       /* update the URL with search parameters */
       var uri = window.location.href.split("?")[0];
