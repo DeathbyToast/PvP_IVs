@@ -70,6 +70,7 @@
     <br />
     <input id="pokeList" onfocus="this.value=''" placeholder="Final Mon"/>
     <label>League:<select id="league" oninput="start()">
+      <option value="500">Little Leagues</option>
       <option value="1500" selected>Great League</option>
 	  	<option value="2500">Ultra League</option>
   		<option value="false">Master League</option>
@@ -191,6 +192,12 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";
                       document.getElementById('ULlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: inline-block;";
                       document.getElementById('MLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: inline-block;";
+                      break;
+                    case "500":
+                      document.getElementById('GLlimit['+(j+1)+']').value = limits[0];
+                      document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";
+                      document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";
                       break;
                     case "1500":
                       document.getElementById('GLlimit['+(j+1)+']').value = limits[0];
@@ -469,12 +476,13 @@
   
         /* If base could also be an evo, add duplicate entry */
         /* Example test cases: Rhyhorn, Electabuzz */
-        if (((evoVals[0][5] > 1350) && ((league == "1500") || (league ==  "All"))) ||
+        if (((evoVals[0][5] > 400) && (league == "500")) ||
+            ((evoVals[0][5] > 1350) && ((league == "1500") || (league ==  "All"))) ||
             ((evoVals[0][5] > 2250) && ((league == "2500") || (league ==  "All"))) ||
             ((evoVals[0][5] > 2500) && ((league =="false") || (league ==  "All")))) {
-          /*console.log("Detected base ("+evoVals[0][4]+") that could be evo, duplicating...");*/
+          console.log("Detected base ("+evoVals[0][4]+") that could be evo, duplicating...");
           evoVals.push([...evoVals[0]]); /* Don't just copy pointer, copy values! */
-          /*console.log("evoVals after duplication: "+JSON.stringify(evoVals));*/
+          console.log("evoVals after duplication: "+JSON.stringify(evoVals));
         }
       } else {
         /* Otherwise reset to default hidden status, default text */
@@ -524,22 +532,22 @@
           document.getElementById('evoName['+i+']').innerHTML = evoVals[i][4]+" ("+evoVals[i][5]+")";
           document.getElementById('evoName['+i+']').style="display: inline-block;";
           document.getElementById('evoLimits['+i+']').style="display: inline-block;";/*style="display: none;";*/
-          document.getElementById('GLlimitDiv['+i+']').style.display = ((league == "All") || (league == "1500")) ? "inline-block" : "none";
+          document.getElementById('GLlimitDiv['+i+']').style.display = ((league == "All") || (league == "500") || (league == "1500")) ? "inline-block" : "none";
           document.getElementById('ULlimitDiv['+i+']').style.display = ((league == "All") || (league == "2500")) ? "inline-block" : "none";
           document.getElementById('MLlimitDiv['+i+']').style.display = ((league == "All") || (league === "false")) ? "inline-block" : "none";
           /*console.log("Added "+evoVals[i][4]+" to list, un-hid evoLimits["+i+"]");*/
         }
     
-        evoVals[i][6] = ((league == "All") || (league == "1500")) ? document.getElementById('GLlimit['+i+']').value/1:0*1;
+        evoVals[i][6] = ((league == "All") || (league == "1500") || (league == "500")) ? document.getElementById('GLlimit['+i+']').value/1:0*1;
         evoVals[i][7] = ((evoVals[i][5] > 1500) && ((league == "All") || (league == "2500"))) ? document.getElementById('ULlimit['+i+']').value/1:0*1;
         /* Set Master League limits if this is the selected mon, or if CP>2500 AND the league is either All or Master League */
         evoVals[i][8] = (((evoVals[i][4] == value[0]) || (evoVals[i][5] > 2500)) && ((league == "All") || (league === "false"))) ? document.getElementById('MLlimit['+i+']').value/1:0*1;
       }
-      /*console.log("Finished building evoVals[]: "+JSON.stringify(evoVals));*/
+      console.log("Finished building evoVals[]: "+JSON.stringify(evoVals));
       
       /* Ensure that we have at least one evolution checked (evoCB) https://stackoverflow.com/a/22938796 */
-      const evoCBs = [...document.getElementsByClassName("evoCBs")];
-      if (evoCBs.filter(input => input.checked).length === 0) {
+      const evoCBs = [...document.getElementsByClassName("evoCBs")]; /* add override to build base mon search strings for <500CP Leagues */
+      if ((evoCBs.filter(input => input.checked).length === 0) && (document.getElementById("base").checked == false)) {
         console.log("ERROR: No evolutions selected, exiting...");
         document.getElementById('errorBox').innerHTML = "<p>ERROR: No Evolution(s) checked to output! Please check at least one Evolution box above and try again.</p>";
         document.getElementById('output').value = "";
@@ -550,7 +558,7 @@
       outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, output, lang, maxLvl);
       
       /* update the URL with search parameters */
-      updateURI(selected,league,rStr,binary,document.getElementById('lang').value.split(',')[0], evoVals.length);
+      updateURI(selected,league,document.getElementById('lang').value.split(',')[0], evoVals.length);
       
       if (perfTiming) {var startT1 = performance.now();
       console.log("start: Execution took "+(startT1-startT0).toFixed(1)+"ms");}
@@ -576,7 +584,7 @@
               }
             } else {rStr += "_f";}
           } else {
-            if ((document.getElementById('league').value == "1500") && (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("GLlimit["+i+"]").value/1;}
+            if (((document.getElementById('league').value == "1500") || (document.getElementById('league').value == "500")) && (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("GLlimit["+i+"]").value/1;}
             if ((document.getElementById('league').value == "2500") && (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("ULlimit["+i+"]").value/1;}
             if ((document.getElementById('league').value === false) && (getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("MLlimit["+i+"]").value/1;}
           }
@@ -741,7 +749,7 @@
               leagueLim = evoVals[i][7]/1;
               break;
             default:
-            leagueLim = evoVals[i][8]/1;
+              leagueLim = evoVals[i][8]/1;
           }
         }
         else { /* league == "All" */
@@ -755,7 +763,6 @@
               if (!trashHundo) {message += "perfect IV (15/15/15) and ";}
               if (!trashZero) {message += "zero IV (0/0/0) and ";}
             } else {message += "finds "+evoVals[i][4]+" as ";}
-            break;
   
           default: /* all evos */
             if (evoVals[i][0]) {
