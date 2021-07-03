@@ -515,6 +515,7 @@
          * ex: ["485",251,213,209,"Heatran",3754,10,10,10]
          * evoVals[][0] = dexNum or "false" if unchecked */
         evoVals[i][0] = document.getElementById('evoCB['+i+']').checked ? evoVals[i][0] : false;
+        console.log("document.getElementById("+evoVals[i][4]+").checked: "+document.getElementById('evoCB['+i+']').checked);
         /**...below already filled previously...
          * ...evoVals[][1] = base attack stat
          * ...evoVals[][2] = base defense stat
@@ -742,6 +743,9 @@
         if (evoVals[i][0]){console.log("Loop #"+i+": evoVals["+i+"]:"+JSON.stringify(evoVals[i]));}
         if (league != "All") {
           switch(league) {
+            case "500":
+              leagueLim = evoVals[i][6]/1;
+              break;
             case "1500":
               leagueLim = evoVals[i][6]/1;
               break;
@@ -763,10 +767,11 @@
               if (!trashHundo) {message += "perfect IV (15/15/15) and ";}
               if (!trashZero) {message += "zero IV (0/0/0) and ";}
             } else {message += "finds "+evoVals[i][4]+" as ";}
+          break;
   
           default: /* all evos */
             if (evoVals[i][0]) {
-              if (league != "All") {
+              if ((league != "All") && (league > 500)) {
                 GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, maxLvl, false, league, evoVals[i][4]);
                 message += " and Top "+leagueLim/1+ " PvP "+evoVals[i][4];
                 rKeys = Object.keys(GLranks);
@@ -778,7 +783,8 @@
                 if (evoVals[i][6]/1 > 0) { /* Be sure the user wants this league before building anything! */
                   /* Run Great League Calculations first, always need to be done for all Leagues */
                   GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, maxLvl, false, 1500, evoVals[i][4]);
-                  message += ",<br> and PvP "+evoVals[i][4]+" for Top "+evoVals[i][6]+ " GL";
+                  message += ",<br> and PvP "+evoVals[i][4]+" for Top "+evoVals[i][6];
+                  if (league > 500) {message += " GL";}
                   GLkeys = Object.keys(GLranks);
                   for (j=evoVals[i][6]/1; j<GLkeys.length; j++) {delete GLranks[GLkeys[j]];}
                   numRanks += evoVals[i][6]/1;
@@ -805,7 +811,8 @@
             break;
         }
       }
-      if (league == "1500") {message += " for Great League";}
+      if (league == "500") {message += " Little League";}
+      else if (league == "1500") {message += " for Great League";}
       else if (league == "2500") {message += " for Ultra League";}
       else if (league != "All") {message += " for Master League";}
       /* Fix "as and Top", "as ,<br> and PvP", "and ,<br> and" message grammar errors */
