@@ -3283,6 +3283,22 @@ var pokeList=[
     'label': 'Melmetal',
     'value': '809,226,190,264,808'
   },
+    {
+    'label': 'Skwovet',
+    'value': '819,95,86,172,820'
+  },
+  {
+    'label': 'Greedent',
+    'value': '820,160,156,260,819'
+  },
+  {
+    'label': 'Wooloo',
+    'value': '831,76,97,123,832’
+  },
+  {
+    'label': 'Dubwool',
+    'value': '832,159,198,176,831’
+  },
   {
     'label': 'Obstagoon',
     'value': '862,180,194,212,263&galar,264&galar'
@@ -3302,5 +3318,13 @@ var pokeList=[
   {
     'label': 'Runerigus',
     'value': '867,163,237,151,562'
+  },
+  {
+    'label': 'Falinks',
+    'value': '870,193,170,163'
+  },
+  {
+    'label': 'Zacian_Hero’,
+    'value': '888,254,236,192’
   }
 ];
