@@ -3324,7 +3324,7 @@ var pokeList=[
     'value': '870,193,170,163'
   },
   {
-    'label': 'Zacian_Hero’,
-    'value': '888,254,236,192’
+    'label': 'Zacian_Hero',
+    'value': '888,254,236,192'
   }
 ];
