@@ -3293,11 +3293,11 @@ var pokeList=[
   },
   {
     'label': 'Wooloo',
-    'value': '831,76,97,123,832’
+    'value': '831,76,97,123,832'
   },
   {
     'label': 'Dubwool',
-    'value': '832,159,198,176,831’
+    'value': '832,159,198,176,831'
   },
   {
     'label': 'Obstagoon',
