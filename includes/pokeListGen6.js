@@ -3326,5 +3326,9 @@ var pokeList=[
   {
     'label': 'Zacian_Hero',
     'value': '888,254,236,192'
+  },
+  {
+    'label': 'Zamazenta_Hero',
+    'value': '889,254,236,192'
   }
 ];
