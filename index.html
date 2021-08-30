@@ -18,7 +18,7 @@
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/pokeListGen6.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/pokeListGen8.js" as="script">
     <title>PvP IVs - Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
@@ -194,7 +194,7 @@
       <script src="https://pvpivs.com/includes/footer.js"></script>
       <script src="https://pvpivs.com/includes/calculate.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
-      <script src="https://pvpivs.com/includes/pokeListGen6.js"></script>
+      <script src="https://pvpivs.com/includes/pokeListGen8.js"></script>
         
       <script>
       /* define Awesomeplete list https://leaverou.github.io/awesomplete/ */
@@ -357,6 +357,7 @@
           } else {
             console.log("start: Found mon in both:'"+awesomplete.suggestions+"' and '"+selected+"'");
             if (selected.indexOf("_SPECULATIVE") > -1)  {megaNote = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
+            if (selected.indexOf("_PLACEHOLDER") > -1)  {megaNote = "<p><i>Please note these base stats are placeholders (1/1/1).</i></p>";}
             /*console.log("aIV[0]:'"+aIV[0]+"', dIV[0]:'"+dIV[0]+"', sIV[0]:'"+sIV[0]+"' aIV.length:"+aIV.length);*/
           }
         }
@@ -387,13 +388,17 @@
         }
         
         var monInfo = mon.split(',');
+        /*Split out the b for "base" evolutions as we don't use it here*/
+        if (monInfo[1].slice(-1) == "b" || monInfo[1].indexOf("b&") > -1) {
+          console.log("Found a base evolution in: "+monInfo[1]);
+        }
         /*Ensure we get the info we need to continue*/
         if (monInfo == "")
         {
           console.log("Cannot find monInfo, returning");
           return;
         }
-        /*console.log("monInfo set to:"+JSON.stringify(monInfo));*/
+        console.log("monInfo set to:"+JSON.stringify(monInfo));
         var output = document.getElementById('outputBox');
         var chart = document.getElementById('chart_div');
         /*ensure we clear the prior output between runs*/
@@ -420,7 +425,8 @@
         var floor = document.getElementById('floor').value;
         var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), floor, minLvl, maxLvl, dti, league, mon);
         var evos = monInfo.slice(4, monInfo.length);
-        var evoLen = evos.length;/*console.log("evos.length:"+evoLen+", evos:"+evos);*/
+        var evoLen = evos.length;
+        console.log("evos.length:"+evoLen+", evos:"+evos);
         
         /*ensure we actually generated something to output*/
         var keys = Object.keys(ranks);
@@ -494,15 +500,16 @@
                 /*correct for 0 index so pokeList.length is end of pokeList.js (instead of one past end)*/
                 var pokeListLen = pokeList.length-1;
                 /*scale pokeList to actual dexEnd*/
-                var dexEnd = pokeList[pokeListLen].value.split(",")[0];
+                var dexEnd = pokeList[pokeListLen].value.split(",")[0].split("b")[0];
                 var scaling = pokeListLen/dexEnd;
-                /*console.log("i: "+i+" Need to output rows for:"+evos);*/
+                console.log("i: "+i+" Need to output rows for:"+evos);
                 for (var e=0; e<evoLen; e++) {
-                  /*console.log("Attempting to find evos[e("+e+")]:"+evos[e]+" with pokeListLen:"+pokeListLen);*/
-                  var searchStart = parseInt(scaling * ((evos[e]).split("&")[0]));
-                  /*console.log("f starting at searchStart:"+searchStart+", iterating while f<("+pokeListLen+")pokeListLen");*/
+                  console.log("Attempting to find evos[e("+e+")]:"+evos[e]+" with pokeListLen:"+pokeListLen);
+                  var searchStart = parseInt(scaling * (evos[e].split("b")[0].split("&")[0]));
+                  console.log("f starting at searchStart:"+searchStart+", iterating while f<("+pokeListLen+")pokeListLen");
                   for (var f=searchStart; f<=pokeListLen; f++) {
                     if (evos[e].indexOf("_SPECULATIVE") > -1) {megaNote = "<i>Please note these base stats are speculative and subject to change!</i>";}
+                    if (evos[e].indexOf("_PLACEHOLDER") > -1) {megaNote = "<i>Please note these base stats are placeholders (1/1/1).</i>";}
                     var evoMonInfo = pokeList[f].value.split(",");
                     /*console.log("Checking evoMonInfo("+evoMonInfo+") vs evos[e("+e+")]:"+evos[e]+", at index f="+f+":"+pokeList[f].label);*/
                     if (evoMonInfo[0].indexOf(evos[e])>-1) {
