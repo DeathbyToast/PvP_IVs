@@ -18,7 +18,7 @@
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/pokeListGen6.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/pokeListGen8.js" as="script">
     <title>PvP IVs - Search Strings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Pok&eacute;mon Go&trade; PvP IVs search string generator finds your best PvP IVs and/or helps you send the rest to Professor Willow. Now able to search for / exclude 0% IVs!"/>
@@ -131,7 +131,7 @@
     <script src="https://pvpivs.com/includes/footer.js"></script>
     <script src="https://pvpivs.com/includes/calculate.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
-    <script src="https://pvpivs.com/includes/pokeListGen6.js"></script>
+    <script src="https://pvpivs.com/includes/pokeListGen8.js"></script>
     <script>
     /* define Awesomeplete list https://leaverou.github.io/awesomplete/ */
     var input = document.getElementById("pokeList");
@@ -388,9 +388,9 @@
       var evoVals = [];
       
       /* Strip out atk/def/sta stats, leave only dex numbers with &alola,etc */
-      var evoFamily = value.slice(4,value.length); evoFamily.unshift(value[0]);
-      evoFamily.sort(function(a, b){return a.split("&")[0]-b.split("&")[0];});
-      
+      var evoFamily = value.slice(4,value.length);
+      evoFamily.unshift(value[0]); /* add selected to front to complete evoFamily */
+
       /* Check if this family has a baby mon */
       if (evoFamily.some(res => res.includes("eggsonly"))) {
         /* Found a baby, unhide baby option */
@@ -405,6 +405,7 @@
         document.getElementById("babyLbl").style.display = "none";
         document.getElementById("baby").style.display = "none";
         document.getElementById("babyLbl").innerHTML = "Search for Baby Evo:";
+        document.getElementById('baby').checked = false;
       }
       
       if ((document.getElementById('base').checked ===  false) && (document.getElementById('baby').checked === true)) {
@@ -419,12 +420,14 @@
         evoFamily = evoFamily.filter(item => (item.indexOf("&eggsonly") < 0));
       }
       
+      console.log("Building evoVals array with evoFamily as: "+JSON.stringify(evoFamily));
+      
       /**
        * Finds mon names and base stats from their nums
        * in values from Awesomeplete array via findIndex
        *
-       * evoVals[0] = baseVals; (base or baby) - 125 or 239
-       * evoVals[1] = finalVals; (selected) - 466
+       * evoVals[0] = baseVals; (base or baby) - 125 or 239 (Elbz)
+       * evoVals[1] = finalVals; (selected or highest Dex) - 466
        * evoVals[2...] = evoVals; (all other evos) 125?
        **/
       for (i=0; i<evoFamily.length; i++) {
@@ -451,28 +454,40 @@
         evoVals[i][4] = pokeList[indexPL].label;
         evoVals[i][5] = Math.max(10, Math.floor((evoVals[i][1]/1 + 15) * Math.sqrt(evoVals[i][2]/1 + 15) * Math.sqrt(evoVals[i][3]/1 + 15) * cpm[(maxLvl - 1)*2] * cpm[(maxLvl - 1)*2] / 10))/1;
       }
-  
-      /* Sort evoVals by maxCP (evoVals[][5]) to find true base mon */
-      evoVals = evoVals.sort(function(a, b) { return a[5] - b[5];});
-      /*console.log("Sorted evoVals["+evoVals.length+"]: "+JSON.stringify(evoVals));*/
       
       /* Only run if there are evolutions, skip for Heatmor, etc */
       if (evoVals.length > 1) {
         
-        /* Ensure that selected/final mon is at evoVals[1] */
-        if ((selected != evoVals[1][4]) && (evoVals.length > 2)) {
-          /*console.log("Final mon("+selected+") not at evoVals[1]("+evoVals[1][4]+"), fixing...");*/
-          var finalMon = evoVals.filter(el => el[4] === selected)[0];
-          evoVals = evoVals.filter(el => el[4] !== selected);
-          evoVals.splice(1, 0, finalMon);
-          /*console.log("final mon("+selected+") now at 1st index: "+JSON.stringify(evoVals));*/
-        }
+        /* Sort evoVals by maxCP (evoVals[][5]) to find true base mon */
+        evoVals = evoVals.sort(function(a, b) { return a[5] - b[5];});
+        console.log("Sorted evoVals["+evoVals.length+"]: "+JSON.stringify(evoVals));
         
-        /* There are evolutions, unhide base option */
-        document.getElementById("baseLbl").style.display = "inline-block";
-        document.getElementById("base").style.display = "inline-block";
-        /* Add base name to label to reduce confusion */
-        document.getElementById("baseLbl").innerHTML = "Search for "+evoVals[0][4]+" (Base Evo):";
+        /* Verify evoVals[0] contains base (or baby) */
+        if (document.getElementById("baby").checked === true) {
+          if (!evoVals[0][0].includes("eggsonly")) {
+            /* baby is not at first slot, need to find it and copy it to 0 index */
+            evoVals.unshift([...evoVals[evoVals.findIndex(mon => mon[0].includes("eggsonly"))]]); /* Don't just copy pointer, copy values! */
+            console.log("evoVals after unshift: "+JSON.stringify(evoVals));
+          }
+          /* Hide base label to avoid confusion */
+          console.log("Baby detected, hiding base...");
+          document.getElementById("baseLbl").style.display = "none";
+          document.getElementById("base").style.display = "none";
+          document.getElementById("baseLbl").innerHTML = "Search for Base Evo:";
+        } else {
+          if (!evoVals[0][0].includes("b")) {
+            /* base is not at first slot, need to find it and copy it to 0 index */
+            evoVals.unshift([...evoVals[evoVals.findIndex(mon => mon[0].includes("b"))]]);
+            console.log("evoVals after unshift: "+JSON.stringify(evoVals));
+          }
+          
+          /* There are evolutions, unhide base option */
+          console.log("Evos detected, showing base...");
+          document.getElementById("baseLbl").style.display = "inline-block";
+          document.getElementById("base").style.display = "inline-block";
+          /* Add base name to label to reduce confusion */
+          document.getElementById("baseLbl").innerHTML = "Search for "+evoVals[0][4]+" (Base Evo):";
+        }
   
         /* If base could also be an evo, add duplicate entry */
         /* Example test cases: Rhyhorn, Electabuzz */
@@ -482,22 +497,45 @@
             ((evoVals[0][5] > 2500) && ((league =="false") || (league ==  "All")))) {
           console.log("Detected base ("+evoVals[0][4]+") that could be evo, duplicating...");
           evoVals.push([...evoVals[0]]); /* Don't just copy pointer, copy values! */
-          console.log("evoVals after duplication: "+JSON.stringify(evoVals));
+          console.log("evoVals after duplication push: "+JSON.stringify(evoVals));
         }
       } else {
         /* Otherwise reset to default hidden status, default text */
-        /*console.log("No evos detected, hiding base...");*/
+        console.log("No evos detected, hiding base...");
         document.getElementById("baseLbl").style.display = "none";
         document.getElementById("base").style.display = "none";
         document.getElementById("baseLbl").innerHTML = "Search for Base Evo:";
         /* Duplicate the only entry to ensure we have a final mon to output */
-        evoVals.push([...evoVals[0]]);
+        evoVals.push([...evoVals[0]]); /* Don't just copy pointer, copy values! */
       }
       
-      /* Add final evo name to maxLvl label to reduce confusion */
-      document.getElementById("maxLvlLbl").innerHTML = "Max "+evoVals[1][4]+" PvP Level:";
       /* Add base/baby name to Output Levels label */
       document.getElementById("searchLvlLbl").innerHTML = "Search "+evoVals[0][4]+" Levels:";
+      
+      /* Ensure we have a clean dex number to output */
+      evoVals[0][0] = evoVals[0][0].split("b").join("");
+      
+      /* Ensure that at least one box is checked for output */
+      if (selected === evoVals[0][4] && newMon) {
+        /* Base is selected, ensure nothing is checked */
+        for (i=1; i<evoVals.length; i++) {
+          if (document.getElementById('evoCB['+i+']').checked === true) {
+            break;
+            console.log("Found a checked box! Won't check others");
+          }
+        }
+        if (i == evoVals.length) {
+          console.log("Looks like no boxes are checked yet...");
+          /* No boxes are checked, let's ensure highest CP non-mega mon is checked */
+          for (i=evoVals.length-1; i>0; i--) {
+            if (!evoVals[i][4].includes("Mega")) {
+              document.getElementById('evoCB['+i+']').checked = true;
+              console.log("Checked the box for "+evoVals[i][4]);
+              break;
+            }
+          }
+        }
+      }
       
       /**
        * Unhides all checkboxes for family evos, and fills
