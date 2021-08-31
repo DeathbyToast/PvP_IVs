@@ -59,7 +59,7 @@
   --secondary: var(--red900);
   --Background: var(--lg200);
   --goodResult: var(--green600); /*old: green*/
-  --okResult: var(--yellow500); /*old: orange*/
+  --okResult: var(--yellow700); /*old: orange*/
   --badResult: var(--orange500); /*old: red*/
   --navBackground: var(--lg500);
   --navActive: var(--yellow700);
