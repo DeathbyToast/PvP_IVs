@@ -16,7 +16,7 @@
     <link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/pokeListGen8.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/pokeListGen6.js" as="script">
     <title>PvP IVs - League Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
@@ -80,10 +80,10 @@
     <br />
     <section>
       <label>League:<select id="league">
-        <option value="500">Little Cup</option>
-        <option value="1500" selected>Great League</option>
-    		<option value="2500">Ultra League</option>
-    		<option value="false">Master League</option>
+        <option value="500" label="Little Leagues">Little Leagues</option>
+        <option value="1500" selected label="Great League">Great League</option>
+    		<option value="2500" label="Ultra League">Ultra League</option>
+    		<option value="false" label="Master League">Master League</option>
     	</select></label><br />
     	<label>Max Level:<select title="What Level Ceiling to Search?" id="maxLvl">
           <option value="1">1: Wild Caught</option>
@@ -154,7 +154,7 @@
     <!-- Footer Code Below -->
     <script src="https://pvpivs.com/includes/footer.js"></script>
     <script src="https://pvpivs.com/includes/calculate.js"></script>
-    <script src="https://pvpivs.com/includes/pokeListGen8.js"></script>
+    <script src="https://pvpivs.com/includes/pokeListGen6.js"></script>
         
     <script>
     var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,486,488];
@@ -186,7 +186,8 @@
       console.log("maxLvl read as:"+maxLvl);
       var maxLvlCPM = Math.max(0, (maxLvl - 1) * 2); /* use half-levels */
       var league = document.getElementById('league').value;
-      var leagueName = document.getElementById('league').label;
+      var leagueName = document.getElementById('league').options[document.getElementById('league').selectedIndex].innerHTML;
+      console.log("leagueName: "+JSON.stringify(leagueName));
       var mega = document.getElementById('mega').checked;
       var all = document.getElementById('all').checked;
       var elem = document.getElementById("myBar");
@@ -214,7 +215,8 @@
       var URL = window.location.href.split("?")[0];
       uri = URL + "?cp="+league+"&max="+maxLvl+"&mega="+mega+"&all="+all;
       uri = encodeURI(uri);
-      var newTitle = "PvP IVs - League Rankings ("+leagueName+")";
+      var newTitle = "PvP IVs - "+leagueName+" Rankings (Level "+maxLvl+")";
+      document.title = newTitle;
       window.history.pushState(null, newTitle, uri);
       
       /* Function that is called recursively to create cells and update progress of rank calculations */
@@ -238,14 +240,14 @@
             var row = document.createElement("tr");
   
             /* Check for higher minIVs or minLvls for non-wild spawning mon */
-            const [minIVs, minLvl] = adjustFloors((pokeList[i].value.split(",")[0]).split("b")[0].split("&")[0], monName, maxLvl);
+            const [minIVs, minLvl] = adjustFloors((pokeList[i].value.split(",")[0]).split("&")[0], monName, maxLvl);
             /* Do the rank calculations for each mon */
             var ranks = calculate(parseInt(monStats[1]), parseInt(monStats[2]), parseInt(monStats[3]), minIVs, minLvl, maxLvl, false, league, monName);
             var keys = Object.keys(ranks);
             var maxStatProd = keys[0].split(".")[0];
             
             if (ranks.numRanks/1 >0) {
-              progress(monName, (pokeList[i].value.split(",")[0]).split("b")[0].split("&")[0], Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1);
+              progress(monName, (pokeList[i].value.split(",")[0]).split("&")[0], Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1);
               
               /* add the row to the end of the table body */
               tblBody.appendChild(row);

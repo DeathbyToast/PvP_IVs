@@ -71,9 +71,9 @@
     <input id="pokeList" onfocus="this.value=''" placeholder="Final Mon"/>
     <label>League:<select id="league" oninput="start()">
       <option value="500">Little Leagues</option>
-      <option value="1500" selected>Great League</option>
-	  	<option value="2500">Ultra League</option>
-  		<option value="false">Master League</option>
+        <option value="1500" selected>Great League</option>
+    		<option value="2500">Ultra League</option>
+    		<option value="false">Master League</option>
   		<option value="All">All Leagues</option></select>
   	</label><br />
     <label id="getStarted"><i>Please first select an evolution family above, then boxes to select Top # Ranks per evo will appear...</i><br /></label>
@@ -322,6 +322,15 @@
       if (document.getElementById('trash').checked) {document.getElementById('trashAdv').style.display = "block";}
       else {document.getElementById('trashAdv').style.display = "none";}
       
+      var league = document.getElementById('league').value;
+      var leagueName = document.getElementById('league').options[document.getElementById('league').selectedIndex].innerHTML;
+      var trash = document.getElementById('trash').checked;
+      var trashHundo = document.getElementById('trashHundo').checked;
+      var trashZero = document.getElementById('trashZero').checked;
+      var onlyZero = document.getElementById('onlyZero').checked;
+      var lang = document.getElementById('lang').value.split(',');
+      var maxLvl = document.getElementById('maxLvl').value;
+      
       /* See if this was a request for all-mon Zero IV string */
       if (document.getElementById('allZero').checked) {
         document.getElementById('getStarted').style.display = "none";
@@ -333,7 +342,7 @@
         document.getElementById("dexSkipsLbl").style.display = "inline-block";
         findAllZeros(cpLimit, dexSkips);
         /* Ensure we update the URL before returning */
-        updateURI(false,document.getElementById('league').value,document.getElementById('lang').value.split(',')[0],);
+        updateURI(false,league,leagueName,lang[0],);
         return;
       } else {
         document.getElementById("cpLimit").style.display = "none";
@@ -383,13 +392,6 @@
         }
       }
       
-      var league = document.getElementById('league').value;
-      var trash = document.getElementById('trash').checked;
-      var trashHundo = document.getElementById('trashHundo').checked;
-      var trashZero = document.getElementById('trashZero').checked;
-      var onlyZero = document.getElementById('onlyZero').checked;
-      var lang = document.getElementById('lang').value.split(',');
-      var maxLvl = document.getElementById('maxLvl').value;
       var value = mon.split(',');
       var output = document.getElementById('output');
       var evoVals = [];
@@ -604,7 +606,7 @@
       outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, output, lang, maxLvl);
       
       /* update the URL with search parameters */
-      updateURI(selected,league,document.getElementById('lang').value.split(',')[0], evoVals.length);
+      updateURI(selected,league,leagueName,lang[0],evoVals.length);
       
       if (perfTiming) {var startT1 = performance.now();
       console.log("start: Execution took "+(startT1-startT0).toFixed(1)+"ms");}
@@ -651,7 +653,7 @@
       return [binary,rStr];
     }
     
-    function updateURI(selected,league,lang,evoLen)
+    function updateURI(selected,league,leagueName,lang,evoLen)
     {
       /* build binary encoding of settings for URL output */
       const [binary, rStr] = encodeSettings(evoLen);
@@ -668,9 +670,9 @@
       uri = encodeURI(uri + "?mon="+selected+"&cp="+league+"&r="+rStr+"&o="+binary+"&l="+lang);
       /* conditional for All Zero mode */
       if (!selected) {
-        var newTitle = "PvP IVs - All Zero 0% Search String ("+league+")";
+        var newTitle = "PvP IVs - All Zero 0% Search String (cp<"+league+")";
       } else {
-        var newTitle = "PvP IVs - Search String " + "Rank " + rStr + " " + selected + " ("+league+")";
+        var newTitle = "PvP IVs - "+selected+" "+leagueName+" Search String";
       }
       document.title = newTitle;
       window.history.pushState(null, newTitle, uri);
