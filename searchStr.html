@@ -172,7 +172,12 @@
           switch (values[i].split("=")[0]) {
             case "mon":
               selected = values[i].split("=")[1];
-              awesomplete.input.value = selected;
+              /* Conditional for ALl Zero mode */
+              if (!selected) {
+                document.getElementById('allZero').checked = true;
+              } else {
+                awesomplete.input.value = selected;
+              }
               break;
               
             case "r":
@@ -270,9 +275,11 @@
           }
         }
         
-        /* Convert CP Limit field for All Zero mode */
+        /* Conditional for All Zero mode */
         if (document.getElementById('allZero').checked) {
-          document.getElementById('cpLimit').value = document.getElementById('league').value;
+          console.log("Detected All Zero mode");
+          /* Override CP Limit for allZero mode */
+          document.getElementById('league').value = document.getElementById('cpLimit').value;
         }
         
         if (perfTiming) {var checkURIT1 = performance.now();
@@ -326,7 +333,7 @@
         document.getElementById("dexSkipsLbl").style.display = "inline-block";
         findAllZeros(cpLimit, dexSkips);
         /* Ensure we update the URL before returning */
-        updateURI(selected,document.getElementById('league').value,document.getElementById('lang').value.split(',')[0],);
+        updateURI(false,document.getElementById('league').value,document.getElementById('lang').value.split(',')[0],);
         return;
       } else {
         document.getElementById("cpLimit").style.display = "none";
@@ -659,7 +666,12 @@
       /* update the URL with search parameters */
       var uri = window.location.href.split("?")[0];
       uri = encodeURI(uri + "?mon="+selected+"&cp="+league+"&r="+rStr+"&o="+binary+"&l="+lang);
-      var newTitle = "PvP IVs - Search String " + "Rank " + rStr + " " + selected + " ("+league+")";
+      /* conditional for All Zero mode */
+      if (!selected) {
+        var newTitle = "PvP IVs - All Zero 0% Search String ("+league+")";
+      } else {
+        var newTitle = "PvP IVs - Search String " + "Rank " + rStr + " " + selected + " ("+league+")";
+      }
       window.history.pushState(null, newTitle, uri);
       return;
     }
@@ -677,10 +689,11 @@
       
       var message = "This string ignores PvP rankings, and only potential 0% IV (0/0/0) mon. For PvP rankings please uncheck 'Find ALL 0% mon' (below)";
       document.getElementById('feedbackBox').innerHTML = "<p><i>"+message+"</i></p>";
-      
+
       for (var i=0; i<pokeList.length; i++) {
-        var id = (pokeList[i].value.split(",")[0]).split("&")[0]/1;
-        
+        /* Ensure we strip out base "b" as well as megas/alola "&" */
+        var id = (pokeList[i].value.split(",")[0]).split("&")[0].split("b")[0]/1;
+
         /* Ensure it can spawn in the wild */
         if (dexSkips.includes(id/1)) {
           console.log("Skipped #"+id+"("+pokeList[i].label+")");
