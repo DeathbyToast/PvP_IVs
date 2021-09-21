@@ -672,6 +672,7 @@
       } else {
         var newTitle = "PvP IVs - Search String " + "Rank " + rStr + " " + selected + " ("+league+")";
       }
+      document.title = newTitle;
       window.history.pushState(null, newTitle, uri);
       return;
     }
