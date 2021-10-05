@@ -709,8 +709,7 @@
         uri = encodeURI(uri);
         console.log("existing page title: "+JSON.stringify(document.title));
         var newTitle = "PvP IVs - " +selected+ " "+leagueName+" Rankings (Top "+limit+")";
-        console.log("new page title: "+JSON.stringify(document.title));
-        document.title = newTitle;
+        document.title = newTitle.replace(/_/g, ' '); /* replace all underscores ('_') with spaces */
         window.history.pushState(null, newTitle, uri);
         console.log("updated page title: "+JSON.stringify(document.title));
         
