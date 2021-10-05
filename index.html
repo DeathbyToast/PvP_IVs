@@ -407,6 +407,7 @@
         var minLvl = document.getElementById('minLvl').value;
         var maxLvl = document.getElementById('maxLvl').value;
         var league = document.getElementById('league').value;
+        console.log("league:"+JSON.stringify(league));
         var leagueName = document.getElementById('league').options[document.getElementById('league').selectedIndex].innerHTML;
         if ((lastLeague) && (leagueName !== lastLeague)){ /* Reset if new League */mA = 0; mD = 0; mHP = 0;}
         lastLeague = leagueName; /* Store League for next run */
@@ -747,7 +748,7 @@
         if (perfTiming) {var checkURIt0 = performance.now();}
         
         var URL = window.location.href.split("?")[1];
-        /*URL = "mon=Honchkrow&r=10&cp=1500&f=0&min=1&max=51&cge=true&mA=0&mD=0&mHP=0&IVs=2_14_12-6_15_15-15_15_15"*/
+        URL = "?mon=Mega_Gengar&r=16&f=0&min=1&max=40&dti=false&cmp=false&shdw=false";
         /*Need:*/
         /*pokeList limit aIV dIV sIV league floor minLvl maxLvl*/
         /*mon      r     IVs         cp     f     min    max*/
@@ -769,6 +770,11 @@
                 break;
               case "cp":
                 document.getElementById('league').value = values[i].split("=")[1];
+                /* Catch incorrect CP values being passed in, default to Master League (false) */
+                if (document.getElementById('league').value == "") {
+                  console.log("ERROR: Unknown cp value detected, defaulting to Master League");
+                  document.getElementById('league').value = false;
+                }
                 break;
               case "f":
                 document.getElementById('floor').value = values[i].split("=")[1];
