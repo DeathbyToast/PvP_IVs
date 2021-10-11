@@ -408,7 +408,6 @@
         var minLvl = document.getElementById('minLvl').value;
         var maxLvl = document.getElementById('maxLvl').value;
         var league = document.getElementById('league').value;
-        console.log("league:"+JSON.stringify(league));
         var leagueName = document.getElementById('league').options[document.getElementById('league').selectedIndex].innerHTML;
         if ((lastLeague) && (leagueName !== lastLeague)){ /* Reset if new League */mA = 0; mD = 0; mHP = 0;}
         lastLeague = leagueName; /* Store League for next run */
@@ -422,7 +421,8 @@
         var floor = document.getElementById('floor').value;
         var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), floor, minLvl, maxLvl, dti, league, mon);
         var evos = monInfo.slice(4, monInfo.length);
-        var evoLen = evos.length;/*console.log("evos.length:"+evoLen+", evos:"+evos);*/
+        var evoLen = evos.length;
+        /*console.log("evos.length:"+evoLen+", evos:"+evos+", family:"+family);*/
         
         /*ensure we actually generated something to output*/
         var keys = Object.keys(ranks);
@@ -482,11 +482,11 @@
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
         document.getElementById('feedbackBox').innerHTML = "";
-
+        
         for (i=0; i<aIV.length; i++) {
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
-              /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
+              console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);
               gmRhtml = getMonRank(numRanks, ranks, keys, shdw, cmp, maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, false, false, maxLvl, dust);
               if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml == "")) {
                 console.log("i:"+i+" Detected too high CP after getMonRank");
@@ -496,7 +496,7 @@
                 /*correct for 0 index so pokeList.length is end of pokeList.js (instead of one past end)*/
                 var pokeListLen = pokeList.length-1;
                 /*scale pokeList to actual dexEnd*/
-                var dexEnd = pokeList[pokeListLen].value.split(",")[0];
+                var dexEnd = pokeList[pokeListLen].value.split(",")[0].split("b")[0];
                 var scaling = pokeListLen/dexEnd;
                 /*console.log("i: "+i+" Need to output rows for:"+evos);*/
                 for (var e=0; e<evoLen; e++) {
@@ -513,13 +513,9 @@
                       /*ensure we don't show impossible Tyrogue evos*/
                       if (selected == "Tyrogue") {if (wrongTyroEvo(aIV[i], dIV[i], sIV[i], evos[e])) {continue;}}
                       
-                      /* Variable to run Great League calculations for family evos of Little Leagues */
+                      /* TODO: Add code to adjust which league we use for family evos */
                       var evoLeague = league;
                       var evoLeagueName = leagueName;
-                      if (evoLeague == 500) {
-                        evoLeague = 1500;
-                        evoLeagueName = "Great League";
-                      }
                       var evoMon = pokeList[f].label;
                       var evoRanks = calculate(parseInt(evoMonInfo[1]), parseInt(evoMonInfo[2]), parseInt(evoMonInfo[3]), floor, minLvl, maxLvl, false, evoLeague, evoMon);
                       /*console.log("calclate returned evoRanks: "+JSON.stringify(evoRanks)+" for league:"+league+", floor:"+floor+",  minLvl:"+minLvl+", maxLvl:"+maxLvl);*/
@@ -746,6 +742,14 @@
       
       function checkURI() {
         if (perfTiming) {var checkURIt0 = performance.now();}
+        
+        /* TODO: Manage User evoFamily Checkbox Preferences (Issue #42)
+        if (localStorage.["evoFamily"] === "true") {
+          document.getElementById("family").checked = true;
+        } else if (localStorage.["evoFamily"] !== "false") {
+            document.getElementById("family").checked = false;
+        }
+        localStorage.["evoFamily"] = document.getElementById("family").checked ? "true" : "false";*/
         
         var URL = window.location.href.split("?")[1];
         /*URL = "?mon=Mega_Gengar&r=16&f=0&min=1&max=40&dti=false&cmp=false&shdw=false";*/
