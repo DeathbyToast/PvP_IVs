@@ -674,7 +674,7 @@ var pokeList = [
     'value': '130&!mega,237,186,216,129b,130&mega'
   },
   {
-    'label': 'Mega_Gyarados_SPECULATIVE',
+    'label': 'Mega_Gyarados',
     'value': '130&mega,292,247,216,129b,130&!mega'
   },
   {
@@ -898,7 +898,7 @@ var pokeList = [
     'value': '181&!mega,211,169,207,179b,180,181&mega'
   },
   {
-    'label': 'Mega_Ampharos_SPECULATIVE',
+    'label': 'Mega_Ampharos',
     'value': '181&mega,294,203,207,179b,180,181&!mega'
   },
   {
@@ -1486,7 +1486,7 @@ var pokeList = [
     'value': '310&!mega,215,127,172,309b,310&mega'
   },
   {
-    'label': 'Mega_Manectric_SPECULATIVE',
+    'label': 'Mega_Manectric',
     'value': '310&mega,286,179,172,309b,310&!mega'
   },
   {
@@ -1594,7 +1594,7 @@ var pokeList = [
     'value': '334&!mega,141,201,181,333b,334&mega'
   },
   {
-    'label': 'Mega_Altaria_SPECULATIVE',
+    'label': 'Mega_Altaria',
     'value': '334&mega,222,218,181,333b,334&!mega'
   },
   {
@@ -2026,7 +2026,7 @@ var pokeList = [
     'value': '428&!mega,156,194,163,427b,428&mega'
   },
   {
-    'label': 'Mega_Lopunny_SPECULATIVE',
+    'label': 'Mega_Lopunny',
     'value': '428&mega,282,214,163,427b,428&!mega'
   },
   {
