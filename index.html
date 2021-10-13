@@ -200,12 +200,6 @@
       /* define Awesomeplete list https://leaverou.github.io/awesomplete/ */
       var input = document.getElementById("pokeList");
       var selected;
-      
-      var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,486,488];
-      /*480,481,482 are wild-spawning legendaries and 808,809 are wild-spawning mythicals*/
-      var raidOnly = [483,484,485,487,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898];
-      var boxMyth = [151,251,385,489,490,492,493,494,647,648,719,720,721,801,802,807,893];
-      var raidMyth = [386,491,649];
       var lastLeague;
       var perfTiming = false; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
@@ -349,7 +343,6 @@
         /*exit if we haven't selected a mon yet*/
         if ((awesomplete.suggestions === undefined) && (selected === undefined)) {
           console.log("No Pokémon found by start(), received:'"+awesomplete.suggestions+"' and '"+selected+"'");
-          /*console.log("aIV[0]:'"+aIV[0]+"', dIV[0]:'"+dIV[0]+"', sIV[0]:'"+sIV[0]+"' aIV.length:"+aIV.length);*/
           return;
         } else {
           if (selected === undefined) {
@@ -358,7 +351,6 @@
           } else {
             console.log("start: Found mon in both:'"+awesomplete.suggestions+"' and '"+selected+"'");
             if (selected.indexOf("_SPECULATIVE") > -1)  {megaNote = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
-            /*console.log("aIV[0]:'"+aIV[0]+"', dIV[0]:'"+dIV[0]+"', sIV[0]:'"+sIV[0]+"' aIV.length:"+aIV.length);*/
           }
         }
         
@@ -752,7 +744,7 @@
         localStorage.["evoFamily"] = document.getElementById("family").checked ? "true" : "false";*/
         
         var URL = window.location.href.split("?")[1];
-        /*URL = "?mon=Mega_Gengar&r=16&f=0&min=1&max=40&dti=false&cmp=false&shdw=false";*/
+        /*URL = "mon=Mega_Altaria_SPECULATIVE&r=10&cp=1500&f=0&min=1&max=40&dti=false&cge=false&fam=false&cmp=false&shdw=false&mA=123.9&mD=120.0&mHP=99&IVs=0_15_15";*/
         /*Need:*/
         /*pokeList limit aIV dIV sIV league floor minLvl maxLvl*/
         /*mon      r     IVs         cp     f     min    max*/
@@ -766,8 +758,20 @@
           {
             switch (values[i].split("=")[0]) {
               case "mon":
-                selected = values[i].split("=")[1];
-                awesomplete.input.value = selected;
+                /* Check if input is a valid mon name without _SPECULATIVE for backwards compatability*/
+                var actuals = pokeList.filter(e => e.label.includes(values[i].split("=")[1].split("_SPECULATIVE")[0]));
+
+                /* Filter returned no results, this is an invalid user input */
+                if (!actuals.length) {
+                  /* Display user's input in text box */
+                  selected = values[i].split("=")[1];
+                  awesomplete.input.value = values[i].split("=")[1];
+                  console.log("ERROR: checkURI: Invalid mon name: "+selected);
+                  document.getElementById('feedbackBox').innerHTML = "<p><i>Invalid mon name '"+selected+"', please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
+                  break;
+                }
+                awesomplete.input.value = actuals[0].label;
+                selected = actuals[0].label;
                 break;
               case "r":
                 document.getElementById('limit').value = values[i].split("=")[1];
@@ -776,7 +780,7 @@
                 document.getElementById('league').value = values[i].split("=")[1];
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
                 if (document.getElementById('league').value == "") {
-                  console.log("ERROR: Unknown cp value detected, defaulting to Master League");
+                  console.log("ERROR: checkURI: Unknown cp value detected, defaulting to Master League");
                   document.getElementById('league').value = false;
                 }
                 break;
@@ -811,17 +815,13 @@
                 break;
               case "IVs":
                 var ivStr = (values[i].split("=")[1]).split("-");
-                /*ivStr = ivStr.split("-");*/
-                /*console.log("About to enter loop with ivStr.length:"+ivStr.length);*/
                 for (var j=0; j<ivStr.length; j++)
                 {
                   if (j>0) {doTheInsert();}
                   var userIVs = ivStr[j].split("_");
-                  /*console.log("j:"+j+" Setting IVs to:"+userIVs);*/
                   document.getElementById('aIV['+j+']').value = userIVs[0];
                   document.getElementById('dIV['+j+']').value = userIVs[1];
                   document.getElementById('sIV['+j+']').value = userIVs[2];
-                  /*console.log("j:"+j+" Set IVs to:"+aIV[j]+dIV[j]+sIV[j]);*/
                 }
                 break;
               case "mA":
