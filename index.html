@@ -408,7 +408,7 @@
         var cge = document.getElementById("cge").checked;
         var family = document.getElementById("family").checked;
         var cmp = document.getElementById("cmp").checked;
-        var dust = false; /*document.getElementById("dust").checked;*/
+        var dust = document.getElementById("dust").checked;
         var shdw = document.getElementById('shdw[0]').checked;
         var floor = document.getElementById('floor').value;
         var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), floor, minLvl, maxLvl, dti, league, mon);
@@ -591,7 +591,7 @@
                   html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";
                 }
                 if (dust) { /* stardust powerup costs go here */
-                  html+="<td></td>";
+                  html+="<td>"+stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";
                 }
                 if (cmp) {
                   html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
@@ -1106,7 +1106,7 @@
                   html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";
                 }
                 if (dust) { /* stardust powerup costs go here */
-                  html+="<td>"+stardust(ranks[keys[i]][j].L/1)+"</td>";
+                  html+="<td>"+stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";
                 }
               
               
@@ -1189,8 +1189,90 @@
       }
       
       /* Returns calculated stardust power-up costs */
-      function stardust(lvl) {
-        return;
+      function stardust(startlvl, endlvl, totaldust) {
+        if (perfTiming) {var stardustT0 = performance.now();}
+        if (startlvl < endlvl) {
+          switch (startlvl) {
+            case 1:
+            case 2:
+              return stardust(startlvl+1, endlvl, totaldust+400);
+            case 3:
+            case 4:
+              return stardust(startlvl+1, endlvl, totaldust+800);
+            case 5:
+            case 6:
+              return stardust(startlvl+1, endlvl, totaldust+1200);
+            case 7:
+            case 8:
+              return stardust(startlvl+1, endlvl, totaldust+1600);
+            case 9:
+            case 10:
+              return stardust(startlvl+1, endlvl, totaldust+2000);
+            case 11:
+            case 12:
+              return stardust(startlvl+1, endlvl, totaldust+2600);
+            case 13:
+            case 14:
+              return stardust(startlvl+1, endlvl, totaldust+3200);
+            case 15:
+            case 16:
+              return stardust(startlvl+1, endlvl, totaldust+3800);
+            case 17:
+            case 18:
+              return stardust(startlvl+1, endlvl, totaldust+4400);
+            case 19:
+            case 20:
+              return stardust(startlvl+1, endlvl, totaldust+5000);
+            case 21:
+            case 22:
+              return stardust(startlvl+1, endlvl, totaldust+6000);
+            case 23:
+            case 24:
+              return stardust(startlvl+1, endlvl, totaldust+7000);
+            case 25:
+            case 26:
+              return stardust(startlvl+1, endlvl, totaldust+8000);
+            case 27:
+            case 28:
+              return stardust(startlvl+1, endlvl, totaldust+9000);
+            case 29:
+            case 30:
+              return stardust(startlvl+1, endlvl, totaldust+10000);
+            case 31:
+            case 32:
+              return stardust(startlvl+1, endlvl, totaldust+12000);
+            case 33:
+            case 34:
+              return stardust(startlvl+1, endlvl, totaldust+14000);
+            case 35:
+            case 36:
+              return stardust(startlvl+1, endlvl, totaldust+16000);
+            case 37:
+            case 38:
+              return stardust(startlvl+1, endlvl, totaldust+18000);
+            case 39:
+            case 40:
+              return stardust(startlvl+1, endlvl, totaldust+20000);
+            case 41:
+            case 42:
+              return stardust(startlvl+1, endlvl, totaldust+22000);
+            case 43:
+            case 44:
+              return stardust(startlvl+1, endlvl, totaldust+24000);
+            case 45:
+            case 46:
+              return stardust(startlvl+1, endlvl, totaldust+26000);
+            case 47:
+            case 48:
+              return stardust(startlvl+1, endlvl, totaldust+28000);
+            case 49:
+              return stardust(startlvl+1, endlvl, totaldust+30000);
+          }
+        } else {
+          return totaldust;
+          if (perfTiming) {var stardustT1 = performance.now();
+          console.log("stardust: Execution took "+(stardustT1-stardustT0).toFixed(1)+"ms");}
+        }
       }
       
       function wrongTyroEvo(aIV, dIV, sIV, eNum) {
@@ -1436,6 +1518,7 @@
       <label>Export PvPoke Custom Group:<input id="cge" type="checkbox" oninput="start()"></label><br />
       <label>Display Family Evolutions:<input id="family" type="checkbox" oninput="start()"></label><br />
       <label>Display Trade Improvement %:<input id="dti" type="checkbox" oninput="start()"></label><br />
+      <label>Display Stardust Power-Up Costs:<input id="dust" type="checkbox" oninput="start()"></label><br />
       <br />
       <div style="overflow-x:auto;">
         <p style="color:silver;font-size:0.6em">This site uses Google Analytics and the Google
