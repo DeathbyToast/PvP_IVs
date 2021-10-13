@@ -696,13 +696,13 @@
           uri += "&IVs="+IVs;
         }
         uri = encodeURI(uri);
+        
+        /* Update title and description to improve SEO for selected mon */
         var newTitle = selected+" PvP IVs - "+leagueName+" Rankings (Top "+limit+")";
         document.title = newTitle.replace(/_/g, ' '); /* replace all underscores ('_') with spaces */
         window.history.pushState(null, newTitle, uri);
-        console.log("updated page title: "+JSON.stringify(document.title));
-        var newDescrp = selected+" PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your "+selected+"'s PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified "+selected+"! Did you catch the very best?";
+        var newDescrp = selected+" PvP IVs lookup tool for Pokémon Go™ to help compare your "+selected+"'s PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified "+selected+"! Did you catch the very best?";
         document.querySelector('meta[name="description"]').setAttribute("content", newDescrp);
-        console.log("updated page description: "+JSON.stringify(document.querySelector('meta[name="description"]')));
         
         /*make table sortable by clicking on any header*/
         /*https://stackoverflow.com/questions/14267781/sorting-html-table-with-javascript*/
