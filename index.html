@@ -464,12 +464,12 @@
         
         /*prepare max stat html output*/
         var URL = window.location.href.split("?")[0];
-        var maxAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
-        var maxDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
-        var maxHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
-        var minAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
-        var minDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
-        var minHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
+        var maxAtkurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
+        var maxDefurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
+        var maxHPurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
+        var minAtkurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
+        var minDefurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
+        var minHPurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
@@ -478,7 +478,7 @@
         for (i=0; i<aIV.length; i++) {
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
-              console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);
+              /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
               gmRhtml = getMonRank(numRanks, ranks, keys, shdw, cmp, maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, false, false, maxLvl, dust);
               if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml == "")) {
                 console.log("i:"+i+" Detected too high CP after getMonRank");
@@ -516,7 +516,7 @@
                       var evoMaxStatProd = evoKeys[0].split(".")[0];
                       /*create link for evo table entry*/
                       IVs = aIV[i] + "_" + dIV[i] + "_" + sIV[i];
-                      uri = URL + "?mon="+evoMon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
+                      uri = URL + "?mon="+evoMon+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
                       /*console.log("About to pass IVs:"+aIV[i]+", "+dIV[i]+", "+sIV[i]+" to getMonRank");*/
                       var evoGMRhtml = getMonRank(evoNumRanks, evoRanks, evoKeys, shdw, cmp, evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evoMon, uri);
                       if (evoGMRhtml) {
@@ -649,7 +649,7 @@
           /*Generate Search String links for each IV set*/
           /*https://pvpivs.com/searchStr.html?mon=Medicham&r=10&cp=1500&o=1011100&l=en*/
           for (i=0; i<rIV.length; i++) {
-            searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+selected+"&r="+rIV[i]+"&cp="+league+"&o=1011100&l=en&m="+maxLvl+"'>Generate "+selected+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
+            searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+selected+"&cp="+league+"&r="+rIV[i]+"&o=1011100&l=en&m="+maxLvl+"'>Generate "+selected+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
           }
         }
         
@@ -687,7 +687,7 @@
         /*URL = "mon=Gyarados&r=5&cp=2500&f=1&lvl=10&IVs=0_15_15";*/
         /*pokeList limit league floor minLvl maxLvl aIV dIV sIV*/
         /*mon      r     cp     f     min    max    IVs*/
-        uri = URL + "?mon="+selected+"&r="+printLimit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
+        uri = URL + "?mon="+selected+"&cp="+league+"&r="+printLimit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
         if (aIV[0] && dIV[0] && sIV[0]) {
           for (i=0; i<aIV.length; i++) {
             if (i > 0) {IVs += "-";} else {IVs = "";}
@@ -703,6 +703,9 @@
         window.history.pushState(null, newTitle, uri);
         var newDescrp = selected+" PvP IVs lookup tool for Pokémon Go™ to help compare your "+selected+"'s PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified "+selected+"! Did you catch the very best?";
         document.querySelector('meta[name="description"]').setAttribute("content", newDescrp);
+        /* Update canonical link to include mon & league for improved SEO */
+        document.querySelector("link[rel='canonical']").setAttribute("href", "https://pvpivs.com/?mon="+selected+"&cp="+league);
+
         
         /*make table sortable by clicking on any header*/
         /*https://stackoverflow.com/questions/14267781/sorting-html-table-with-javascript*/
