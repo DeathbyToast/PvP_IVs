@@ -16,7 +16,7 @@
     <link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/pokeListGen6.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/pokeListGen8.js" as="script">
     <title>PvP IVs - League Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
@@ -154,14 +154,9 @@
     <!-- Footer Code Below -->
     <script src="https://pvpivs.com/includes/footer.js"></script>
     <script src="https://pvpivs.com/includes/calculate.js"></script>
-    <script src="https://pvpivs.com/includes/pokeListGen6.js"></script>
+    <script src="https://pvpivs.com/includes/pokeListGen8.js"></script>
         
     <script>
-    var boxRewrd = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,486,488];
-    /*480,481,482 are wild-spawning legendaries and 808,809 are wild-spawning mythicals*/
-    var raidOnly = [483,484,485,487,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898];
-    var boxMyth = [151,251,385,489,490,492,493,494,647,648,719,720,721,801,802,807,893];
-    var raidMyth = [386,491,649];
     var perfTiming = false; /* used for timing execution */
     var lastPercent;
     
@@ -206,7 +201,10 @@
       tbl.setAttribute("id", "outTable");
       var header = tbl.createTHead();
       var headerRow = header.insertRow(0);
-      headerRow.innerHTML = "<tr><th>Dex</th><th>Mon</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def IV</th><th>Sta IV</th><th>Apr</th><th>Perfect</th><th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
+      headerRow.innerHTML = "<tr><th>Dex</th><th>Mon</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def IV</th><th>Sta IV</th><th>Apr</th><th>Perfect</th>";
+      /*include XL candy costs if Max Level > 41*/
+      if (maxLvl > 41) {headerRow.innerHTML+="<th>XL</th>";}
+      headerRow.innerHTML += "<th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
       
       var tooSmallMons = "";
       var tooBigMons = "";
@@ -247,7 +245,7 @@
             var maxStatProd = keys[0].split(".")[0];
             
             if (ranks.numRanks/1 >0) {
-              progress(monName, (pokeList[i].value.split(",")[0]).split("&")[0], Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1);
+              progress(monName, (pokeList[i].value.split(",")[0]).split("&")[0], maxLvl, Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1);
               
               /* add the row to the end of the table body */
               tblBody.appendChild(row);
@@ -309,8 +307,8 @@
       })();
     }
       
-    function progress(monName, dexNum, percent, feedback, elem, row, stats, perfect, statProd, numRanks) {
-      feedback.innerHTML = "<p><i>Calculating "+monName+", please wait...</i></p>";
+    function progress(monName, dexNum, maxLvl, percent, feedback, elem, row, stats, perfect, statProd, numRanks) {
+      feedback.innerHTML = "<p><i>Calculating "+monName+", please"+JSON.stringify(maxLvl)+" wait...</i></p>";
       
       /* Update progress bar */
       if (percent > lastPercent+1) {
@@ -328,6 +326,9 @@
       outCell(stats.IVs.S, row); /*Sta IV*/
       outCell(stats.IVs.star, row); /*Star Appraisal*/
       outCell(perfect+"%", row); /*Perfection*/
+      if (maxLvl > 41) { /* XL Candy costs */
+        outCell(XLcandy(stats.L/1 - 40), row);
+      }
       outCell(numOut(stats.battle.A,1), row); /*GL Atk Total*/
       outCell(numOut(stats.battle.D,1), row); /*GL Def Total*/
       outCell(stats.battle.S, row); /*GL HP*/
@@ -363,6 +364,58 @@
       } else {
         /* Otherwise, return zeros */
         return [0, 0];
+      }
+    }
+    
+    /* Returns calculated XL candy costs based on https://i.redd.it/kb4pu1kxu9061.png */
+    function XLcandy(xlev) {
+      switch (xlev) {
+        case 11:
+          return 296;
+        case 10.5:
+          return 276;
+        case 10:
+          return 296;
+        case 9.5:
+          return 276;
+        case 9:
+          return 256;
+        case 8.5:
+          return 236;
+        case 8:
+          return 216;
+        case 7.5:
+          return 199;
+        case 7:
+          return 182;
+        case 6.5:
+          return 165;
+        case 6:
+          return 148;
+        case 5.5:
+          return 133;
+        case 5:
+          return 118;
+        case 4.5:
+          return 103;
+        case 4:
+          return 88;
+        case 3.5:
+          return 76;
+        case 3:
+          return 64;
+        case 2.5:
+          return 52;
+        case 2:
+          return 40;
+        case 1.5:
+          return 30;
+        case 1:
+          return 20;
+        case 0.5:
+          return 10;
+        default:
+          return 0;
       }
     }
     
