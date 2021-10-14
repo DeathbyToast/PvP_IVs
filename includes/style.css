@@ -64,7 +64,7 @@
   --navBackground: var(--lg500);
   --navActive: var(--yellow700);
   --navActiveText: var(--white100);
-  --navHover: var(--secondary);
+  --navHover: var(--green800);
   --text: var(--black100);
   --darkModeSlider: var(--secondary);
   --darkModeSliderBg: var(--dg16dp);
@@ -87,7 +87,7 @@
   --navBackground: var(--dg04dp);
   --navActive: var(--primary);
   --navActiveText: var(--black100);
-  --navHover: var(--secondary);
+  --navHover: var(--green800);
   --text: var(--white100);
   --darkModeSlider: var(--dg16dp);
   --darkModeSliderBg: var(--secondary);
