@@ -126,7 +126,7 @@
         <tr><td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td><td title="Your Attack IV">Atk</td><td title="Your Defense IV">Def</td><td title="Your Stamina IV">Sta</td><td id="plusCell"><button class="circle plus" onclick="doTheInsert()"></button></td></tr>
         <tr>
           <td><input class='shadowCB' id="shdw[0]" type="checkbox" oninput="checkAllBoxes()"></td>
-          <td><select title="Your Attack IV" class="aIV" id="aIV[0]" onchange="start()">
+          <td><select title="Your Attack IV" class="aIV" id="aIV[0]" onchange="main()">
             <option value="">&nbsp;</option>
             <option value="15">15</option>
             <option value="14">14</option>
@@ -145,7 +145,7 @@
             <option value="1">1</option>
             <option value="0">0</option>
           </select></td>
-          <td><select title="Your Defense IV" class="dIV" id="dIV[0]" onchange="start()">
+          <td><select title="Your Defense IV" class="dIV" id="dIV[0]" onchange="main()">
             <option value="15">15</option>
             <option value="14">14</option>
             <option value="13">13</option>
@@ -163,7 +163,7 @@
             <option value="1">1</option>
             <option value="0">0</option>
           </select></td>
-          <td><select title="Your Stamina IV" class="sIV" id="sIV[0]" onchange="start()">
+          <td><select title="Your Stamina IV" class="sIV" id="sIV[0]" onchange="main()">
             <option value="15">15</option>
             <option value="14">14</option>
             <option value="13">13</option>
@@ -330,26 +330,26 @@
                 }
               }
             }
-            start();
+            main();
           }
         });
         /*end Awesomeplete definitions https://leaverou.github.io/awesomplete/*/
       }
       
-      function start() {
-        if (perfTiming) {var startT0 = performance.now();}
+      function main() {
+        if (perfTiming) {var mainT0 = performance.now();}
         let megaNote = "";
 
         /*exit if we haven't selected a mon yet*/
         if ((awesomplete.suggestions === undefined) && (selected === undefined)) {
-          console.log("No Pokémon found by start(), received:'"+awesomplete.suggestions+"' and '"+selected+"'");
+          console.log("No Pokémon found by main(), received:'"+awesomplete.suggestions+"' and '"+selected+"'");
           return;
         } else {
           if (selected === undefined) {
             console.log("Invalid input detected:'"+awesomplete.suggestions+"' and '"+selected+"'");
             return;
           } else {
-            console.log("start: Found mon in both:'"+awesomplete.suggestions+"' and '"+selected+"'");
+            console.log("main: Found mon in both:'"+awesomplete.suggestions+"' and '"+selected+"'");
             if (selected.indexOf("_SPECULATIVE") > -1)  {megaNote = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
           }
         }
@@ -392,6 +392,7 @@
         /*ensure we clear the prior output between runs*/
         output.innerHTML = "";
         chart.innerHTML = "";
+        document.getElementById('timing_outputs').innerHTML = "";
         rIV = [];
         lvl = [];
         var uri;
@@ -632,9 +633,9 @@
         }
         html = "<br><br>Top "+printLimit+" "+leagueName+" "+selected+" of "+numRanks+":"+html;
 
-        var ranges = "Atk &ge; <input type='number' step='0.1' id='atkVal' min="+numOut(minAtk,1)+" max="+numOut(maxAtk,1)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;start();'> <a href="+minAtkurl+">"+numOut(minAtk,1)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,1)+" max="+numOut(maxAtk,1)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;start();'><a href="+maxAtkurl+">"+numOut(maxAtk,1)+"</a><br>";
-        ranges += "Def &ge; <input type='number' step='0.1' id='defVal' min="+numOut(minDef,1)+" max="+numOut(maxDef,1)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;start();'> <a href="+minDefurl+">"+numOut(minDef,1)+"</a><input type='range' id='defRange' min="+numOut(minDef,1)+" max="+numOut(maxDef,1)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;start();'><a href="+maxDefurl+">"+numOut(maxDef,1)+"</a><br>";
-        ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;start();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;start();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a>";
+        var ranges = "Atk &ge; <input type='number' step='0.1' id='atkVal' min="+numOut(minAtk,1)+" max="+numOut(maxAtk,1)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;main();'> <a href="+minAtkurl+">"+numOut(minAtk,1)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,1)+" max="+numOut(maxAtk,1)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;main();'><a href="+maxAtkurl+">"+numOut(maxAtk,1)+"</a><br>";
+        ranges += "Def &ge; <input type='number' step='0.1' id='defVal' min="+numOut(minDef,1)+" max="+numOut(maxDef,1)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;main();'> <a href="+minDefurl+">"+numOut(minDef,1)+"</a><input type='range' id='defRange' min="+numOut(minDef,1)+" max="+numOut(maxDef,1)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;main();'><a href="+maxDefurl+">"+numOut(maxDef,1)+"</a><br>";
+        ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;main();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;main();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a>";
         
         /*compute trade percentages*/
         var trades = "";
@@ -722,8 +723,9 @@
                 .forEach(tr => table.appendChild(tr) );
         })));
         
-        if (perfTiming) {var startT1 = performance.now();
-        console.log("start: Execution took "+(startT1-startT0).toFixed(1)+"ms");}
+        if (perfTiming) {var mainT1 = performance.now();
+        console.log("main: Execution took "+(mainT1-mainT0).toFixed(1)+"ms");
+        document.getElementById('timing_outputs').innerHTML += "main: Execution took "+(mainT1-mainT0).toFixed(1)+"ms<br>";}
         return true;
       }
       
@@ -845,14 +847,15 @@
           }
           if (perfTiming) {var checkURIt1 = performance.now();
           console.log("checkURI: Execution took "+(checkURIt1-checkURIt0).toFixed(1)+"ms");}
-          start();
+          main();
           return true;
         }
         else
         {
           console.log("No inputs detected, awaiting user input");
           if (perfTiming) {var checkURIt1 = performance.now();
-          console.log("start: Execution took "+(checkURIt1-checkURIt0).toFixed(1)+"ms");}
+          console.log("checkURI: Execution took "+(checkURIt1-checkURIt0).toFixed(1)+"ms");
+          document.getElementById('timing_outputs').innerHTML += "checkURI: Execution took "+(checkURIt1-checkURIt0).toFixed(1)+"ms<br>";}
           return false;
         }
       }
@@ -893,7 +896,8 @@
             }
         }
         if (perfTiming) {var cmpCalcsT1 = performance.now();
-        console.log("cmpCalcs: Execution took "+(cmpCalcsT1-cmpCalcsT0).toFixed(1)+"ms");}
+        console.log("cmpCalcs: Execution took "+(cmpCalcsT1-cmpCalcsT0).toFixed(1)+"ms");
+        document.getElementById('timing_outputs').innerHTML += "cmpCalcs: Execution took "+(cmpCalcsT1-cmpCalcsT0).toFixed(1)+"ms<br>";}
         return ranks;
       }
       
@@ -978,24 +982,32 @@
         
         /*highlight higest chance row*/
         var nfCls="",gdfCls="",grfCls="",ufCls="",bfCls="",lfCls="",clsVal="";
-        var maxVal = 0; /*leave as zero if IV floor is at least 1*/
-        if (floor/1 < 1) {maxVal = ((10000*hNo/numRanks).toFixed(1))/1; /*no friends pcnt*/}
-        var maxType = "None";
+        
+        /* Initialize with "None" Friends */var maxVal=cNo/1;var maxType = "None"; /*none friends pcnt*/
         
         if ((floor/1 < 2) && (maxVal/1<=cGo/1)){maxVal=cGo/1;maxType="Good";}/*check good friends pcnt*/
+        
 
         if ((floor/1 < 3) && (maxVal/1<=cGr/1)){maxVal=cGr/1;maxType="Great";}/*check great friends pcnt*/
+        console.log("cGr ("+cGr+") maxVal updated? "+maxVal);
 
         if ((floor/1 < 4) && (maxVal/1<=cUf/1)){maxVal=cUf/1;maxType="Ultra";}/*check ultra friends pcnt*/
+        console.log("cUf ("+cUf+") maxVal updated? "+maxVal);
 
         if ((floor/1 < 6) && (maxVal/1<=cBf/1)){maxVal=cBf/1;maxType="Best";}/*check best friends pcnt*/
+        console.log("cBf ("+cBf+") maxVal updated? "+maxVal);
 
         if (maxVal/1<=cLf/1){maxVal=cLf/1;maxType="Lucky";}/*check lucky friends pcnt*/
+        console.log("cLf ("+cLf+") maxVal updated? "+maxVal);
         
-        /* control highlighting of table rows based on trade improvement percentage chance */
-        if (maxVal/100 > 60) {clsVal = "highMaxRow";}
-          else if (maxVal/100 > 40) {clsVal = "okMaxRow";}
+        /* Only highlight if chance to improve is non-zero */
+        if (maxVal) {
+          /* control highlighting of table rows based on trade improvement percentage chance */
+          if (maxVal/10000 > 60) {clsVal = "highMaxRow";}
+          else if (maxVal/10000 > 40) {clsVal = "okMaxRow";}
           else {clsVal = "lowMaxRow";}
+        }
+        console.log("clsVal:"+clsVal);
         
         /* determine which row should be highlighted, others left blank / not assigned a class */
         switch(maxType) {
@@ -1056,7 +1068,8 @@
           outHTML += "<td>"+tLf+"</td></tr></table>";
         }
         if (perfTiming) {var tradePcntsT1 = performance.now();
-        console.log("tradePcnts: Execution took "+(tradePcntsT1-tradePcntsT0).toFixed(1)+"ms");}
+        console.log("tradePcnts: Execution took "+(tradePcntsT1-tradePcntsT0).toFixed(1)+"ms");
+        document.getElementById('timing_outputs').innerHTML += "tradePcnts: Execution took "+(tradePcntsT1-tradePcntsT0).toFixed(1)+"ms<br>";}
         return outHTML;
       }
       
@@ -1132,7 +1145,8 @@
           }
         }
         if (perfTiming) {var getMonRankT1 = performance.now();
-        console.log("getMonRank: Execution took "+(getMonRankT1-getMonRankT0).toFixed(1)+"ms");}
+        console.log("getMonRank: Execution took "+(getMonRankT1-getMonRankT0).toFixed(1)+"ms");
+        document.getElementById('timing_outputs').innerHTML += "getMonRank: Execution took "+(getMonRankT1-getMonRankT0).toFixed(1)+"ms<br>";}
         return html;
       }
       
@@ -1271,7 +1285,8 @@
         } else {
           return totaldust;
           if (perfTiming) {var stardustT1 = performance.now();
-          console.log("stardust: Execution took "+(stardustT1-stardustT0).toFixed(1)+"ms");}
+          console.log("stardust: Execution took "+(stardustT1-stardustT0).toFixed(1)+"ms");
+          document.getElementById('timing_outputs').innerHTML += "stardust: Execution took "+(stardustT1-stardustT0).toFixed(1)+"ms<br>";}
         }
       }
       
@@ -1318,7 +1333,8 @@
               return true; }
           } else {console.log("Tyrogue: Not sure how this is possible?");return false;}
         if (perfTiming) {var wrongTyroEvoT1 = performance.now();
-        console.log("wrongTyroEvo: Execution took "+(wrongTyroEvoT1-wrongTyroEvoT0).toFixed(1)+"ms");}
+        console.log("wrongTyroEvo: Execution took "+(wrongTyroEvoT1-wrongTyroEvoT0).toFixed(1)+"ms");
+        document.getElementById('timing_outputs').innerHTML += "wrongTyroEvo: Execution took "+(wrongTyroEvoT1-wrongTyroEvoT0).toFixed(1)+"ms<br>";}
         return false;
       }
       
@@ -1340,22 +1356,24 @@
           mD = mD/0.83333331;
         }
         if (perfTiming) {var checkAllBoxesT1 = performance.now();
-        console.log("checkAllBoxes: Execution took "+(checkAllBoxesT1-checkAllBoxesT0).toFixed(1)+"ms");}
-        start();
+        console.log("checkAllBoxes: Execution took "+(checkAllBoxesT1-checkAllBoxesT0).toFixed(1)+"ms");
+        document.getElementById('timing_outputs').innerHTML += "checkAllBoxes: Execution took "+(checkAllBoxesT1-checkAllBoxesT0).toFixed(1)+"ms<br>";}
+        main();
       }
       
       function doTheInsert() {
         if (perfTiming) {var doTheInsertT0 = performance.now();}
         var newRow=document.getElementById('inputTable').insertRow();
         var shadowCB = document.getElementsByClassName('shadowCB');
-        newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='checkAllBoxes()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='start()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='start()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='start()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' onclick='doTheRemoval()'></button></td></tr>";
+        newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='checkAllBoxes()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' onclick='doTheRemoval()'></button></td></tr>";
         /* Ensure this new row "spawns" with correct shadow checkbox state (copy top row state) */
         document.getElementById('shdw['+(shadowCB.length-1)+']').checked = document.getElementById('shdw[0]').checked;
         aIV.push('');
         dIV.push('15');
         sIV.push('15');
         if (perfTiming) {var doTheInsertT1 = performance.now();
-        console.log("doTheInsert: Execution took "+(doTheInsertT1-doTheInsertT0).toFixed(1)+"ms");}
+        console.log("doTheInsert: Execution took "+(doTheInsertT1-doTheInsertT0).toFixed(1)+"ms");
+        document.getElementById('timing_outputs').innerHTML += "doTheInsert: Execution took "+(doTheInsertT1-doTheInsertT0).toFixed(1)+"ms<br>";}
         return true;
       }
       
@@ -1395,20 +1413,22 @@
           doTheInsert();
         }
         if (perfTiming) {var doTheRemovalT1 = performance.now();
-        console.log("doTheRemoval: Execution took "+(doTheRemovalT1-doTheRemovalT0).toFixed(1)+"ms");}
-        start();
+        console.log("doTheRemoval: Execution took "+(doTheRemovalT1-doTheRemovalT0).toFixed(1)+"ms");
+        document.getElementById('timing_outputs').innerHTML += "doTheRemoval: Execution took "+(doTheRemovalT1-doTheRemovalT0).toFixed(1)+"ms<br>";}
+        main();
         return true;
       }
       </script>
+      <div style="overflow-x:auto;" id="timing_outputs"></div>
       <h3>Settings:</h3>
-      <label>Top # Ranks:<input type="number" value="10" id="limit" min="1" max="4096" oninput="start()"></label><br />
-      <label>League:<select id="league" oninput="start()">
+      <label>Top # Ranks:<input type="number" value="10" id="limit" min="1" max="4096" oninput="main()"></label><br />
+      <label>League:<select id="league" oninput="main()">
         <option value="500" label="Little Leagues">Little Leagues</option>
         <option value="1500" selected label="Great League">Great League</option>
     		<option value="2500" label="Ultra League">Ultra League</option>
     		<option value="false" label="Master League">Master League</option>
     	</select></label><br />
-      <label>IV Floor:<select id="floor" oninput="start()">
+      <label>IV Floor:<select id="floor" oninput="main()">
         <option value="0">0: Wild Caught</option>
         <option value="1">1: Trade, Good Friend</option>
         <option value="2">2: Trade, Great / Purified</option>
@@ -1419,7 +1439,7 @@
         <option value="10">10: Raid / Hatch</option>
         <option value="12">12: Lucky Trade</option>
       </select></label><br />
-      <label>Min Level:<select title="What Level Floor to Search?" id="minLvl" oninput="start()">
+      <label>Min Level:<select title="What Level Floor to Search?" id="minLvl" oninput="main()">
         <option value="1">1: Wild Caught</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -1461,7 +1481,7 @@
         <option value="39">39</option>
         <option value="40">40</option>
       </select></label><br />
-      <label>Max Level:<select title="What Level Ceiling to Search?" id="maxLvl" oninput="start()">
+      <label>Max Level:<select title="What Level Ceiling to Search?" id="maxLvl" oninput="main()">
         <option value="1">1: Wild Caught</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -1514,11 +1534,11 @@
         <option value="50">50</option>
         <option value="51">51: Best Buddy</option>
       </select></label><br />
-      <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="start()"></label><br />
-      <label>Export PvPoke Custom Group:<input id="cge" type="checkbox" oninput="start()"></label><br />
-      <label>Display Family Evolutions:<input id="family" type="checkbox" oninput="start()"></label><br />
-      <label>Display Trade Improvement %:<input id="dti" type="checkbox" oninput="start()"></label><br />
-      <label>Display Stardust Power-Up Costs:<input id="dust" type="checkbox" oninput="start()"></label><br />
+      <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="main()"></label><br />
+      <label>Export PvPoke Custom Group:<input id="cge" type="checkbox" oninput="main()"></label><br />
+      <label>Display Family Evolutions:<input id="family" type="checkbox" oninput="main()"></label><br />
+      <label>Display Trade Improvement %:<input id="dti" type="checkbox" oninput="main()"></label><br />
+      <label>Display Stardust Power-Up Costs:<input id="dust" type="checkbox" oninput="main()"></label><br />
       <br />
       <div style="overflow-x:auto;">
         <p style="color:silver;font-size:0.6em">This site uses Google Analytics and the Google
