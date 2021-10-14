@@ -245,7 +245,7 @@
             var maxStatProd = keys[0].split(".")[0];
             
             if (ranks.numRanks/1 >0) {
-              progress(monName, (pokeList[i].value.split(",")[0]).split("&")[0], maxLvl, Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1);
+              progress(monName, (pokeList[i].value.split(",")[0]).split("b")[0].split("&")[0], maxLvl, Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1);
               
               /* add the row to the end of the table body */
               tblBody.appendChild(row);
