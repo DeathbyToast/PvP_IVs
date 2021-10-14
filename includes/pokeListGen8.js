@@ -3258,6 +3258,14 @@ var pokeList = [
     'value': '709,201,154,198,708b'
   },
   {
+    'label': 'Pumpkaboo',
+    'value': '710b,122,124,127,711'
+  },
+  {
+    'label': 'Gourgeist',
+    'value': '711,171,146,219,710b'
+  },
+  {
     'label': 'Bergmite',
     'value': '712b,117,120,146,713'
   },
