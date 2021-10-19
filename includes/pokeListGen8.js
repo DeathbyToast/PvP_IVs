@@ -559,11 +559,11 @@ var pokeList = [
   },
   {
     'label': 'Hitmonlee',
-    'value': '106b,224,181,137,107,236&eggsonly,237'
+    'value': '106b,224,181,137,107b,236&eggsonly,237'
   },
   {
     'label': 'Hitmonchan',
-    'value': '107b,193,197,137,106,236&eggsonly,237'
+    'value': '107b,193,197,137,106b,236&eggsonly,237'
   },
   {
     'label': 'Lickitung',
@@ -1147,7 +1147,7 @@ var pokeList = [
   },
   {
     'label': 'Hitmontop',
-    'value': '237b,173,207,137,106,107,236&eggsonly'
+    'value': '237b,173,207,137,106b,107b,236&eggsonly'
   },
   {
     'label': 'Smoochum',
@@ -3146,6 +3146,10 @@ var pokeList = [
     'value': '680,188,206,153,679b'
   },
   {
+    'label': 'Aegislash_PLACEHOLDER',
+    'value': '681b,1,1,1'
+  },
+  {
     'label': 'Spritzee',
     'value': '682b,110,113,186,683'
   },
@@ -4083,14 +4087,14 @@ var pokeList = [
   },
   {
     'label': 'Calyrex',
-    'value': '897b,147,147,205'
+    'value': '898b,147,147,205'
   },
   {
     'label': 'Ice_Rider_Calyrex',
-    'value': '897b,268,246,205'
+    'value': '898b,268,246,205'
   },
   {
     'label': 'Shadow_Rider_Calyrex',
-    'value': '897b,324,194,205'
+    'value': '898b,324,194,205'
   }
 ];
