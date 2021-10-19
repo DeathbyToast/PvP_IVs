@@ -559,11 +559,11 @@ var pokeList = [
   },
   {
     'label': 'Hitmonlee',
-    'value': '106b,224,181,137,107b,236&eggsonly,237'
+    'value': '106b,224,181,137,107b,236&eggsonly,237b'
   },
   {
     'label': 'Hitmonchan',
-    'value': '107b,193,197,137,106b,236&eggsonly,237'
+    'value': '107b,193,197,137,106b,236&eggsonly,237b'
   },
   {
     'label': 'Lickitung',
