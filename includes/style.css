@@ -311,14 +311,14 @@ textarea, select, input {
 /* Table CSS for Rankings Pages */
 /*https://www.w3schools.com/css/css_table.asp*/
 
-#outTable, #inputTable, #tradeTable {
+#outTable, #familyTable, #inputTable, #tradeTable {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   border-collapse: collapse;
   margin-left:auto;
   margin-right:auto;
 }
       
-#outTable td, #outTable th {
+#outTable td, #outTable th, #familyTable td, #familyTable th {
   border: 1px solid var(--tableDividers);
   padding: 8px;
   text-align: center;
@@ -339,11 +339,11 @@ textarea, select, input {
   line-height: normal;
 }
 
-#outTable tr:nth-child(even), #tradeTable tr:nth-child(even) {background-color: var(--tableRowEven);}
-#outTable tr:nth-child(odd), #tradeTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
-#outTable tr:hover, #tradeTable tr:hover {background-color: var(--navHover);}
+#outTable tr:nth-child(even), #tradeTable tr:nth-child(even), #familyTable tr:nth-child(even) {background-color: var(--tableRowEven);}
+#outTable tr:nth-child(odd), #tradeTable tr:nth-child(odd), #familyTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
+#outTable tr:hover, #tradeTable tr:hover, #familyTable tr:hover {background-color: var(--navHover);}
 
-#outTable th, #tradeTable th {
+#outTable th, #tradeTable th, #familyTable th {
   line-height: 15px;
   padding: 3px;
   padding-top: 5px;
