@@ -31,11 +31,11 @@
        * 1000/4096 ~= 0.2442 and 100/4096 ~= 0.02442
        * use 0.02442 to approximate "Top 100" (green) when there are less than 4096 results
        * use 0.2442 to approximate "Top 1000" (orange) when there are less than 4096 results */
-      #outTable tr.good > *, #tradeTable tr.highMaxRow > * {background-color: var(--goodResult); color: var(--navActiveText);}
-      #outTable tr.ok > *, #tradeTable tr.okMaxRow > * {background-color: var(--okResult); color: var(--navActiveText);}
-      #outTable tr.rubbish > *, #tradeTable tr.lowMaxRow > * {background-color: var(--badResult); color: var(--navActiveText);}
+      #outTable tr.good > *, #familyTable tr.good > *, #tradeTable tr.highMaxRow > * {background-color: var(--goodResult); color: var(--navActiveText);}
+      #outTable tr.ok > *, #familyTable tr.ok > *, #tradeTable tr.okMaxRow > * {background-color: var(--okResult); color: var(--navActiveText);}
+      #outTable tr.rubbish > *, #familyTable tr.rubbish > *, #tradeTable tr.lowMaxRow > * {background-color: var(--badResult); color: var(--navActiveText);}
       /* the > * operator applies the css to all children (cells) */
-      #outTable a {
+      #outTable, #familyTable a {
         color: var(--navActiveText);
       }
       
@@ -246,7 +246,7 @@
             if (selected) {
               /* Clear all existing IV Input Rows */
               for (var i=0; i<aIV.length; i++) {
-                /* voodoo to actually remove all the rows one by one */
+                /* magic to actually remove all the rows one by one */
                 var tr = document.getElementById('aIV['+i+']').parentNode;
                 tr.parentNode.parentNode.removeChild(tr.parentNode);
               }
@@ -442,6 +442,8 @@
         var dti = document.getElementById("dti").checked;
         var cge = document.getElementById("cge").checked;
         var family = document.getElementById("family").checked;
+        var evoLeague = document.getElementById('familyEvoLeague').value;
+        var evoLeagueName = document.getElementById('familyEvoLeague').options[document.getElementById('familyEvoLeague').selectedIndex].innerHTML;
         var cmp = document.getElementById("cmp").checked;
         var dust = document.getElementById("dust").checked;
         var shdw = document.getElementById('shdw[0]').checked;
@@ -500,12 +502,12 @@
         
         /*prepare max stat html output*/
         var URL = window.location.href.split("?")[0];
-        var maxAtkurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
-        var maxDefurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
-        var maxHPurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
-        var minAtkurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
-        var minDefurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
-        var minHPurl = encodeURI(URL + "?mon="+selected+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
+        var maxAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
+        var maxDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
+        var maxHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
+        var minAtkurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
+        var minDefurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
+        var minHPurl = encodeURI(URL + "?mon="+selected+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
@@ -532,16 +534,13 @@
                   var evoVals = pokeList[evoDex].value.split(",");
                   var evoName = pokeList[evoDex].label;
                   
-                  var evoLeague = document.getElementById('familyEvoLeague').value;
-                  var evoLeagueName = document.getElementById('familyEvoLeague').options[document.getElementById('familyEvoLeague').selectedIndex].innerHTML;
-                  
                   var evoRanks = calculate(parseInt(evoVals[1]), parseInt(evoVals[2]), parseInt(evoVals[3]), floor, minLvl, maxLvl, false, evoLeague, evoName);
                   var evoKeys = Object.keys(evoRanks);
                   var evoNumRanks = evoRanks.numRanks;
                   var evoMaxStatProd = evoKeys[0].split(".")[0];
                   /*create link for evo table entry*/
                   IVs = aIV[i] + "_" + dIV[i] + "_" + sIV[i];
-                  uri = URL + "?mon="+evoName+"&cp="+league+"&r="+limit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
+                  uri = URL + "?mon="+evoName+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
 
                   var evoGMRhtml = getMonRank(evoNumRanks, evoRanks, evoKeys, shdw, cmp, evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evoName, uri);
                   if (evoGMRhtml) {
@@ -551,13 +550,13 @@
                     } else {
                       /*if this is the first evo, add header too*/
                       if ((evoLen > 1) || (aIV.length > 1)) {
-                        evoHtml = "<p><i>"+evoLen+" "+selected+" "+evoLeagueName+" family evos:<br>(click table headers to sort)</i></p><table id='outTable'><tr><th>Pokémon</th>";
+                        evoHtml = "<p><i>"+evoLen+" "+selected+" "+evoLeagueName+" family evos:<br>(click table headers to sort)</i></p><table id='familyTable'><tr><th>Pokémon</th>";
                         if (aIV.length > 1) {
                           evoHtml += "<th>IVs</th>";
                         }
                         evoHtml += "<th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th><th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
                       } else {
-                        evoHtml = "<p><i>"+evoLen+" "+selected+" "+evoLeagueName+" family evo:</i></p><table id='outTable'><tr><th>Pokémon</th><th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th><th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
+                        evoHtml = "<p><i>"+evoLen+" "+selected+" "+evoLeagueName+" family evo:</i></p><table id='familyTable'><tr><th>Pokémon</th><th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th><th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
                       }
                       evoHtml += evoGMRhtml;
                     }
@@ -703,11 +702,22 @@
         
         output.innerHTML = evoHtml + megaNote + evoFeedback + ranges + html + searchLink + "<br>" + trades;
         
+        var elT0 = performance.now();
+        /* Add event listener to capture user clicking on any table row */
+        //var tableRows = document.getElementById("outTable").getElementsByTagName("tr");
+        
+        document.getElementById('outTable').addEventListener('click', function(){addToCompare(event)}, false);
+        
+        //for (i=0; i<tableRows.length; i++) {
+          //tableRows[i].addEventListener("click", addToCompare, false);
+        //}
+        var elT1 = performance.now();
+        console.log("added the table row listener");
+        console.log("el Execution took "+(elT1-elT0).toFixed(1)+"ms");
+        
         /*update the URL with search parameters*/
-        /*URL = "mon=Gyarados&r=5&cp=2500&f=1&lvl=10&IVs=0_15_15";*/
-        /*pokeList limit league floor minLvl maxLvl aIV dIV sIV*/
-        /*mon      r     cp     f     min    max    IVs*/
-        uri = URL + "?mon="+selected+"&cp="+league+"&r="+printLimit+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&dti="+dti+"&cge="+cge+"&fam="+family+"&cmp="+cmp+"&shdw="+shdw+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
+        /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000111&fel=1500";*/
+        uri = URL + "?mon="+selected+"&r="+printLimit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
         if (aIV[0] && dIV[0] && sIV[0]) {
           for (i=0; i<aIV.length; i++) {
             if (i > 0) {IVs += "-";} else {IVs = "";}
@@ -745,6 +755,21 @@
         console.log("main: Execution took "+(mainT1-mainT0).toFixed(1)+"ms");
         document.getElementById('timing_outputs').innerHTML += "main: Execution took "+(mainT1-mainT0).toFixed(1)+"ms<br>";}
         return true;
+      }
+      
+      function addToCompare(e) {
+        var row = window.event.target.parentNode;
+        console.log("row.rowIndex:"+row.rowIndex);
+        /* Ensure we didn't click on the header row to sort */
+        if (row.rowIndex/1 > 0) {
+          var atk = row.cells[3].innerHTML;
+          var def = row.cells[4].innerHTML;
+          var sta = row.cells[5].innerHTML;
+          doTheInsert(atk, def, sta);
+        } else {
+          console.log("Skipping adding row as we clicked on the Header Row:"+row.rowIndex);
+        }
+        main();
       }
       
       function findMonbyDex(target) {
@@ -810,7 +835,7 @@
         for (var i=0;  i<settings.length; i++) {
           if (localStorage[settings[i]] === undefined) {
             /* User has no preference for us to read yet */
-            console.log("Could not find localStorage."+settings[i]);
+            /*console.log("Could not find localStorage."+settings[i]);*/
             continue;
           }
           /* User has a stored preference for us to read */
@@ -852,7 +877,7 @@
         checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust");
         
         var URL = window.location.href.split("?")[1];
-        /*URL = "mon=Mega_Altaria_SPECULATIVE&r=10&cp=1500&f=0&min=1&max=40&cmp=false&shdw=false&cge=false&fam=false&fel=false&dti=false&dust=false&mA=123.9&mD=120.0&mHP=99&IVs=0_15_15";*/
+        /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000111&fel=1500";*/
         
         if (URL)
         {
@@ -900,19 +925,27 @@
                 document.getElementById('maxLvl').value = values[i].split("=")[1];
                 break;
               case "dti":
-                document.getElementById('dti').checked = values[i].split("=")[1] ? "true" : "false";
+                document.getElementById('dti').checked = values[i].split("=")[1] ? true : false;
                 break;
               case "cge":
-                document.getElementById('cge').checked = values[i].split("=")[1] ? "true" : "false";
+                document.getElementById('cge').checked = values[i].split("=")[1] ? true : false;
                 break;
               case "fam":
-                document.getElementById('family').checked = values[i].split("=")[1] ? "true" : "false";
+                document.getElementById('family').checked = values[i].split("=")[1] ? true : false;
+                break;
+              case "fel":
+                document.getElementById('familyEvoLeague').value = values[i].split("=")[1];
+                /* Catch incorrect CP values being passed in, default to Master League (false) */
+                if (document.getElementById('familyEvoLeague').value == "") {
+                  console.log("ERROR: checkURI: Unknown cp value detected, defaulting to Master League");
+                  document.getElementById('familyEvoLeague').value = false;
+                }
                 break;
               case "cmp":
-                document.getElementById('cmp').checked = values[i].split("=")[1] ? "true" : "false";
+                document.getElementById('cmp').checked = values[i].split("=")[1] ? true : false;
                 break;
               case "shdw":
-                document.getElementById('shdw[0]').checked = values[i].split("=")[1] ? "true" : "false";
+                document.getElementById('shdw[0]').checked = values[i].split("=")[1] ? true : false;
                 break;
               case "IVs":
                 var ivStr = (values[i].split("=")[1]).split("-");
@@ -940,12 +973,12 @@
               case "set":
                 /* settings = shdw,cmp,cge,family,dti,dust */
                 var settings = (''+values[i].split("=")[1]);
-                document.getElementById('shdw').checked = settings[0] ? "true" : "false";
-                document.getElementById('cmp').checked = settings[1] ? "true" : "false";
-                document.getElementById('cge').checked = settings[2] ? "true" : "false";
-                document.getElementById('family').checked = settings[3] ? "true" : "false";
-                document.getElementById('dti').checked = settings[4] ? "true" : "false";
-                document.getElementById('dust').checked = settings[5] ? "true" : "false";
+                document.getElementById('shdw[0]').checked = settings[0]==1 ? true : false;
+                document.getElementById('cmp').checked = settings[1]==1 ? true : false;
+                document.getElementById('cge').checked = settings[2]==1 ? true : false;
+                document.getElementById('family').checked = settings[3]==1 ? true : false;
+                document.getElementById('dti').checked = settings[4]==1 ? true : false;
+                document.getElementById('dust').checked = settings[5]==1 ? true : false;
                 break;
             }
           }
@@ -1449,16 +1482,29 @@
         main();
       }
       
-      function doTheInsert() {
+      function doTheInsert(atk, def, sta) {
         if (perfTiming) {var doTheInsertT0 = performance.now();}
+        
         var newRow=document.getElementById('inputTable').insertRow();
         var shadowCB = document.getElementsByClassName('shadowCB');
         newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='checkAllBoxes()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' onclick='doTheRemoval()'></button></td></tr>";
         /* Ensure this new row "spawns" with correct shadow checkbox state (copy top row state) */
         document.getElementById('shdw['+(shadowCB.length-1)+']').checked = document.getElementById('shdw[0]').checked;
-        aIV.push('');
-        dIV.push('15');
-        sIV.push('15');
+        
+        /* Check if this row should have default IVs or specific IVs */
+        if (!(atk && def && sta)) {
+          console.log("Missing one or more IVs, inserting default values");
+          atk = '';
+          def = '15';
+          sta = '15';
+        } else {
+          document.getElementById("aIV["+aIV.length+"]").selectedIndex = [...document.getElementById("aIV["+aIV.length+"]").options].findIndex (option => option.text === atk);
+          document.getElementById("dIV["+dIV.length+"]").selectedIndex = [...document.getElementById("dIV["+dIV.length+"]").options].findIndex (option => option.text === def);
+          document.getElementById("sIV["+sIV.length+"]").selectedIndex = [...document.getElementById("sIV["+sIV.length+"]").options].findIndex (option => option.text === sta);
+        }
+        aIV.push(atk);
+        dIV.push(def);
+        sIV.push(sta);
         if (perfTiming) {var doTheInsertT1 = performance.now();
         console.log("doTheInsert: Execution took "+(doTheInsertT1-doTheInsertT0).toFixed(1)+"ms");
         document.getElementById('timing_outputs').innerHTML += "doTheInsert: Execution took "+(doTheInsertT1-doTheInsertT0).toFixed(1)+"ms<br>";}
@@ -1474,10 +1520,6 @@
         var tr = td.parentNode; /*the row to be removed*/
         var rowNum = tr.innerHTML.split("aIV[")[1];
         rowNum = rowNum.split("]")[0];
-        /*console.log("rowNum:"+JSON.stringify(rowNum));
-        console.log("aIV before removal:"+JSON.stringify(aIV));
-        console.log("dIV before removal:"+JSON.stringify(dIV));
-        console.log("sIV before removal:"+JSON.stringify(sIV));*/
         for (var i=0; i<aIV.length; i++)
         {
           if (i>=rowNum) {
@@ -1491,9 +1533,6 @@
         aIV.splice(rowNum, 1);
         dIV.splice(rowNum, 1);
         sIV.splice(rowNum, 1);
-        /*console.log("aIV after removal:"+JSON.stringify(aIV));
-        console.log("dIV after removal:"+JSON.stringify(dIV));
-        console.log("sIV after removal:"+JSON.stringify(sIV));*/
         tr.parentNode.removeChild(tr);
         
         /* If we removed all rows, add one back */
