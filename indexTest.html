@@ -704,16 +704,7 @@
         
         var elT0 = performance.now();
         /* Add event listener to capture user clicking on any table row */
-        //var tableRows = document.getElementById("outTable").getElementsByTagName("tr");
-        
         document.getElementById('outTable').addEventListener('click', function(){addToCompare(event)}, false);
-        
-        //for (i=0; i<tableRows.length; i++) {
-          //tableRows[i].addEventListener("click", addToCompare, false);
-        //}
-        var elT1 = performance.now();
-        console.log("added the table row listener");
-        console.log("el Execution took "+(elT1-elT0).toFixed(1)+"ms");
         
         /*update the URL with search parameters*/
         /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000111&fel=1500";*/
