@@ -128,9 +128,6 @@
       <div id="outputSummaryBox"></div>
       <div id="feedbackBox"></div><br />
     <br /><br />
-      <textarea id="outputAlt" rows="10" style="width: 95%; height: 50%;" onclick="autocopy(this)"></textarea>
-      <div id="outputSummaryBoxAlt"></div>
-      <div id="feedbackBoxAlt"></div><br />
       <!-- Footer Code Below -->
     <script src="https://pvpivs.com/includes/footer.js"></script>
     <script src="https://pvpivs.com/includes/calculate.js"></script>
@@ -952,8 +949,6 @@
           maxHP = results[3];
         }
         
-        var altout = evoVals[0][0]+"&";
-        
         /* generate all the cps and hps for matching */
         /* for ranks 1 to user cutoff, up to maxSearchLvl/league limit */
         for (i=0; i<rKeys.length; i++) {
@@ -998,42 +993,35 @@
                   hps[0].add(hp);
                   if (maxCP[0] < cp) {maxCP[0] = cp;}
                   if (maxHP[0] < hp) {maxHP[0] = hp;}
-                  altout += "!0*&!cp"+cp+",!hp"+hp+",";
                   break;
                 case "1*":
                   cps[1].add(cp);
                   hps[1].add(hp);
                   if (maxCP[1] < cp) {maxCP[1] = cp;}
                   if (maxHP[1] < hp) {maxHP[1] = hp;}
-                  altout += "!1*&!cp"+cp+",!hp"+hp+",";
                   break;
                 case "2*":
                   cps[2].add(cp);
                   hps[2].add(hp);
                   if (maxCP[2] < cp) {maxCP[2] = cp;}
                   if (maxHP[2] < hp) {maxHP[2] = hp;}
-                  altout += "!2*&!cp"+cp+",!hp"+hp+",";
                   break;
                 case "3*":
                   cps[3].add(cp);
                   hps[3].add(hp);
                   if (maxCP[3] < cp) {maxCP[3] = cp;}
                   if (maxHP[3] < hp) {maxHP[3] = hp;}
-                  altout += "!3*&!cp"+cp+",!hp"+hp+",";
                   break;
                 case "4*":
                   cps[4].add(cp);
                   hps[4].add(hp);
                   if (maxCP[4] < cp) {maxCP[4] = cp;}
                   if (maxHP[4] < hp) {maxHP[4] = hp;}
-                  altout += "!4*";
                   break;
               }
             }
           }
         }
-        /* TODO: OUTPUT SPECIAL STRING HERE */
-        document.getElementById('outputAlt').innerHTML = altout;
       }
       
       /* get actual maxCP and maxHP using spread syntax */
