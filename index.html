@@ -542,21 +542,26 @@
                   IVs = aIV[i] + "_" + dIV[i] + "_" + sIV[i];
                   uri = URL + "?mon="+evoName+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+IVs+"&mA=0&mD=0&mHP=0";
 
-                  var evoGMRhtml = getMonRank(evoNumRanks, evoRanks, evoKeys, shdw, cmp, evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evoName, uri);
+                  var evoGMRhtml = getMonRank(evoNumRanks, evoRanks, evoKeys, shdw, cmp, evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evoName, uri, false, dust);
                   if (evoGMRhtml) {
                     if (evoHtml) {
                       /*if this is a second evo, just add it*/
                       evoHtml += evoGMRhtml;
                     } else {
+                      /*include stardust costs if selected*/
+                      var dustHeader = "";
+                      if (dust) {
+                        dustHeader="<th>Dust</th>";
+                      }
                       /*if this is the first evo, add header too*/
                       if ((evoLen > 1) || (aIV.length > 1)) {
                         evoHtml = "<p><i>"+evoLen+" "+selected+" "+evoLeagueName+" family evos:<br>(click table headers to sort)</i></p><table id='familyTable'><tr><th>Pokémon</th>";
                         if (aIV.length > 1) {
                           evoHtml += "<th>IVs</th>";
                         }
-                        evoHtml += "<th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th><th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
+                        evoHtml += "<th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th>"+dustHeader+"<th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
                       } else {
-                        evoHtml = "<p><i>"+evoLen+" "+selected+" "+evoLeagueName+" family evo:</i></p><table id='familyTable'><tr><th>Pokémon</th><th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th><th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
+                        evoHtml = "<p><i>"+evoLen+" "+selected+" "+evoLeagueName+" family evo:</i></p><table id='familyTable'><tr><th>Pokémon</th><th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th>"+dustHeader+"<th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
                       }
                       evoHtml += evoGMRhtml;
                     }
@@ -612,7 +617,7 @@
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
                 html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"+"</td>"; /*Perfection*/
                 if (maxLvl > 41) {html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";}
-                if (dust) {html+="<td>"+stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";}
+                if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";}
                 if (cmp) {
                   html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
                   if (ranks.numRanks/1 < 100) { /*account for when there aren't 100 numRanks*/
@@ -1240,15 +1245,13 @@
                 lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
               }
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
+              if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";}
               
               if(!mon) {
                 if (maxLvl > 41) {html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";}
-                if (dust) {html+="<td>"+stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";}
-              
                 if (cmp) {
                     html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
                     html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
-                    /*usrAtk = numOut(ranks[keys[i]][j].battle.A,1);*/
                 }
               }
               if (shdw) { /*apply shadow mon 20% attack buff and 20% defense debuff*/
@@ -1409,6 +1412,10 @@
             case 51:
               startlvl+=1;break;
           }
+        }
+        /* Adjust for shadow power up penalty */
+        if (document.getElementById('shdw[0]').checked) {
+          totaldust = totaldust*1.2;
         }
         if (totaldust > 1000) {
           totaldust = totaldust/1000 + "K";
