@@ -3262,32 +3262,32 @@ var pokeList = [
     'value': '709,201,154,198,708b'
   },
   {
-    'label': 'Pumpkaboo_Small',
-    'value': '710b&small,122,124,127,711&small'
-  },
-  {
-    'label': 'Gourgeist_Small',
-    'value': '711&small,171,219,146,710b&small'
-  },
-  {
     'label': 'Pumpkaboo_Average',
     'value': '710b&average,121,123,135,711&average'
-  },
-  {
-    'label': 'Gourgeist_Average',
-    'value': '711&average,175,213,163,710b&average'
   },
   {
     'label': 'Pumpkaboo_Large',
     'value': '710b&large,120,122,144,711&large'
   },
   {
-    'label': 'Gourgeist_Large',
-    'value': '711&large,179,206,181,710b&large'
+    'label': 'Pumpkaboo_Small',
+    'value': '710b&small,122,124,127,711&small'
   },
   {
     'label': 'Pumpkaboo_Super',
     'value': '710b&super,118,120,153,711&super'
+  },
+  {
+    'label': 'Gourgeist_Average',
+    'value': '711&average,175,213,163,710b&average'
+  },
+  {
+    'label': 'Gourgeist_Large',
+    'value': '711&large,179,206,181,710b&large'
+  },
+  {
+    'label': 'Gourgeist_Small',
+    'value': '711&small,171,219,146,710b&small'
   },
   {
     'label': 'Gourgeist_Super',
