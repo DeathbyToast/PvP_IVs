@@ -484,7 +484,7 @@
         }
         /*include stardust costs if selected*/
         if (dust) {
-          html+="<th>Stardust</th>";
+          html+="<th>Dust</th>";
         }
         
         /*include cmp columns if checked*/
@@ -591,6 +591,10 @@
         } else {
           /* If there are existing values, ensure we remove the shadow buffs/debuffs before filtering */
           if (shdw) {mA=mA/1.2;mD=mD/0.83333331;}
+          /* Ensure that we don't have atk/def/HP filters above maximums */
+          mA = (mA/1 > maxAtk/1) ? numOut(maxAtk,1)-1 : mA;
+          mD = (mD/1 > maxDef/1) ? numOut(maxDef,1)-1 : mD;
+          mHP = (mHP/1 > ranks.maxHP.value/1) ? ranks.maxHP.value/1-1 : mHP;
         }
         
         for (i=0; ((actualRank/1<=numRanks/1) && (actualRank/1 <= limit/1)); i++) {
@@ -666,9 +670,10 @@
             trades = tradePcnts(numRanks, ranks, keys, statProd, floor, aIV.length, aIV[aIV.length-1], dIV[aIV.length-1], sIV[aIV.length-1]);
           }
           /*Generate Search String links for each IV set*/
-          /*https://pvpivs.com/searchStr.html?mon=Medicham&r=10&cp=1500&o=1011100&l=en*/
+          /*https://pvpivs.com/searchStr.html?mon=Dusknoir&cp=1500&r=f_10_f_f&o=1001100&l=en*/
+          /* TODO: Fix rStr formatting */
           for (i=0; i<rIV.length; i++) {
-            searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+selected+"&cp="+league+"&r="+rIV[i]+"&o=1011100&l=en&m="+maxLvl+"'>Generate "+selected+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
+            searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+selected+"&cp="+league+"&r="+rIV[i]+"&o=1001100&l=en&m="+maxLvl+"'>Generate "+selected+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
           }
         }
         
@@ -702,10 +707,6 @@
         
         output.innerHTML = evoHtml + megaNote + evoFeedback + ranges + html + searchLink + "<br>" + trades;
         
-        var elT0 = performance.now();
-        /* Add event listener to capture user clicking on any table row */
-        document.getElementById('outTable').addEventListener('click', function(){addToCompare(event)}, false);
-        
         /*update the URL with search parameters*/
         /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000111&fel=1500";*/
         uri = URL + "?mon="+selected+"&r="+printLimit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&mA="+mA+"&mD="+mD+"&mHP="+mHP;
@@ -727,6 +728,8 @@
         /* Update canonical link to include mon & league for improved SEO */
         document.querySelector("link[rel='canonical']").setAttribute("href", "https://pvpivs.com/?mon="+selected+"&cp="+league);
 
+        /* Add event listener to capture user clicking on any table row */
+        document.getElementById('outTable').addEventListener('click', function(){addToCompare(event)}, false);
         
         /*make table sortable by clicking on any header https://stackoverflow.com/a/49041392 */
         const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
@@ -867,7 +870,7 @@
         checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust");
         
         var URL = window.location.href.split("?")[1];
-        /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000111&fel=1500";*/
+        /*URL = "mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164";*/
         
         if (URL)
         {
@@ -887,13 +890,20 @@
                   /* Display user's input in text box */
                   selected = values[i].split("=")[1];
                   awesomplete.input.value = values[i].split("=")[1];
-                  console.log("ERROR: checkURI: Invalid mon name: "+selected);
+                  console.log("ERROR: checkURI: Invalid mon name: "+selected+", not found in actuals:" +JSON.stringify(actuals));
                   document.getElementById('feedbackBox').innerHTML = "<p><i>Invalid mon name '"+selected+"', please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
                   break;
                 }
-                awesomplete.input.value = actuals[0].label;
-                selected = actuals[0].label;
-                break;
+                if (actuals.indexOf(values[i].split("=")[1]).label > -1) {
+                  awesomplete.input.value = actuals[actuals.indexOf(values[i].split("=")[1])].label;
+                  selected = actuals[actuals.indexOf(values[i].split("=")[1])].label;
+                  break;
+                } else {
+                  console.log("ERROR: checkURI: Could not find exact match in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
+                  awesomplete.input.value = actuals[0].label;
+                  selected = actuals[0].label;
+                  break;
+                }
               case "r":
                 document.getElementById('limit').value = values[i].split("=")[1];
                 break;
@@ -974,6 +984,7 @@
           }
           if (perfTiming) {var checkURIt1 = performance.now();
           console.log("checkURI: Execution took "+(checkURIt1-checkURIt0).toFixed(1)+"ms");}
+          console.log("checkURI: Finished reading inputs, calling main()");
           main();
           return true;
         }
@@ -1394,7 +1405,13 @@
               startlvl+=1;totaldust+=28000;break;
             case 49:
               startlvl+=1;totaldust+=30000;break;
+            case 50:
+            case 51:
+              startlvl+=1;break;
           }
+        }
+        if (totaldust > 1000) {
+          totaldust = totaldust/1000 + "K";
         }
         if (perfTiming) {var stardustT1 = performance.now();
         console.log("stardust: Execution took "+(stardustT1-stardustT0).toFixed(1)+"ms");}
