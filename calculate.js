@@ -45,7 +45,7 @@ function calculate(baseatk, basedef, basesta, floor, minLvl, maxLvl, invalid, le
     		    maxDef.value = dSt;maxDef.aIV = atk;maxDef.dIV = def;maxDef.sIV = sta;maxDef.sp = statProd;}
     		  if ((maxHP.value < sSt) || ((maxHP.sp < statProd) && (maxHP.value <= sSt))) {
     		    maxHP.value = sSt;maxHP.aIV = atk;maxHP.dIV = def;maxHP.sIV = sta;maxHP.sp = statProd;}
-    		  if (level/1 > maxRankLvl/1) {maxRankLvl = level;console.log("Updated maxRankLvl to:"+level);}
+    		  if (level/1 > maxRankLvl/1) {maxRankLvl = level;}
     		  /* update minStats if necessary */
     		  if ((minAtk.value > aSt) || ((minAtk.sp < statProd) && (minAtk.value >= aSt))) {
     		    minAtk.value = aSt;minAtk.aIV = atk;minAtk.dIV = def;minAtk.sIV = sta;minAtk.sp = statProd;}
@@ -53,7 +53,7 @@ function calculate(baseatk, basedef, basesta, floor, minLvl, maxLvl, invalid, le
     		    minDef.value = dSt;minDef.aIV = atk;minDef.dIV = def;minDef.sIV = sta;minDef.sp = statProd;}
     		  if ((minHP.value > sSt) || ((minHP.sp < statProd) && (minHP.value >= sSt))) {
     		    minHP.value = sSt;minHP.aIV = atk;minHP.dIV = def;minHP.sIV = sta;minHP.sp = statProd;}
-    		  if (level/1 < minRankLvl/1) {minRankLvl = level;;console.log("Updated minRankLvl to:"+level);}
+    		  if (level/1 < minRankLvl/1) {minRankLvl = level;}
     		  
     		  var IVsum = atk/1 + def/1 + sta/1;
     		  var Star = "NA";
