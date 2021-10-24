@@ -479,7 +479,7 @@
         var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def</th><th>Stam</th><th>Perfect</th>";
         
         /*include XL candy costs if Max Level > 41*/
-        if (maxLvl > 41) {
+        if (maxLvl > 41 && ranks.maxLvl>41) {
           html+="<th>XL</th>";
         }
         /*include stardust costs if selected*/
@@ -602,12 +602,14 @@
           mHP = (mHP/1 > ranks.maxHP.value/1) ? ranks.maxHP.value/1-1 : mHP;
         }
         
+        /* used to track if we should hide XL candy column */
+        var nonZeroXL = false;
+        
         for (i=0; ((actualRank/1<=numRanks/1) && (actualRank/1 <= limit/1)); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             
             if ((mA/1 <= numOut(ranks[keys[i]][j].battle.A,1)) && (mD/1 <= numOut(ranks[keys[i]][j].battle.D,1)) && (mHP/1 <= ranks[keys[i]][j].battle.S)) {
               /* All three stats are above filter cutoffs, proceed with printing this row */
-              /*console.log("Attempting to print row:"+i+" (actualRank:"+actualRank/1+"<=limit:"+limit/1+") with ranks[keys["+i+"]]["+j+"]="+JSON.stringify(ranks[keys[i]][j], null, 2));*/
               if (actualRank/1 <= limit/1) {
                 html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
                 html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
@@ -616,7 +618,13 @@
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
                 html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"+"</td>"; /*Perfection*/
-                if (maxLvl > 41) {html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";}
+                if (maxLvl > 41 && ranks.maxLvl>41) {
+                  var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
+                  html+=shdw ? "<td style='color:purple'>" : "<td>";html+=candy+"</td>";
+                  if (!nonZeroXL && candy > 0) {
+                    nonZeroXL = true;
+                  }
+                }
                 if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";}
                 if (cmp) {
                   html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
@@ -875,7 +883,7 @@
         checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust");
         
         var URL = window.location.href.split("?")[1];
-        /*URL = "mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164";*/
+        /*URL = "mon=Gourgeist_Small&r=10&cp=1500&f=0&min=1&max=51&set=000000&fel=1500&mA=114.2&mD=143.1&mHP=95";*/
         
         if (URL)
         {
@@ -899,16 +907,20 @@
                   document.getElementById('feedbackBox').innerHTML = "<p><i>Invalid mon name '"+selected+"', please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
                   break;
                 }
-                if (actuals.indexOf(values[i].split("=")[1]).label > -1) {
-                  awesomplete.input.value = actuals[actuals.indexOf(values[i].split("=")[1])].label;
-                  selected = actuals[actuals.indexOf(values[i].split("=")[1])].label;
-                  break;
-                } else {
-                  console.log("ERROR: checkURI: Could not find exact match in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
+                for (var j=0;j<actuals.length;j++) {
+                  if (actuals[j].label.indexOf(values[i].split("=")[1]) > -1) {
+                    /*console.log("Found match at '"+actuals[j].label+"' for "+values[i].split("=")[1]);*/
+                    awesomplete.input.value = actuals[j].label;
+                    selected = actuals[j].label;
+                    break;
+                  }
+                }
+                if (j>=actuals.length) {
+                  console.log("ERROR: checkURI: Could not find exact match for '"+values[i].split("=")[1]+"' in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
                   awesomplete.input.value = actuals[0].label;
                   selected = actuals[0].label;
-                  break;
                 }
+                break;
               case "r":
                 document.getElementById('limit').value = values[i].split("=")[1];
                 break;
@@ -1245,14 +1257,12 @@
                 lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
               }
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
+              if (maxLvl > 41 && ranks.maxLvl>41) {html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";}
               if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";}
               
-              if(!mon) {
-                if (maxLvl > 41) {html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";}
-                if (cmp) {
-                    html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
-                    html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
-                }
+              if(!mon && cmp) {
+                html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
+                html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
               }
               if (shdw) { /*apply shadow mon 20% attack buff and 20% defense debuff*/
                 html+="<td style='color:red'>"+numOut(ranks[keys[i]][j].battle.A*1.2,1)+"</td>"; /*GL Atk Total*/
@@ -1277,54 +1287,60 @@
       
       /* Returns calculated XL candy costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier */
       function XLcandy(xlev) {
+        var candy = 0;
         switch (xlev) {
           case 11:
-            return 296;
+            candy = 296;break;
           case 10.5:
-            return 276;
+            candy = 276;break;
           case 10:
-            return 296;
+            candy = 296;break;
           case 9.5:
-            return 276;
+            candy = 276;break;
           case 9:
-            return 256;
+            candy = 256;break;
           case 8.5:
-            return 236;
+            candy = 236;break;
           case 8:
-            return 216;
+            candy = 216;break;
           case 7.5:
-            return 199;
+            candy = 199;break;
           case 7:
-            return 182;
+            candy = 182;break;
           case 6.5:
-            return 165;
+            candy = 165;break;
           case 6:
-            return 148;
+            candy = 148;break;
           case 5.5:
-            return 133;
+            candy = 133;break;
           case 5:
-            return 118;
+            candy = 118;break;
           case 4.5:
-            return 103;
+            candy = 103;break;
           case 4:
-            return 88;
+            candy = 88;break;
           case 3.5:
-            return 76;
+            candy = 76;break;
           case 3:
-            return 64;
+            candy = 64;break;
           case 2.5:
-            return 52;
+            candy = 52;break;
           case 2:
-            return 40;
+            candy = 40;break;
           case 1.5:
-            return 30;
+            candy = 30;break;
           case 1:
-            return 20;
+            candy = 20;break;
           case 0.5:
-            return 10;
+            candy = 10;break;
           default:
-            return 0;
+            candy = 0;break;
         }
+        /* Adjust for shadow power up penalty */
+        if (document.getElementById('shdw[0]').checked) {
+          candy = candy*1.2;
+        }
+        return candy;
       }
       
       /* Returns calculated stardust power-up costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier*/
