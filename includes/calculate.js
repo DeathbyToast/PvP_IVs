@@ -2,51 +2,6 @@
 var cpm = [0.0939999967813492,0.135137432089339,0.166397869586945,0.192650913155325,0.215732470154762,0.236572651424822,0.255720049142838,0.273530372106572,0.290249884128571,0.306057381389863,0.321087598800659,0.335445031996451,0.349212676286697,0.362457736609939,0.375235587358475,0.387592407713878,0.399567276239395,0.4111935532161,0.422500014305115,0.432926420512509,0.443107545375824,0.453059948165049,0.46279838681221,0.472336085311278,0.481684952974319,0.490855807179549,0.499858438968658,0.5087017489616,0.517393946647644,0.525942516110322,0.534354329109192,0.542635753803599,0.550792694091797,0.558830584490385,0.566754519939423,0.57456912814537,0.582278907299042,0.589887907888945,0.597400009632111,0.604823648665171,0.61215728521347,0.619404107958234,0.626567125320435,0.633649178748576,0.6406529545784,0.647580971386554,0.654435634613037,0.661219265805859,0.667934000492095,0.674581885647492,0.681164920330048,0.687684901255373,0.694143652915955,0.700542901033063,0.706884205341339,0.713169074873823,0.719399094581604,0.725575586915154,0.731700003147125,0.734741038550429,0.737769484519958,0.740785579737136,0.743789434432983,0.746781197247765,0.749761044979095,0.752729099732281,0.75568550825119,0.758630370209851,0.761563837528229,0.76448604959218,0.767397165298462,0.770297293677362,0.773186504840851,0.776064947064992,0.778932750225067,0.781790050767666,0.784636974334717,0.787473608513275,0.790300011634827,0.792803968023538,0.795300006866455,0.797803898371622,0.800300002098083,0.802803871877596,0.805299997329711,0.807803850847053,0.81029999256134,0.812803835179168,0.815299987792968,0.817803806620319,0.820299983024597,0.822803778631297,0.825299978256225,0.827803750922782,0.830299973487854,0.832803753381377,0.835300028324127,0.837803755931569,0.840300023555755,0.842803729,0.8453000188];
 
 function calculate(baseatk, basedef, basesta, floor, minLvl, maxLvl, invalid, league, mon) {
-  if (perfTiming) {var calculateT0 = performance.now();
-  if (perfTiming) {
-    var calculateT0 = performance.now();
-    if (!(mon)) { mon = "";}
-  }
-  /* returns sorted list of all (up to 4096) combinations indexed by statProd + CP */
-@@ -16,7 +14,10 @@ function calculate(baseatk, basedef, basesta, floor, minLvl, maxLvl, invalid, le
-  var minAtk = {value:1000,aIV:0,dIV:0,sIV:0,sp:0};
-  var minDef = {value:1000,aIV:0,dIV:0,sIV:0,sp:0};
-  var minHP = {value:1000,aIV:0,dIV:0,sIV:0,sp:0};
-  var minRankLvl = 100;
-  var maxRankLvl = 0;
-  var numRanks = 0;
-
-  /* account for half-level CPMs (40-1)*2 = 78 */
-  minLvl = Math.max(0, (minLvl - 1) * 2); /* use half-levels */
-  maxLvl = Math.max(0, (maxLvl - 1) * 2); /* use half-levels */
-@@ -44,13 +45,15 @@ function calculate(baseatk, basedef, basesta, floor, minLvl, maxLvl, invalid, le
-    		    maxDef.value = dSt;maxDef.aIV = atk;maxDef.dIV = def;maxDef.sIV = sta;maxDef.sp = statProd;}
-    		  if ((maxHP.value < sSt) || ((maxHP.sp < statProd) && (maxHP.value <= sSt))) {
-    		    maxHP.value = sSt;maxHP.aIV = atk;maxHP.dIV = def;maxHP.sIV = sta;maxHP.sp = statProd;}
-    		  if (level/1 > maxRankLvl/1) {maxRankLvl = level;}
-    		  /* update minStats if necessary */
-    		  if ((minAtk.value > aSt) || ((minAtk.sp < statProd) && (minAtk.value >= aSt))) {
-    		    minAtk.value = aSt;minAtk.aIV = atk;minAtk.dIV = def;minAtk.sIV = sta;minAtk.sp = statProd;}
-    		  if ((minDef.value > dSt) || ((minDef.sp < statProd) && (minDef.value >= dSt))) {
-    		    minDef.value = dSt;minDef.aIV = atk;minDef.dIV = def;minDef.sIV = sta;minDef.sp = statProd;}
-    		  if ((minHP.value > sSt) || ((minHP.sp < statProd) && (minHP.value >= sSt))) {
-    		    minHP.value = sSt;minHP.aIV = atk;minHP.dIV = def;minHP.sIV = sta;minHP.sp = statProd;}
-    		  if (level/1 < minRankLvl/1) {minRankLvl = level;}
-
-    		  var IVsum = atk/1 + def/1 + sta/1;
-    		  var Star = "NA";
-@@ -103,6 +106,8 @@ function calculate(baseatk, basedef, basesta, floor, minLvl, maxLvl, invalid, le
-  sorted.minAtk = minAtk;
-  sorted.minDef = minDef;
-  sorted.minHP = minHP;
-  sorted.minLvl = 1+(minRankLvl/2);
-  sorted.maxLvl = 1+(maxRankLvl/2);
-  sorted.numRanks = numRanks;
-  sorted.invalids = invalids;
-
-
-
-function calculate(baseatk, basedef, basesta, floor, minLvl, maxLvl, invalid, league, mon) {
   if (perfTiming) {
     var calculateT0 = performance.now();
     if (!(mon)) { mon = "";}
