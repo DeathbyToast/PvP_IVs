@@ -3263,35 +3263,35 @@ var pokeList = [
   },
   {
     'label': 'Pumpkaboo_Average',
-    'value': '710b&average,121,123,135,711&average'
+    'value': '710b&!xs&!xl&!xxl,121,123,135,711&!xs&!xl&!xxl'
   },
   {
     'label': 'Pumpkaboo_Large',
-    'value': '710b&large,120,122,144,711&large'
+    'value': '710b&xl,120,122,144,711&xl'
   },
   {
     'label': 'Pumpkaboo_Small',
-    'value': '710b&small,122,124,127,711&small'
+    'value': '710b&xs,122,124,127,711&xs'
   },
   {
     'label': 'Pumpkaboo_Super',
-    'value': '710b&super,118,120,153,711&super'
+    'value': '710b&xxl,118,120,153,711&xxl'
   },
   {
     'label': 'Gourgeist_Average',
-    'value': '711&average,175,213,163,710b&average'
+    'value': '711&!xs&!xl&!xxl,175,213,163,710b&!xs&!xl&!xxl'
   },
   {
     'label': 'Gourgeist_Large',
-    'value': '711&large,179,206,181,710b&large'
+    'value': '711&xl,179,206,181,710b&xl'
   },
   {
     'label': 'Gourgeist_Small',
-    'value': '711&small,171,219,146,710b&small'
+    'value': '711&xs,171,219,146,710b&xs'
   },
   {
     'label': 'Gourgeist_Super',
-    'value': '711&super,182,200,198,710b&super'
+    'value': '711&xxl,182,200,198,710b&xxl'
   },
   {
     'label': 'Bergmite',
