@@ -646,13 +646,15 @@
         if ((i==1) && (rStr.charAt(0)) == "_") {rStr = rStr.substring(1);} /* remove leading "_" */
       }
   
-      binary = document.getElementById('trash') ? "1" : "0";
-      binary += document.getElementById('onlyZero') ? "1" : "0";
-      binary += document.getElementById('trashHundo') ? "1" : "0";
-      binary += document.getElementById('trashZero') ? "1" : "0";
-      binary += document.getElementById('base') ? "1" : "0";
-      binary += document.getElementById('baby') ? "1" : "0";
-      binary += document.getElementById('allZero') ? "1" : "0";
+      binary = document.getElementById('trash').checked ? "1" : "0";
+      binary += document.getElementById('onlyZero').checked ? "1" : "0";
+      binary += document.getElementById('trashHundo').checked ? "1" : "0";
+      binary += document.getElementById('trashZero').checked ? "1" : "0";
+      binary += document.getElementById('base').checked ? "1" : "0";
+      binary += document.getElementById('baby').checked ? "1" : "0";
+      binary += document.getElementById('allZero').checked ? "1" : "0";
+      
+      console.log("encodeSettings: Computed binary as "+binary);
       
       return [binary,rStr];
     }
@@ -712,7 +714,7 @@
         /* Strip out the dex information */
         var dex = (pokeList[i].value.split(",")[0]);
         console.log("Received dex: "+JSON.stringify(dex));
-        /* Remove b from dex info for proper output */
+        /* Remove b from dex info but preserve the rest for proper output */
         if (dex.includes("b")) {
           dex = dex.split("b")[0] + dex.split("b")[1];
         }
@@ -724,8 +726,8 @@
           continue;
         }
         
-        /* Strip out base and "&" info and convert dex to numerical id */
-        id = dex.split("b")[0].split("&")[0]/1;
+        /* Strip out "&" info and convert dex to numerical id */
+        id = dex.split("&")[0]/1;
         console.log("Final ID: "+JSON.stringify(id));
         
         /* Check for dex numbers that user wants to skip */
@@ -750,8 +752,8 @@
           console.log("Skipped #"+id+"("+pokeList[i].label+"), maxCP("+results[2][0]/1+")");
           continue;
         }
-        segments += outputZeroCPsHPs(cps.slice(), hps.slice(), id, lang);
-        ids += id+',';
+        segments += outputZeroCPsHPs(cps.slice(), hps.slice(), dex, lang);
+        ids += dex+',';
       }
       /* trim trailing ',' convert to array of ints (not strings) and sort and de-duplicate */
       ids = ids.substring(0, ids.length - 1).split`,`.map(x=>+x);
