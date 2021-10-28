@@ -479,7 +479,7 @@
         var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def</th><th>Stam</th><th>Perfect</th>";
         
         /*include XL candy costs if Max Level > 41*/
-        if (maxLvl > 41 && ranks.maxLvl>41) {
+        if (maxLvl > 41) {
           html+="<th>XL</th>";
         }
         /*include stardust costs if selected*/
@@ -602,14 +602,12 @@
           mHP = (mHP/1 > ranks.maxHP.value/1) ? ranks.maxHP.value/1-1 : mHP;
         }
         
-        /* used to track if we should hide XL candy column */
-        var nonZeroXL = false;
-        
         for (i=0; ((actualRank/1<=numRanks/1) && (actualRank/1 <= limit/1)); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             
             if ((mA/1 <= numOut(ranks[keys[i]][j].battle.A,1)) && (mD/1 <= numOut(ranks[keys[i]][j].battle.D,1)) && (mHP/1 <= ranks[keys[i]][j].battle.S)) {
               /* All three stats are above filter cutoffs, proceed with printing this row */
+              /*console.log("Attempting to print row:"+i+" (actualRank:"+actualRank/1+"<=limit:"+limit/1+") with ranks[keys["+i+"]]["+j+"]="+JSON.stringify(ranks[keys[i]][j], null, 2));*/
               if (actualRank/1 <= limit/1) {
                 html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
                 html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
@@ -618,13 +616,7 @@
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
                 html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"+"</td>"; /*Perfection*/
-                if (maxLvl > 41 && ranks.maxLvl>41) {
-                  var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
-                  html+=shdw ? "<td style='color:purple'>" : "<td>";html+=candy+"</td>";
-                  if (!nonZeroXL && candy > 0) {
-                    nonZeroXL = true;
-                  }
-                }
+                if (maxLvl > 41) {html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";}
                 if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";}
                 if (cmp) {
                   html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
@@ -766,16 +758,33 @@
       
       function addToCompare(e) {
         var row = window.event.target.parentNode;
-        /* Ensure we didn't click on the header row to sort */
-        if (row.rowIndex/1 > 0) {
+        /* Ensure we didn't click on the header row to sort and ensure we aren't adding duplicate IVs */
+        if (row.rowIndex/1 > aIV.length/1) {
+          
+          /* Get the IVs we're trying to add */
           var atk = row.cells[3].innerHTML;
           var def = row.cells[4].innerHTML;
           var sta = row.cells[5].innerHTML;
-          doTheInsert(atk, def, sta);
+          var uniqueIVs = true;
+          
+          /* Ensure we aren't duplicating IVs */
+          for (var i=0; i<aIV.length; i++) {
+            if ((atk/1 == aIV[i]) && (def/1 == dIV[i]) && (sta == sIV[i])) {
+              uniqueIVs = false;
+              break;
+            }
+          }
+          
+          if (uniqueIVs) {
+            doTheInsert(atk, def, sta);
+            main();
+          } else {
+            console.log(atk+"/"+def+"/"+sta+" already exists in comparison IVs, skipping");
+            document.getElementById('feedbackBox').innerHTML += "<br /><i>"+atk+"/"+def+"/"+sta+" already exists in comparison IVs</i>";
+          }
         } else {
-          console.log("Skipping adding row as we clicked on the Header Row:"+row.rowIndex);
+          console.log("Skipping adding row as we clicked on the Header or Highlighted Row:"+row.rowIndex);
         }
-        main();
       }
       
       function findMonbyDex(target) {
@@ -876,14 +885,71 @@
         return main();
       }
       
-      function checkURI() {
+      function updateSitemap() {
+        /* TODO: Ensure output contains &amp; instead of & */
+        var singleRankLinks = "";
+        var leagueRankLinks = "";
+        var searchStrLinks = "";
+        var leagues = ["500","1500","2500","false"];
+        var langs = ["en","fr","de","es","it","ja","ko","pt","zh"];
+        var levels = ["51","50","49","48","47","46","45","44","43","42","41","40","39","38","37","36","35","34","33","32","31","30","29","28","27","26","25","24","23","22","21","20","19","18","17","16","15","14","13","12","11","10","9","8","7","6","5","4","3","2","1"];
+        
+        for (var i=0; i<pokeList.length; i++) {
+          if ((pokeList[i].label.includes("_PLACEHOLDER")) || (pokeList[i].label.includes("_SPECULATIVE"))) {
+            /*console.log("Skipping: "+pokeList[i].label);*/
+            continue;
+          }
+          for (var j=0; j<leagues.length; j++) {
+            singleRankLinks += '&lt;url&gt;&lt;loc&gt;https://pvpivs.com/?mon='+pokeList[i].label+'&amp;cp='+leagues[j]+'&lt;/loc&gt;&lt;changefreq&gt;always&lt;/changefreq&gt;&lt;priority&gt;0.9&lt;/priority&gt;&lt;/url&gt;<br />';
+            /* Include max level info for League Rankings */
+            for (var k=0; k<levels.length; k++) {
+              if (i==0) {leagueRankLinks += '&lt;url&gt;&lt;loc&gt;https://pvpivs.com/leagueRanks.html?&amp;cp='+leagues[j]+'&amp;max='+levels[k]+'&lt;/loc&gt;&lt;changefreq&gt;always&lt;/changefreq&gt;&lt;priority&gt;0.9&lt;/priority&gt;&lt;/url&gt;<br />';}
+              else continue;
+            }
+            /* Include language codes for the various languages supported by Search Strings page */
+            for (var k=0; k<langs.length; k++) {
+              /* Following formatting from Google Search Central: https://developers.google.com/search/docs/advanced/crawling/localized-versions#language-codes */
+              searchStrLinks += '&lt;url&gt;&lt;loc&gt;https://pvpivs.com/searchStr.html?mon='+pokeList[i].label+'&amp;cp='+leagues[j]+'&amp;l='+langs[k]+'&lt;/loc&gt;';
+              for (var l=0; l<langs.length; l++) {
+                searchStrLinks += '&lt;xhtml:link rel="alternate" hreflang="'+langs[l]+'" href="https://pvpivs.com/searchStr.html?mon='+pokeList[i].label+'&amp;cp='+leagues[j]+'&amp;l='+langs[l]+'"/&gt;';
+              }
+              searchStrLinks += '&lt;changefreq&gt;always&lt;/changefreq&gt;&lt;priority&gt;0.7&lt;/priority&gt;&lt;/url&gt;<br />';
+            }
+          }
+        }
+        document.getElementById('feedbackBox').innerHTML = singleRankLinks + leagueRankLinks;
+      }
+      
+      function unitTests() {
+        console.log("Beginning first test...");
+        checkURI();
+        console.log("First test complete");
+        return true;
+      }
+      
+      function checkURI(testMode, URL) {
         if (perfTiming) {var checkURIt0 = performance.now();}
         
         /* Read returning user's settings */
         checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust");
         
-        var URL = window.location.href.split("?")[1];
-        /*URL = "mon=Gourgeist_Small&r=10&cp=1500&f=0&min=1&max=51&set=000000&fel=1500&mA=114.2&mD=143.1&mHP=95";*/
+        /* Enable unit testing */
+        if (!testMode) {
+          /* Not in test mode, parse URL for user inputs*/
+          URL = window.location.href.split("?")[1];
+          /*URL = "test=true&mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164";*/
+        } else {
+          console.log("testMode is true");
+          if (URL == "sitemap") {
+            updateSitemap();
+            console.log("Updated sitemap output to console");
+            URL = "";
+          } else {
+            console.log("We are in testing mode!");
+            unitTests();
+            return true;
+          }
+        }
         
         if (URL)
         {
@@ -907,20 +973,16 @@
                   document.getElementById('feedbackBox').innerHTML = "<p><i>Invalid mon name '"+selected+"', please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
                   break;
                 }
-                for (var j=0;j<actuals.length;j++) {
-                  if (actuals[j].label.indexOf(values[i].split("=")[1]) > -1) {
-                    /*console.log("Found match at '"+actuals[j].label+"' for "+values[i].split("=")[1]);*/
-                    awesomplete.input.value = actuals[j].label;
-                    selected = actuals[j].label;
-                    break;
-                  }
-                }
-                if (j>=actuals.length) {
-                  console.log("ERROR: checkURI: Could not find exact match for '"+values[i].split("=")[1]+"' in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
+                if (actuals.indexOf(values[i].split("=")[1]).label > -1) {
+                  awesomplete.input.value = actuals[actuals.indexOf(values[i].split("=")[1])].label;
+                  selected = actuals[actuals.indexOf(values[i].split("=")[1])].label;
+                  break;
+                } else {
+                  console.log("ERROR: checkURI: Could not find exact match in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
                   awesomplete.input.value = actuals[0].label;
                   selected = actuals[0].label;
+                  break;
                 }
-                break;
               case "r":
                 document.getElementById('limit').value = values[i].split("=")[1];
                 break;
@@ -986,6 +1048,10 @@
                 break;
               case "t": /* Enable performance timing output in console for debugging */
                 perfTiming = values[i].split("=")[1];
+                break;
+              case "test": /* Enable test mode for website unit testing and sitemap generation */
+                checkURI(true, URL);
+                return true;
                 break;
               case "set":
                 /* settings = shdw,cmp,cge,family,dti,dust */
@@ -1257,12 +1323,14 @@
                 lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
               }
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
-              if (maxLvl > 41 && ranks.maxLvl>41) {html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";}
               if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";}
               
-              if(!mon && cmp) {
-                html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
-                html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
+              if(!mon) {
+                if (maxLvl > 41) {html+="<td>"+XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";}
+                if (cmp) {
+                    html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
+                    html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
+                }
               }
               if (shdw) { /*apply shadow mon 20% attack buff and 20% defense debuff*/
                 html+="<td style='color:red'>"+numOut(ranks[keys[i]][j].battle.A*1.2,1)+"</td>"; /*GL Atk Total*/
@@ -1287,60 +1355,54 @@
       
       /* Returns calculated XL candy costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier */
       function XLcandy(xlev) {
-        var candy = 0;
         switch (xlev) {
           case 11:
-            candy = 296;break;
+            return 296;
           case 10.5:
-            candy = 276;break;
+            return 276;
           case 10:
-            candy = 296;break;
+            return 296;
           case 9.5:
-            candy = 276;break;
+            return 276;
           case 9:
-            candy = 256;break;
+            return 256;
           case 8.5:
-            candy = 236;break;
+            return 236;
           case 8:
-            candy = 216;break;
+            return 216;
           case 7.5:
-            candy = 199;break;
+            return 199;
           case 7:
-            candy = 182;break;
+            return 182;
           case 6.5:
-            candy = 165;break;
+            return 165;
           case 6:
-            candy = 148;break;
+            return 148;
           case 5.5:
-            candy = 133;break;
+            return 133;
           case 5:
-            candy = 118;break;
+            return 118;
           case 4.5:
-            candy = 103;break;
+            return 103;
           case 4:
-            candy = 88;break;
+            return 88;
           case 3.5:
-            candy = 76;break;
+            return 76;
           case 3:
-            candy = 64;break;
+            return 64;
           case 2.5:
-            candy = 52;break;
+            return 52;
           case 2:
-            candy = 40;break;
+            return 40;
           case 1.5:
-            candy = 30;break;
+            return 30;
           case 1:
-            candy = 20;break;
+            return 20;
           case 0.5:
-            candy = 10;break;
+            return 10;
           default:
-            candy = 0;break;
+            return 0;
         }
-        /* Adjust for shadow power up penalty */
-        if (document.getElementById('shdw[0]').checked) {
-          candy = candy*1.2;
-        }
-        return candy;
       }
       
       /* Returns calculated stardust power-up costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier*/
