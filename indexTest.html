@@ -936,7 +936,9 @@
         console.log("unitTests: "+i+": testing pokeList not found");
         try {
           var pokeListCopy = pokeList;
+          console.log("unitTests: "+i+": pokeList before: "+JSON.stringify(pokeList));
           pokeList = "";
+          console.log("unitTests: "+i+": pokeList after: "+JSON.stringify(pokeList));
           main();
         } catch (err) {
           console.log("unitTests: "+i+": test generated error:'"+err+"'");
