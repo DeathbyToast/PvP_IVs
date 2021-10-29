@@ -933,23 +933,10 @@
         /* Read returning user's settings */
         checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust");
         
-        /* Enable unit testing */
-        if (testMode) {
-          console.log("testMode is true");
-          if (URL == "sitemap") {
-            updateSitemap();
-            console.log("Updated sitemap output to console");
-            URL = "";
-          } else {
-            console.log("We are in testing mode!");
-            unitTests();
-            return true;
-          }
-        } else {
-          /* Not in test mode, parse URL for user inputs*/
-          URL = window.location.href.split("?")[1];
-          /*URL = "mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164";*/
-        }
+      
+        /* Not in test mode, parse URL for user inputs*/
+        URL = window.location.href.split("?")[1];
+        /*URL = "mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164";*/
         
         if (URL)
         {
@@ -1050,8 +1037,17 @@
                 perfTiming = values[i].split("=")[1];
                 break;
               case "test": /* Enable test mode for website unit testing and sitemap generation */
-                console.log("Reached 'test' case in URL switch, calling checkURI(true)");
-                checkURI(true);
+                console.log("Reached 'test' case in URL switch...");
+                if (URL == "sitemap") {
+                  console.log("Calling updateSitemap()");
+                  updateSitemap();
+                  console.log("Updated sitemap output to console");
+                  URL = "";
+                  return true;
+                }
+                console.log("Calling unitTests()");
+                unitTests();
+                console.log("Finished all tests, exiting");
                 return true;
                 break;
               case "set":
