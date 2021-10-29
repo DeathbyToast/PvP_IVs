@@ -970,12 +970,13 @@
                 var actuals = pokeList.filter(e => e.label.includes(values[i].split("=")[1].split("_SPECULATIVE")[0]));
 
                 /* Filter returned no results, this is an invalid user input */
-                if (!actuals.length) {
+                if (actuals.length < 1) {
                   /* Display user's input in text box */
                   selected = values[i].split("=")[1];
                   awesomplete.input.value = values[i].split("=")[1];
-                  console.error("checkURI: Invalid mon name: "+selected+", not found in actuals:" +JSON.stringify(actuals));
+                  console.error("checkURI: Invalid mon name: "+selected);
                   document.getElementById('feedbackBox').innerHTML = "<p><i>Invalid mon name '"+selected+"', please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
+                  return false;
                   break;
                 }
                 
