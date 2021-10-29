@@ -235,7 +235,7 @@
       /* Ensure we've successfully loaded a pokeList */
       if (!(pokeList.length))
       {
-        console.log("ERROR: Failed to load pokeList!");
+        console.error("ERROR: Failed to load pokeList!");
       } else {
         /* Yes we have a valid pokeList, build awesomplete search box */
 
@@ -833,7 +833,7 @@
           case 1:
             return (Math.trunc(num*10)/10).toFixed(decimals);
           default:
-            console.log("ERROR: numOut: unsupported decimal place:"+decimals);
+            console.error("ERROR: numOut: unsupported decimal place:"+decimals);
             return false;
         }
       }
@@ -965,7 +965,7 @@
                   /* Display user's input in text box */
                   selected = values[i].split("=")[1];
                   awesomplete.input.value = values[i].split("=")[1];
-                  console.log("ERROR: checkURI: Invalid mon name: "+selected+", not found in actuals:" +JSON.stringify(actuals));
+                  console.error("ERROR: checkURI: Invalid mon name: "+selected+", not found in actuals:" +JSON.stringify(actuals));
                   document.getElementById('feedbackBox').innerHTML = "<p><i>Invalid mon name '"+selected+"', please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
                   break;
                 }
@@ -979,7 +979,7 @@
                   }
                 }
                 if (j>=actuals.length) {
-                  console.log("ERROR: checkURI: Could not find exact match for '"+values[i].split("=")[1]+"' in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
+                  console.error("ERROR: checkURI: Could not find exact match for '"+values[i].split("=")[1]+"' in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
                   awesomplete.input.value = actuals[0].label;
                   selected = actuals[0].label;
                 }
@@ -991,7 +991,7 @@
                 document.getElementById('league').value = values[i].split("=")[1];
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
                 if (document.getElementById('league').value == "") {
-                  console.log("ERROR: checkURI: Unknown cp value detected, defaulting to Master League");
+                  console.error("ERROR: checkURI: Unknown cp value detected, defaulting to Master League");
                   document.getElementById('league').value = false;
                 }
                 break;
@@ -1017,7 +1017,7 @@
                 document.getElementById('familyEvoLeague').value = values[i].split("=")[1];
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
                 if (document.getElementById('familyEvoLeague').value == "") {
-                  console.log("ERROR: checkURI: Unknown cp value detected, defaulting to Master League");
+                  console.error("ERROR: checkURI: Unknown cp value detected, defaulting to Master League");
                   document.getElementById('familyEvoLeague').value = false;
                 }
                 break;
@@ -1555,7 +1555,7 @@
             if (eNum != "237b") {/*Only show Hitmontop*/
               console.log("Tyrogue: Stamina is highest, skipping non-Hitmontop evo");
               return true; }
-          } else {console.log("ERROR::Tyrogue: Not sure how this is possible?");return false;}
+          } else {console.error("ERROR::Tyrogue: Not sure how this is possible?");return false;}
         if (perfTiming) {var wrongTyroEvoT1 = performance.now();
         console.log("wrongTyroEvo: Execution took "+(wrongTyroEvoT1-wrongTyroEvoT0).toFixed(1)+"ms");
         document.getElementById('timing_outputs').innerHTML += "wrongTyroEvo: Execution took "+(wrongTyroEvoT1-wrongTyroEvoT0).toFixed(1)+"ms<br>";}
