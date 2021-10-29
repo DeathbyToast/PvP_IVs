@@ -922,7 +922,8 @@
       
       function unitTests(testURLs) {
         if (!testURLs) {var testURLs = ["mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164","mon=PidgEot&r=10&cp=2500&f=0&min=1&max=51&set=000000"];}
-        for (var i=1; i<testURLs.length+1;i++) {
+        
+        for (var i=0; i<testURLs.length;i++) {
           console.log("unitTests: "+i+": testing '"+testURLs[i]+"'");
           try {
             checkURI(testURLs[i]);
@@ -1072,7 +1073,7 @@
                   URL = "";
                   return true;
                 }
-                console.log("Calling unitTests()");
+                console.log("Calling unitTests("+tests+")");
                 unitTests(tests);
                 console.log("Finished all tests, exiting");
                 return true;
