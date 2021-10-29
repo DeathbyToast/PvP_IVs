@@ -921,9 +921,12 @@
       }
       
       function unitTests() {
-        console.log("Beginning first test with URL='mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164'");
-        checkURI("mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164");
-        console.log("First test complete");
+        var testURLs = ["mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164","mon=PidgEot&r=10&cp=2500&f=0&min=1&max=51&set=000000"];
+        for (var i=0; i<testURLs.length;i++) {
+          console.log("unitTests: "+i+": testing '"+testURL+"'");
+          checkURI(testURL);
+          console.log("unitTests: "+i+": test complete");
+        }
         return true;
       }
       
