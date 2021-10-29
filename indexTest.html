@@ -954,6 +954,9 @@
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
           URL = window.location.href.split("?")[1];
+          console.log("checkURI: No URL passed in, read from winow:"+URL);
+        } else {
+          console.log("checkURI: URL passed in as:"+URL);
         }
         
         if (URL)
