@@ -921,8 +921,8 @@
       }
       
       function unitTests() {
-        console.log("Beginning first test...");
-        checkURI("", false);
+        console.log("Beginning first test with URL='mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164'");
+        checkURI(true, "mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164");
         console.log("First test complete");
         return true;
       }
@@ -934,11 +934,7 @@
         checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust");
         
         /* Enable unit testing */
-        if (!testMode) {
-          /* Not in test mode, parse URL for user inputs*/
-          URL = window.location.href.split("?")[1];
-          /*URL = "test=true&mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164";*/
-        } else {
+        if (testMode) {
           console.log("testMode is true");
           if (URL == "sitemap") {
             updateSitemap();
@@ -949,6 +945,10 @@
             unitTests(URL);
             return true;
           }
+        } else {
+          /* Not in test mode, parse URL for user inputs*/
+          URL = window.location.href.split("?")[1];
+          /*URL = "mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164";*/
         }
         
         if (URL)
