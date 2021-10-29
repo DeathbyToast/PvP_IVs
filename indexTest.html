@@ -235,7 +235,7 @@
       /* Ensure we've successfully loaded a pokeList */
       if (!(pokeList.length))
       {
-        console.error("ERROR: Failed to load pokeList!");
+        console.error("Failed to load pokeList!");
       } else {
         /* Yes we have a valid pokeList, build awesomplete search box */
 
@@ -822,7 +822,7 @@
           }
           /*console.log("Iter:: now have low:" +low+", high:"+high+", target:"+target+", mid:"+mid+"("+pokeList[mid].label+")");*/
         }
-        console.log("Iter::ERROR: Unable to find target:"+target);
+        console.error("Iter: Unable to find target:"+target);
         if (perfTiming) {var findMonbyDexT1 = performance.now();
         console.log("findMonbyDex: Execution took "+(findMonbyDexT1-findMonbyDexT0).toFixed(5)+"ms");}
         return -1;
@@ -833,7 +833,7 @@
           case 1:
             return (Math.trunc(num*10)/10).toFixed(decimals);
           default:
-            console.error("ERROR: numOut: unsupported decimal place:"+decimals);
+            console.error("numOut: unsupported decimal place:"+decimals);
             return false;
         }
       }
@@ -965,7 +965,7 @@
                   /* Display user's input in text box */
                   selected = values[i].split("=")[1];
                   awesomplete.input.value = values[i].split("=")[1];
-                  console.error("ERROR: checkURI: Invalid mon name: "+selected+", not found in actuals:" +JSON.stringify(actuals));
+                  console.error("checkURI: Invalid mon name: "+selected+", not found in actuals:" +JSON.stringify(actuals));
                   document.getElementById('feedbackBox').innerHTML = "<p><i>Invalid mon name '"+selected+"', please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
                   break;
                 }
@@ -979,7 +979,7 @@
                   }
                 }
                 if (j>=actuals.length) {
-                  console.error("ERROR: checkURI: Could not find exact match for '"+values[i].split("=")[1]+"' in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
+                  console.error("checkURI: Could not find exact match for '"+values[i].split("=")[1]+"' in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
                   awesomplete.input.value = actuals[0].label;
                   selected = actuals[0].label;
                 }
@@ -991,7 +991,7 @@
                 document.getElementById('league').value = values[i].split("=")[1];
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
                 if (document.getElementById('league').value == "") {
-                  console.error("ERROR: checkURI: Unknown cp value detected, defaulting to Master League");
+                  console.error("checkURI: Unknown cp value detected, defaulting to Master League");
                   document.getElementById('league').value = false;
                 }
                 break;
@@ -1017,7 +1017,7 @@
                 document.getElementById('familyEvoLeague').value = values[i].split("=")[1];
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
                 if (document.getElementById('familyEvoLeague').value == "") {
-                  console.error("ERROR: checkURI: Unknown cp value detected, defaulting to Master League");
+                  console.error("checkURI: Unknown cp value detected, defaulting to Master League");
                   document.getElementById('familyEvoLeague').value = false;
                 }
                 break;
@@ -1516,46 +1516,46 @@
       
       function wrongTyroEvo(aIV, dIV, sIV, eNum) {
         if (perfTiming) {var wrongTyroEvoT0 = performance.now();}
-        if (aIV/1 === dIV/1 && aIV/1 === sIV/1) {console.log("Tyrogue: All IVs equal, random evo (showing all 3)"); return false;
+        if (aIV/1 === dIV/1 && aIV/1 === sIV/1) {console.log("wrongTyroEvo: All IVs equal, random evo (showing all 3)"); return false;
           } else if (aIV/1 === dIV/1 || aIV/1 === sIV/1 || dIV/1 === sIV/1) {
             if (aIV/1 === dIV/1) {
               if ((sIV/1 < aIV/1) && (eNum == "237b")) {
-                console.log("Tyrogue: Stamina is lowest, skipping Hitmontop evo");
+                console.log("wrongTyroEvo: Stamina is lowest, skipping Hitmontop evo");
                 return true; /*skip Hitmontop*/
               } else if ((sIV/1 > aIV/1) && (eNum != "237b")) {
-                console.log("Tyrogue: Stamina is highest, skipping non-Hitmontop evo");
+                console.log("wrongTyroEvo: Stamina is highest, skipping non-Hitmontop evo");
                 return true; /*only show Hitmontop*/
               }
             } else if (dIV/1 === sIV/1) {
               if ((aIV/1 < dIV/1) && (eNum == "106b")) {
-                console.log("Tyrogue: Attack is lowest, skipping Hitmonlee evo");
+                console.log("wrongTyroEvo: Attack is lowest, skipping Hitmonlee evo");
                 return true; /*skip Hitmonlee*/
               } else if ((aIV/1 > dIV/1) && (eNum != "106b")) {
-                console.log("Tyrogue: Attack is highest, skipping non-Hitmonlee evo");
+                console.log("wrongTyroEvo: Attack is highest, skipping non-Hitmonlee evo");
                 return true; /*only show Hitmonlee*/
               }
             } else if (aIV/1 === sIV/1) {
               if ((dIV/1 < sIV/1) && (eNum == "107b")) {
-                console.log("Tyrogue: Defense is lowest, skipping Hitmonchan evo");
+                console.log("wrongTyroEvo: Defense is lowest, skipping Hitmonchan evo");
                 return true; /*skip Hitmonchan*/
               } else if ((dIV/1 > sIV/1) && (eNum != "107b")) {
-                console.log("Tyrogue: Defense is highest, skipping non-Hitmonchan evo");
+                console.log("wrongTyroEvo: Defense is highest, skipping non-Hitmonchan evo");
                 return true; /*only show Hitmonchan*/
               }
             }
           } else if ((aIV/1 > dIV/1) && (aIV/1 > sIV/1)) {
               if (eNum != "106b") {/*Only show Hitmonlee*/
-                console.log("Tyrogue: Attack is highest, skipping non-Hitmonlee evo");
+                console.log("wrongTyroEvo: Attack is highest, skipping non-Hitmonlee evo");
                 return true; }
           } else if ((dIV/1 > sIV/1) && (dIV/1 > aIV/1)) {
             if (eNum != "107b") {/*Only show Hitmonchan*/
-              console.log("Tyrogue: Defense is highest, skipping non-Hitmonchan evo");
+              console.log("wrongTyroEvo: Defense is highest, skipping non-Hitmonchan evo");
               return true; }
           } else if ((sIV/1 > dIV/1) && (sIV/1 > aIV/1)) {
             if (eNum != "237b") {/*Only show Hitmontop*/
-              console.log("Tyrogue: Stamina is highest, skipping non-Hitmontop evo");
+              console.log("wrongTyroEvo: Stamina is highest, skipping non-Hitmontop evo");
               return true; }
-          } else {console.error("ERROR::Tyrogue: Not sure how this is possible?");return false;}
+          } else {console.error("wrongTyroEvo: Not sure how this is possible?");return false;}
         if (perfTiming) {var wrongTyroEvoT1 = performance.now();
         console.log("wrongTyroEvo: Execution took "+(wrongTyroEvoT1-wrongTyroEvoT0).toFixed(1)+"ms");
         document.getElementById('timing_outputs').innerHTML += "wrongTyroEvo: Execution took "+(wrongTyroEvoT1-wrongTyroEvoT0).toFixed(1)+"ms<br>";}
