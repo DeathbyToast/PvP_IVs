@@ -920,8 +920,8 @@
         document.getElementById('feedbackBox').innerHTML = singleRankLinks + leagueRankLinks;
       }
       
-      function unitTests() {
-        var testURLs = ["mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164","mon=PidgEot&r=10&cp=2500&f=0&min=1&max=51&set=000000"];
+      function unitTests(testURLs) {
+        if (!testURLs) {var testURLs = ["mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164","mon=PidgEot&r=10&cp=2500&f=0&min=1&max=51&set=000000"];}
         for (var i=0; i<testURLs.length;i++) {
           console.log("unitTests: "+i+": testing '"+testURL+"'");
           checkURI(testURL);
@@ -930,7 +930,7 @@
         return true;
       }
       
-      function checkURI(URL) {
+      function checkURI(URL, tests) {
         if (perfTiming) {var checkURIt0 = performance.now();}
         
         /* Read returning user's settings */
@@ -1049,7 +1049,7 @@
                   return true;
                 }
                 console.log("Calling unitTests()");
-                unitTests();
+                unitTests(tests);
                 console.log("Finished all tests, exiting");
                 return true;
                 break;
