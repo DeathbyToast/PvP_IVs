@@ -922,21 +922,21 @@
       
       function unitTests() {
         console.log("Beginning first test with URL='mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164'");
-        checkURI(,"mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164");
+        checkURI("mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164");
         console.log("First test complete");
         return true;
       }
       
-      function checkURI(testMode, URL) {
+      function checkURI(URL) {
         if (perfTiming) {var checkURIt0 = performance.now();}
         
         /* Read returning user's settings */
         checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust");
         
-      
-        /* Not in test mode, parse URL for user inputs*/
-        URL = window.location.href.split("?")[1];
-        /*URL = "mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164";*/
+        if (!URL) {
+          /* Not in test mode, parse URL for user inputs*/
+          URL = window.location.href.split("?")[1];
+        }
         
         if (URL)
         {
