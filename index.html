@@ -922,7 +922,7 @@
       
       function unitTests() {
         console.log("Beginning first test...");
-        checkURI();
+        checkURI(false, false);
         console.log("First test complete");
         return true;
       }
@@ -946,7 +946,7 @@
             URL = "";
           } else {
             console.log("We are in testing mode!");
-            unitTests();
+            unitTests(URL);
             return true;
           }
         }
@@ -973,16 +973,21 @@
                   document.getElementById('feedbackBox').innerHTML = "<p><i>Invalid mon name '"+selected+"', please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
                   break;
                 }
-                if (actuals.indexOf(values[i].split("=")[1]).label > -1) {
-                  awesomplete.input.value = actuals[actuals.indexOf(values[i].split("=")[1])].label;
-                  selected = actuals[actuals.indexOf(values[i].split("=")[1])].label;
-                  break;
-                } else {
-                  console.log("ERROR: checkURI: Could not find exact match in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
+                
+                for (var j=0;j<actuals.length;j++) {
+                  if (actuals[j].label.indexOf(values[i].split("=")[1]) > -1) {
+                    /*console.log("Found match at '"+actuals[j].label+"' for "+values[i].split("=")[1]);*/
+                    awesomplete.input.value = actuals[j].label;
+                    selected = actuals[j].label;
+                    break;
+                  }
+                }
+                if (j>=actuals.length) {
+                  console.log("ERROR: checkURI: Could not find exact match for '"+values[i].split("=")[1]+"' in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
                   awesomplete.input.value = actuals[0].label;
                   selected = actuals[0].label;
-                  break;
                 }
+                break;
               case "r":
                 document.getElementById('limit').value = values[i].split("=")[1];
                 break;
@@ -1050,7 +1055,8 @@
                 perfTiming = values[i].split("=")[1];
                 break;
               case "test": /* Enable test mode for website unit testing and sitemap generation */
-                checkURI(true, URL);
+                console.log("Reached 'test' case in URL switch, calling checkURI(true)");
+                checkURI(true);
                 return true;
                 break;
               case "set":
