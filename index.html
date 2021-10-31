@@ -937,7 +937,7 @@
         if (!testMode) {
           /* Not in test mode, parse URL for user inputs*/
           URL = window.location.href.split("?")[1];
-          /*URL = "test=true&mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164";*/
+          /*URL = "mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164";*/
         } else {
           console.log("testMode is true");
           if (URL == "sitemap") {
@@ -954,7 +954,7 @@
         if (URL)
         {
           URL = decodeURI(URL);
-          /*console.log("Read URL as: "+URL);*/
+          console.log("Read URL as: "+URL);
           var values = URL.split("&");
           /*console.log("Values array as: "+JSON.stringify(values));*/
           for (var i=0; i<values.length; i++)
@@ -974,16 +974,28 @@
                   break;
                 }
                 
+                var matched = false;
                 for (var j=0;j<actuals.length;j++) {
-                  if (actuals[j].label.indexOf(values[i].split("=")[1]) > -1) {
-                    /*console.log("Found match at '"+actuals[j].label+"' for "+values[i].split("=")[1]);*/
+                  if (actuals[j].label == values[i].split("=")[1]) {
+                    console.log("Found exact match at '"+actuals[j].label+"' for "+values[i].split("=")[1]);
                     awesomplete.input.value = actuals[j].label;
                     selected = actuals[j].label;
+                    matched = true;
                     break;
                   }
                 }
+                if (matched == false) {
+                  for (var j=0;j<actuals.length;j++) {
+                    if (actuals[j].label.indexOf(values[i].split("=")[1]) > -1) {
+                      console.log("Found partial match at '"+actuals[j].label+"' for "+values[i].split("=")[1]);
+                      awesomplete.input.value = actuals[j].label;
+                      selected = actuals[j].label;
+                      break;
+                    }
+                  }
+                }
                 if (j>=actuals.length) {
-                  console.log("ERROR: checkURI: Could not find exact match for '"+values[i].split("=")[1]+"' in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
+                  console.log("ERROR: checkURI: Could not find exact or partial match for '"+values[i].split("=")[1]+"' in actuals, using first match instead. Actuals: "+JSON.stringify(actuals));
                   awesomplete.input.value = actuals[0].label;
                   selected = actuals[0].label;
                 }
