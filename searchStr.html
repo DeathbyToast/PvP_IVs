@@ -682,6 +682,8 @@
       }
       document.title = newTitle;
       window.history.pushState(null, newTitle, uri);
+      /* Update canonical link to include mon & league for improved SEO */
+      document.querySelector("link[rel='canonical']").setAttribute("href", "https://pvpivs.com/searchStr.html?mon="+selected+"&cp="+league+"&l="+lang);
       return;
     }
     
