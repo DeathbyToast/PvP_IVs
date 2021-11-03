@@ -39,7 +39,7 @@
     margin: 0 auto;
     width: auto;
     /*margin: 1px;*/
-    background-color: #f1f1f1;
+    background-color: var(--textBoxBg);
     text-align: center;
     }
     img .PoGoImg{
@@ -55,8 +55,8 @@
   
   /* FAQ Section Box Collapsing Stuff */
   .accordion {
-  background-color: #eee;
-  color: #444;
+  background-color: var(--textBoxBg);
+  color: var(--text);
   cursor: pointer;
   padding: 18px;
   width: 100%;
@@ -69,12 +69,13 @@
   }
   
   .activeFAQ, .accordion:hover {
-    background-color: #ccc;
+    background-color: var(--navActive);
+    color: var(--navActiveText);
   }
   
   .accordion:after {
     content: '\002B';
-    color: #777;
+    color: var(--navHover);
     font-weight: bold;
     float: right;
     margin-left: 5px;
@@ -82,11 +83,12 @@
   
   .activeFAQ:after {
     content: "\2212";
+    color: var(--secondary);
   }
   
   .panel {
     padding: 0 18px;
-    background-color: white;
+    background-color: var(--navBackground);
     max-height: 0;
     overflow: hidden;
     overflow-y: auto; /*scrollbar*/
