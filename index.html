@@ -127,17 +127,15 @@
     </header>
     <br />
     <section>
-      <div id="topLine">
-        <label>Top <input type="number" value="10" id="limit" min="1" max="4096" oninput="setUserPreference('limit')"></label>
-        <label><select id="league" oninput="setUserPreference('league')">
-          <option value="500" label="Little Leagues">Little Leagues</option>
-          <option value="1500" selected label="Great League">Great League</option>
-      		<option value="2500" label="Ultra League">Ultra League</option>
-      		<option value="false" label="Master League">Master League</option>
-      	</select></label>
-      	<input id="pokeInput" list="pokeListDL" onfocus="this.value='';document.querySelector('datalist').id = '';" placeholder="Pok&eacute;mon" onkeyup="setMon(event)" autocomplete="off"/>
-      	<datalist id="pokeListDL"></datalist>
-      </div>
+      <label>Top <input type="number" value="10" id="limit" min="1" max="4096" oninput="setUserPreference('limit')"></label>
+      <label><select id="league" oninput="setUserPreference('league')">
+        <option value="500" label="Little Leagues">Little Leagues</option>
+        <option value="1500" selected label="Great League">Great League</option>
+    		<option value="2500" label="Ultra League">Ultra League</option>
+    		<option value="false" label="Master League">Master League</option>
+    	</select></label>
+    	<input id="pokeInput" list="pokeListDL" onfocus="this.value='';document.querySelector('datalist').id = '';" placeholder="Pok&eacute;mon" onkeyup="setMon(event)" autocomplete="off"/>
+    	<datalist id="pokeListDL"></datalist><span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a Pok&eacute;mon above to continue...</i></span>
       	
       <br />
       <table id="inputTable">
@@ -205,8 +203,8 @@
       <textarea id="CustomGroupExport" hidden></textarea>
       
       <div style="overflow-x:auto;" id="megaNote"></div>
-      <div id="feedbackBox"></div>
-      <div style="overflow-x:auto;" id="outputBox"><i><br/>Please select a Pok&eacute;mon above to continue...</i></div>
+      <div id="feedbackBox"><br /></div>
+      <div style="overflow-x:auto;" id="outputBox"></div>
     
       <!-- Footer Code Below -->
       <script src="https://pvpivs.com/includes/footer.js"></script>
@@ -232,7 +230,6 @@
       {
         console.error("Failed to load pokeListAA!");
         document.getElementById('feedbackBox').innerHTML = "<p><i>ERROR: Failed to load pokeListAA, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
-        /*document.getElementById('outputBox').innerHTML = "";*/
       } else {
         /* Load mon data into datalist placeholder */
         var datalist = "";
@@ -244,70 +241,70 @@
       
       function adjustFloors(dexNum, poke) {
         if (perfTiming) {var T0 = performance.now();}
-        var minLvl = document.getElementById('minLvl').value;
-        var maxLvl = document.getElementById('maxLvl').value;
-        var floor = document.getElementById('floor').value;
+        var minLvl = document.getElementById('minLvl');
+        var maxLvl = document.getElementById('maxLvl');
+        var floor = document.getElementById('floor');
         
         /*check if we need to adjust IV Floor or Min Level*/
         if (boxRewrd.includes(dexNum)) {
           console.log("Detected box reward mon:" +poke);
           /*set min IVs to 1 and min Level to 15*/
-          if (minLvl/1 < 15) {
-            minLvl = 15;
+          if (minLvl.value/1 < 15) {
+            minLvl.value = 15;
             mnlMod = true;
           }
-          if (maxLvl/1 < 15) {
-            maxLvl = 15;
+          if (maxLvl.value/1 < 15) {
+            maxLvl.value = 15;
             mxlMod = true;
           }
-          if (floor/1 < 1) {
-            floor = 1;
+          if (floor.value/1 < 1) {
+            floor.value = 1;
             ivMod = true;
           }
         } else {
           if (raidOnly.includes(dexNum)) {
             console.log("Detected Raid+Trade mon:" +poke);
             /*set min IVs to 1 and min Level to 20*/
-            if (minLvl/1 < 20) {
-              minLvl = 20;
+            if (minLvl.value/1 < 20) {
+              minLvl.value = 20;
               mnlMod = true;
             }
-            if (maxLvl/1 < 20) {
-              maxLvl = 20;
+            if (maxLvl.value/1 < 20) {
+              maxLvl.value = 20;
             }
-            if (floor/1 < 1) {
-              floor = 1;
+            if (floor.value/1 < 1) {
+              floor.value = 1;
             }
           } else {
             if (boxMyth.includes(dexNum)) {
               console.log("Detected Mythical mon:" +poke);
               /*set min IVs to 10 and min Level to 15*/
-              if (minLvl/1 < 15) {
-                minLvl = 15;
+              if (minLvl.value/1 < 15) {
+                minLvl.value = 15;
                 mnlMod = true;
               }
               if (maxLvl/1 < 15) {
-                maxLvl = 15;
+                maxLvl.value = 15;
                 mxlMod = true;
               }
-              if (floor/1 < 10) {
-                floor = 10;
+              if (floor.value/1 < 10) {
+                floor.value = 10;
                 ivMod = true;
               }
             } else {
               if (raidMyth.includes(dexNum)) {
                 console.log("Detected Raid no Trade mon:" +poke);
                 /*set min IVs to 10 and min Level to 20*/
-                if (minLvl/1 < 20) {
-                  minLvl = 20;
+                if (minLvl.value/1 < 20) {
+                  minLvl.value = 20;
                   mnlMod = true;
                 }
-                if (maxLvl/1 < 20) {
-                  maxLvl = 20;
+                if (maxLvl.value/1 < 20) {
+                  maxLvl.value = 20;
                   mxlMod = true;
                 }
-                if (floor/1 < 10) {
-                  floor = 10;
+                if (floor.value/1 < 10) {
+                  floor.value = 10;
                   ivMod = true;
                 }
               }
@@ -333,7 +330,8 @@
           document.querySelector("datalist").id = "";
           if (perfTiming) {stopTiming(T0, "setMon");}
           return false;
-        } else { /* Prevent dropdown from covering Android keyboards */
+        } else if (document.querySelector("datalist").id == "") {
+          /* Prevent dropdown from covering Android keyboards */
           document.querySelector("datalist").id = "pokeListDL";
         }
         
@@ -371,9 +369,9 @@
       function resetMonState() {
         if (perfTiming) {var T0 = performance.now();}
         
-        var minLvl = document.getElementById('minLvl').value;
-        var maxLvl = document.getElementById('maxLvl').value;
-        var floor = document.getElementById('floor').value;
+        var minLvl = document.getElementById('minLvl');
+        var maxLvl = document.getElementById('maxLvl');
+        var floor = document.getElementById('floor');
         
         /* Clear all existing IV Input Rows */
         for (var i=0; i<aIV.length; i++) {
@@ -395,22 +393,22 @@
         
         /*reset Min Level if we adjusted it previously*/
         if (mnlMod) {
-          if ((minLvl/1 == 15) || (minLvl/1 == 20)) {
-            minLvl = 1;
+          if ((minLvl.value == 15) || (minLvl.value == 20)) {
+            minLvl.value = 1;
           }
           mnlMod = false;
         }
         /*reset Max Level if we adjusted it previously*/
         if (mxlMod) {
-          if ((maxLvl/1 == 15) || (maxLvl/1 == 20)) {
-            maxLvl = 40;
+          if ((maxLvl.value == 15) || (maxLvl.value == 20)) {
+            maxLvl.value = 40;
           }
           mxlMod = false;
         }
         /*reset IV Floor if we adjusted it previously*/
         if (ivMod) {
-          if ((floor/1 == 1) || (floor/1 == 10)) {
-            floor = 0;
+          if ((floor.value == 1) || (floor.value == 10)) {
+            floor.value = 0;
           }
           ivMod = false;
         }
@@ -452,7 +450,13 @@
         /*we have at least one rank to output, let's print! */
         var evoHtml = "";
         var evoFeedback = "";
-        var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th><th>Atk IV</th><th>Def</th><th>Stam</th><th>Perfect</th>";
+        var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th>";
+        
+        if (settings[6]) {
+          html += "<th>L"+minLvl+" CP</th>"
+        }
+          
+        html += "<th>Atk IV</th><th>Def</th><th>Stam</th><th>Perfect</th>";
         
         /*include XL candy costs if Max Level > 41*/
         if (maxLvl > 41 && ranks.maxLvl>41) {
@@ -544,7 +548,7 @@
             }
           } else {
             console.log("i:"+i+" Missing an IV, detected: aIV["+i+"]:"+aIV[i]+" dIV["+i+"]:"+dIV[i]+" sIV["+i+"]:"+sIV[i]);
-            document.getElementById('feedbackBox').innerHTML += "<p><i>Please enter an Attack IV for Row "+(i+1)+" with IVs (_"+aIV[i]+"_/"+dIV[i]+"/"+sIV[i]+") to check your "+poke+"'s "+leagueName+" PvP Rank</i></p><br>";
+            document.getElementById('feedbackBox').innerHTML += "<p><i>Please enter an Attack IV for Row "+(i+1)+" with IVs (_"+aIV[i]+"_/"+dIV[i]+"/"+sIV[i]+") to check your "+poke+"'s "+leagueName+" PvP Rank</i></p>";
             lvl.push(false); /* keep this balanced */
           }
         }
@@ -582,6 +586,7 @@
                 html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
                 html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
                 html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
+                if (settings[6]) {html+="<td>"+Math.max(10, Math.floor((pokeListAA[poke].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListAA[poke].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListAA[poke].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
@@ -640,9 +645,9 @@
         var minDefurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
         var minHPurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
 
-        var ranges = "Atk &ge; <input type='number' step='0.1' id='atkVal' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;main();'> <a href="+minAtkurl+">"+numOut(minAtk,dec)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;main();'><a href="+maxAtkurl+">"+numOut(maxAtk,dec)+"</a><br>";
+        var ranges = "<br />Atk &ge; <input type='number' step='0.1' id='atkVal' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;main();'> <a href="+minAtkurl+">"+numOut(minAtk,dec)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;main();'><a href="+maxAtkurl+">"+numOut(maxAtk,dec)+"</a><br>";
         ranges += "Def &ge; <input type='number' step='0.1' id='defVal' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;main();'> <a href="+minDefurl+">"+numOut(minDef,dec)+"</a><input type='range' id='defRange' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;main();'><a href="+maxDefurl+">"+numOut(maxDef,dec)+"</a><br>";
-        ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;main();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;main();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a><br /><br />";
+        ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;main();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;main();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a><br />";
         
         /*compute trade percentages*/
         var trades = "";
@@ -661,10 +666,10 @@
           }
         }
         
-        document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback + ranges + html + searchLink + "<br>" + trades;
+        document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback + html + ranges + searchLink + "<br>" + trades;
         
-        /* Include how many total ranks were generated at the end of topLine, cannot use innerHTML, it removes child elements */
-        document.getElementById("topLine").insertAdjacentHTML('beforeend', "<p id='totalRanks'> of "+ranks.numRanks+":</p>");
+        /* Include how many total ranks were generated at the end of instructionsBox */
+        document.getElementById("instructionsBox").innerHTML += "<p id='totalRanks'> of "+ranks.numRanks+":</p><br />";
         
         if (perfTiming) {var T1 = performance.now();
         console.log(poke+" outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.");
@@ -685,6 +690,8 @@
           console.log("main: User has not yet selected a poke:"+poke);
           if (perfTiming) {stopTiming(T0, "main");}
           return true;
+        } else { /* Have a valid poke, remove instructions */
+          document.getElementById('instructionsBox').innerHTML = "";
         }
         
         /*ensure we clear the prior output between runs*/
@@ -696,7 +703,7 @@
         if (monInfo == "")
         {
           console.error("Cannot find monInfo, returning");
-          document.getElementById('feedbackBox').innerHTML = "<p><i>ERROR: Cannot find monInfo, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
+          document.getElementById('instructionsBox').innerHTML = "<p><i>ERROR: Cannot find monInfo, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
           if (perfTiming) {stopTiming(T0, "main");}
           return false;
         }
@@ -710,13 +717,13 @@
         if ((lastLeague) && (leagueName !== lastLeague)){ /* Reset if new League */mA = 0; mD = 0; mHP = 0;}
         lastLeague = leagueName; /* Store League for next run */
         var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), document.getElementById('floor').value, document.getElementById('minLvl').value, document.getElementById('maxLvl').value, document.getElementById("dti").checked, league, poke);
-        var settings = (document.getElementById('shdw[0]').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0");
+        var settings = (document.getElementById('shdw[0]').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0") + (document.getElementById("mlCP").checked ? "1":"0");
         var URL = window.location.href.split("?")[0];
         
         /*ensure we actually generated something to output*/
         if (ranks.numRanks/1 < 1) {
           /*nothing to output, print Error and exit*/
-          document.getElementById('feedbackBox').innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Settings and try again</i></p><br />";
+          document.getElementById('instructionsBox').innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Settings and try again</i></p><br />";
           console.log("No ranks generated!");
           if (perfTiming) {stopTiming(T0, "main");}
           return false;
@@ -742,7 +749,7 @@
         if (document.getElementById('floor').value>0) {uri += "&f="+document.getElementById('floor').value;}
         if (document.getElementById('minLvl').value>1) {uri += "&min="+document.getElementById('minLvl').value;}
         if (document.getElementById('maxLvl').value!=40) {uri += "&max="+document.getElementById('maxLvl').value;}
-        if (settings!=000000) {uri += "&set="+settings;}
+        if (settings!=0000000) {uri += "&set="+settings;}
         if (document.getElementById('familyEvoLeague').value!=1500) {uri += "&fel="+document.getElementById('familyEvoLeague').value;}
         if (mA != numOut(ranks.minAtk.value, dec)) {uri += "&mA="+mA;console.log("mA:"+mA+" while ranks.minAtk.value:"+ranks.minAtk.value)}
         if (mD != numOut(ranks.minDef.value, dec)) {uri += "&mD="+mD;}
@@ -1002,7 +1009,7 @@
         if (perfTiming) {var T0 = performance.now();}
         
         /* Read returning user's settings */
-        checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust");
+        checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,mlCP");
         
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
@@ -1144,6 +1151,7 @@
                 document.getElementById('family').checked = settings[3]==1 ? true : false;
                 document.getElementById('dti').checked = settings[4]==1 ? true : false;
                 document.getElementById('dust').checked = settings[5]==1 ? true : false;
+                document.getElementById('mlCP').checked = settings[6]==1 ? true : false;
                 toggleFamilyEvos();
                 break;
             }
@@ -1816,7 +1824,7 @@
       <label>PvP Stat Decimal Places:<input title="How many decimal places to Output?" type="number" value="1" id="dec" min="1" oninput="setUserPreference('dec')"></label><br />
       <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="setUserPreference('cmp')"></label><br />
       <label>Export PvPoke Custom Group:<input id="cge" type="checkbox" oninput="setUserPreference('cge')"></label><br />
-      <label>Display Family Evolutions:<input id="family" type="checkbox" oninput="toggleFamilyEvos()"></label><br />
+      <label>Show Family Evolutions:<input id="family" type="checkbox" oninput="toggleFamilyEvos()"></label><br />
       <div id="familyEvoLeagueDiv"><label id="familyEvoLeagueLbl" for="familyEvoLeague" style="display: none;">Family Evos League:
         <select id="familyEvoLeague" oninput="setUserPreference('familyEvoLeague')">
           <option value="500" label="Little Leagues">Little Leagues</option>
@@ -1825,8 +1833,9 @@
       		<option value="false" label="Master League">Master League</option>
       	</select></label>
       </div>
-      <label>Display Trade Improvement %:<input id="dti" type="checkbox" oninput="setUserPreference('dti')"></label><br />
-      <label>Display Stardust Power-Up Costs:<input id="dust" type="checkbox" oninput="setUserPreference('dust')"></label><br />
+      <label>Show Trade Improvement %:<input id="dti" type="checkbox" oninput="setUserPreference('dti')"></label><br />
+      <label>Show Stardust Power-Up Costs:<input id="dust" type="checkbox" oninput="setUserPreference('dust')"></label><br />
+      <label>Show Min Level CP (Raid/Hatch):<input id="mlCP" type="checkbox" oninput="setUserPreference('mlCP')"></label><br />
       <label>Remember My Settings:<input id="save" type="checkbox" oninput="saveCurrentSettings()"></label><br />
       <button id="resetButton" type="resetSettings" onclick="localStorage.clear();location.reload();">Reset All Saved Settings to Defaults</button>
 
