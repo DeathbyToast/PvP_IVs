@@ -715,12 +715,12 @@
       for (var i=0; i<pokeList.length; i++) {
         /* Strip out the dex information */
         var dex = (pokeList[i].value.split(",")[0]);
-        console.log("Received dex: "+JSON.stringify(dex));
+        //console.log("Received dex: "+JSON.stringify(dex));
         /* Remove b from dex info but preserve the rest for proper output */
         if (dex.includes("b")) {
           dex = dex.split("b")[0] + dex.split("b")[1];
         }
-        console.log("Final dex: "+JSON.stringify(dex));
+        //console.log("Final dex: "+JSON.stringify(dex));
         
         /* Ensure it can spawn in the wild */
         if (dex.includes("&mega")) {
@@ -730,11 +730,11 @@
         
         /* Strip out "&" info and convert dex to numerical id */
         id = dex.split("&")[0]/1;
-        console.log("Final ID: "+JSON.stringify(id));
+        //console.log("Final ID: "+JSON.stringify(id));
         
         /* Check for dex numbers that user wants to skip */
         if (dexSkips.includes(id/1)) {
-          console.log("Skipped #"+id+"("+pokeList[i].label+")");
+          //console.log("Skipped #"+id+"("+pokeList[i].label+")");
           continue;
         }
         
@@ -751,17 +751,14 @@
         
         /* Skip forms above CP limit which aren't common wild spawns */
         if (results[2][0]/1 > cpLimit/1) {
-          console.log("Skipped #"+id+"("+pokeList[i].label+"), maxCP("+results[2][0]/1+")");
+          //console.log("Skipped #"+id+"("+pokeList[i].label+"), maxCP("+results[2][0]/1+")");
           continue;
         }
         segments += outputZeroCPsHPs(cps.slice(), hps.slice(), dex, lang);
         ids += dex+',';
       }
-      /* trim trailing ',' convert to array of ints (not strings) and sort and de-duplicate */
-      ids = ids.substring(0, ids.length - 1).split`,`.map(x=>+x);
-      ids.sort((a, b) => a - b);
-      let uniqIDs = [...new Set(ids)]; /* remove duplicates */
-      ids = get_matching_string(uniqIDs,"");
+      /* trim trailing ',' */
+      ids = ids.replace(/,\s*$/, "");
       output.value = ids+"&0*"+segments;
         document.getElementById('feedbackBox').innerHTML += "<p><i>Output Search String Length: "+output.value.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+" characters</i></p>";
       
