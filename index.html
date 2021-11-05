@@ -141,7 +141,7 @@
       <table id="inputTable">
         <tr><td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td><td title="Your Attack IV">Atk</td><td title="Your Defense IV">Def</td><td title="Your Stamina IV">Sta</td><td id="plusCell"><button class="circle plus" onclick="doTheInsert()"></button></td></tr>
         <tr>
-          <td><input class='shadowCB' id="shdw[0]" type="checkbox" oninput="checkAllBoxes()"></td>
+          <td><input class='shadowCB' id="shdw[0]" type="checkbox" oninput="main()"></td>
           <td><select title="Your Attack IV" class="aIV" id="aIV[0]" onchange="main()">
             <option value="">&nbsp;</option>
             <option value="15">15</option>
@@ -221,6 +221,7 @@
       let aIV=[document.getElementById('aIV[0]').value];
       let dIV=[document.getElementById('dIV[0]').value];
       let sIV=[document.getElementById('sIV[0]').value];
+      let shdw=[document.getElementById('shdw[0]').value];
       let rIV=[];
       let lvl=[];
       let mA = 0, mD = 0, mHP = 0; /* min stat filter vars */
@@ -384,6 +385,7 @@
         aIV.splice(0, aIV.length);
         dIV.splice(0, dIV.length);
         sIV.splice(0, sIV.length);
+        shdw.splice(0, shdw.length);
         
         /* Re-Add default IV Input Row */
         doTheInsert();
@@ -429,7 +431,7 @@
         setUserPreference('family');
       }
       
-      function outputUserRanks(aIV, dIV, sIV, leagueName, ranks, settings, dec, URL) {
+      function outputUserRanks(aIV, dIV, sIV, shdw, leagueName, ranks, settings, dec, URL) {
         if (perfTiming) {var T0 = performance.now();}
         
         settings = settings.split(''); /* split into characters */
@@ -452,7 +454,7 @@
         var evoFeedback = "";
         var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th>";
         
-        if (settings[6]) {
+        if (settings[0]) {
           html += "<th>L"+minLvl+" CP</th>"
         }
           
@@ -493,7 +495,7 @@
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
               /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
-              gmRhtml = getMonRank(ranks, keys, settings[0], settings[1], maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, false, false, maxLvl, settings[5], dec);
+              gmRhtml = getMonRank(ranks, keys, shdw[i], settings[1], maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, false, false, maxLvl, settings[5], dec);
               
               if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml == "")) {
                 console.log("i:"+i+" Detected too high CP after getMonRank");
@@ -512,9 +514,9 @@
                   var evoKeys = Object.keys(evoRanks);
                   var evoMaxStatProd = evoKeys[0].split(".")[0];
                   /*create link for evo table entry*/
-                  uri = URL + "?mon="+evos[e]+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i]+"&mA=0&mD=0&mHP=0";
+                  uri = URL + "?mon="+evos[e]+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i] + "_" + shdw[i]+"&mA=0&mD=0&mHP=0";
 
-                  var evoGMRhtml = getMonRank(evoRanks, evoKeys, settings[0], settings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evos[e], uri, false, settings[5], dec);
+                  var evoGMRhtml = getMonRank(evoRanks, evoKeys, shdw[i], settings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evos[e], uri, false, settings[5], dec);
                   if (evoGMRhtml) {
                     if (evoHtml) {
                       /*if this is a second evo, just add it*/
@@ -566,8 +568,6 @@
         if ((mA+mD+mHP)/1 == 0) { /*console.log("Noticed mA,mD,or mHP are 0, initializing...");*/
           mA = numOut(minAtk,dec);mD = numOut(minDef,dec);mHP = ranks.minHP.value;
         } else {
-          /* If there are existing values, ensure we remove the shadow buffs/debuffs before filtering */
-          if (settings[0]) {mA=mA/1.2;mD=mD/0.83333331;}
           /* Ensure that we don't have atk/def/HP filters above maximums */
           mA = (mA/1 > maxAtk/1) ? numOut(maxAtk,dec)-1 : mA;
           mD = (mD/1 > maxDef/1) ? numOut(maxDef,dec)-1 : mD;
@@ -586,19 +586,17 @@
                 html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
                 html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
                 html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
-                if (settings[6]) {html+="<td>"+Math.max(10, Math.floor((pokeListAA[poke].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListAA[poke].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListAA[poke].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
+                if (settings[0]) {html+="<td>"+Math.max(10, Math.floor((pokeListAA[poke].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListAA[poke].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListAA[poke].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
                 html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"+"</td>"; /*Perfection*/
                 if (maxLvl > 41 && ranks.maxLvl>41) {
                   var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
-                  html+=settings[0] ? "<td style='color:purple'>" : "<td>";html+=candy+"</td>";
-                  if (!nonZeroXL && candy > 0) {
-                    nonZeroXL = true;
-                  }
+                  html+="<td>"+candy+"</td>";
+                  if (!nonZeroXL && candy > 0) {nonZeroXL = true;}
                 }
-                if (settings[5]) {html+= settings[0] ? "<td style='color:purple'>" : "<td>";html+=stardust(minLvl/1, ranks[keys[i]][j].L/1, 0)+"</td>";}
+                if (settings[5]) {html+= "<td>"+stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)+"</td>";}
                 if (settings[1]) {
                   html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
                   if (ranks.numRanks/1 < 100) { /*account for when there aren't 100 numRanks*/
@@ -607,13 +605,8 @@
                     html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
                   }
                 }
-                if (settings[0]) { /*apply shadow mon 20% attack buff and 20% defense debuff*/
-                  html+="<td style='color:red'>"+numOut(ranks[keys[i]][j].battle.A*1.2,dec)+"</td>"; /*GL Atk Total*/
-                  html+="<td style='color:blue'>"+numOut(ranks[keys[i]][j].battle.D*0.83333331,dec)+"</td>"; /*GL Def Total*/
-                } else {
-                  html+="<td>"+numOut(ranks[keys[i]][j].battle.A,dec)+"</td>"; /*GL Atk Total*/
-                  html+="<td>"+numOut(ranks[keys[i]][j].battle.D,dec)+"</td>"; /*GL Def Total*/
-                }
+                html+="<td>"+numOut(ranks[keys[i]][j].battle.A,dec)+"</td>"; /*GL Atk Total*/
+                html+="<td>"+numOut(ranks[keys[i]][j].battle.D,dec)+"</td>"; /*GL Def Total*/
                 html+="<td>"+ranks[keys[i]][j].battle.S+"</td>"; /*GL HP*/
                 html+="<td>"+keys[i].split(".")[0]+"</td>"; /*Stat Product*/
                 html+="</tr>";
@@ -630,12 +623,6 @@
         html+="</table>"; /*finish building the whole table*/
         var printLimit = Math.min(rowsOutput, limit, ranks.numRanks); /* TODO: Delete this? */
         if (perfTiming) {var Tr = performance.now();}
-        
-        /*apply shadow buffs/debuffs post-filtering for correct shadow UI elements*/
-        if (settings[0]) {
-          mA=mA*1.2;minAtk=minAtk*1.2;maxAtk=maxAtk*1.2;
-          mD=mD*0.83333331;minDef=minDef*0.83333331;maxDef=maxDef*0.83333331;
-        }
         
         /*prepare max stat html output*/
         var maxAtkurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
@@ -717,7 +704,7 @@
         if ((lastLeague) && (leagueName !== lastLeague)){ /* Reset if new League */mA = 0; mD = 0; mHP = 0;}
         lastLeague = leagueName; /* Store League for next run */
         var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), document.getElementById('floor').value, document.getElementById('minLvl').value, document.getElementById('maxLvl').value, document.getElementById("dti").checked, league, poke);
-        var settings = (document.getElementById('shdw[0]').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0") + (document.getElementById("mlCP").checked ? "1":"0");
+        var settings = (document.getElementById('mlCP').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0");
         var URL = window.location.href.split("?")[0];
         
         /*ensure we actually generated something to output*/
@@ -735,10 +722,10 @@
           aIV[i] = document.getElementById("aIV["+i+"]").value;
           dIV[i] = document.getElementById("dIV["+i+"]").value;
           sIV[i] = document.getElementById("sIV["+i+"]").value;
-          /*console.log("Updated aIV["+i+"]:'"+aIV[i]+"', dIV["+i+"]:'"+dIV[i]+"', sIV["+i+"]:'"+sIV[i]+"' aIV.length:"+aIV.length);*/
+          shdw[i] = document.getElementById("shdw["+i+"]").checked;
         }
         
-        const [printLimit] = outputUserRanks(aIV, dIV, sIV, leagueName, ranks, settings, dec, URL);
+        const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, leagueName, ranks, settings, dec, URL);
         
         displayPvPokeEvoGroup();
         
@@ -749,9 +736,9 @@
         if (document.getElementById('floor').value>0) {uri += "&f="+document.getElementById('floor').value;}
         if (document.getElementById('minLvl').value>1) {uri += "&min="+document.getElementById('minLvl').value;}
         if (document.getElementById('maxLvl').value!=40) {uri += "&max="+document.getElementById('maxLvl').value;}
-        if (settings!=0000000) {uri += "&set="+settings;}
+        if (settings!=000000) {uri += "&set="+settings;}
         if (document.getElementById('familyEvoLeague').value!=1500) {uri += "&fel="+document.getElementById('familyEvoLeague').value;}
-        if (mA != numOut(ranks.minAtk.value, dec)) {uri += "&mA="+mA;console.log("mA:"+mA+" while ranks.minAtk.value:"+ranks.minAtk.value)}
+        if (mA != numOut(ranks.minAtk.value, dec)) {uri += "&mA="+mA;console.log("mA:"+mA+" while numOut("+ranks.minAtk.value+", "+dec+"):"+numOut(ranks.minAtk.value, dec))}
         if (mD != numOut(ranks.minDef.value, dec)) {uri += "&mD="+mD;}
         if (mHP != ranks.minHP.value) {uri += "&mHP="+mHP;}
         if (document.getElementById('dec').value>1) {uri += "&dec="+document.getElementById('dec').value;}
@@ -759,7 +746,7 @@
           var IVs = "";
           for (i=0; i<aIV.length; i++) {
             if (i > 0) {IVs += "-";} else {IVs = "";}
-            IVs += aIV[i] + "_" + dIV[i] + "_" + sIV[i];
+            IVs += aIV[i] + "_" + dIV[i] + "_" + sIV[i] + "_" + shdw[i];
           }
           uri += "&IVs="+IVs;
         }
@@ -805,23 +792,24 @@
           if (name.includes("_Alola")) {
             name = name + "n";
           }
-          if (document.getElementById('shdw[0]').checked) {
-            name = name + "_shadow";
-          }
           var cgeData = "";
           var maxWidth = 0;
           for (var i=0; i<aIV.length; i++) {
+            var mon = name;
+            if (shdw[i]) {
+              mon = name + "_shadow";
+            }
             if (aIV[i] == "") {
               console.log("skipping incomplete row, i:"+i+", aIV:"+aIV[i]+", dIV:"+dIV[i]+", sIV:"+sIV[i]);
               continue;
             }
-            var row = name+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
+            var row = mon+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
             if (row.length > maxWidth) {
               maxWidth = row.length;
             }
             if (cgeData!="") {
               var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
-              cgeData += newline+name+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
+              cgeData += newline+mon+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
             }
             else {
               cgeData = row;
@@ -978,7 +966,7 @@
       }
       
       function unitTests(testURLs) {
-        if (!testURLs) {var testURLs = ["mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164","mon=PidgEot&r=10&cp=2500&f=0&min=1&max=51&set=000000"];}
+        if (!testURLs) {var testURLs = ["mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164","mon=PidgEot&r=10&cp=2500&f=0&min=1&max=51"];}
         
         for (var i=0; i<testURLs.length;i++) {
           console.log("unitTests: "+i+": testing '"+testURLs[i]+"'");
@@ -1113,6 +1101,7 @@
                   document.getElementById('aIV['+j+']').value = userIVs[0];
                   document.getElementById('dIV['+j+']').value = userIVs[1];
                   document.getElementById('sIV['+j+']').value = userIVs[2];
+                  document.getElementById('shdw['+j+']').value = userIVs[3];
                 }
                 break;
               case "mA":
@@ -1145,13 +1134,12 @@
               case "set":
                 /* settings = shdw,cmp,cge,family,dti,dust */
                 var settings = (''+values[i].split("=")[1]);
-                document.getElementById('shdw[0]').checked = settings[0]==1 ? true : false;
+                document.getElementById('mlCP').checked = settings[0]==1 ? true : false;
                 document.getElementById('cmp').checked = settings[1]==1 ? true : false;
                 document.getElementById('cge').checked = settings[2]==1 ? true : false;
                 document.getElementById('family').checked = settings[3]==1 ? true : false;
                 document.getElementById('dti').checked = settings[4]==1 ? true : false;
                 document.getElementById('dust').checked = settings[5]==1 ? true : false;
-                document.getElementById('mlCP').checked = settings[6]==1 ? true : false;
                 toggleFamilyEvos();
                 break;
             }
@@ -1405,22 +1393,16 @@
                 lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
               }
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
-              if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0)+"</td>";}
-              
               if(!mon) {
-                if (maxLvl > 41 && ranks.maxLvl>41) {html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40)+"</td>";}
+                if (maxLvl > 41 && ranks.maxLvl>41) {html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40, shdw)+"</td>";}
+                if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0,shdw)+"</td>";}
                 if (cmp) {
                     html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
                     html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
                 }
               }
-              if (shdw) { /*apply shadow mon 20% attack buff and 20% defense debuff*/
-                html+="<td style='color:red'>"+numOut(ranks[keys[i]][j].battle.A*1.2,dec)+"</td>"; /*GL Atk Total*/
-                html+="<td style='color:blue'>"+numOut(ranks[keys[i]][j].battle.D*0.83333331,dec)+"</td>"; /*GL Def Total*/
-              } else {
-                html+="<td>"+numOut(ranks[keys[i]][j].battle.A,dec)+"</td>"; /*GL Atk Total*/
-                html+="<td>"+numOut(ranks[keys[i]][j].battle.D,dec)+"</td>"; /*GL Def Total*/
-              }
+              html+="<td>"+numOut(ranks[keys[i]][j].battle.A,dec)+"</td>"; /*GL Atk Total*/
+              html+="<td>"+numOut(ranks[keys[i]][j].battle.D,dec)+"</td>"; /*GL Def Total*/
               html+="<td>"+ranks[keys[i]][j].battle.S+"</td>"; /*GL Sta IV*/
               html+="<td>"+keys[i].split(".")[0]+"</td></tr>"; /*Stat Product*/
               /*console.log("Found rank="+actualRank);*/
@@ -1433,59 +1415,77 @@
         return html;
       }
       
-      function XLcandy(xlev) {
+      function XLcandy(xlev, shdw) {
         /* Returns calculated XL candy costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier */
         switch (xlev) {
           case 11:
+          case 10:
+            if (shdw) {return 360;}
             return 296;
           case 10.5:
-            return 276;
-          case 10:
-            return 296;
           case 9.5:
+            if (shdw) {return 336;}
             return 276;
           case 9:
+            if (shdw) {return 312;}
             return 256;
           case 8.5:
+            if (shdw) {return 288;}
             return 236;
           case 8:
+            if (shdw) {return 264;}
             return 216;
           case 7.5:
+            if (shdw) {return 243;}
             return 199;
           case 7:
+            if (shdw) {return 222;}
             return 182;
           case 6.5:
+            if (shdw) {return 201;}
             return 165;
           case 6:
+            if (shdw) {return 180;}
             return 148;
           case 5.5:
+            if (shdw) {return 162;}
             return 133;
           case 5:
+            if (shdw) {return 144;}
             return 118;
           case 4.5:
+            if (shdw) {return 126;}
             return 103;
           case 4:
+            if (shdw) {return 108;}
             return 88;
           case 3.5:
+            if (shdw) {return 93;}
             return 76;
           case 3:
+            if (shdw) {return 78;}
             return 64;
           case 2.5:
+            if (shdw) {return 63;}
             return 52;
           case 2:
+            if (shdw) {return 48;}
             return 40;
           case 1.5:
+            if (shdw) {return 36;}
             return 30;
           case 1:
+            if (shdw) {return 24;}
             return 20;
           case 0.5:
+            if (shdw) {return 12;}
             return 10;
           default:
             return 0;
         }
       }
       
-      function stardust(startlvl, endlvl, totaldust) {
+      function stardust(startlvl, endlvl, totaldust, shdw) {
         /* Returns calculated stardust power-up costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier*/
         while (startlvl < endlvl) {
           switch (startlvl) {
@@ -1569,11 +1569,11 @@
           }
         }
         /* Adjust for shadow power up penalty */
-        if (document.getElementById('shdw[0]').checked) {
+        if (shdw) {
           totaldust = totaldust*1.2;
         }
         if (totaldust > 1000) {
-          totaldust = totaldust/1000 + "K";
+          totaldust = Math.round(totaldust/1000) + "K";
         }
         return totaldust;
       }
@@ -1633,33 +1633,12 @@
         return false;
       }
       
-      function checkAllBoxes() {
-        if (perfTiming) {var T0 = performance.now();}
-        console.log("event.target.checked:"+JSON.stringify(event.target.checked));
-        var allCB = document.getElementsByClassName('shadowCB');
-        var boxChecked = event.target.checked;
-        for(var i=0; i<allCB.length; i++){
-            allCB[i].checked=boxChecked;
-        }
-        /* Reset mA and mD to fix over/undershooting bug GitHub#7*/
-        if (event.target.checked) {
-          mA = mA*1.2;
-          mD = mD*0.83333331;
-        }
-        else {
-          mA = mA/1.2;
-          mD = mD/0.83333331;
-        }
-        if (perfTiming) {stopTiming(T0, "checkAllBoxes");}
-        main();
-      }
-      
       function doTheInsert(atk, def, sta) {
         if (perfTiming) {var T0 = performance.now();}
         
         var newRow=document.getElementById('inputTable').insertRow();
         var shadowCB = document.getElementsByClassName('shadowCB');
-        newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='checkAllBoxes()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' onclick='doTheRemoval()'></button></td></tr>";
+        newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='main()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' onclick='doTheRemoval()'></button></td></tr>";
         /* Ensure this new row "spawns" with correct shadow checkbox state (copy top row state) */
         document.getElementById('shdw['+(shadowCB.length-1)+']').checked = document.getElementById('shdw[0]').checked;
         
