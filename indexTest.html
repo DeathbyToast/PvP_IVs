@@ -134,7 +134,7 @@
     		<option value="2500" label="Ultra League">Ultra League</option>
     		<option value="false" label="Master League">Master League</option>
     	</select></label>
-    	<input id="pokeInput" list="pokeListDL" onfocus="this.value='';document.querySelector('datalist').id = '';" placeholder="Pok&eacute;mon" onkeyup="setMon(event)" onblur="setMon(event)" ontouchend="setMon(event)" autocomplete="off"/>
+    	<input id="pokeInput" list="pokeListDL" onfocus="this.value='';document.querySelector('datalist').id = '';" placeholder="Pok&eacute;mon" onkeyup="setMon(event)" onblur="setMon(event)" oninput="setMon(event)" autocomplete="off"/>
     	<datalist id="pokeListDL"></datalist><span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a Pok&eacute;mon above to continue...</i></span>
       	
       <br />
