@@ -348,24 +348,20 @@
         }
         
         poke = document.getElementById('pokeInput').value;
-        if(!poke) {
-          /*exit if there's no valid mon yet*/
-          console.error("setMon: User has not yet selected a valid poke:"+poke);
+        if (pokeListAA[poke]) {
+          if (poke.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
+          if (poke.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
+          
+          document.getElementById('feedbackBox').innerHTML += "User has selected a valid poke: "+poke+"</i></p><br>";
           if (perfTiming) {stopTiming(T0, "setMon");}
-          return false;
+          main(true);
         } else {
-          if (pokeListAA[poke]) {
-            if (poke.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
-            if (poke.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
-            
-            console.log("setMon: User has chosen a valid poke:"+poke);
+            document.getElementById('feedbackBox').innerHTML += "User has NOT selected a valid poke: "+poke+"</i></p><br>";
+            /*exit if there's no valid mon yet*/
+            console.error("setMon: User has not yet selected a valid poke:"+poke);
             if (perfTiming) {stopTiming(T0, "setMon");}
-            main(true);
-          } else {
+        
             /* TODO: Add partial text match style highlighting like Awesomplete had */
-            console.error("User selection ("+poke+") is NOT valid!");
-          }
-          if (perfTiming) {stopTiming(T0, "setMon");}
         }
       }
       
