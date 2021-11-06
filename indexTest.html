@@ -337,9 +337,9 @@
         }
         
         document.getElementById('feedbackBox').innerHTML += "Generated event: "+JSON.stringify(e)+", event.key: "+JSON.stringify(e.key)+"</i></p><br>";
-        
+
         /* Exit if user is still adding/deleting the mon name */
-        if (!(pokeListAA[poke]) && e.key && e.key != "Enter" && e.key.match(/[a-z]/i)) {
+        if (!(pokeListAA[document.getElementById('pokeInput').value]) && e.key && e.key != "Enter" && e.key.match(/[a-z]/i)) {
           console.log(document.getElementById('pokeInput').value.length+" chars, urrent input: "+document.getElementById('pokeInput').value);
           /*console.log("User is still typing, exiting...");*/
           
