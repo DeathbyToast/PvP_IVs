@@ -715,12 +715,10 @@
       for (var i=0; i<pokeList.length; i++) {
         /* Strip out the dex information */
         var dex = (pokeList[i].value.split(",")[0]);
-        //console.log("Received dex: "+JSON.stringify(dex));
         /* Remove b from dex info but preserve the rest for proper output */
         if (dex.includes("b")) {
           dex = dex.split("b")[0] + dex.split("b")[1];
         }
-        //console.log("Final dex: "+JSON.stringify(dex));
         
         /* Ensure it can spawn in the wild */
         if (dex.includes("&mega")) {
@@ -730,11 +728,10 @@
         
         /* Strip out "&" info and convert dex to numerical id */
         id = dex.split("&")[0]/1;
-        //console.log("Final ID: "+JSON.stringify(id));
         
         /* Check for dex numbers that user wants to skip */
         if (dexSkips.includes(id/1)) {
-          //console.log("Skipped #"+id+"("+pokeList[i].label+")");
+          console.log("User asked to skip #"+id+"("+pokeList[i].label+"), Skipping!");
           continue;
         }
         
@@ -751,7 +748,7 @@
         
         /* Skip forms above CP limit which aren't common wild spawns */
         if (results[2][0]/1 > cpLimit/1) {
-          //console.log("Skipped #"+id+"("+pokeList[i].label+"), maxCP("+results[2][0]/1+")");
+          console.log("Skipped #"+id+"("+pokeList[i].label+"), over maxCP("+results[2][0]/1+")");
           continue;
         }
         segments += outputZeroCPsHPs(cps.slice(), hps.slice(), dex, lang);
