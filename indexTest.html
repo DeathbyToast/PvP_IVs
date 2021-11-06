@@ -234,10 +234,15 @@
       } else {
         /* Load mon data into datalist placeholder */
         var datalist = "";
+        
         for (mon in pokeListAA) {
           datalist+= "<option value="+mon+">";
         }
         document.getElementById('pokeListDL').innerHTML = datalist;
+        
+        document.getElementById('pokeInput').onpaste = function(e) {
+          setMon(e);
+        };
       }
       
       function adjustFloors(dexNum, poke) {
@@ -326,9 +331,30 @@
         
         document.getElementById('timing_outputs').innerHTML = "";
         
+        /* Intercept paste events and handle correctly */
+        if (e.type == "paste") {
+          console.log("document.getElementById('pokeInput').value.length: "+document.getElementById('pokeInput').value.length);
+          /* Get pasted data via clipboard API */
+          clipboardData = e.clipboardData || window.clipboardData;
+          pastedData = clipboardData.getData('Text');
+          console.log("Detected paste event with data: "+pastedData);
+          document.getElementById('feedbackBox').innerHTML += "event.type:"+ e.type +", e.namespace: "+event.namespace+", event.key: "+JSON.stringify(e.key)+", pokeListAA["+pastedData+"]:" +pokeListAA[pastedData]+"</i></p><br>";
+          if (pokeListAA[pastedData]) {
+            poke = pastedData;
+            if (poke.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
+            if (poke.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
+            
+            document.getElementById('feedbackBox').innerHTML += "User has selected a valid poke: "+poke+"</i></p><br>";
+            if (perfTiming) {stopTiming(T0, "setMon");}
+            main(true);
+            return true;
+          }
+        }
+        
         /*console.log("e.key:"+JSON.stringify(e.key));*/
-        if (document.getElementById('pokeInput').value.length < 3) {
+        if (document.getElementById('pokeInput').value.length < 2) {
           document.querySelector("datalist").id = "";
+          console.log("Why here?1");
           if (perfTiming) {stopTiming(T0, "setMon");}
           return false;
         } else if (document.querySelector("datalist").id == "") {
@@ -336,7 +362,7 @@
           document.querySelector("datalist").id = "pokeListDL";
         }
         
-        document.getElementById('feedbackBox').innerHTML += "Event: "+JSON.stringify(e)+", event.key: "+JSON.stringify(e.key)+", pokeListAA[document.getElementById('pokeInput').value]:" +pokeListAA[document.getElementById('pokeInput').value]+"</i></p><br>";
+        document.getElementById('feedbackBox').innerHTML += "event.type:"+ e.type +", e.namespace: "+event.namespace+", event.key: "+JSON.stringify(e.key)+", pokeListAA[document.getElementById('pokeInput').value]:" +pokeListAA[document.getElementById('pokeInput').value]+"</i></p><br>";
 
         /* Exit if user is still adding/deleting the mon name */
         if (!(pokeListAA[document.getElementById('pokeInput').value]) && e.key && e.key != "Enter" && e.key.match(/[a-z]/i)) {
