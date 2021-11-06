@@ -134,8 +134,8 @@
     		<option value="2500" label="Ultra League">Ultra League</option>
     		<option value="false" label="Master League">Master League</option>
     	</select></label>
-    	<input id="pokeInput" list="pokeListDL" onfocus="this.value='';document.querySelector('datalist').id = '';" placeholder="Pok&eacute;mon" onkeyup="setMon(event)" autocomplete="off"/>
-    	<datalist id="pokeListDL"></datalist><span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a Pok&eacute;mon above to continue...</i></span>
+    	<input id="pokeInput" list="pokeListDL" onfocus="this.value='';document.querySelector('datalist').id = '';" placeholder="Pok&eacute;mon" onkeyup="setMon(event)" onblur="setMon(event)" oninput="setMon(event)" autocomplete="off"/>
+    	<datalist id="pokeListDL"></datalist><span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a valid Pok&eacute;mon to continue...</i></span>
       	
       <br />
       <table id="inputTable">
@@ -234,6 +234,7 @@
       } else {
         /* Load mon data into datalist placeholder */
         var datalist = "";
+        
         for (mon in pokeListAA) {
           datalist+= "<option value="+mon+">";
         }
@@ -329,15 +330,16 @@
         /*console.log("e.key:"+JSON.stringify(e.key));*/
         if (document.getElementById('pokeInput').value.length < 3) {
           document.querySelector("datalist").id = "";
+          console.log("Why here?1");
           if (perfTiming) {stopTiming(T0, "setMon");}
           return false;
         } else if (document.querySelector("datalist").id == "") {
           /* Prevent dropdown from covering Android keyboards */
           document.querySelector("datalist").id = "pokeListDL";
         }
-        
+
         /* Exit if user is still adding/deleting the mon name */
-        if (e.key && e.key != "Enter" && e.key.match(/[a-z]/i)) {
+        if (!(pokeListAA[document.getElementById('pokeInput').value]) && e.key && e.key != "Enter" && e.key.match(/[a-z]/i)) {
           console.log(document.getElementById('pokeInput').value.length+" chars, urrent input: "+document.getElementById('pokeInput').value);
           /*console.log("User is still typing, exiting...");*/
           
@@ -346,24 +348,17 @@
         }
         
         poke = document.getElementById('pokeInput').value;
-        if(!poke) {
-          /*exit if there's no valid mon yet*/
+        if (pokeListAA[poke]) {
+          if (poke.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
+          if (poke.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
+          
+          console.log("User has selected a valid poke: "+poke);
+          if (perfTiming) {stopTiming(T0, "setMon");}
+          main(true);
+        } else {/*exit if there's no valid mon yet*/
           console.error("setMon: User has not yet selected a valid poke:"+poke);
           if (perfTiming) {stopTiming(T0, "setMon");}
-          return false;
-        } else {
-          if (pokeListAA[poke]) {
-            if (poke.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
-            if (poke.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
-            
-            console.log("setMon: User has chosen a valid poke:"+poke);
-            if (perfTiming) {stopTiming(T0, "setMon");}
-            main(true);
-          } else {
-            /* TODO: Add partial text match style highlighting like Awesomplete had */
-            console.error("User selection ("+poke+") is NOT valid!");
-          }
-          if (perfTiming) {stopTiming(T0, "setMon");}
+          /* TODO: Add partial text match style highlighting like Awesomplete had */
         }
       }
       
