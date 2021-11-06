@@ -490,7 +490,7 @@
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
               /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
-              gmRhtml = getMonRank(ranks, keys, shdw[i], settings[1], maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, false, false, maxLvl, settings[5], dec);
+              gmRhtml = getMonRank(ranks, keys, shdw[i], settings[1], maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, false, false, maxLvl, settings[5], dec, settings[0]);
               
               if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml == "")) {
                 console.log("i:"+i+" Detected too high CP after getMonRank");
@@ -511,7 +511,7 @@
                   /*create link for evo table entry*/
                   uri = URL + "?mon="+evos[e]+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i] + "_" + shdw[i]+"&mA=0&mD=0&mHP=0";
 
-                  var evoGMRhtml = getMonRank(evoRanks, evoKeys, shdw[i], settings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evos[e], uri, false, settings[5], dec);
+                  var evoGMRhtml = getMonRank(evoRanks, evoKeys, shdw[i], settings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evos[e], uri, false, settings[5], dec, false);
                   if (evoGMRhtml) {
                     if (evoHtml) {
                       /*if this is a second evo, just add it*/
@@ -824,12 +824,15 @@
         if (perfTiming) {var T0 = performance.now();}
         var row = window.event.target.parentNode;
         /* Ensure we didn't click on the header row to sort and ensure we aren't adding duplicate IVs */
+        
+        var offset = 3; /* Account for mlCP column */
+        if (document.getElementById('mlCP').checked) {offset+=1;}
         if (row.rowIndex/1 > aIV.length/1) {
           
           /* Get the IVs we're trying to add */
-          var atk = row.cells[3].innerHTML;
-          var def = row.cells[4].innerHTML;
-          var sta = row.cells[5].innerHTML;
+          var atk = row.cells[offset].innerHTML;
+          var def = row.cells[offset+1].innerHTML;
+          var sta = row.cells[offset+2].innerHTML;
           var uniqueIVs = true;
           
           /* Ensure we aren't duplicating IVs */
@@ -1348,9 +1351,9 @@
         return outHTML;
       }
       
-      function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, numIVs, mon, uri, maxLvl, dust, dec) {
+      function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, numIVs, mon, uri, maxLvl, dust, dec, mlCP) {
         if (perfTiming) {var T0 = performance.now();}
-        /*console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mon:"+mon+", uri:"+uri);*/
+        console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mon:"+mon+", uri:"+uri);
         var html = "";
         var actualRank = 1;
 
@@ -1381,6 +1384,7 @@
               html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
               html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
               if (!mon) { /*skip if this is an evoTable print*/
+              if (mlCP) {html+="<td>"+Math.max(10, Math.floor((pokeListAA[poke].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListAA[poke].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListAA[poke].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(document.getElementById('minLvl').value-1)*2] * cpm[(document.getElementById('minLvl').value-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
@@ -1651,6 +1655,7 @@
         aIV.push(atk);
         dIV.push(def);
         sIV.push(sta);
+        shdw.push(false);
         
         if (perfTiming) {stopTiming(T0, "doTheInsert");}
       }
@@ -1677,6 +1682,7 @@
         aIV.splice(rowNum, 1);
         dIV.splice(rowNum, 1);
         sIV.splice(rowNum, 1);
+        shdw.splice(rowNum, 1);
         tr.parentNode.removeChild(tr);
         
         /* If we removed all rows, add one back */
