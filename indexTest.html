@@ -336,7 +336,7 @@
           document.querySelector("datalist").id = "pokeListDL";
         }
         
-        document.getElementById('feedbackBox').innerHTML += "Generated event: "+JSON.stringify(e)+", event.key: "+JSON.stringify(e.key)+"</i></p><br>";
+        document.getElementById('feedbackBox').innerHTML += "Event: "+JSON.stringify(e)+", event.key: "+JSON.stringify(e.key)+", pokeListAA[document.getElementById('pokeInput').value]:" +pokeListAA[document.getElementById('pokeInput').value]+"</i></p><br>";
 
         /* Exit if user is still adding/deleting the mon name */
         if (!(pokeListAA[document.getElementById('pokeInput').value]) && e.key && e.key != "Enter" && e.key.match(/[a-z]/i)) {
