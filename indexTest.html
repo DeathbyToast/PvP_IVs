@@ -326,7 +326,7 @@
         if (perfTiming) {var T0 = performance.now();}
         
         document.getElementById('timing_outputs').innerHTML = "";
-        document.getElementById("testBox").innerHTML += "<p>Detected e.key:"+e.key+", e:"+console.log(e)+"</p>";
+        document.getElementById('testBox').innerHTML += "event.type:"+ e.type +", e.namespace: "+event.namespace+", event.key: "+JSON.stringify(e.key)+", pokeListAA["+document.getElementById('pokeInput').value+"]:" +pokeListAA[document.getElementById('pokeInput').value]+"</i></p><br>";
         
         /*console.log("e.key:"+JSON.stringify(e.key));*/
         if (document.getElementById('pokeInput').value.length < 3) {
