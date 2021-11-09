@@ -141,7 +141,7 @@
       <table id="inputTable">
         <tr><td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td><td title="Your Attack IV">Atk</td><td title="Your Defense IV">Def</td><td title="Your Stamina IV">Sta</td><td id="plusCell"><button class="circle plus" onclick="doTheInsert()"></button></td></tr>
         <tr>
-          <td><input class='shadowCB' id="shdw[0]" type="checkbox" oninput="main()"></td>
+          <td><input class='shadowCB' id="shdw[0]" type="checkbox" oninput="shdwUpdater()"></td>
           <td><select title="Your Attack IV" class="aIV" id="aIV[0]" onchange="main()">
             <option value="">&nbsp;</option>
             <option value="15">15</option>
@@ -221,10 +221,12 @@
       let aIV=[document.getElementById('aIV[0]').value];
       let dIV=[document.getElementById('dIV[0]').value];
       let sIV=[document.getElementById('sIV[0]').value];
-      let shdw=[document.getElementById('shdw[0]').value];
+      let shdw=[document.getElementById('shdw[0]').checked];
       let rIV=[];
       let lvl=[];
       let mA = 0, mD = 0, mHP = 0; /* min stat filter vars */
+      let lastMon = "";
+      let lastShadow = false;
       
       /* Ensure we've successfully loaded mon */
       if (Object.keys(pokeListAA).length < 1)
@@ -244,10 +246,23 @@
       function adjustFloors(dexNum, poke) {
         if (perfTiming) {var T0 = performance.now();}
         var minLvl = document.getElementById('minLvl');
-        var maxLvl = document.getElementById('maxLvl');
         var floor = document.getElementById('floor');
         
         /*check if we need to adjust IV Floor or Min Level*/
+        
+        if (shadowLegend.includes(dexNum) && shdw.indexOf(true) > -1) {
+          console.log("Detected Shadow Legendary:" +poke);
+          /*set min IVs to 10 and min Level to 20*/
+          if (minLvl.value/1 > 8) {
+            minLvl.value = 8;
+            mnlMod = true;
+          }
+          floor.value = 6;
+          ivMod = true;
+          if (perfTiming) {stopTiming(T0, "adjustFloors");}
+          return;
+        }
+        
         if (boxRewrd.includes(dexNum)) {
           console.log("Detected box reward mon:" +poke);
           /*set min IVs to 1 and min Level to 15*/
@@ -255,65 +270,50 @@
             minLvl.value = 15;
             mnlMod = true;
           }
-          if (maxLvl.value/1 < 15) {
-            maxLvl.value = 15;
-            mxlMod = true;
-          }
-          if (floor.value/1 < 1) {
-            floor.value = 1;
-            ivMod = true;
-          }
-        } else {
-          if (raidOnly.includes(dexNum)) {
-            console.log("Detected Raid+Trade mon:" +poke);
-            /*set min IVs to 1 and min Level to 20*/
-            if (minLvl.value/1 < 20) {
-              minLvl.value = 20;
-              mnlMod = true;
-            }
-            if (maxLvl.value/1 < 20) {
-              maxLvl.value = 20;
-            }
-            if (floor.value/1 < 1) {
-              floor.value = 1;
-            }
-          } else {
-            if (boxMyth.includes(dexNum)) {
-              console.log("Detected Mythical mon:" +poke);
-              /*set min IVs to 10 and min Level to 15*/
-              if (minLvl.value/1 < 15) {
-                minLvl.value = 15;
-                mnlMod = true;
-              }
-              if (maxLvl/1 < 15) {
-                maxLvl.value = 15;
-                mxlMod = true;
-              }
-              if (floor.value/1 < 10) {
-                floor.value = 10;
-                ivMod = true;
-              }
-            } else {
-              if (raidMyth.includes(dexNum)) {
-                console.log("Detected Raid no Trade mon:" +poke);
-                /*set min IVs to 10 and min Level to 20*/
-                if (minLvl.value/1 < 20) {
-                  minLvl.value = 20;
-                  mnlMod = true;
-                }
-                if (maxLvl.value/1 < 20) {
-                  maxLvl.value = 20;
-                  mxlMod = true;
-                }
-                if (floor.value/1 < 10) {
-                  floor.value = 10;
-                  ivMod = true;
-                }
-              }
-            }
-          }
+          floor.value = 1;
+          ivMod = true;
+          if (perfTiming) {stopTiming(T0, "adjustFloors");}
+          return;
         }
-        if (perfTiming) {stopTiming(T0, "adjustFloors");}
+        
+        if (raidOnly.includes(dexNum)) {
+          console.log("Detected Raid+Trade mon:" +poke);
+          /*set min IVs to 1 and min Level to 20*/
+          if (minLvl.value/1 < 20) {
+            minLvl.value = 20;
+            mnlMod = true;
+          }
+          floor.value = 1;
+          ivMod = true;
+          if (perfTiming) {stopTiming(T0, "adjustFloors");}
+          return;
+        }
+        
+        if (boxMyth.includes(dexNum)) {
+          console.log("Detected Mythical mon:" +poke);
+          /*set min IVs to 10 and min Level to 15*/
+          if (minLvl.value/1 < 15) {
+            minLvl.value = 15;
+            mnlMod = true;
+          }
+          floor.value = 10;
+          ivMod = true;
+          if (perfTiming) {stopTiming(T0, "adjustFloors");}
+          return;
+        }
+        
+        if (raidMyth.includes(dexNum)) {
+          console.log("Detected Raid no Trade mon:" +poke);
+          /*set min IVs to 10 and min Level to 20*/
+          if (minLvl.value/1 < 20) {
+            minLvl.value = 20;
+            mnlMod = true;
+          }
+          floor.value = 10;
+          ivMod = true;
+          if (perfTiming) {stopTiming(T0, "adjustFloors");}
+          return;
+        }
       }
       
       function stopTiming(startTime, functionName) {
@@ -322,15 +322,22 @@
         document.getElementById('timing_outputs').innerHTML += functionName+": Execution took "+(endTime-startTime).toFixed(1)+"ms<br>";
       }
       
+      function shdwUpdater() {
+        /* Ensure we have current shdw state all input rows */
+        for (var i=0; i<shdw.length; i++)
+        {
+          shdw[i] = document.getElementById("shdw["+i+"]").checked;
+        }
+        setMon();
+      }
+      
       function setMon(e) {
         if (perfTiming) {var T0 = performance.now();}
         
         document.getElementById('timing_outputs').innerHTML = "";
         
-        /*console.log("e.key:"+JSON.stringify(e.key));*/
         if (document.getElementById('pokeInput').value.length < 3) {
           document.querySelector("datalist").id = "";
-          console.log("Why here?1");
           if (perfTiming) {stopTiming(T0, "setMon");}
           return false;
         } else if (document.querySelector("datalist").id == "") {
@@ -353,8 +360,31 @@
           if (poke.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
           
           console.log("User has selected a valid poke: "+poke);
-          if (perfTiming) {stopTiming(T0, "setMon");}
-          main(true);
+          
+          if (lastMon == "") {
+            console.log("Checking if we need to adjustFloors on first run");
+            adjustFloors(pokeListAA[poke].split(',')[0].split("b")[0].split("&")[0]/1, poke);
+          } else {
+            console.log("Checking if shadow status changed: lastShadow:"+lastShadow+", shdw.indexOf(true):"+shdw.indexOf(true));
+            if (shdw.indexOf(true) > -1 || lastShadow) {
+              console.log("User just toggled a shadow box");
+              adjustFloors(pokeListAA[poke].split(',')[0].split("b")[0].split("&")[0]/1, poke);
+            }
+          }
+          
+          if (lastMon != poke) {
+            console.log("We've swapped mon, resetting monState: lastMon:"+lastMon+", poke:"+poke);
+            resetMonState();
+            adjustFloors(pokeListAA[poke].split(',')[0].split("b")[0].split("&")[0]/1, poke);
+            if (perfTiming) {stopTiming(T0, "setMon");}
+            main();
+          } else {
+            if (perfTiming) {stopTiming(T0, "setMon");}
+            main();
+          }
+          /* Ensure we track the correct lastMon for next run */
+          lastMon = poke;
+          lastShadow = (shdw.indexOf(true) > -1) ? true : false;
         } else {/*exit if there's no valid mon yet*/
           console.error("setMon: User has not yet selected a valid poke:"+poke);
           if (perfTiming) {stopTiming(T0, "setMon");}
@@ -390,7 +420,7 @@
         
         /*reset Min Level if we adjusted it previously*/
         if (mnlMod) {
-          if ((minLvl.value == 15) || (minLvl.value == 20)) {
+          if ((minLvl.value == 8) || (minLvl.value == 15) || (minLvl.value == 20)) {
             minLvl.value = 1;
           }
           mnlMod = false;
@@ -404,7 +434,7 @@
         }
         /*reset IV Floor if we adjusted it previously*/
         if (ivMod) {
-          if ((floor.value == 1) || (floor.value == 10)) {
+          if ((floor.value == 1) || (floor.value == 6) || (floor.value == 10)) {
             floor.value = 0;
           }
           ivMod = false;
@@ -660,10 +690,9 @@
         return [printLimit];
       }
       
-      function main(newMon) {
+      function main() {
         if (perfTiming) {var T0 = performance.now();}
         
-        if (newMon) {resetMonState();}
         else {document.getElementById('timing_outputs').innerHTML = "";}
         
         /* Ensure we have a mon before continuing */
@@ -690,8 +719,6 @@
           return false;
         }
         
-        adjustFloors(monInfo[0].split("b")[0].split("&")[0]/1, poke);
-        
         /* name user input fields for code readability */
         var league = document.getElementById('league').value;
         var dec = document.getElementById('dec').value;
@@ -706,6 +733,7 @@
         if (ranks.numRanks/1 < 1) {
           /*nothing to output, print Error and exit*/
           document.getElementById('instructionsBox').innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Settings and try again</i></p><br />";
+          document.getElementById('feedbackBox').innerHTML = "";
           console.log("No ranks generated!");
           if (perfTiming) {stopTiming(T0, "main");}
           return false;
@@ -717,7 +745,6 @@
           aIV[i] = document.getElementById("aIV["+i+"]").value;
           dIV[i] = document.getElementById("dIV["+i+"]").value;
           sIV[i] = document.getElementById("sIV["+i+"]").value;
-          shdw[i] = document.getElementById("shdw["+i+"]").checked;
         }
         
         const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, leagueName, ranks, settings, dec, URL);
@@ -1000,7 +1027,7 @@
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
           URL = window.location.href.split("?")[1];
-          /*URL = "mon=Mega_GeNgar&r=15&cp=2500&t=true&f=5&min=1&max=51&set=111111&fel=2500&mA=140.3&mD=130.1&mHP=164&dec=6";*/
+          URL = "mon=Politoed&r=10&cp=1500&IVs=2_15_15_false-4_15_15_false-10_15_15_false";
         } else {
           /* Enable unit testing */
           console.log("checkURI: URL passed in as:"+URL);
@@ -1011,7 +1038,7 @@
           URL = decodeURI(URL);
           /*console.log("Read URL as: "+URL);*/
           var values = URL.split("&");
-          /*console.log("Values array as: "+JSON.stringify(values));*/
+          console.log("Values array as: "+JSON.stringify(values));
           for (var i=0; i<values.length; i++)
           {
             switch (values[i].split("=")[0]) {
@@ -1042,6 +1069,7 @@
                 } /* However we found the right mon, select in textbox */
                 document.querySelector("datalist").id = "pokeListDL";
                 document.getElementById("pokeInput").value = poke;
+                lastMon = poke;
                 break;
               case "r":
                 document.getElementById('limit').value = values[i].split("=")[1];
@@ -1099,7 +1127,7 @@
                   document.getElementById('aIV['+j+']').value = userIVs[0];
                   document.getElementById('dIV['+j+']').value = userIVs[1];
                   document.getElementById('sIV['+j+']').value = userIVs[2];
-                  document.getElementById('shdw['+j+']').value = userIVs[3];
+                  document.getElementById('shdw['+j+']').checked = userIVs[3];
                 }
                 break;
               case "mA":
@@ -1353,7 +1381,7 @@
       
       function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, numIVs, mon, uri, maxLvl, dust, dec, mlCP) {
         if (perfTiming) {var T0 = performance.now();}
-        console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mon:"+mon+", uri:"+uri);
+        /*console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mon:"+mon+", uri:"+uri);*/
         var html = "";
         var actualRank = 1;
 
@@ -1637,9 +1665,7 @@
         
         var newRow=document.getElementById('inputTable').insertRow();
         var shadowCB = document.getElementsByClassName('shadowCB');
-        newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='main()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' onclick='doTheRemoval()'></button></td></tr>";
-        /* Ensure this new row "spawns" with correct shadow checkbox state (copy top row state) */
-        document.getElementById('shdw['+(shadowCB.length-1)+']').checked = document.getElementById('shdw[0]').checked;
+        newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='shdwUpdater()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' onclick='doTheRemoval()'></button></td></tr>";
         
         /* Check if this row should have default IVs or specific IVs */
         if (!(atk && def && sta)) {
@@ -1702,7 +1728,7 @@
         <option value="3">3: Trade, Ultra Friend</option>
         <option value="4">4: Weather Boost</option>
         <option value="5">5: Trade, Best Friend</option>
-        <option value="6">6: Purified Weather Boost</option>
+        <option value="6">6: Shadow Legendary</option>
         <option value="10">10: Raid / Hatch</option>
         <option value="12">12: Lucky Trade</option>
       </select></label><br />
