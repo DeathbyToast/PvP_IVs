@@ -135,9 +135,9 @@
     		<option value="false" label="Master League">Master League</option>
     	</select></label>
     	<input id="pokeInput" list="pokeListDL" onfocus="this.value='';document.querySelector('datalist').id = '';" placeholder="Pok&eacute;mon" onkeyup="setMon(event)" onblur="setMon(event)" oninput="setMon(event)" autocomplete="off"/>
-    	<datalist id="pokeListDL"></datalist><span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a Pok&eacute;mon above to continue...</i></span>
+    	<datalist id="pokeListDL"></datalist><span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a valid Pok&eacute;mon to continue...</i></span>
       	
-      <br />
+      <div id="testBox"><br /></div><br />
       <table id="inputTable">
         <tr><td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td><td title="Your Attack IV">Atk</td><td title="Your Defense IV">Def</td><td title="Your Stamina IV">Sta</td><td id="plusCell"><button class="circle plus" onclick="doTheInsert()"></button></td></tr>
         <tr>
@@ -239,10 +239,6 @@
           datalist+= "<option value="+mon+">";
         }
         document.getElementById('pokeListDL').innerHTML = datalist;
-        
-        document.getElementById('pokeInput').onpaste = function(e) {
-          setMon(e);
-        };
       }
       
       function adjustFloors(dexNum, poke) {
@@ -330,29 +326,10 @@
         if (perfTiming) {var T0 = performance.now();}
         
         document.getElementById('timing_outputs').innerHTML = "";
-        
-        /* Intercept paste events and handle correctly */
-        if (e.type == "paste") {
-          console.log("document.getElementById('pokeInput').value.length: "+document.getElementById('pokeInput').value.length);
-          /* Get pasted data via clipboard API */
-          clipboardData = e.clipboardData || window.clipboardData;
-          pastedData = clipboardData.getData('Text');
-          console.log("Detected paste event with data: "+pastedData);
-          document.getElementById('feedbackBox').innerHTML += "event.type:"+ e.type +", e.namespace: "+event.namespace+", event.key: "+JSON.stringify(e.key)+", pokeListAA["+pastedData+"]:" +pokeListAA[pastedData]+"</i></p><br>";
-          if (pokeListAA[pastedData]) {
-            poke = pastedData;
-            if (poke.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
-            if (poke.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
-            
-            document.getElementById('feedbackBox').innerHTML += "User has selected a valid poke: "+poke+"</i></p><br>";
-            if (perfTiming) {stopTiming(T0, "setMon");}
-            main(true);
-            return true;
-          }
-        }
+        document.getElementById("testBox").innerHTML += "<p>Detected e.key:"+e.key+", e:"+console.log(e)+"</p>";
         
         /*console.log("e.key:"+JSON.stringify(e.key));*/
-        if (document.getElementById('pokeInput').value.length < 2) {
+        if (document.getElementById('pokeInput').value.length < 3) {
           document.querySelector("datalist").id = "";
           console.log("Why here?1");
           if (perfTiming) {stopTiming(T0, "setMon");}
@@ -361,8 +338,6 @@
           /* Prevent dropdown from covering Android keyboards */
           document.querySelector("datalist").id = "pokeListDL";
         }
-        
-        document.getElementById('feedbackBox').innerHTML += "event.type:"+ e.type +", e.namespace: "+event.namespace+", event.key: "+JSON.stringify(e.key)+", pokeListAA[document.getElementById('pokeInput').value]:" +pokeListAA[document.getElementById('pokeInput').value]+"</i></p><br>";
 
         /* Exit if user is still adding/deleting the mon name */
         if (!(pokeListAA[document.getElementById('pokeInput').value]) && e.key && e.key != "Enter" && e.key.match(/[a-z]/i)) {
@@ -378,16 +353,13 @@
           if (poke.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
           if (poke.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
           
-          document.getElementById('feedbackBox').innerHTML += "User has selected a valid poke: "+poke+"</i></p><br>";
+          console.log("User has selected a valid poke: "+poke);
           if (perfTiming) {stopTiming(T0, "setMon");}
           main(true);
-        } else {
-            document.getElementById('feedbackBox').innerHTML += "User has NOT selected a valid poke: "+poke+"</i></p><br>";
-            /*exit if there's no valid mon yet*/
-            console.error("setMon: User has not yet selected a valid poke:"+poke);
-            if (perfTiming) {stopTiming(T0, "setMon");}
-        
-            /* TODO: Add partial text match style highlighting like Awesomplete had */
+        } else {/*exit if there's no valid mon yet*/
+          console.error("setMon: User has not yet selected a valid poke:"+poke);
+          if (perfTiming) {stopTiming(T0, "setMon");}
+          /* TODO: Add partial text match style highlighting like Awesomplete had */
         }
       }
       
@@ -519,7 +491,7 @@
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
               /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
-              gmRhtml = getMonRank(ranks, keys, shdw[i], settings[1], maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, false, false, maxLvl, settings[5], dec);
+              gmRhtml = getMonRank(ranks, keys, shdw[i], settings[1], maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, false, false, maxLvl, settings[5], dec, settings[0]);
               
               if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml == "")) {
                 console.log("i:"+i+" Detected too high CP after getMonRank");
@@ -540,7 +512,7 @@
                   /*create link for evo table entry*/
                   uri = URL + "?mon="+evos[e]+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i] + "_" + shdw[i]+"&mA=0&mD=0&mHP=0";
 
-                  var evoGMRhtml = getMonRank(evoRanks, evoKeys, shdw[i], settings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evos[e], uri, false, settings[5], dec);
+                  var evoGMRhtml = getMonRank(evoRanks, evoKeys, shdw[i], settings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evos[e], uri, false, settings[5], dec, false);
                   if (evoGMRhtml) {
                     if (evoHtml) {
                       /*if this is a second evo, just add it*/
@@ -853,12 +825,15 @@
         if (perfTiming) {var T0 = performance.now();}
         var row = window.event.target.parentNode;
         /* Ensure we didn't click on the header row to sort and ensure we aren't adding duplicate IVs */
+        
+        var offset = 3; /* Account for mlCP column */
+        if (document.getElementById('mlCP').checked) {offset+=1;}
         if (row.rowIndex/1 > aIV.length/1) {
           
           /* Get the IVs we're trying to add */
-          var atk = row.cells[3].innerHTML;
-          var def = row.cells[4].innerHTML;
-          var sta = row.cells[5].innerHTML;
+          var atk = row.cells[offset].innerHTML;
+          var def = row.cells[offset+1].innerHTML;
+          var sta = row.cells[offset+2].innerHTML;
           var uniqueIVs = true;
           
           /* Ensure we aren't duplicating IVs */
@@ -1377,9 +1352,9 @@
         return outHTML;
       }
       
-      function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, numIVs, mon, uri, maxLvl, dust, dec) {
+      function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, numIVs, mon, uri, maxLvl, dust, dec, mlCP) {
         if (perfTiming) {var T0 = performance.now();}
-        /*console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mon:"+mon+", uri:"+uri);*/
+        console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mon:"+mon+", uri:"+uri);
         var html = "";
         var actualRank = 1;
 
@@ -1410,6 +1385,7 @@
               html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
               html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
               if (!mon) { /*skip if this is an evoTable print*/
+              if (mlCP) {html+="<td>"+Math.max(10, Math.floor((pokeListAA[poke].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListAA[poke].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListAA[poke].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(document.getElementById('minLvl').value-1)*2] * cpm[(document.getElementById('minLvl').value-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
@@ -1680,6 +1656,7 @@
         aIV.push(atk);
         dIV.push(def);
         sIV.push(sta);
+        shdw.push(false);
         
         if (perfTiming) {stopTiming(T0, "doTheInsert");}
       }
@@ -1706,6 +1683,7 @@
         aIV.splice(rowNum, 1);
         dIV.splice(rowNum, 1);
         sIV.splice(rowNum, 1);
+        shdw.splice(rowNum, 1);
         tr.parentNode.removeChild(tr);
         
         /* If we removed all rows, add one back */
