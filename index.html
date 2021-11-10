@@ -134,7 +134,7 @@
     		<option value="2500" label="Ultra League">Ultra League</option>
     		<option value="false" label="Master League">Master League</option>
     	</select></label>
-    	<input id="pokeInput" list="pokeListDL" onfocus="this.value='';document.querySelector('datalist').id = '';" placeholder="Pok&eacute;mon" onkeyup="setMon(event)" onblur="setMon(event)" oninput="setMon(event)" autocomplete="off"/>
+    	<input id="pokeInput" list="pokeListDL" onfocus="this.value='';document.querySelector('datalist').id = '';" placeholder="Pok&eacute;mon" onkeyup="setMon(event)" oninput="setMon(event)" autocomplete="off"/>
     	<datalist id="pokeListDL"></datalist><span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a valid Pok&eacute;mon to continue...</i></span>
       	
       <br />
@@ -197,7 +197,7 @@
             <option value="1">1</option>
             <option value="0">0</option>
           </select></td>
-          <td id="minusCell"><button class="circle minus" onclick="doTheRemoval()"></button></td>
+          <td id="minusCell"><button class="circle minus" id="minus[0]" onclick="doTheRemoval()"></button></td>
         </tr>
       </table>
       <textarea id="CustomGroupExport" hidden></textarea>
@@ -347,7 +347,7 @@
 
         /* Exit if user is still adding/deleting the mon name */
         if (!(pokeListAA[document.getElementById('pokeInput').value]) && e.key && e.key != "Enter" && e.key.match(/[a-z]/i)) {
-          console.log(document.getElementById('pokeInput').value.length+" chars, urrent input: "+document.getElementById('pokeInput').value);
+          console.log("setMon: "+document.getElementById('pokeInput').value.length+" chars, input: "+document.getElementById('pokeInput').value);
           /*console.log("User is still typing, exiting...");*/
           
           if (perfTiming) {stopTiming(T0, "setMon");}
@@ -359,21 +359,21 @@
           if (poke.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
           if (poke.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
           
-          console.log("User has selected a valid poke: "+poke);
+          console.log("setMon: User has selected a valid poke: "+poke);
           
           if (lastMon == "") {
-            console.log("Checking if we need to adjustFloors on first run");
+            /*console.log("setMon: Checking if we need to adjustFloors on first run");*/
             adjustFloors(pokeListAA[poke].split(',')[0].split("b")[0].split("&")[0]/1, poke);
           } else {
-            console.log("Checking if shadow status changed: lastShadow:"+lastShadow+", shdw.indexOf(true):"+shdw.indexOf(true));
+            /*console.log("setMon: Checking if shadow status changed: lastShadow:"+lastShadow+", shdw.indexOf(true):"+shdw.indexOf(true));*/
             if (shdw.indexOf(true) > -1 || lastShadow) {
-              console.log("User just toggled a shadow box");
+              /*console.log("setMon: User just toggled a shadow box");*/
               adjustFloors(pokeListAA[poke].split(',')[0].split("b")[0].split("&")[0]/1, poke);
             }
           }
           
           if (lastMon != poke) {
-            console.log("We've swapped mon, resetting monState: lastMon:"+lastMon+", poke:"+poke);
+            /*console.log("We've swapped mon, resetting monState: lastMon:"+lastMon+", poke:"+poke);*/
             resetMonState();
             adjustFloors(pokeListAA[poke].split(',')[0].split("b")[0].split("&")[0]/1, poke);
             if (perfTiming) {stopTiming(T0, "setMon");}
@@ -1027,7 +1027,7 @@
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
           URL = window.location.href.split("?")[1];
-          /*URL = "mon=Politoed&r=10&cp=1500&IVs=2_15_15_false-4_15_15_false-10_15_15_false";*/
+          /*URL = "mon=Poliwrath&r=10&cp=1500&IVs=1_2_3_true-4_5_6_false-7_8_9_true";*/
         } else {
           /* Enable unit testing */
           console.log("checkURI: URL passed in as:"+URL);
@@ -1038,22 +1038,22 @@
           URL = decodeURI(URL);
           /*console.log("Read URL as: "+URL);*/
           var values = URL.split("&");
-          console.log("Values array as: "+JSON.stringify(values));
+          /*console.log("Values array as: "+JSON.stringify(values));*/
           for (var i=0; i<values.length; i++)
           {
             switch (values[i].split("=")[0]) {
               case "mon":
                 var poke = values[i].split("=")[1];
                 if (pokeListAA[poke]) { /* Check for exact match */
-                  console.log("Found exact match:"+pokeListAA[poke]);
+                  console.log("checkURI: Found exact match:"+pokeListAA[poke]);
                 } else {
                   if ((poke.includes("_PLACEHOLDER")) && pokeListAA[poke.split("_PLACEHOLDER")[0]]) {
                     poke = poke.split("_PLACEHOLDER")[0];
-                    console.log("Poke is placeholder, removed to now be:"+poke);
+                    console.log("checkURI: Poke is placeholder, removed to now be:"+poke);
                   }
                   if ((poke.includes("_SPECULATIVE")) && pokeListAA[poke.split("_SPECULATIVE")[0]]) {
                   poke = poke.split("_SPECULATIVE")[0];
-                  console.log("Poke is speculative, removed to now be:"+poke);
+                  console.log("checkURI: Poke is speculative, removed to now be:"+poke);
                   }
                   /* Last ditch effort to fix capitalization mistakes via https://stackoverflow.com/a/4878800 */
                   var text = poke.toLowerCase()
@@ -1063,7 +1063,7 @@
                   if (pokeListAA[text]) {
                     poke = text;
                   } else {
-                    console.log("Could not find '"+text+"':"+pokeListAA[text]);
+                    console.log("checkURI: Could not find '"+text+"':"+pokeListAA[text]);
                     break;
                   }
                 } /* However we found the right mon, select in textbox */
@@ -1122,13 +1122,12 @@
                 var ivStr = (values[i].split("=")[1]).split("-");
                 for (var j=0; j<ivStr.length; j++)
                 {
-                  if (j>0) {doTheInsert();}
                   var userIVs = ivStr[j].split("_");
-                  document.getElementById('aIV['+j+']').value = userIVs[0];
-                  document.getElementById('dIV['+j+']').value = userIVs[1];
-                  document.getElementById('sIV['+j+']').value = userIVs[2];
-                  document.getElementById('shdw['+j+']').checked = userIVs[3];
+                  doTheInsert(userIVs[0],userIVs[1],userIVs[2],userIVs[3]);
                 }
+                /* Need to remove first row now */
+                document.getElementById("minus[0]").click();
+                console.log("checkURI: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);
                 break;
               case "mA":
                 mA = values[i].split("=")[1];
@@ -1143,18 +1142,18 @@
                 perfTiming = values[i].split("=")[1];
                 break;
               case "test": /* Enable test mode for website unit testing and sitemap generation */
-                console.log("Reached 'test' case in URL switch...");
+                console.log("checkURI: Reached 'test' case in URL switch...");
                 if (URL == "sitemap") {
-                  console.log("Calling updateSitemap()");
+                  console.log("checkURI: Calling updateSitemap()");
                   updateSitemap();
-                  console.log("Updated sitemap output to console");
+                  console.log("checkURI: Updated sitemap output to console");
                   URL = "";
                   if (perfTiming) {stopTiming(T0, "checkURI");}
                   return true;
                 }
-                console.log("Calling unitTests("+tests+")");
+                console.log("checkURI: Calling unitTests("+tests+")");
                 unitTests(tests);
-                console.log("Finished all tests, exiting");
+                console.log("checkURI: Finished all tests, exiting");
                 if (perfTiming) {stopTiming(T0, "checkURI");}
                 return true;
               case "set":
@@ -1175,13 +1174,13 @@
             if (perfTiming) {stopTiming(T0, "checkURI");}
             document.getElementById("pokeInput").dispatchEvent(new KeyboardEvent('keyup',{'key':'Enter'}));
           } else {
-            console.log("No poke detected, awaiting user input");
+            console.log("checkURI: No poke detected, awaiting user input");
             if (perfTiming) {stopTiming(T0, "checkURI");}
           }
         }
         else
         {
-          console.log("No inputs detected, awaiting user input");
+          console.log("checkURI: No inputs detected, awaiting user input");
           if (perfTiming) {stopTiming(T0, "checkURI");}
         }
       }
@@ -1660,12 +1659,13 @@
         return false;
       }
       
-      function doTheInsert(atk, def, sta) {
+      function doTheInsert(atk, def, sta, sha) {
         if (perfTiming) {var T0 = performance.now();}
         
         var newRow=document.getElementById('inputTable').insertRow();
         var shadowCB = document.getElementsByClassName('shadowCB');
-        newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='shdwUpdater()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' onclick='doTheRemoval()'></button></td></tr>";
+        
+        newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='shdwUpdater()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus["+shadowCB.length+"]' onclick='doTheRemoval()'></button></td></tr>";
         
         /* Check if this row should have default IVs or specific IVs */
         if (!(atk && def && sta)) {
@@ -1677,11 +1677,12 @@
           document.getElementById("aIV["+aIV.length+"]").selectedIndex = [...document.getElementById("aIV["+aIV.length+"]").options].findIndex (option => option.text === atk);
           document.getElementById("dIV["+dIV.length+"]").selectedIndex = [...document.getElementById("dIV["+dIV.length+"]").options].findIndex (option => option.text === def);
           document.getElementById("sIV["+sIV.length+"]").selectedIndex = [...document.getElementById("sIV["+sIV.length+"]").options].findIndex (option => option.text === sta);
+          document.getElementById("shdw["+(shadowCB.length-1)+"]").checked = (sha == "true") ? true: false;
         }
         aIV.push(atk);
         dIV.push(def);
         sIV.push(sta);
-        shdw.push(false);
+        shdw.push(sha);
         
         if (perfTiming) {stopTiming(T0, "doTheInsert");}
       }
