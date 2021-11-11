@@ -713,6 +713,19 @@
       document.getElementById('feedbackBox').innerHTML = "<p><i>"+message+"</i></p>";
 
       for (var i=0; i<pokeList.length; i++) {
+        
+        /* Skip placeholder entries */
+        if (pokeList[i].label.includes("_PLACEHOLDER")) {
+          console.log("Skipped Placeholder mon: "+pokeList[i].label);
+          continue;
+        }
+        
+        /* Skip placeholder entries */
+        if (pokeList[i].label.includes("_SPECULATIVE")) {
+          console.log("Skipped Speculative mon: "+pokeList[i].label);
+          continue;
+        }
+        
         /* Strip out the dex information */
         var dex = (pokeList[i].value.split(",")[0]);
         /* Remove b from dex info but preserve the rest for proper output */
@@ -844,7 +857,7 @@
           default: /* all evos */
             if (evoVals[i][0]) {
               if ((league != "All") && (league > 500)) {
-                GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, maxLvl, false, league, evoVals[i][4]);
+                GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), document.getElementById('floor').value, 0, maxLvl, false, league, evoVals[i][4]);
                 message += " and Top "+leagueLim/1+ " PvP "+evoVals[i][4];
                 rKeys = Object.keys(GLranks);
                 for (j=leagueLim/1; j<rKeys.length; j++) {delete GLranks[rKeys[j]];}
@@ -854,7 +867,7 @@
                 
                 if (evoVals[i][6]/1 > 0) { /* Be sure the user wants this league before building anything! */
                   /* Run Great League Calculations first, always need to be done for all Leagues */
-                  GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, maxLvl, false, 1500, evoVals[i][4]);
+                  GLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), document.getElementById('floor').value, 0, maxLvl, false, 1500, evoVals[i][4]);
                   message += ",<br> and PvP "+evoVals[i][4]+" for Top "+evoVals[i][6];
                   if (league > 500) {message += " GL";}
                   GLkeys = Object.keys(GLranks);
@@ -863,7 +876,7 @@
                 }
     
                 if ((evoVals.length<2) || ((evoVals[i][5]/1 > 1500) && (evoVals[i][7]/1 > 0))) {
-                  ULranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, maxLvl, false, 2500, evoVals[i][4]);
+                  ULranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), document.getElementById('floor').value, 0, maxLvl, false, 2500, evoVals[i][4]);
                   message += ", and Top "+evoVals[i][7]+ " UL";
                   ULkeys = Object.keys(ULranks);
                   for (j=evoVals[i][7]/1; j<ULkeys.length; j++) {delete ULranks[ULkeys[j]];}
@@ -871,7 +884,7 @@
                 }
                 
                 if ((evoVals.length<2) || ((evoVals[i][5]/1 > 2500) && (evoVals[i][8]/1 > 0))) {
-                  MLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), 0, 0, maxLvl, false, false, evoVals[i][4]);
+                  MLranks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), document.getElementById('floor').value, 0, maxLvl, false, false, evoVals[i][4]);
                   message += ", and Top "+evoVals[i][8]+ " ML";
                   MLkeys = Object.keys(MLranks);
                   for (j=evoVals[i][8]/1; j<MLkeys.length; j++) {delete MLranks[MLkeys[j]];}
@@ -1238,6 +1251,17 @@
     		<option value="zh,cp,hp,mega,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;">Chinese</option>
     </select>
     </label><br />
+    <label>IV Floor:<select id="floor" oninput="main()">
+        <option value="0">0: Wild Caught</option>
+        <option value="1">1: Trade, Good Friend</option>
+        <option value="2">2: Trade, Great / Purified</option>
+        <option value="3">3: Trade, Ultra Friend</option>
+        <option value="4">4: Weather Boost</option>
+        <option value="5">5: Trade, Best Friend</option>
+        <option value="6">6: Shadow Legendary</option>
+        <option value="10">10: Raid / Hatch</option>
+        <option value="12">12: Lucky Trade</option>
+      </select></label><br />
     <div><label id="maxLvlLbl">Max PvP Level:</label><select title="What Level Ceiling to Search?" id="maxLvl" oninput="main()">
         <option value="1">1: Wild Caught</option>
         <option value="2">2</option>
