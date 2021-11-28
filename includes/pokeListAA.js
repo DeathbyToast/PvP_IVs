@@ -432,7 +432,7 @@ var pokeListAA = {
     "Absol": "359b&!mega,246,120,163,Mega_Absol_SPECULATIVE",
     "Mega_Absol_SPECULATIVE": "359&mega,314,130,163,Absol",
     "Wynaut": "360&eggsonly,41,86,216,Wobbuffet",
-    "Snorunt": "361b,95,95,137,362,Froslass,Glalie,Mega_Glalie_SPECULATIVE",
+    "Snorunt": "361b,95,95,137,Froslass,Glalie,Mega_Glalie_SPECULATIVE",
     "Glalie": "362&!mega,162,162,190,Snorunt,Mega_Glalie_SPECULATIVE,Froslass",
     "Mega_Glalie_SPECULATIVE": "362&mega,252,168,190,Snorunt,Glalie",
     "Spheal": "363b,95,90,172,Sealeo,Walrein",
