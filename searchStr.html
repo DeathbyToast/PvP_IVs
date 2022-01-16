@@ -721,9 +721,17 @@
         lang = lang + "&IVentry="+document.getElementById('IVentry').value;
       }
       
+      if (document.getElementById('maxLvl').value != "40") {
+        lang = lang + "&m="+document.getElementById('maxLvl').value;
+      }
+      
+      if (document.getElementById('searchLvl').value != "30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1") {
+        lang = lang + "&s="+document.getElementById('searchLvl').value;
+      }
+      
       /* update the URL with search parameters */
       var uri = window.location.href.split("?")[0];
-      uri = encodeURI(uri + "?mon="+selected+"&cp="+league+"&r="+rStr+"&set="+binary+"&l="+lang+"&m="+maxLvl+"&s="+searchLvl);
+      uri = encodeURI(uri + "?mon="+selected+"&cp="+league+"&r="+rStr+"&set="+binary+"&l="+lang);
 
       /* conditional for All Zero mode */
       if (!selected) {
