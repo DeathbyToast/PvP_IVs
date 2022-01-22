@@ -613,7 +613,7 @@
             lvl.push(false); /* keep this balanced */
           }
         }
-        if (filtered) {
+        if (filtered && aIV[0]) {
           if (validIVs && invalidIVs) {document.getElementById('feedbackBox').innerHTML += "<p><i>Based on your filters, Valid IVs: "+validIVs+"</i></p><p><i>Invalid IVs: "+invalidIVs+"</i></p>";
           } else if (validIVs) {
             document.getElementById('feedbackBox').innerHTML += "<p><i>All of your IVs are above your minimum stat filters!</i></p>";
