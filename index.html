@@ -458,7 +458,7 @@
         setUserPreference('family');
       }
       
-      function outputUserRanks(aIV, dIV, sIV, shdw, leagueName, ranks, settings, dec, URL) {
+      function outputUserRanks(aIV, dIV, sIV, shdw, league, leagueName, ranks, settings, dec, URL) {
         if (perfTiming) {var T0 = performance.now();}
         
         settings = settings.split(''); /* split into characters */
@@ -509,6 +509,22 @@
         if (perfTiming) {var Tc = performance.now();}
         
         html+="<th>PvP Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
+        
+        /*print main table output and count actual outputted rows/ranks*/
+        var actualRank = 1; var rowsOutput = 0;
+        var minAtk = ranks.minAtk.value, maxAtk = ranks.maxAtk.value;
+        var minDef = ranks.minDef.value, maxDef = ranks.maxDef.value;
+        var filtered = false;
+        
+        /* Initialize min stat filters if blank (first run only)*/
+        if ((mA+mD+mHP)/1 == 0) { /*console.log("Noticed mA,mD,or mHP are 0, initializing...");*/
+          mA = numOut(minAtk,dec);mD = numOut(minDef,dec);mHP = ranks.minHP.value;
+        } else {
+          /* Ensure that we don't have atk/def/HP filters above maximums */
+          mA = (mA/1 > maxAtk/1) ? numOut(maxAtk,dec)-1 : mA;
+          mD = (mD/1 > maxDef/1) ? numOut(maxDef,dec)-1 : mD;
+          mHP = (mHP/1 > ranks.maxHP.value/1) ? ranks.maxHP.value/1-1 : mHP;
+        }
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
@@ -516,13 +532,29 @@
         var uri;
         lvl = []
         ;rIV = [];
+        var validIVs = "";
+        var invalidIVs = "";
+        
+        /* Check to see if the user has filtered their stat output*/
+        if (ranks.minAtk.value != mA && ranks.minDef.value != mD && ranks.minHP.value != mHP) {
+          filtered = true;
+        }
         
         /* Generate user inputted IV rows for main output table */
         for (i=0; i<aIV.length; i++) {
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
               /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
-              gmRhtml = getMonRank(ranks, keys, shdw[i], settings[1], maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, false, false, maxLvl, settings[5], dec, settings[0]);
+              [gmRhtml, validIV] = getMonRank(ranks, keys, shdw[i], settings[1], maxStatProd, aIV[i], dIV[i], sIV[i], mA, mD, mHP, filtered, aIV.length, false, false, maxLvl, settings[5], dec, settings[0]);
+              
+              /* Keep track of which user IVs are valid and invalid per stat filters */
+              if (filtered) {
+                if (validIV) {
+                  validIVs += aIV[i]+"-"+dIV[i]+"-"+sIV[i]+" ";
+                } else {
+                  invalidIVs += aIV[i]+"-"+dIV[i]+"-"+sIV[i]+" ";
+                }
+              }
               
               if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml == "")) {
                 console.log("i:"+i+" Detected too high CP after getMonRank");
@@ -543,7 +575,7 @@
                   /*create link for evo table entry*/
                   uri = URL + "?mon="+evos[e]+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i] + "_" + shdw[i]+"&mA=0&mD=0&mHP=0";
 
-                  var evoGMRhtml = getMonRank(evoRanks, evoKeys, shdw[i], settings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, evos[e], uri, false, settings[5], dec, false);
+                  var evoGMRhtml = getMonRank(evoRanks, evoKeys, shdw[i], settings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], 0, 0, 0, false, aIV.length, evos[e], uri, false, settings[5], dec, false);
                   if (evoGMRhtml) {
                     if (evoHtml) {
                       /*if this is a second evo, just add it*/
@@ -581,28 +613,23 @@
             lvl.push(false); /* keep this balanced */
           }
         }
+        if (filtered) {
+          if (validIVs && invalidIVs) {document.getElementById('feedbackBox').innerHTML += "<p><i>Based on your filters, Valid IVs: "+validIVs+"</i></p><p><i>Invalid IVs: "+invalidIVs+"</i></p>";
+          } else if (validIVs) {
+            document.getElementById('feedbackBox').innerHTML += "<p><i>All of your IVs are above your minimum stat filters!</i></p>";
+          } else {
+            document.getElementById('feedbackBox').innerHTML += "<p><i>None of your IVs are above your minimum stat filters!</i></p>";
+          }
+        }
         evoHtml += "</table>";
         evoFeedback += "<br />";
         /*console.log("outputUserRanks: Finished creating output for IVs, now printing main table...");*/
         if (perfTiming) {var Ti = performance.now();}
         
-        /*print main table output and count actual outputted rows/ranks*/
-        var actualRank = 1; var rowsOutput = 0;
-        var minAtk = ranks.minAtk.value, maxAtk = ranks.maxAtk.value;
-        var minDef = ranks.minDef.value, maxDef = ranks.maxDef.value;
-        
-        /* Initialize min stat filters if blank (first run only)*/
-        if ((mA+mD+mHP)/1 == 0) { /*console.log("Noticed mA,mD,or mHP are 0, initializing...");*/
-          mA = numOut(minAtk,dec);mD = numOut(minDef,dec);mHP = ranks.minHP.value;
-        } else {
-          /* Ensure that we don't have atk/def/HP filters above maximums */
-          mA = (mA/1 > maxAtk/1) ? numOut(maxAtk,dec)-1 : mA;
-          mD = (mD/1 > maxDef/1) ? numOut(maxDef,dec)-1 : mD;
-          mHP = (mHP/1 > ranks.maxHP.value/1) ? ranks.maxHP.value/1-1 : mHP;
-        }
-        
         /* used to track if we should hide XL candy column */
         var nonZeroXL = false;
+        var outIVs = "";
+        var filtered = false;
         
         for (i=0; ((actualRank/1<=ranks.numRanks/1) && (actualRank/1 <= limit/1)); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
@@ -617,6 +644,7 @@
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
+                outIVs+=ranks[keys[i]][j].IVs.A+"-"+ranks[keys[i]][j].IVs.D+"-"+ranks[keys[i]][j].IVs.S+",";
                 html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"+"</td>"; /*Perfection*/
                 if (maxLvl > 41 && ranks.maxLvl>41) {
                   var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
@@ -642,6 +670,10 @@
             } else {
               /* Skip printing row, but ensure we still print a total of <limit> rows */
               limit = (limit/1 + 1)/1;
+              if (!filtered)
+              {
+                filtered = true;
+              }
             }
             actualRank = actualRank + 1;
           }
@@ -658,9 +690,11 @@
         var minAtkurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
         var minDefurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
         var minHPurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
+        
+        var step = 1/Math.pow(10,dec);
 
-        var ranges = "<br />Atk &ge; <input type='number' step='0.1' id='atkVal' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;main();'> <a href="+minAtkurl+">"+numOut(minAtk,dec)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;main();'><a href="+maxAtkurl+">"+numOut(maxAtk,dec)+"</a><br>";
-        ranges += "Def &ge; <input type='number' step='0.1' id='defVal' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;main();'> <a href="+minDefurl+">"+numOut(minDef,dec)+"</a><input type='range' id='defRange' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;main();'><a href="+maxDefurl+">"+numOut(maxDef,dec)+"</a><br>";
+        var ranges = "<br />Atk &ge; <input type='number' step="+step+" id='atkVal' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;main();'> <a href="+minAtkurl+">"+numOut(minAtk,dec)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;main();'><a href="+maxAtkurl+">"+numOut(maxAtk,dec)+"</a><br>";
+        ranges += "Def &ge; <input type='number' step="+step+" id='defVal' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;main();'> <a href="+minDefurl+">"+numOut(minDef,dec)+"</a><input type='range' id='defRange' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;main();'><a href="+maxDefurl+">"+numOut(maxDef,dec)+"</a><br>";
         ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;main();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;main();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a><br />";
         
         /*compute trade percentages*/
@@ -675,9 +709,18 @@
           }
           /*TODO: FIX THIS Generate Search String links for each IV set*/
           /*https://pvpivs.com/searchStr.html?mon=Dusknoir&cp=1500&r=f_10_f_f&o=1001100&l=en*/
-          for (i=0; i<rIV.length; i++) {
-            searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+poke+"&cp="+league+"&r="+rIV[i]+"&o=1001100&l=en&m="+maxLvl+"'>Generate "+poke+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
+          if (!filtered) {
+            for (i=0; i<rIV.length; i++) {
+              /*searchLink += "<p><a href='https://pvpivs.com/searchStr.html?mon="+poke+"&cp="+league+"set=00011001&m="+maxLvl+"'>Generate "+poke+" Search String to Trash below Rank "+rIV[i]+"</a></p>";*/
+            }
           }
+        }
+        
+        /* Print out link to custom IV Search String if any ranks were filtered out*/
+        if (filtered) {
+          /* Trim trailing comma off string */
+          outIVs = outIVs.replace(/,\s*$/, "");
+          searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+poke+"&cp="+league+"&o=00011001&IVentry="+outIVs+"'>Generate "+poke+" Search String for only these filtered IVs</a></p>";
         }
         
         document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback + html + ranges + searchLink + "<br>" + trades;
@@ -749,7 +792,7 @@
           sIV[i] = document.getElementById("sIV["+i+"]").value;
         }
         
-        const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, leagueName, ranks, settings, dec, URL);
+        const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, league, leagueName, ranks, settings, dec, URL);
         
         displayPvPokeEvoGroup();
         
@@ -1029,7 +1072,7 @@
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
           URL = window.location.href.split("?")[1];
-          /*URL = "mon=Poliwrath&r=10&cp=1500&IVs=1_2_3_true-4_5_6_false-7_8_9_true";*/
+          /*URL = "mon=Nidoqueen&r=66&cp=2500&max=50&set=100000&mA=151.98&mD=149.4&mHP=175&dec=2&IVs=7_14_9_true-6_10_8_true-9_12_15_true";*/
         } else {
           /* Enable unit testing */
           console.log("checkURI: URL passed in as:"+URL);
@@ -1380,11 +1423,12 @@
         return outHTML;
       }
       
-      function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, numIVs, mon, uri, maxLvl, dust, dec, mlCP) {
+      function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, mA, mD, mHP, filtered, numIVs, mon, uri, maxLvl, dust, dec, mlCP) {
         if (perfTiming) {var T0 = performance.now();}
         /*console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mon:"+mon+", uri:"+uri);*/
         var html = "";
         var actualRank = 1;
+        var validIVs = false;
 
         for (var i=0; (i<ranks.numRanks && ranks[keys[i]].length); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
@@ -1434,13 +1478,20 @@
               html+="<td>"+ranks[keys[i]][j].battle.S+"</td>"; /*GL Sta IV*/
               html+="<td>"+keys[i].split(".")[0]+"</td></tr>"; /*Stat Product*/
               /*console.log("Found rank="+actualRank);*/
+              
+              /* Check if these IVs are valid or invalid for user filter feeedback */
+              if (filtered && (mA/1 <= numOut(ranks[keys[i]][j].battle.A,dec)) && (mD/1 <= numOut(ranks[keys[i]][j].battle.D,dec)) && (mHP/1 <= ranks[keys[i]][j].battle.S)) {
+                validIVs = true;
+              }
+              
               break; /* we found it, stop searching / leave the loop!*/
             }
             actualRank = actualRank + 1;
           }
         }
+        
         if (perfTiming) {stopTiming(T0, "getMonRank");}
-        return html;
+        return [html, validIVs];
       }
       
       function XLcandy(xlev, shdw) {
