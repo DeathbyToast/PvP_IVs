@@ -573,7 +573,11 @@
                   var evoKeys = Object.keys(evoRanks);
                   var evoMaxStatProd = evoKeys[0].split(".")[0];
                   /*create link for evo table entry*/
-                  uri = URL + "?mon="+evos[e]+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i] + "_" + shdw[i]+"&mA=0&mD=0&mHP=0";
+                  uri = URL + "?mon="+evos[e]+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i];
+                  if (shdw[i]) {
+                    uri += "_" + shdw[i];
+                  }
+                  uri += "&mA=0&mD=0&mHP=0";
 
                   var evoGMRhtml = getMonRank(evoRanks, evoKeys, shdw[i], settings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], 0, 0, 0, false, aIV.length, evos[e], uri, false, settings[5], dec, false);
                   if (evoGMRhtml) {
@@ -813,7 +817,10 @@
           var IVs = "";
           for (i=0; i<aIV.length; i++) {
             if (i > 0) {IVs += "-";} else {IVs = "";}
-            IVs += aIV[i] + "_" + dIV[i] + "_" + sIV[i] + "_" + shdw[i];
+            IVs += aIV[i] + "_" + dIV[i] + "_" + sIV[i];
+            if (shdw[i]) {
+              IVs += "_" + shdw[i];
+            }
           }
           uri += "&IVs="+IVs;
         }
