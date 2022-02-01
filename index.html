@@ -226,7 +226,8 @@
       let shdw=[document.getElementById('shdw[0]').checked];
       let rIV=[];
       let lvl=[];
-      let mA = 0, mD = 0, mHP = 0; /* min stat filter vars */
+      let mA = 0, mD = 0, mHP = 0; /*min stat filter vars*/
+      let filterMod = false; /*track if stat filters were adjusted*/
       let lastMon = "";
       let lastShadow = false;
       
@@ -418,7 +419,8 @@
         doTheInsert();
         
         /* clear min stat filters and lastLeague */
-        mA = 0; mD = 0; mHP = 0; lastLeague = undefined;
+        mA = 0; mD = 0; mHP = 0; lastLeague = undefined; filterMod = false;
+        
         
         /*reset Min Level if we adjusted it previously*/
         if (mnlMod) {
@@ -461,7 +463,7 @@
       function outputUserRanks(aIV, dIV, sIV, shdw, league, leagueName, ranks, settings, dec, URL) {
         if (perfTiming) {var T0 = performance.now();}
         
-        settings = settings.split(''); /* split into characters */
+        splitSettings = settings.split(''); /* split into characters */
         var evoLeague = document.getElementById('familyEvoLeague').value;
         var evoLeagueName = document.getElementById('familyEvoLeague').options[document.getElementById('familyEvoLeague').selectedIndex].innerHTML;
         var minLvl = document.getElementById('minLvl').value;
@@ -474,14 +476,14 @@
         var evoLen = evos.length;
         
         /* properly parse settings bits as true/false */
-        for (var i=0; i<settings.length; i++) { settings[i] = (settings[i] == 1) ? true : false;}
+        for (var i=0; i<splitSettings.length; i++) { splitSettings[i] = (splitSettings[i] == 1) ? true : false;}
         
         /*we have at least one rank to output, let's print! */
         var evoHtml = "";
         var evoFeedback = "";
         var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th>";
         
-        if (settings[0]) {
+        if (splitSettings[0]) {
           html += "<th>L"+minLvl+" CP</th>"
         }
           
@@ -492,12 +494,12 @@
           html+="<th>XL</th>";
         }
         /*include stardust costs if enabled*/
-        if (settings[5]) {
+        if (splitSettings[5]) {
           html+="<th>Dust</th>";
         }
         
         /*include cmp columns if checked*/
-        if (settings[1] == true) {
+        if (splitSettings[1] == true) {
           if (ranks.numRanks/1 < 100) {
             /*if there isn't a top 100, make it Top numRanks*/
             html+="<th>R1 CMP</th><th>T"+ranks.numRanks+" CMP</th>";
@@ -517,13 +519,19 @@
         var filtered = false;
         
         /* Initialize min stat filters if blank (first run only)*/
-        if ((mA+mD+mHP)/1 == 0) { /*console.log("Noticed mA,mD,or mHP are 0, initializing...");*/
+        if ((mA+mD+mHP)/1 == 0 && filterMod == false) { /*console.log("Noticed mA,mD,or mHP are 0, initializing...");*/
           mA = numOut(minAtk,dec);mD = numOut(minDef,dec);mHP = ranks.minHP.value;
         } else {
           /* Ensure that we don't have atk/def/HP filters above maximums */
           mA = (mA/1 > maxAtk/1) ? numOut(maxAtk,dec)-1 : mA;
           mD = (mD/1 > maxDef/1) ? numOut(maxDef,dec)-1 : mD;
           mHP = (mHP/1 > ranks.maxHP.value/1) ? ranks.maxHP.value/1-1 : mHP;
+          /* Ensure that we don't have atk/def/HP filters above minimums unless filterMod is true */
+          console.log("Before mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);
+          mA = (filterMod == true) ? mA : numOut(minAtk,dec);
+          mD = (filterMod == true) ? mD : numOut(minDef,dec);
+          mHP = (filterMod == true) ? mHP : ranks.minHP.value;
+          console.log("After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);
         }
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
@@ -536,7 +544,7 @@
         var invalidIVs = "";
         
         /* Check to see if the user has filtered their stat output*/
-        if (ranks.minAtk.value != mA && ranks.minDef.value != mD && ranks.minHP.value != mHP) {
+        if ((ranks.minAtk.value != mA && ranks.minDef.value != mD && ranks.minHP.value != mHP) && filterMod) {
           filtered = true;
         }
         
@@ -545,7 +553,7 @@
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
               /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
-              [gmRhtml, validIV] = getMonRank(ranks, keys, shdw[i], settings[1], maxStatProd, aIV[i], dIV[i], sIV[i], mA, mD, mHP, filtered, aIV.length, false, false, maxLvl, settings[5], dec, settings[0]);
+              [gmRhtml, validIV] = getMonRank(ranks, keys, shdw[i], splitSettings[1], maxStatProd, aIV[i], dIV[i], sIV[i], mA, mD, mHP, filtered, aIV.length, false, false, maxLvl, splitSettings[5], dec, splitSettings[0]);
               
               /* Keep track of which user IVs are valid and invalid per stat filters */
               if (filtered) {
@@ -562,7 +570,7 @@
               } else {html += gmRhtml;}
               
               /* See if we need to output evo familyTable*/
-              if (evoLen && settings[3]) {
+              if (evoLen && splitSettings[3]) {
                 /* valid set of IVs, need to find base stats for evos */
                 for (var e=0; e<evoLen; e++) {
                   /* Ensure we don't show impossible Tyrogue evos (highest stat determines evo) */
@@ -579,7 +587,7 @@
                   }
                   uri += "&mA=0&mD=0&mHP=0";
 
-                  var evoGMRhtml = getMonRank(evoRanks, evoKeys, shdw[i], settings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], 0, 0, 0, false, aIV.length, evos[e], uri, false, settings[5], dec, false);
+                  let [evoGMRhtml, validIV] = getMonRank(evoRanks, evoKeys, shdw[i], splitSettings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], 0, 0, 0, false, aIV.length, evos[e], uri, false, splitSettings[5], dec, false);
                   if (evoGMRhtml) {
                     if (evoHtml) {
                       /*if this is a second evo, just add it*/
@@ -587,7 +595,7 @@
                     } else {
                       /*include stardust costs if enabled*/
                       var dustHeader = "";
-                      if (settings[5]) {
+                      if (splitSettings[5]) {
                         dustHeader="<th>Dust</th>";
                       }
                       /*if this is the first evo, add header too*/
@@ -617,7 +625,7 @@
             lvl.push(false); /* keep this balanced */
           }
         }
-        if (filtered && aIV[0]) {
+        if (filtered && filterMod && aIV[0]) {
           if (validIVs && invalidIVs) {document.getElementById('feedbackBox').innerHTML += "<p><i>Based on your filters, Valid IVs: "+validIVs+"</i></p><p><i>Invalid IVs: "+invalidIVs+"</i></p>";
           } else if (validIVs) {
             document.getElementById('feedbackBox').innerHTML += "<p><i>All of your IVs are above your minimum stat filters!</i></p>";
@@ -644,7 +652,7 @@
                 html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
                 html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
                 html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
-                if (settings[0]) {html+="<td>"+Math.max(10, Math.floor((pokeListAA[poke].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListAA[poke].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListAA[poke].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
+                if (splitSettings[0]) {html+="<td>"+Math.max(10, Math.floor((pokeListAA[poke].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListAA[poke].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListAA[poke].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
@@ -655,8 +663,8 @@
                   html+="<td>"+candy+"</td>";
                   if (!nonZeroXL && candy > 0) {nonZeroXL = true;}
                 }
-                if (settings[5]) {html+= "<td>"+stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)+"</td>";}
-                if (settings[1]) {
+                if (splitSettings[5]) {html+= "<td>"+stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)+"</td>";}
+                if (splitSettings[1]) {
                   html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
                   if (ranks.numRanks/1 < 100) { /*account for when there aren't 100 numRanks*/
                     html+="<td>"+Math.round(((ranks[keys[i]][j].IVs.T100)/ranks.numRanks)*100)+"%"+"</td>"; /*T100 CMP*/
@@ -697,9 +705,9 @@
         
         var step = 1/Math.pow(10,dec);
 
-        var ranges = "<br />Atk &ge; <input type='number' step="+step+" id='atkVal' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;main();'> <a href="+minAtkurl+">"+numOut(minAtk,dec)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;main();'><a href="+maxAtkurl+">"+numOut(maxAtk,dec)+"</a><br>";
-        ranges += "Def &ge; <input type='number' step="+step+" id='defVal' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;main();'> <a href="+minDefurl+">"+numOut(minDef,dec)+"</a><input type='range' id='defRange' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;main();'><a href="+maxDefurl+">"+numOut(maxDef,dec)+"</a><br>";
-        ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;main();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;main();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a><br />";
+        var ranges = "<br />Atk &ge; <input type='number' step="+step+" id='atkVal' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;filterAdjusted();'> <a href="+minAtkurl+">"+numOut(minAtk,dec)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;filterAdjusted();'><a href="+maxAtkurl+">"+numOut(maxAtk,dec)+"</a><br>";
+        ranges += "Def &ge; <input type='number' step="+step+" id='defVal' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;filterAdjusted();'> <a href="+minDefurl+">"+numOut(minDef,dec)+"</a><input type='range' id='defRange' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;filterAdjusted();'><a href="+maxDefurl+">"+numOut(maxDef,dec)+"</a><br>";
+        ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;filterAdjusted();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;filterAdjusted();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a><br />";
         
         /*compute trade percentages*/
         var trades = "";
@@ -708,7 +716,7 @@
         if ((gmRhtml != "") && (statProd != null) && (aIV[aIV.length-1] && dIV[aIV.length-1] && sIV[aIV.length-1])) {
           statProd = statProd.split('</td><td>');
           statProd = statProd[statProd.length-1];
-          if (settings[4])  {
+          if (splitSettings[4])  {
             trades = tradePcnts(ranks, keys, statProd, floor, aIV.length, aIV[aIV.length-1], dIV[aIV.length-1], sIV[aIV.length-1]);
           }
           /*TODO: FIX THIS Generate Search String links for each IV set*/
@@ -737,6 +745,11 @@
         document.getElementById('timing_outputs').innerHTML += "outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.<br>";
         }
         return [printLimit];
+      }
+      
+      function filterAdjusted() {
+        filterMod = true;
+        main();
       }
       
       function main() {
@@ -772,7 +785,7 @@
         var league = document.getElementById('league').value;
         var dec = document.getElementById('dec').value;
         var leagueName = document.getElementById('league').options[document.getElementById('league').selectedIndex].innerHTML;
-        if ((lastLeague) && (leagueName !== lastLeague)){ /* Reset if new League */mA = 0; mD = 0; mHP = 0;}
+        if ((lastLeague) && (leagueName !== lastLeague)){ /* Reset if new League */mA = 0; mD = 0; mHP = 0;filterMod=false;}
         lastLeague = leagueName; /* Store League for next run */
         var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), document.getElementById('floor').value, document.getElementById('minLvl').value, document.getElementById('maxLvl').value, document.getElementById("dti").checked, league, poke);
         var settings = (document.getElementById('mlCP').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0");
@@ -795,7 +808,6 @@
           dIV[i] = document.getElementById("dIV["+i+"]").value;
           sIV[i] = document.getElementById("sIV["+i+"]").value;
         }
-        
         const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, league, leagueName, ranks, settings, dec, URL);
         
         displayPvPokeEvoGroup();
@@ -807,11 +819,13 @@
         if (document.getElementById('floor').value>0) {uri += "&f="+document.getElementById('floor').value;}
         if (document.getElementById('minLvl').value>1) {uri += "&min="+document.getElementById('minLvl').value;}
         if (document.getElementById('maxLvl').value!=40) {uri += "&max="+document.getElementById('maxLvl').value;}
-        if (settings!=000000) {uri += "&set="+settings;}
+        if (settings!=000000) {
+          console.log("813: About to make '&set'="+settings);
+          uri += "&set="+settings;}
         if (document.getElementById('familyEvoLeague').value!=1500) {uri += "&fel="+document.getElementById('familyEvoLeague').value;}
-        if (mA != numOut(ranks.minAtk.value, dec)) {uri += "&mA="+mA;console.log("mA:"+mA+" while numOut("+ranks.minAtk.value+", "+dec+"):"+numOut(ranks.minAtk.value, dec))}
-        if (mD != numOut(ranks.minDef.value, dec)) {uri += "&mD="+mD;}
-        if (mHP != ranks.minHP.value) {uri += "&mHP="+mHP;}
+        if (filterMod && mA != numOut(ranks.minAtk.value, dec)) {uri += "&mA="+mA;console.log("mA:"+mA+" while numOut("+ranks.minAtk.value+", "+dec+"):"+numOut(ranks.minAtk.value, dec))}
+        if (filterMod && mD != numOut(ranks.minDef.value, dec)) {uri += "&mD="+mD;}
+        if (filterMod && mHP != ranks.minHP.value) {uri += "&mHP="+mHP;}
         if (document.getElementById('dec').value>1) {uri += "&dec="+document.getElementById('dec').value;}
         if (aIV[0] && dIV[0] && sIV[0]) {
           var IVs = "";
@@ -1183,12 +1197,15 @@
                 break;
               case "mA":
                 mA = values[i].split("=")[1];
+                filterMod = true;
                 break;
               case "mD":
                 mD = values[i].split("=")[1];
+                filterMod = true;
                 break;
               case "mHP":
                 mHP = values[i].split("=")[1];
+                filterMod = true;
                 break;
               case "t": /* Enable performance timing output in console for debugging */
                 perfTiming = values[i].split("=")[1];
@@ -1487,7 +1504,7 @@
               /*console.log("Found rank="+actualRank);*/
               
               /* Check if these IVs are valid or invalid for user filter feeedback */
-              if (filtered && (mA/1 <= numOut(ranks[keys[i]][j].battle.A,dec)) && (mD/1 <= numOut(ranks[keys[i]][j].battle.D,dec)) && (mHP/1 <= ranks[keys[i]][j].battle.S)) {
+              if (filtered && filterMod && (mA/1 <= numOut(ranks[keys[i]][j].battle.A,dec)) && (mD/1 <= numOut(ranks[keys[i]][j].battle.D,dec)) && (mHP/1 <= ranks[keys[i]][j].battle.S)) {
                 validIVs = true;
               }
               
