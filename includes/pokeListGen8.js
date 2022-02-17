@@ -527,11 +527,19 @@ var pokeList = [
   },
   {
     'label': 'Voltorb',
-    'value': '100b,109,111,120,101'
+    'value': '100b&!hisuian,109,111,120,101&!hisuian'
+  },
+  {
+    'label': 'Voltorb_Hisuian',
+    'value': '100b&hisuian,109,111,120,101&hisuian'
   },
   {
     'label': 'Electrode',
-    'value': '101,173,173,155,100b'
+    'value': '101&!hisuian,173,173,155,100b&!hisuian'
+  },
+  {
+    'label': 'Electrode_Hisuian',
+    'value': '101&hisuian,176,176,155,100b&hisuian'
   },
   {
     'label': 'Exeggcute',
