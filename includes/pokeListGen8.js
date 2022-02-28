@@ -3350,140 +3350,140 @@ var pokeList = [
     'value': '721,252,216,190'
   },
   {
-    'label': 'Rowlet_PLACEHOLDER',
-    'value': '722b,1,1,1,723,724'
+    'label': 'Rowlet',
+    'value': '722b,102,99,169,723,724'
   },
   {
-    'label': 'Dartrix_PLACEHOLDER',
-    'value': '723,1,1,1,722b,724'
+    'label': 'Dartrix',
+    'value': '723,142,139,186,722b,724'
   },
   {
-    'label': 'Decidueye_PLACEHOLDER',
-    'value': '724,1,1,1,722b,723'
+    'label': 'Decidueye',
+    'value': '724,210,179,186,722b,723'
   },
   {
-    'label': 'Litten_PLACEHOLDER',
-    'value': '725b,1,1,1,726,727'
+    'label': 'Litten',
+    'value': '725b,128,79,128,726,727'
   },
   {
-    'label': 'Torracat_PLACEHOLDER',
-    'value': '726,1,1,1,725b,727'
+    'label': 'Torracat',
+    'value': '726,174,103,163,725b,727'
   },
   {
-    'label': 'Incineroar_PLACEHOLDER',
-    'value': '727,1,1,1,725b,726'
+    'label': 'Incineroar',
+    'value': '727,214,175,216,725b,726'
   },
   {
-    'label': 'Popplio_PLACEHOLDER',
-    'value': '728b,1,1,1,729,730'
+    'label': 'Popplio',
+    'value': '728b,120,103,137,729,730'
   },
   {
-    'label': 'Brionne_PLACEHOLDER',
-    'value': '729,1,1,1,728b,730'
+    'label': 'Brionne',
+    'value': '729,168,145,155,728b,730'
   },
   {
-    'label': 'Primarina_PLACEHOLDER',
-    'value': '730,1,1,1,728b,729'
+    'label': 'Primarina',
+    'value': '730,232,195,190,728b,729'
   },
   {
-    'label': 'Pikipek_PLACEHOLDER',
-    'value': '731b,1,1,1,732,733'
+    'label': 'Pikipek',
+    'value': '731b,136,59,111,732,733'
   },
   {
-    'label': 'Trumbeak_PLACEHOLDER',
-    'value': '732,1,1,1,731b,733'
+    'label': 'Trumbeak',
+    'value': '732,159,100,146,731b,733'
   },
   {
-    'label': 'Toucannon_PLACEHOLDER',
-    'value': '733,1,1,1,731b,732'
+    'label': 'Toucannon',
+    'value': '733,222,146,190,731b,732'
   },
   {
-    'label': 'Yungoos_PLACEHOLDER',
-    'value': '734b,1,1,1,735'
+    'label': 'Yungoos',
+    'value': '734b,122,56,134,735'
   },
   {
-    'label': 'Gumshoos_PLACEHOLDER',
-    'value': '735,1,1,1,734b'
+    'label': 'Gumshoos',
+    'value': '735,194,113,204,734b'
   },
   {
-    'label': 'Grubbin_PLACEHOLDER',
-    'value': '736b,1,1,1,737,738'
+    'label': 'Grubbin',
+    'value': '736b,115,85,132,737,738'
   },
   {
-    'label': 'Charjabug_PLACEHOLDER',
-    'value': '737,1,1,1,736b,738'
+    'label': 'Charjabug',
+    'value': '737,145,161,149,736b,738'
   },
   {
-    'label': 'Vikavolt_PLACEHOLDER',
-    'value': '738,1,1,1,736b,737'
+    'label': 'Vikavolt',
+    'value': '738,254,158,184,736b,737'
   },
   {
-    'label': 'Crabrawler_PLACEHOLDER',
-    'value': '739b,1,1,1,740'
+    'label': 'Crabrawler',
+    'value': '739b,150,104,132,740'
   },
   {
-    'label': 'Crabominable_PLACEHOLDER',
-    'value': '740,1,1,1,739b'
+    'label': 'Crabominable',
+    'value': '740,231,138,219,739b'
   },
   {
     'label': 'Oricorio_PLACEHOLDER',
     'value': '741b,1,1,1'
   },
   {
-    'label': 'Cutiefly_PLACEHOLDER',
-    'value': '742b,1,1,1,743'
+    'label': 'Cutiefly',
+    'value': '742b,110,81,120,743'
   },
   {
-    'label': 'Ribombee_PLACEHOLDER',
-    'value': '743,1,1,1,742b'
+    'label': 'Ribombee',
+    'value': '743,198,146,155,742b'
   },
   {
-    'label': 'Rockruff_PLACEHOLDER',
-    'value': '744b,1,1,1,745'
+    'label': 'Rockruff',
+    'value': '744b,117,78,128,745'
   },
   {
-    'label': 'Lycanroc_Midday_PLACEHOLDER',
-    'value': '745,1,1,1,744b'
+    'label': 'Lycanroc_Midday',
+    'value': '745,231,140,181,744b'
   },
   {
-    'label': 'Lycanroc_Midnight_PLACEHOLDER',
-    'value': '745,1,1,1,744b'
+    'label': 'Lycanroc_Midnight',
+    'value': '745,218,152,198,744b'
   },
   {
-    'label': 'Lycanroc_Dusk_PLACEHOLDER',
-    'value': '745,1,1,1,744b'
+    'label': 'Lycanroc_Dusk',
+    'value': '745,234,139,181,744b'
   },
   {
-    'label': 'Wishiwashi_Solo_PLACEHOLDER',
-    'value': '746b,1,1,1'
+    'label': 'Wishiwashi_Solo',
+    'value': '746b,46,43,128'
   },
   {
-    'label': 'Wishiwashi_School_PLACEHOLDER',
-    'value': '746b,1,1,1'
+    'label': 'Wishiwashi_School',
+    'value': '746b,255,242,128'
   },
   {
-    'label': 'Mareanie_PLACEHOLDER',
-    'value': '747b,1,1,1,748'
+    'label': 'Mareanie',
+    'value': '747b,98,110,137,748'
   },
   {
-    'label': 'Toxapex_PLACEHOLDER',
-    'value': '748,1,1,1,747b'
+    'label': 'Toxapex',
+    'value': '748,114,273,137,747b'
   },
   {
-    'label': 'Mudbray_PLACEHOLDER',
-    'value': '749b,1,1,1,750'
+    'label': 'Mudbray',
+    'value': '749b,175,121,172,750'
   },
   {
-    'label': 'Mudsdale_PLACEHOLDER',
-    'value': '750,1,1,1,749b'
+    'label': 'Mudsdale',
+    'value': '750,214,174,225,749b'
   },
   {
-    'label': 'Dewpider_PLACEHOLDER',
-    'value': '751b,1,1,1,752'
+    'label': 'Dewpider',
+    'value': '751b,72,117,116,752'
   },
   {
-    'label': 'Araquanid_PLACEHOLDER',
-    'value': '752,1,1,1,751b'
+    'label': 'Araquanid',
+    'value': '752,126,219,169,751b'
   },
   {
     'label': 'Fomantis_PLACEHOLDER',
