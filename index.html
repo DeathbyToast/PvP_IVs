@@ -339,7 +339,7 @@
         
         document.getElementById('timing_outputs').innerHTML = "";
         
-        if (document.getElementById('pokeInput').value.length < 3) {
+        if (document.getElementById('pokeInput').value.length < 2) {
           document.querySelector("datalist").id = "";
           if (perfTiming) {stopTiming(T0, "setMon");}
           return false;
