@@ -3486,240 +3486,240 @@ var pokeList = [
     'value': '752,126,219,169,751b'
   },
   {
-    'label': 'Fomantis_PLACEHOLDER',
-    'value': '753b,1,1,1,754'
+    'label': 'Fomantis',
+    'value': '753b,100,64,120,754'
   },
   {
-    'label': 'Lurantis_PLACEHOLDER',
-    'value': '754,1,1,1,753b'
+    'label': 'Lurantis',
+    'value': '754,192,169,172,753b'
   },
   {
-    'label': 'Morelull_PLACEHOLDER',
-    'value': '755b,1,1,1,756'
+    'label': 'Morelull',
+    'value': '755b,108,119,120,756'
   },
   {
-    'label': 'Shiinotic_PLACEHOLDER',
-    'value': '756,1,1,1,755b'
+    'label': 'Shiinotic',
+    'value': '756,154,168,155,755b'
   },
   {
-    'label': 'Salandit_PLACEHOLDER',
-    'value': '757b,1,1,1,758'
+    'label': 'Salandit',
+    'value': '757b,136,80,134,758'
   },
   {
-    'label': 'Salazzle_PLACEHOLDER',
-    'value': '758,1,1,1,757b'
+    'label': 'Salazzle',
+    'value': '758,228,130,169,757b'
   },
   {
-    'label': 'Stufful_PLACEHOLDER',
-    'value': '759b,1,1,1,760'
+    'label': 'Stufful',
+    'value': '759b,136,95,172,760'
   },
   {
-    'label': 'Bewear_PLACEHOLDER',
-    'value': '760,1,1,1,759b'
+    'label': 'Bewear',
+    'value': '760,226,141,260,759b'
   },
   {
-    'label': 'Bounsweet_PLACEHOLDER',
-    'value': '761b,1,1,1,762,763'
+    'label': 'Bounsweet',
+    'value': '761b,55,69,123,762,763'
   },
   {
-    'label': 'Steenee_PLACEHOLDER',
-    'value': '762,1,1,1,761b,763'
+    'label': 'Steenee',
+    'value': '762,78,94,141,761b,763'
   },
   {
-    'label': 'Tsareena_PLACEHOLDER',
-    'value': '763,1,1,1,761b,762'
+    'label': 'Tsareena',
+    'value': '763,222,195,176,761b,762'
   },
   {
-    'label': 'Comfey_PLACEHOLDER',
-    'value': '764b,1,1,1'
+    'label': 'Comfey',
+    'value': '764b,165,215,139'
   },
   {
-    'label': 'Oranguru_PLACEHOLDER',
-    'value': '765b,1,1,1'
+    'label': 'Oranguru',
+    'value': '765b,168,192,207'
   },
   {
-    'label': 'Passimian_PLACEHOLDER',
-    'value': '766b,1,1,1'
+    'label': 'Passimian',
+    'value': '766b,222,160,225'
   },
   {
-    'label': 'Wimpod_PLACEHOLDER',
-    'value': '767b,1,1,1,768'
+    'label': 'Wimpod',
+    'value': '767b,67,74,93,768'
   },
   {
-    'label': 'Golisopod_PLACEHOLDER',
-    'value': '768,1,1,1,767b'
+    'label': 'Golisopod',
+    'value': '768,218,226,181,767b'
   },
   {
-    'label': 'Sandygast_PLACEHOLDER',
-    'value': '769b,1,1,1,770'
+    'label': 'Sandygast',
+    'value': '769b,120,118,146,770'
   },
   {
-    'label': 'Palossand_PLACEHOLDER',
-    'value': '770,1,1,1,769b'
+    'label': 'Palossand',
+    'value': '770,178,178,198,769b'
   },
   {
-    'label': 'Pyukumuku_PLACEHOLDER',
-    'value': '771b,1,1,1'
+    'label': 'Pyukumuku',
+    'value': '771b,97,224,146'
   },
   {
-    'label': 'Type_Null_PLACEHOLDER',
-    'value': '772b,1,1,1,773'
+    'label': 'Type_Null',
+    'value': '772b,184,184,216,773'
   },
   {
-    'label': 'Silvally_PLACEHOLDER',
-    'value': '773,1,1,1,772b'
+    'label': 'Silvally',
+    'value': '773,198,198,216,772b'
   },
   {
-    'label': 'Minior_Meteor_PLACEHOLDER',
-    'value': '774b,1,1,1'
+    'label': 'Minior_Meteor',
+    'value': '774b,116,194,155'
   },
   {
-    'label': 'Minior_Core_PLACEHOLDER',
-    'value': '774b,1,1,1'
+    'label': 'Minior_Core',
+    'value': '774b,218,131,155'
   },
   {
-    'label': 'Komala_PLACEHOLDER',
-    'value': '775b,1,1,1'
+    'label': 'Komala',
+    'value': '775b,216,165,163'
   },
   {
-    'label': 'Turtonator_PLACEHOLDER',
-    'value': '776b,1,1,1'
+    'label': 'Turtonator',
+    'value': '776b,165,215,155'
   },
   {
-    'label': 'Togedemaru_PLACEHOLDER',
-    'value': '777b,1,1,1'
+    'label': 'Togedemaru',
+    'value': '777b,190,145,163'
   },
   {
-    'label': 'Mimikyu_PLACEHOLDER',
-    'value': '778b,1,1,1'
+    'label': 'Mimikyu',
+    'value': '778b,177,199,146'
   },
   {
-    'label': 'Bruxish_PLACEHOLDER',
-    'value': '779b,1,1,1'
+    'label': 'Bruxish',
+    'value': '779b,208,145,169'
   },
   {
-    'label': 'Drampa_PLACEHOLDER',
-    'value': '780b,1,1,1'
+    'label': 'Drampa',
+    'value': '780b,231,164,186'
   },
   {
-    'label': 'Dhelmise_PLACEHOLDER',
-    'value': '781b,1,1,1'
+    'label': 'Dhelmise',
+    'value': '781b,233,179,172'
   },
   {
-    'label': 'Jangmo_O_PLACEHOLDER',
-    'value': '782b,1,1,1,783,784'
+    'label': 'Jangmo_O',
+    'value': '782b,102,108,128,783,784'
   },
   {
-    'label': 'Hakamo_O_PLACEHOLDER',
-    'value': '783,1,1,1,782b,784'
+    'label': 'Hakamo_O',
+    'value': '783,145,162,146,782b,784'
   },
   {
-    'label': 'Kommo_O_PLACEHOLDER',
-    'value': '784,1,1,1,782b,783'
+    'label': 'Kommo_O',
+    'value': '784,222,240,181,782b,783'
   },
   {
-    'label': 'Tapu_Koko_PLACEHOLDER',
-    'value': '785b,1,1,1'
+    'label': 'Tapu_Koko',
+    'value': '785b,250,181,172'
   },
   {
-    'label': 'Tapu_Lele_PLACEHOLDER',
-    'value': '786b,1,1,1'
+    'label': 'Tapu_Lele',
+    'value': '786b,259,208,172'
   },
   {
-    'label': 'Tapu_Bulu_PLACEHOLDER',
-    'value': '787b,1,1,1'
+    'label': 'Tapu_Bulu',
+    'value': '787b,249,215,172'
   },
   {
-    'label': 'Tapu_Fini_PLACEHOLDER',
-    'value': '788b,1,1,1'
+    'label': 'Tapu_Fini',
+    'value': '788b,189,254,172'
   },
   {
-    'label': 'Cosmog_PLACEHOLDER',
-    'value': '789b,1,1,1,790,791,792'
+    'label': 'Cosmog',
+    'value': '789b,54,57,125,790,791,792'
   },
   {
-    'label': 'Cosmoem_PLACEHOLDER',
-    'value': '790,1,1,1,789b,791,792'
+    'label': 'Cosmoem',
+    'value': '790,54,242,125,789b,791,792'
   },
   {
-    'label': 'Solgaleo_PLACEHOLDER',
-    'value': '791,1,1,1,789b,790'
+    'label': 'Solgaleo',
+    'value': '791,255,191,264,789b,790'
   },
   {
-    'label': 'Lunala_PLACEHOLDER',
-    'value': '792,1,1,1,789b,790'
+    'label': 'Lunala',
+    'value': '792,255,191,264,789b,790'
   },
   {
-    'label': 'Nihilego_PLACEHOLDER',
-    'value': '793b,1,1,1'
+    'label': 'Nihilego',
+    'value': '793b,249,210,240'
   },
   {
-    'label': 'Buzzwole_PLACEHOLDER',
-    'value': '794b,1,1,1'
+    'label': 'Buzzwole',
+    'value': '794b,236,196,216'
   },
   {
-    'label': 'Pheromosa_PLACEHOLDER',
-    'value': '795b,1,1,1'
+    'label': 'Pheromosa',
+    'value': '795b,316,85,174'
   },
   {
-    'label': 'Xurkitree_PLACEHOLDER',
-    'value': '796b,1,1,1'
+    'label': 'Xurkitree',
+    'value': '796b,330,144,195'
   },
   {
-    'label': 'Celesteela_PLACEHOLDER',
-    'value': '797b,1,1,1'
+    'label': 'Celesteela',
+    'value': '797b,207,199,219'
   },
   {
-    'label': 'Kartana_PLACEHOLDER',
-    'value': '798b,1,1,1'
+    'label': 'Kartana',
+    'value': '798b,323,182,139'
   },
   {
-    'label': 'Guzzlord_PLACEHOLDER',
-    'value': '799b,1,1,1'
+    'label': 'Guzzlord',
+    'value': '799b,188,99,440'
   },
   {
-    'label': 'Necrozma_PLACEHOLDER',
-    'value': '800b,1,1,1'
+    'label': 'Necrozma',
+    'value': '800b,251,195,219'
   },
   {
-    'label': 'Necrozma_Dusk_Mane_PLACEHOLDER',
-    'value': '800b,1,1,1'
+    'label': 'Necrozma_Dusk_Mane',
+    'value': '800b,277,220,200'
   },
   {
-    'label': 'Necrozma_Dawn_Wings_PLACEHOLDER',
-    'value': '800b,1,1,1'
+    'label': 'Necrozma_Dawn_Wings',
+    'value': '800b,277,220,200'
   },
   {
-    'label': 'Ultra_Necrozma_PLACEHOLDER',
-    'value': '800b,1,1,1'
+    'label': 'Ultra_Necrozma',
+    'value': '800b,337,196,200'
   },
   {
-    'label': 'Magearna_PLACEHOLDER',
-    'value': '801b,1,1,1'
+    'label': 'Magearna',
+    'value': '801b,246,225,190'
   },
   {
-    'label': 'Marshadow_PLACEHOLDER',
-    'value': '802b,1,1,1'
+    'label': 'Marshadow',
+    'value': '802b,265,190,207'
   },
   {
-    'label': 'Poipole_PLACEHOLDER',
-    'value': '803b,1,1,1,804'
+    'label': 'Poipole',
+    'value': '803b,145,133,167,804'
   },
   {
-    'label': 'Naganadel_PLACEHOLDER',
-    'value': '804,1,1,1,803b'
+    'label': 'Naganadel',
+    'value': '804,263,159,177,803b'
   },
   {
-    'label': 'Stakataka_PLACEHOLDER',
-    'value': '805b,1,1,1'
+    'label': 'Stakataka',
+    'value': '805b,213,298,156'
   },
   {
-    'label': 'Blacephalon_PLACEHOLDER',
-    'value': '806b,1,1,1'
+    'label': 'Blacephalon',
+    'value': '806b,315,148,142'
   },
   {
-    'label': 'Zeraora_PLACEHOLDER',
-    'value': '807b,1,1,1'
+    'label': 'Zeraora',
+    'value': '807b,252,177,204'
   },
   {
     'label': 'Meltan',
