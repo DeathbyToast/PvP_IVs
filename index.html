@@ -533,6 +533,17 @@
           mHP = (filterMod == true) ? mHP : ranks.minHP.value;
           console.log("After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);
         }
+        
+        /* Pareto Efficiency Filtering Logic */
+        if (document.getElementById('r1atk').checked) {
+          mA = numOut(ranks[keys[0]][0].battle.A,dec);
+        }
+        if (document.getElementById('r1def').checked) {
+          mD = numOut(ranks[keys[0]][0].battle.D,dec);
+        }
+        if (document.getElementById('r1hp').checked) {
+          mHP = ranks[keys[0]][0].battle.S/1;
+        }
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
@@ -826,6 +837,7 @@
         if (filterMod && mA != numOut(ranks.minAtk.value, dec)) {uri += "&mA="+mA;console.log("mA:"+mA+" while numOut("+ranks.minAtk.value+", "+dec+"):"+numOut(ranks.minAtk.value, dec))}
         if (filterMod && mD != numOut(ranks.minDef.value, dec)) {uri += "&mD="+mD;}
         if (filterMod && mHP != ranks.minHP.value) {uri += "&mHP="+mHP;}
+        if (document.getElementById('r1atk').checked || document.getElementById('r1def').checked || document.getElementById('r1hp').checked) {uri += "&p=" + (document.getElementById("r1atk").checked ? "1":"0") + (document.getElementById("r1def").checked ? "1":"0") + (document.getElementById("r1hp").checked ? "1":"0")};
         if (document.getElementById('dec').value>1) {uri += "&dec="+document.getElementById('dec').value;}
         if (aIV[0] && dIV[0] && sIV[0]) {
           var IVs = "";
@@ -839,6 +851,7 @@
           uri += "&IVs="+IVs;
         }
         uri = encodeURI(uri);
+        console.log("uri generated as:"+uri);
         
         /* Update title and description to improve SEO for chosen mon */
         var newTitle = poke+" PvP IVs - "+leagueName+" Rankings (Top "+document.getElementById('limit').value+")";
@@ -1207,6 +1220,12 @@
                 mHP = values[i].split("=")[1];
                 filterMod = true;
                 break;
+              case "p":
+                var pareto = (''+values[i].split("=")[1]);
+                document.getElementById('r1atk').checked = pareto[0]==1 ? true : false;
+                document.getElementById('r1def').checked = pareto[1]==1 ? true : false;
+                document.getElementById('r1hp').checked = pareto[2]==1 ? true : false;
+                break;
               case "t": /* Enable performance timing output in console for debugging */
                 perfTiming = values[i].split("=")[1];
                 break;
@@ -1257,14 +1276,14 @@
       function cmpCalcs(ranks, keys, dec) {
         if (perfTiming) {var T0 = performance.now();}
         /*console.log("cmpCalcs: received: ranks: "+JSON.stringify(ranks)+", keys:"+JSON.stringify(keys))*/
-        var print = false;
+        /*var print = false;*/
 
         /*walk all (4096) entries in ranks and compare*/
         for (var i=0; (i<ranks.numRanks && (keys[i].indexOf(".")>-1)); i++) {
             for (var j=0; j<ranks[keys[i]].length; j++) {
-              if ((ranks[keys[i]][j].IVs.A/1 == 9) && (ranks[keys[i]][j].IVs.D/1 == 13) && (ranks[keys[i]][j].IVs.S/1 == 8)) {
+              /*if ((ranks[keys[i]][j].IVs.A/1 == 9) && (ranks[keys[i]][j].IVs.D/1 == 13) && (ranks[keys[i]][j].IVs.S/1 == 8)) {
                 print = true;
-              }
+              }*/
               if (numOut(ranks[keys[i]][j].battle.A,dec)/1 > numOut(ranks[keys[0]][0].battle.A,dec)/1) {
                 /*if (print) { console.log("R1 set to W because numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" > numOut(ranks[keys[0]][0].battle.A,1): "+numOut(ranks[keys[0]][0].battle.A,1));}*/
                 ranks[keys[i]][j].IVs.R1 = "W";
@@ -1286,7 +1305,7 @@
                   /*if (print) { console.log("T100 increased to "+ranks[keys[i]][j].IVs.T100+" with numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" > numOut(ranks[keys[k]][l].battle.A,1): "+numOut(ranks[keys[k]][l].battle.A,1));}*/
                 }
               }
-            if (print) {print = false;}
+            /*if (print) {print = false;}*/
             }
         }
         if (perfTiming) {stopTiming(T0, "cmpCalcs");}
@@ -1910,6 +1929,7 @@
         <option value="55">55 (SPECULATIVE)</option>
       </select></label><br />
       <label>PvP Stat Decimal Places:<input title="How many decimal places to Output?" type="number" value="1" id="dec" min="1" oninput="setUserPreference('dec')"></label><br />
+      Pareto Eff: Rank 1 <label>Atk:<input id="r1atk" type="checkbox" oninput="setUserPreference('r1atk')"></label> <label>Def:<input id="r1def" type="checkbox" oninput="setUserPreference('r1def')"></label> <label>HP:<input id="r1hp" type="checkbox" oninput="setUserPreference('r1hp')"></label><br />
       <label>Include CMP Tie Breaking:<input id="cmp" type="checkbox" oninput="setUserPreference('cmp')"></label><br />
       <label>Export PvPoke Custom Group:<input id="cge" type="checkbox" oninput="setUserPreference('cge')"></label><br />
       <label>Show Family Evolutions:<input id="family" type="checkbox" oninput="toggleFamilyEvos()"></label><br />
