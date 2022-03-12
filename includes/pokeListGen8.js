@@ -147,19 +147,19 @@ var pokeList = [
   },
   {
     'label': 'Sandshrew',
-    'value': '27b&!alola,126,120,137,28&!alola'
+    'value': '27b&ground,126,120,137,28&ground'
   },
   {
     'label': 'Sandshrew_Alola',
-    'value': '27b&alola,125,129,137,28&alola'
+    'value': '27b&steel,125,129,137,28&steel'
   },
   {
     'label': 'Sandslash',
-    'value': '28&!alola,182,175,181,27b&!alola'
+    'value': '28&ground,182,175,181,27b&ground'
   },
   {
     'label': 'Sandslash_Alola',
-    'value': '28&alola,177,195,181,27b&alola'
+    'value': '28&steel,177,195,181,27b&steel'
   },
   {
     'label': 'Nidoran_Female',
