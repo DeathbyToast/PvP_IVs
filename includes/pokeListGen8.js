@@ -3426,8 +3426,8 @@ var pokeList = [
     'value': '740,231,138,219,739b'
   },
   {
-    'label': 'Oricorio_PLACEHOLDER',
-    'value': '741b,1,1,1'
+    'label': 'Oricorio',
+    'value': '741b,181,196,145'
   },
   {
     'label': 'Cutiefly',
