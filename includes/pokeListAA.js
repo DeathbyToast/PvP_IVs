@@ -861,7 +861,7 @@ var pokeListAA = {
     "Vikavolt": "738,254,158,184,Grubbin,Charjabug",
     "Crabrawler": "739b,150,104,132,Crabominable",
     "Crabominable": "740,231,138,219,Crabrawler",
-    "Oricorio": "741b,181,196,145",
+    "Oricorio": "741b,196,145,181",
     "Cutiefly": "742b,110,81,120,Ribombee",
     "Ribombee": "743,198,146,155,Cutiefly",
     "Rockruff": "744b,117,78,128,Lycanroc_Midday,Lycanroc_Midnight",
