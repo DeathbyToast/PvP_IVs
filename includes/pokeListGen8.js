@@ -3427,7 +3427,7 @@ var pokeList = [
   },
   {
     'label': 'Oricorio',
-    'value': '741b,181,196,145'
+    'value': '741b,196,145,181'
   },
   {
     'label': 'Cutiefly',
