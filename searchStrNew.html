@@ -16,7 +16,7 @@
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/pokeListAA.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
     <title>PvP IVs - Search Strings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Pok&eacute;mon Go&trade; PvP IVs search string generator finds your best PvP IVs and/or helps you send the rest to Professor Willow. Now able to search for / exclude 0% IVs!"/>
@@ -144,17 +144,18 @@
     <script src="https://pvpivs.com/includes/footer.js"></script>
     <script src="https://pvpivs.com/includes/calculate.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
-    <script src="https://pvpivs.com/includes/pokeListAA.js"></script>
+    <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
     <script>
     var perfTiming = false; /* used for timing execution */
     
     var input = document.getElementById("pokeList");
-    var monNames = Object.keys(pokeListAA);
-    /* Ensure we've successfully loaded pokeListAA, and converted to list for awesomplete */
+    var monNames = Object.keys(pokeListObj);
+    /* Ensure we've successfully loaded pokeListObj, and converted to list for awesomplete */
     if (monNames.length<1000) /* At time of writing, monNames.length was 1025 */
     {
-      console.error("ERROR: monNames.length ("+monNames.length+") shorter than expected (1000), check pokeListAA load");
-      console.log("pokeListAA: "+JSON.stringify(pokeListAA));
+      console.error("ERROR: monNames.length ("+monNames.length+") shorter than expected (1000), check pokeListObj load");
+      document.getElementById('feedbackBox').innerHTML = "<p><i>ERROR: Failed to load, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
+      console.log("pokeListObj: "+JSON.stringify(pokeListObj));
       console.log("monNames: "+JSON.stringify(monNames));
     } else {
       new Awesomplete(input, {list: monNames});
@@ -317,26 +318,26 @@
       if (perfTiming) {var mainT0 = performance.now();}
       
       /* Reset all evoLimits / name divs */
-  		for (var i=1; i<10; i++) {
-  		  document.getElementById('evoName['+i+']').innerHTML = "";
-    		document.getElementById('evoName['+i+']').style.display = "none";
-    		document.getElementById('evoLimits['+i+']').style.display = "none";
-    		if (mon) { /* Only reset these if a new mon is selected */
-    		  document.getElementById('evoCB['+i+']').checked = false;
-      		document.getElementById('LLlimit['+i+']').value = "10";
-      		document.getElementById('GLlimit['+i+']').value = "10";
-      		document.getElementById('ULlimit['+i+']').value = "10";
-      		document.getElementById('MLlimit['+i+']').value = "10";
-    		}
-  		}
-  		if (mon) { /* Clear target when new mon is selected */
-  		  console.log("target before:"+JSON.stringify(document.getElementById('target').innerHTML));
-  		  document.getElementById('target').innerHTML = "";
-  		  console.log("target after:"+JSON.stringify(document.getElementById('target').innerHTML));
-  		}
-  		
-  		/* Ensure messages from prior runs are cleared */
-  		document.getElementById('feedbackBox').innerHTML = "";
+      for (var i=1; i<10; i++) {
+        document.getElementById('evoName['+i+']').innerHTML = "";
+        document.getElementById('evoName['+i+']').style.display = "none";
+        document.getElementById('evoLimits['+i+']').style.display = "none";
+        if (mon) { /* Only reset these if a new mon is selected */
+          document.getElementById('evoCB['+i+']').checked = false;
+          document.getElementById('LLlimit['+i+']').value = "10";
+          document.getElementById('GLlimit['+i+']').value = "10";
+          document.getElementById('ULlimit['+i+']').value = "10";
+          document.getElementById('MLlimit['+i+']').value = "10";
+        }
+      }
+      if (mon) { /* Clear target when new mon is selected */
+        console.log("target before:"+JSON.stringify(document.getElementById('target').innerHTML));
+        document.getElementById('target').innerHTML = "";
+        console.log("target after:"+JSON.stringify(document.getElementById('target').innerHTML));
+      }
+      
+      /* Ensure messages from prior runs are cleared */
+      document.getElementById('feedbackBox').innerHTML = "";
       document.getElementById("errorBox").innerHTML = "";
       document.getElementById("overflowArea").innerHTML = "";
       document.getElementById("outputSummaryBox").innerHTML = "";
@@ -408,7 +409,7 @@
       
       /* Awesomeplete sends "undefined" when it did not find a valid input */
       if (mon == undefined) { /* Determine if we have a valid, previously selected mon we can use */
-        if (pokeListAA[input.value]) {
+        if (pokeListObj[input.value]) {
           console.log("Found a valid input.value of:"+JSON.stringify(input.value));
           mon = input.value;
           console.log("SET MON TO:"+mon);
@@ -417,7 +418,7 @@
       }
       
       /* Exit if we don't have a valid mon yet */
-      if (typeof mon === 'undefined' || mon === null || typeof pokeListAA[mon] === 'undefined') {
+      if (typeof mon === 'undefined' || mon === null || typeof pokeListObj[mon] === 'undefined') {
         console.log("No Pok&eacute;mon received by main()");
         document.getElementById('getStarted').style.display = "block";
         document.getElementById('output').value = "";
@@ -427,7 +428,7 @@
       }
       
       document.getElementById('getStarted').style.display = "none";
-      var value = pokeListAA[mon].split(',');
+      var value = pokeListObj[mon].split(',');
       console.log("Value:"+JSON.stringify(value));
       var output = document.getElementById('output');
       var target = document.getElementById("target");
@@ -476,14 +477,14 @@
        **/
       for (i=0; i<monFamilyNames.length; i++) {
         /* find stats from pokeList for each monFamilyName */
-        var stats = pokeListAA[monFamilyNames[i]].split(",");
+        var stats = pokeListObj[monFamilyNames[i]].split(",");
         
         /* Skip baby and remove from monFamilyNames if it isn't selected */
         if (stats[0].includes("&eggsonly") && i>0) {
           console.error("Found unselected baby mon at i:"+i+", with stats:"+stats);
           monFamilyNames.splice(i,1); /* Remove baby from family */
           if (i<monFamilyNames.length) { /* Get new name for evoVals */
-            stats = pokeListAA[monFamilyNames[i]].split(",");
+            stats = pokeListObj[monFamilyNames[i]].split(",");
           } else { /* That was the last family name, all done */
             break;
           }
