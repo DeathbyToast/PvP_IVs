@@ -14,11 +14,14 @@
     <link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/pokeListAA.js" as="script">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
     <title>PvP IVs - Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
     <link rel=icon href=/includes/favicon.png>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
       /* control highlight of trading improvement rows based on % chace to improve post-trade
@@ -37,7 +40,7 @@
       input[type=number] {
         width: 44px;
       }
-      input[id=pokeInput] {
+      input[id=pokeList] {
         width: 111px;
       }
       /* Plus/Minus Buttons */
@@ -136,8 +139,8 @@
     		<option value="2500" label="Ultra League">Ultra League</option>
     		<option value="false" label="Master League">Master League</option>
     	</select></label>
-    	<input id="pokeInput" list="pokeListDL" onfocus="this.value='';document.querySelector('datalist').id = '';" placeholder="Pok&eacute;mon" onkeyup="setMon(event)" oninput="setMon(event)" autocomplete="off"/>
-    	<datalist id="pokeListDL"></datalist><span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a valid Pok&eacute;mon to continue...</i></span>
+    	<input id="pokeList" onfocus="this.value=''" placeholder="Pok&eacute;mon"/>
+    	<span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a valid Pok&eacute;mon to continue...</i></span>
       	
       <br />
       <table id="inputTable">
@@ -211,10 +214,10 @@
       <!-- Footer Code Below -->
       <script src="https://pvpivs.com/includes/footer.js"></script>
       <script src="https://pvpivs.com/includes/calculate.js"></script>
-      <script src="https://pvpivs.com/includes/pokeListAA.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
+      <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
         
       <script>
-      var poke;
       var lastLeague;
       var perfTiming = false; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
@@ -228,33 +231,39 @@
       let lvl=[];
       let mA = 0, mD = 0, mHP = 0; /*min stat filter vars*/
       let filterMod = false; /*track if stat filters were adjusted*/
-      let lastMon = "";
       let lastShadow = false;
       
-      /* Ensure we've successfully loaded mon */
-      if (Object.keys(pokeListAA).length < 1)
+      var input = document.getElementById("pokeList");
+      var monNames = Object.keys(pokeListObj);
+      /* Ensure we've successfully loaded pokeListObj, and converted to list for awesomplete */
+      if (monNames.length<1000) /* At time of writing, monNames.length was 1025 */
       {
-        console.error("Failed to load pokeListAA!");
-        document.getElementById('feedbackBox').innerHTML = "<p><i>ERROR: Failed to load pokeListAA, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
+        console.error("monNames.length ("+monNames.length+") shorter than expected (1000), check pokeListObj load");
+        document.getElementById('feedbackBox').innerHTML = "<p><i>ERROR: Failed to load, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
+        console.log("pokeListObj: "+JSON.stringify(pokeListObj));
+        console.log("monNames: "+JSON.stringify(monNames));
       } else {
-        /* Load mon data into datalist placeholder */
-        var datalist = "";
-        
-        for (mon in pokeListAA) {
-          datalist+= "<option value="+mon+">";
-        }
-        document.getElementById('pokeListDL').innerHTML = datalist;
+        new Awesomplete(input, {list: monNames});
+        /*https://github.com/LeaVerou/awesomplete/issues/16438#issuecomment-195921708*/
+        Awesomplete.$.bind(input, {
+          "awesomplete-selectcomplete": function(evt) {
+            /*console.log("User Selected "+evt.text.label+", passing to main and exiting Awesomplete");*/
+            if (evt.text.label.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}if (evt.text.label.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
+            main(evt.text.label);
+          }
+        });
+        /* end Awesomeplete https://leaverou.github.io/awesomplete/ */
       }
-      
-      function adjustFloors(dexNum, poke) {
+    
+      function adjustFloors(pokeName) {
         if (perfTiming) {var T0 = performance.now();}
         var minLvl = document.getElementById('minLvl');
         var floor = document.getElementById('floor');
         
         /*check if we need to adjust IV Floor or Min Level*/
         
-        if (shadowLegend.includes(dexNum) && shdw.indexOf(true) > -1) {
-          console.log("Detected Shadow Legendary:" +poke);
+        if (shadowLegend.includes(pokeName) && shdw.indexOf(true) > -1) {
+          console.log("Detected Shadow Legendary:" +pokeName);
           /*set min IVs to 10 and min Level to 20*/
           if (minLvl.value/1 > 8) {
             minLvl.value = 8;
@@ -266,8 +275,8 @@
           return;
         }
         
-        if (boxRewrd.includes(dexNum)) {
-          console.log("Detected box reward mon:" +poke);
+        if (boxRewrd.includes(pokeName)) {
+          console.log("Detected box reward mon:" +pokeName);
           /*set min IVs to 1 and min Level to 15*/
           if (minLvl.value/1 < 15) {
             minLvl.value = 15;
@@ -279,8 +288,8 @@
           return;
         }
         
-        if (raidOnly.includes(dexNum)) {
-          console.log("Detected Raid+Trade mon:" +poke);
+        if (raidOnly.includes(pokeName)) {
+          console.log("Detected Raid+Trade mon:" +pokeName);
           /*set min IVs to 1 and min Level to 20*/
           if (minLvl.value/1 < 20) {
             minLvl.value = 20;
@@ -292,8 +301,8 @@
           return;
         }
         
-        if (boxMyth.includes(dexNum)) {
-          console.log("Detected Mythical mon:" +poke);
+        if (boxMyth.includes(pokeName)) {
+          console.log("Detected Mythical mon:" +pokeName);
           /*set min IVs to 10 and min Level to 15*/
           if (minLvl.value/1 < 15) {
             minLvl.value = 15;
@@ -305,8 +314,8 @@
           return;
         }
         
-        if (raidMyth.includes(dexNum)) {
-          console.log("Detected Raid no Trade mon:" +poke);
+        if (raidMyth.includes(pokeName)) {
+          console.log("Detected Raid no Trade mon:" +pokeName);
           /*set min IVs to 10 and min Level to 20*/
           if (minLvl.value/1 < 20) {
             minLvl.value = 20;
@@ -331,68 +340,7 @@
         {
           shdw[i] = document.getElementById("shdw["+i+"]").checked;
         }
-        setMon();
-      }
-      
-      function setMon(e) {
-        if (perfTiming) {var T0 = performance.now();}
-        
-        document.getElementById('timing_outputs').innerHTML = "";
-        
-        if (document.getElementById('pokeInput').value.length < 2) {
-          document.querySelector("datalist").id = "";
-          if (perfTiming) {stopTiming(T0, "setMon");}
-          return false;
-        } else if (document.querySelector("datalist").id == "") {
-          /* Prevent dropdown from covering Android keyboards */
-          document.querySelector("datalist").id = "pokeListDL";
-        }
-
-        /* Exit if user is still adding/deleting the mon name */
-        if (!(pokeListAA[document.getElementById('pokeInput').value]) && e.key && e.key != "Enter" && e.key.match(/[a-z]/i)) {
-          console.log("setMon: "+document.getElementById('pokeInput').value.length+" chars, input: "+document.getElementById('pokeInput').value);
-          /*console.log("User is still typing, exiting...");*/
-          
-          if (perfTiming) {stopTiming(T0, "setMon");}
-          return false;
-        }
-        
-        poke = document.getElementById('pokeInput').value;
-        if (pokeListAA[poke]) {
-          if (poke.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}
-          if (poke.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
-          
-          console.log("setMon: User has selected a valid poke: "+poke);
-          
-          if (lastMon == "") {
-            /*console.log("setMon: Checking if we need to adjustFloors on first run");*/
-            adjustFloors(pokeListAA[poke].split(',')[0].split("b")[0].split("&")[0]/1, poke);
-          } else {
-            /*console.log("setMon: Checking if shadow status changed: lastShadow:"+lastShadow+", shdw.indexOf(true):"+shdw.indexOf(true));*/
-            if (shdw.indexOf(true) > -1 || lastShadow) {
-              /*console.log("setMon: User just toggled a shadow box");*/
-              adjustFloors(pokeListAA[poke].split(',')[0].split("b")[0].split("&")[0]/1, poke);
-            }
-          }
-          
-          if (lastMon != poke) {
-            /*console.log("We've swapped mon, resetting monState: lastMon:"+lastMon+", poke:"+poke);*/
-            resetMonState();
-            adjustFloors(pokeListAA[poke].split(',')[0].split("b")[0].split("&")[0]/1, poke);
-            if (perfTiming) {stopTiming(T0, "setMon");}
-            main();
-          } else {
-            if (perfTiming) {stopTiming(T0, "setMon");}
-            main();
-          }
-          /* Ensure we track the correct lastMon for next run */
-          lastMon = poke;
-          lastShadow = (shdw.indexOf(true) > -1) ? true : false;
-        } else {/*exit if there's no valid mon yet*/
-          console.error("setMon: User has not yet selected a valid poke:"+poke);
-          if (perfTiming) {stopTiming(T0, "setMon");}
-          /* TODO: Add partial text match style highlighting like Awesomplete had */
-        }
+        main();
       }
       
       function resetMonState() {
@@ -460,8 +408,8 @@
         setUserPreference('family');
       }
       
-      function outputUserRanks(aIV, dIV, sIV, shdw, league, leagueName, ranks, settings, dec, URL) {
-        if (perfTiming) {var T0 = performance.now();}
+      function outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, settings, dec, URL) {
+        if (perfTiming) {var T0 = performance.now();}/*console.log("oUR::Received aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw+", league:"+league+", leagueName:"+leagueName+", ranks"+ranks+", settings:"+settings+", dec:"+dec+", URL:"+URL);*/
         
         splitSettings = settings.split(''); /* split into characters */
         var evoLeague = document.getElementById('familyEvoLeague').value;
@@ -472,7 +420,7 @@
         var limit = document.getElementById('limit').value;
         var keys = Object.keys(ranks);
         var maxStatProd = keys[0].split(".")[0];
-        var evos = pokeListAA[poke].split(',').slice(4, pokeListAA[poke].split(',').length);
+        var evos = pokeListObj[mon].split(',').slice(4, pokeListObj[mon].split(',').length);
         var evoLen = evos.length;
         
         /* properly parse settings bits as true/false */
@@ -585,9 +533,9 @@
                 /* valid set of IVs, need to find base stats for evos */
                 for (var e=0; e<evoLen; e++) {
                   /* Ensure we don't show impossible Tyrogue evos (highest stat determines evo) */
-                  if (poke == "Tyrogue" && validTyroEvo(aIV[i], dIV[i], sIV[i], evos[e])) {continue;}
+                  if (mon == "Tyrogue" && validTyroEvo(aIV[i], dIV[i], sIV[i], evos[e])) {continue;}
                   
-                  var evoVals = pokeListAA[evos[e]].split(",");
+                  var evoVals = pokeListObj[evos[e]].split(",");
                   var evoRanks = calculate(parseInt(evoVals[1]), parseInt(evoVals[2]), parseInt(evoVals[3]), floor, minLvl, maxLvl, false, evoLeague, evos[e]);
                   var evoKeys = Object.keys(evoRanks);
                   var evoMaxStatProd = evoKeys[0].split(".")[0];
@@ -611,13 +559,13 @@
                       }
                       /*if this is the first evo, add header too*/
                       if ((evoLen > 1) || (aIV.length > 1)) {
-                        evoHtml = "<p><i>"+evoLen+" "+poke+" "+evoLeagueName+" family evos:<br>(click table headers to sort)</i></p><table id='familyTable'><tr><th>Pokémon</th>";
+                        evoHtml = "<p><i>"+evoLen+" "+mon+" "+evoLeagueName+" family evos:<br>(click table headers to sort)</i></p><table id='familyTable'><tr><th>Pokémon</th>";
                         if (aIV.length > 1) {
                           evoHtml += "<th>IVs</th>";
                         }
                         evoHtml += "<th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th>"+dustHeader+"<th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
                       } else {
-                        evoHtml = "<p><i>"+evoLen+" "+poke+" "+evoLeagueName+" family evo:</i></p><table id='familyTable'><tr><th>Pokémon</th><th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th>"+dustHeader+"<th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
+                        evoHtml = "<p><i>"+evoLen+" "+mon+" "+evoLeagueName+" family evo:</i></p><table id='familyTable'><tr><th>Pokémon</th><th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th>"+dustHeader+"<th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th></tr>";
                       }
                       evoHtml += evoGMRhtml;
                     }
@@ -632,7 +580,7 @@
             }
           } else {
             console.log("i:"+i+" Missing an IV, detected: aIV["+i+"]:"+aIV[i]+" dIV["+i+"]:"+dIV[i]+" sIV["+i+"]:"+sIV[i]);
-            document.getElementById('feedbackBox').innerHTML += "<p><i>Please enter an Attack IV for Row "+(i+1)+" with IVs (_"+aIV[i]+"_/"+dIV[i]+"/"+sIV[i]+") to check your "+poke+"'s "+leagueName+" PvP Rank</i></p>";
+            document.getElementById('feedbackBox').innerHTML += "<p><i>Please enter an Attack IV for Row "+(i+1)+" with IVs (_"+aIV[i]+"_/"+dIV[i]+"/"+sIV[i]+") to check your "+mon+"'s "+leagueName+" PvP Rank</i></p>";
             lvl.push(false); /* keep this balanced */
           }
         }
@@ -663,7 +611,7 @@
                 html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
                 html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
                 html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
-                if (splitSettings[0]) {html+="<td>"+Math.max(10, Math.floor((pokeListAA[poke].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListAA[poke].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListAA[poke].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
+                if (splitSettings[0]) {html+="<td>"+Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
@@ -707,12 +655,12 @@
         if (perfTiming) {var Tr = performance.now();}
         
         /*prepare max stat html output*/
-        var maxAtkurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
-        var maxDefurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
-        var maxHPurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
-        var minAtkurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
-        var minDefurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
-        var minHPurl = encodeURI(URL + "?mon="+poke+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
+        var maxAtkurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
+        var maxDefurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
+        var maxHPurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
+        var minAtkurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
+        var minDefurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
+        var minHPurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
         
         var step = 1/Math.pow(10,dec);
 
@@ -734,7 +682,7 @@
           /*https://pvpivs.com/searchStr.html?mon=Dusknoir&cp=1500&r=f_10_f_f&o=1001100&l=en*/
           if (!filtered) {
             for (i=0; i<rIV.length; i++) {
-              /*searchLink += "<p><a href='https://pvpivs.com/searchStr.html?mon="+poke+"&cp="+league+"set=00011001&m="+maxLvl+"'>Generate "+poke+" Search String to Trash below Rank "+rIV[i]+"</a></p>";*/
+              /*searchLink += "<p><a href='https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"set=00011001&m="+maxLvl+"'>Generate "+mon+" Search String to Trash below Rank "+rIV[i]+"</a></p>";*/
             }
           }
         }
@@ -743,7 +691,7 @@
         if (filtered) {
           /* Trim trailing comma off string */
           outIVs = outIVs.replace(/,\s*$/, "");
-          searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+poke+"&cp="+league+"&o=00011001&IVentry="+outIVs+"'>Generate "+poke+" Search String for only these filtered IVs</a></p>";
+          searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"&o=00011001&IVentry="+outIVs+"'>Generate "+mon+" Search String for only these filtered IVs</a></p>";
         }
         
         document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback + html + ranges + searchLink + "<br>" + trades;
@@ -752,7 +700,7 @@
         document.getElementById("instructionsBox").innerHTML += "<p id='totalRanks'> of "+ranks.numRanks+":</p><br />";
         
         if (perfTiming) {var T1 = performance.now();
-        console.log(poke+" outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.");
+        console.log(mon+" outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.");
         document.getElementById('timing_outputs').innerHTML += "outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.<br>";
         }
         return [printLimit];
@@ -763,18 +711,31 @@
         main();
       }
       
-      function main() {
+      function main(mon) {
         if (perfTiming) {var T0 = performance.now();}
-        
         else {document.getElementById('timing_outputs').innerHTML = "";}
         
-        /* Ensure we have a mon before continuing */
-        if(!poke) {
-          /*exit if there's no mon yet*/
-          console.log("main: User has not yet selected a poke:"+poke);
+        if (mon) { /* This is a new input */
+          /*console.log("New mon detected, resetting monState, mon:"+mon);*/
+          resetMonState();
+          adjustFloors(pokeListObj[mon]);
+        }
+        
+        /* Awesomeplete sends "undefined" when it did not find a valid input */
+        if (mon == undefined) { /* Determine if we have a valid, previously selected mon we can use */
+          if (pokeListObj[input.value]) {
+            /*console.log("Found a valid input.value of:"+JSON.stringify(input.value));*/
+            mon = input.value;
+            /* We have a valid mon, hide the 'getting started' mon selection help text */
+          }
+        }
+        
+        /* Exit if we don't have a valid mon yet */
+        if (typeof mon === 'undefined' || mon === null || typeof pokeListObj[mon] === 'undefined') {
+          console.log("No Pok&eacute;mon received by main()");
           if (perfTiming) {stopTiming(T0, "main");}
-          return true;
-        } else { /* Have a valid poke, remove instructions */
+          return;
+        } else { /* Have a valid mon, remove instructions */
           document.getElementById('instructionsBox').innerHTML = "";
         }
         
@@ -782,7 +743,7 @@
         document.getElementById('outputBox').innerHTML = "";
         if (document.contains(document.getElementById("totalRanks"))) {document.getElementById("totalRanks").remove();}
         
-        var monInfo = pokeListAA[poke].split(',');
+        var monInfo = pokeListObj[mon].split(',');
         /*Ensure we get the info we need to continue*/
         if (monInfo == "")
         {
@@ -798,7 +759,7 @@
         var leagueName = document.getElementById('league').options[document.getElementById('league').selectedIndex].innerHTML;
         if ((lastLeague) && (leagueName !== lastLeague)){ /* Reset if new League */mA = 0; mD = 0; mHP = 0;filterMod=false;}
         lastLeague = leagueName; /* Store League for next run */
-        var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), document.getElementById('floor').value, document.getElementById('minLvl').value, document.getElementById('maxLvl').value, document.getElementById("dti").checked, league, poke);
+        var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), document.getElementById('floor').value, document.getElementById('minLvl').value, document.getElementById('maxLvl').value, document.getElementById("dti").checked, league, mon);
         var settings = (document.getElementById('mlCP').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0");
         var URL = window.location.href.split("?")[0];
         
@@ -819,17 +780,17 @@
           dIV[i] = document.getElementById("dIV["+i+"]").value;
           sIV[i] = document.getElementById("sIV["+i+"]").value;
         }
-        const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, league, leagueName, ranks, settings, dec, URL);
+        const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, settings, dec, URL);
         
         displayPvPokeEvoGroup();
         
         /*update the URL with search parameters*/
         /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000000&fel=1500&mA=119.7&mD=112.6&mHP=113";*/
-        var uri = URL + "?mon="+poke+"&r="+printLimit+"&cp="+league;
+        var uri = URL + "?mon="+mon+"&r="+printLimit+"&cp="+league;
         /* Only print remaining params if they aren't default values */
         if (document.getElementById('floor').value>0) {uri += "&f="+document.getElementById('floor').value;}
         if (document.getElementById('minLvl').value>1) {uri += "&min="+document.getElementById('minLvl').value;}
-        if (document.getElementById('maxLvl').value!=40) {uri += "&max="+document.getElementById('maxLvl').value;}
+        if (document.getElementById('maxLvl').value!=51) {uri += "&max="+document.getElementById('maxLvl').value;}
         if (settings!=000000) {
           console.log("813: About to make '&set'="+settings);
           uri += "&set="+settings;}
@@ -851,16 +812,16 @@
           uri += "&IVs="+IVs;
         }
         uri = encodeURI(uri);
-        console.log("uri generated as:"+uri);
+        /*console.log("uri generated as:"+uri);*/
         
         /* Update title and description to improve SEO for chosen mon */
-        var newTitle = poke+" PvP IVs - "+leagueName+" Rankings (Top "+document.getElementById('limit').value+")";
+        var newTitle = mon+" PvP IVs - "+leagueName+" Rankings (Top "+document.getElementById('limit').value+")";
         document.title = newTitle.replace(/_/g, ' '); /* replace all underscores ('_') with spaces */
         window.history.pushState(null, newTitle, uri);
-        var newDescrp = poke+" PvP IVs lookup tool for Pokémon Go™ to help compare your "+poke+"'s PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified "+poke+"! Did you catch the very best?";
+        var newDescrp = mon+" PvP IVs lookup tool for Pokémon Go™ to help compare your "+mon+"'s PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified "+mon+"! Did you catch the very best?";
         document.querySelector('meta[name="description"]').setAttribute("content", newDescrp);
         /* Update canonical link to include mon & league for improved SEO */
-        document.querySelector("link[rel='canonical']").setAttribute("href", "https://pvpivs.com/?mon="+poke+"&cp="+league);
+        document.querySelector("link[rel='canonical']").setAttribute("href", "https://pvpivs.com/?mon="+mon+"&cp="+league);
 
         /* Add event listener to capture user clicking on any table row */
         document.getElementById('outTable').addEventListener('click', (function(){addToCompare(event)}), false);
@@ -888,7 +849,7 @@
         /*show textbox with PvPoke Custom Group Export data*/
         if (document.getElementById("cge").checked == true)
         {
-          var name = poke;
+          var name = mon;
           /* Game Master uses Alola, but PvPoke uses Alolan, need to fix for valid data export */
           if (name.includes("_Alola")) {
             name = name + "n";
@@ -1041,7 +1002,7 @@
         var levels = ["51","50","49","48","47","46","45","44","43","42","41","40","39","38","37","36","35","34","33","32","31","30","29","28","27","26","25","24","23","22","21","20","19","18","17","16","15","14","13","12","11","10","9","8","7","6","5","4","3","2","1"];
         var first = true;
         
-        for (mon in pokeListAA) {
+        for (mon in pokeListObj) {
           if ((mon.includes("_PLACEHOLDER")) || (mon.includes("_SPECULATIVE"))) {
             /*console.log("Skipping: "+mon);*/
             continue;
@@ -1082,22 +1043,22 @@
           }
           console.log("unitTests: "+i+": test complete");
         }
-        console.log("unitTests: "+i+": testing pokeListAA not found");
+        console.log("unitTests: "+i+": testing pokeListObj not found");
         try {
-          var pokeListCopy = pokeListAA;
-          console.log("unitTests: "+i+": pokeListAA before: "+JSON.stringify(pokeListAA));
-          pokeListAA = "";
-          console.log("unitTests: "+i+": pokeListAA after: "+JSON.stringify(pokeListAA));
+          var pokeListCopy = pokeListObj;
+          console.log("unitTests: "+i+": pokeListObj before: "+JSON.stringify(pokeListObj));
+          pokeListObj = "";
+          console.log("unitTests: "+i+": pokeListObj after: "+JSON.stringify(pokeListObj));
           main();
         } catch (err) {
           console.log("unitTests: "+i+": test generated error:'"+err+"'");
         }
         console.log("unitTests: "+i+": test complete");
-        pokeListAA = pokeListCopy;
+        pokeListObj = pokeListCopy;
         return true;
       }
       
-      function checkURI(URL, tests) {
+      function  checkURI(URL, tests) {
         if (perfTiming) {var T0 = performance.now();}
         
         /* Read returning user's settings */
@@ -1121,34 +1082,11 @@
           for (var i=0; i<values.length; i++)
           {
             switch (values[i].split("=")[0]) {
+              
               case "mon":
-                var poke = values[i].split("=")[1];
-                if (pokeListAA[poke]) { /* Check for exact match */
-                  console.log("checkURI: Found exact match:"+pokeListAA[poke]);
-                } else {
-                  if ((poke.includes("_PLACEHOLDER")) && pokeListAA[poke.split("_PLACEHOLDER")[0]]) {
-                    poke = poke.split("_PLACEHOLDER")[0];
-                    console.log("checkURI: Poke is placeholder, removed to now be:"+poke);
-                  }
-                  if ((poke.includes("_SPECULATIVE")) && pokeListAA[poke.split("_SPECULATIVE")[0]]) {
-                  poke = poke.split("_SPECULATIVE")[0];
-                  console.log("checkURI: Poke is speculative, removed to now be:"+poke);
-                  }
-                  /* Last ditch effort to fix capitalization mistakes via https://stackoverflow.com/a/4878800 */
-                  var text = poke.toLowerCase()
-                      .split('_')
-                      .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-                      .join('_');
-                  if (pokeListAA[text]) {
-                    poke = text;
-                  } else {
-                    console.log("checkURI: Could not find '"+text+"':"+pokeListAA[text]);
-                    break;
-                  }
-                } /* However we found the right mon, select in textbox */
-                document.querySelector("datalist").id = "pokeListDL";
-                document.getElementById("pokeInput").value = poke;
-                lastMon = poke;
+                input.value = values[i].split("=")[1];
+                /* Ensure input shows in awesomplete box */
+                Awesomplete.input = input.value;
                 break;
               case "r":
                 document.getElementById('limit').value = values[i].split("=")[1];
@@ -1257,14 +1195,8 @@
                 break;
             }
           }
-          /* If there's a poke, simulate Enter key press to start main() */
-          if (document.getElementById("pokeInput").value) { /*https://stackoverflow.com/a/44190874*/
-            if (perfTiming) {stopTiming(T0, "checkURI");}
-            document.getElementById("pokeInput").dispatchEvent(new KeyboardEvent('keyup',{'key':'Enter'}));
-          } else {
-            console.log("checkURI: No poke detected, awaiting user input");
-            if (perfTiming) {stopTiming(T0, "checkURI");}
-          }
+          if (perfTiming) {stopTiming(T0, "checkURI");}
+          main();
         }
         else
         {
@@ -1468,7 +1400,7 @@
       
       function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, mA, mD, mHP, filtered, numIVs, mon, uri, maxLvl, dust, dec, mlCP) {
         if (perfTiming) {var T0 = performance.now();}
-        /*console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mon:"+mon+", uri:"+uri);*/
+        console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", shdw:"+shdw+", cmp:"+cmp+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mA:"+mA+", mD"+mD+", mHP:"+mHP+", filtered:"+filtered+", numIVs:"+numIVs+", mon:"+mon+", uri:"+uri+", maxLvl:"+maxLvl+", dust:"+dust+", dec:"+dec+", mlCP:"+mlCP);
         var html = "";
         var actualRank = 1;
         var validIVs = false;
@@ -1500,7 +1432,9 @@
               html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
               html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
               if (!mon) { /*skip if this is an evoTable print*/
-              if (mlCP) {html+="<td>"+Math.max(10, Math.floor((pokeListAA[poke].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListAA[poke].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListAA[poke].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(document.getElementById('minLvl').value-1)*2] * cpm[(document.getElementById('minLvl').value-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
+              
+              /* Show min lvl CP (raid/hatch) if checked by user */
+              if (mlCP) {html+="<td>"+Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(document.getElementById('minLvl').value-1)*2] * cpm[(document.getElementById('minLvl').value-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
