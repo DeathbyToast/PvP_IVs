@@ -962,6 +962,7 @@
             document.getElementById(settings[i]).checked = true;
           } else if (["familyEvoLeague","league"].includes(settings[i])) { /* https://stackoverflow.com/a/47340778 */
             document.getElementById(settings[i]).selectedIndex = [...document.getElementById(settings[i]).options].findIndex (option => option.text === localStorage[settings[i]]);
+            document.getElementById("familyEvoLeagueLbl").style.display = "inline-block"; /* Ensure we unhide family evo block as user prefers */
           } else if (["limit","floor","minLvl","maxLvl"].includes(settings[i])) {
             document.getElementById(settings[i]).value = localStorage[settings[i]];
           }
