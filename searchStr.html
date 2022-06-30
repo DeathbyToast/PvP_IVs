@@ -172,6 +172,7 @@
       if (perfTiming) {var checkURIT0 = performance.now();}
       var URL = window.location.href.split("?")[1];
       /*var URL = "mon=Deino&cp=All&r=11-12-13-10_14-15-16-17_18-19-10-10_f_f&set=00011000&l=en&m=51";*/
+      /*URL = "mon=Deino&cp=All&r=&set=000101&l=en&IVentry=0/14/15,0/15/14";*/
       
       if (URL)
       {
@@ -289,6 +290,7 @@
               break;
             
             case "IVentry":
+              document.getElementById('customIVs').checked = true;
               document.getElementById('IVentry').value = values[i].split("=")[1];
               break;
           }
@@ -1098,6 +1100,7 @@
       /*console.log("Received customIVs: "+JSON.stringify(customIVs)+", baseAtk: "+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", league:"+league+", output:"+output+", maxLvl:"+maxLvl+", dexNum:"+dexNum+", monName:"+monName);*/
   
       output.value = ''; /* ensure old output is cleared */
+      var message = "String finds "+monName+" with IVs: "+JSON.stringify(customIVs);
       var cps = [], hps = [], results, i, j, k;
       cps[0] = new Set();
       hps[0] = new Set();
@@ -1196,6 +1199,11 @@
           output.value += "&female";
         }
       }
+      
+      /* Fix UI to remove base mon selection and update message appropriately */
+      document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
+      document.getElementById('feedbackBox').innerHTML = "";
+      document.getElementById('targetDiv').style.display = "none";
       
       if (perfTiming) {var outputStrT1 = performance.now();
       console.log("outputStr: Execution took "+(outputStrT1-outputStrT0).toFixed(1)+"ms");}
