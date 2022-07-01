@@ -512,7 +512,7 @@
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
               /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
-              [gmRhtml, validIV] = getMonRank(ranks, keys, shdw[i], splitSettings[1], maxStatProd, aIV[i], dIV[i], sIV[i], mA, mD, mHP, filtered, aIV.length, false, false, maxLvl, splitSettings[5], dec, splitSettings[0]);
+              [gmRhtml, validIV] = getMonRank(ranks, keys, shdw[i], splitSettings[1], maxStatProd, aIV[i], dIV[i], sIV[i], mA, mD, mHP, filtered, aIV.length, mon, false, false, maxLvl, splitSettings[5], dec, splitSettings[0]);
               
               /* Keep track of which user IVs are valid and invalid per stat filters */
               if (filtered) {
@@ -546,7 +546,8 @@
                   }
                   uri += "&mA=0&mD=0&mHP=0";
 
-                  let [evoGMRhtml, validIV] = getMonRank(evoRanks, evoKeys, shdw[i], splitSettings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], 0, 0, 0, false, aIV.length, evos[e], uri, false, splitSettings[5], dec, false);
+                  let [evoGMRhtml, validIV] = getMonRank(evoRanks, evoKeys, shdw[i], splitSettings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], 0, 0, 0, false, aIV.length, mon, evos[e], uri, false, splitSettings[5], dec, false);
+                  
                   if (evoGMRhtml) {
                     if (evoHtml) {
                       /*if this is a second evo, just add it*/
@@ -782,7 +783,7 @@
         }
         const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, settings, dec, URL);
         
-        displayPvPokeEvoGroup();
+        displayPvPokeEvoGroup(mon);
         
         /*update the URL with search parameters*/
         /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000000&fel=1500&mA=119.7&mD=112.6&mHP=113";*/
@@ -843,7 +844,7 @@
         if (perfTiming) {stopTiming(T0, "main");}
       }
       
-      function displayPvPokeEvoGroup() {
+      function displayPvPokeEvoGroup(mon) {
         if (perfTiming) {var T0 = performance.now();}
         
         /*show textbox with PvPoke Custom Group Export data*/
@@ -851,6 +852,7 @@
         {
           var name = mon;
           /* Game Master uses Alola, but PvPoke uses Alolan, need to fix for valid data export */
+          console.log("displayPvPokeEvoGroup starting...");
           if (name.includes("_Alola")) {
             name = name + "n";
           }
@@ -1032,7 +1034,8 @@
       }
       
       function unitTests(testURLs) {
-        if (!testURLs) {var testURLs = ["mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164","mon=PidgEot&r=10&cp=2500&f=0&min=1&max=51"];}
+        if (!testURLs) {var testURLs = ["mon=Pidgeot&r=10&cp=2500&f=0&min=1&max=51&set=000000&fel=1500&mA=140.3&mD=130.1&mHP=164","mon=PidgEot&r=10&cp=2500&f=0&min=1&max=51",
+                                        "mon=Totodile&r=20&cp=1500&f=0&min=1&max=50&set=111110&fel=1500&mA=98.3&mD=85.916664261&mHP=115&IVs=2_13_6_undefined-7_10_2_undefined-6_6_8_undefined-"];}
         
         for (var i=0; i<testURLs.length;i++) {
           console.log("unitTests: "+i+": testing '"+testURLs[i]+"'");
@@ -1068,7 +1071,7 @@
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
           URL = window.location.href.split("?")[1];
-          /*URL = "mon=Nidoqueen&r=66&cp=2500&max=50&set=100000&mA=151.98&mD=149.4&mHP=175&dec=2&IVs=7_14_9_true-6_10_8_true-9_12_15_true";*/
+          /*URL = "mon=Totodile&r=20&cp=1500&f=0&min=1&max=50&set=111110&fel=1500&mA=98.3&mD=85.916664261&mHP=115&IVs=2_13_6_undefined-7_10_2_undefined-6_6_8_undefined-";*/
         } else {
           /* Enable unit testing */
           console.log("checkURI: URL passed in as:"+URL);
@@ -1138,9 +1141,12 @@
                 break;
               case "IVs":
                 var ivStr = (values[i].split("=")[1]).split("-");
+                /*console.log("checkURI::IVs:ivStr:"+ivStr+", ivStr.length: "+ivStr.length);*/
                 for (var j=0; j<ivStr.length; j++)
                 {
                   var userIVs = ivStr[j].split("_");
+                  if (userIVs.length<2) {continue;} /* skip blank/incomplete entries */
+                  /*console.log("checkURI::IVs:insering userIVs: "+userIVs+" (length:"+userIVs.length+")");*/
                   doTheInsert(userIVs[0],userIVs[1],userIVs[2],userIVs[3]);
                 }
                 /* Need to remove first row now */
@@ -1399,7 +1405,7 @@
         return outHTML;
       }
       
-      function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, mA, mD, mHP, filtered, numIVs, mon, uri, maxLvl, dust, dec, mlCP) {
+      function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, mA, mD, mHP, filtered, numIVs, mon, evo, uri, maxLvl, dust, dec, mlCP) {
         if (perfTiming) {var T0 = performance.now();}
         console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", shdw:"+shdw+", cmp:"+cmp+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mA:"+mA+", mD"+mD+", mHP:"+mHP+", filtered:"+filtered+", numIVs:"+numIVs+", mon:"+mon+", uri:"+uri+", maxLvl:"+maxLvl+", dust:"+dust+", dec:"+dec+", mlCP:"+mlCP);
         var html = "";
@@ -1423,8 +1429,8 @@
               /*output the row for this individual mon*/
               /*if there is an evo mon passed in, print/exclude certain rows*/
               /*allows for more code re-use / less versioning to maintain*/
-              if (mon) {
-                html+="<td><a href='"+encodeURI(uri)+"'>"+mon+"</a></td>"; /*evos[e] aka evoName*/
+              if (evo) {
+                html+="<td><a href='"+encodeURI(uri)+"'>"+evo+"</a></td>"; /*evos[e] aka evoName*/
                 if (numIVs/1 > 1) {
                   html+="<td>"+ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S+"</td>"; /*evoIVs*/
                 }
@@ -1432,10 +1438,13 @@
               html+="<td>"+actualRank+"</td>"; /*Rank*/
               html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
               html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
-              if (!mon) { /*skip if this is an evoTable print*/
+              if (!evo) { /*skip if this is an evoTable print*/
               
               /* Show min lvl CP (raid/hatch) if checked by user */
-              if (mlCP) {html+="<td>"+Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(document.getElementById('minLvl').value-1)*2] * cpm[(document.getElementById('minLvl').value-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
+              if (mlCP) {
+                console.log("Attempting to read pokeListObj["+mon+"]:");
+                console.log(pokeListObj[mon]);
+                html+="<td>"+Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(document.getElementById('minLvl').value-1)*2] * cpm[(document.getElementById('minLvl').value-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
@@ -1443,7 +1452,7 @@
                 lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
               }
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
-              if(!mon) {
+              if(!evo) {
                 if (maxLvl > 41 && ranks.maxLvl>41) {html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40, shdw)+"</td>";}
                 if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0,shdw)+"</td>";}
                 if (cmp) {
