@@ -146,6 +146,7 @@
         </select></label><br />
       <label>Include Mega Evolutions:<input id="mega" type="checkbox"></label><br />
       <label>Include Entire Pokedex:<input id="all" type="checkbox"></label><br />
+      <label>Include Top <input type="number" value="10" id="limit" min="1" max="4096"> Buckets:<input id="buckets" type="checkbox"></label><br />
       <br /><button onclick="start()">Calculate</button>
     </section>
       
@@ -193,6 +194,8 @@
       var all = document.getElementById('all').checked;
       var elem = document.getElementById("myBar");
       var feedback = document.getElementById('feedbackBox');
+      var buckets = document.getElementById('buckets').checked;
+      var limit = document.getElementById('limit').value;
       var i = 0;
       
       /* Reset progress bar between runs */
@@ -211,13 +214,19 @@
       /*include XL candy costs if Max Level > 41*/
       if (maxLvl > 41) {headerRow.innerHTML+="<th>XL</th>";}
       headerRow.innerHTML += "<th>PvP Atk</th><th>PvP Def</th><th>PvP HP</th><th>Stat Prod</th></tr>";
+      if (buckets) {headerRow.innerHTML += "<th>a0</th><th>a1</th><th>a2</th><th>a3</th><th>a4</th><th>d0</th><th>d1</th><th>d2</th><th>d3</th><th>d4</th><th>s0</th><th>s1</th><th>s2</th><th>s3</th><th>s4</th></tr>";}
       
       var tooSmallMons = "";
       var tooBigMons = "";
+      /* Support new IV search buckets */
+      atkBuckets = new Array(5).fill(0);
+      defBuckets = new Array(5).fill(0);
+      staBuckets = new Array(5).fill(0);
       
       /*update the URL with search parameters*/
       var URL = window.location.href.split("?")[0];
-      uri = URL + "?cp="+league+"&max="+maxLvl+"&mega="+mega+"&all="+all;
+      uri = URL + "?cp="+league+"&max="+maxLvl+"&mega="+mega+"&all="+all+"&buckets"+buckets+"&all="+all;
+      if (buckets) {uri += "&buckets"+buckets+"&limit="+limit;}
       uri = encodeURI(uri);
       var newTitle = "PvP IVs - "+leagueName+" Rankings (Level "+maxLvl+")";
       document.title = newTitle;
@@ -252,6 +261,7 @@
             
             if (ranks.numRanks/1 >0) {
               progress(monName, (pokeList[i].value.split(",")[0]).split("b")[0].split("&")[0], maxLvl, Math.round(i/pokeList.length*100), feedback, elem, row, ranks[keys[0]][0], parseFloat(100*(keys[0].split(".")[0])/maxStatProd).toFixed(3), keys[0].split(".")[0], ranks.numRanks/1);
+              if (buckets) {calculateBuckets(ranks, keys, limit, atkBuckets, defBuckets, staBuckets, row)};
               
               /* add the row to the end of the table body */
               tblBody.appendChild(row);
@@ -271,6 +281,7 @@
           console.log("i: "+i);
           /* We are done calculating, time to finish */
           feedback.innerHTML = "<p><i>Complete!</i></p><br />";
+          if (buckets) {feedback.innerHTML +="<p>atkBuckets: "+JSON.stringify(atkBuckets)+", defBuckets: "+JSON.stringify(defBuckets)+", staBuckets: "+JSON.stringify(staBuckets)+"</p><br />";}
 
           /* put the <tbody> in the <table> */
           tbl.appendChild(tblBody);
@@ -303,6 +314,10 @@
           skippedMessage += tooSmallMons + ". Removed all too big mon: " + tooBigMons;
           console.log(skippedMessage);
           skippedMessage = "";
+          
+          console.log("atkBuckets: "+JSON.stringify(atkBuckets));
+          console.log("defBuckets: "+JSON.stringify(defBuckets));
+          console.log("staBuckets: "+JSON.stringify(staBuckets));
           
           /* Compute total execution time */
           if (true) {var startT1 = performance.now();
@@ -444,6 +459,80 @@
       }
     }
     
+    function calculateBuckets(ranks, keys, limit, atkBuckets, defBuckets, staBuckets, row) {
+      if (perfTiming) {var calculateBucketst0 = performance.now();}
+      
+      var i=0,j=0,counted=0;
+      var a0=0,a1=0,a2=0,a3=0,a4=0;
+      var d0=0,d1=0,d2=0,d3=0,d4=0;
+      var s0=0,s1=0,s2=0,s3=0,s4=0;
+      
+      /*walk all (4096) entries in ranks and compare*/
+      for (i=0; (i<limit && (keys[i].indexOf(".")>-1) && counted<limit); i++) {
+        for (j=0; j<ranks[keys[i]].length && j<limit  && counted<limit; j++) {
+          
+          var atk = ranks[keys[i]][j].IVs.A;
+          var def = ranks[keys[i]][j].IVs.D;
+          var sta = ranks[keys[i]][j].IVs.S;
+          
+          /* Update IV search bucket counters*/
+    		  /* 0 is 0IV, 1 is 1-5IV, 2 is 6-10IV, 3 is 11-14IV, 4 is 15IV */
+    		  if (atk/1==15) {atkBuckets[4]++;a4++;}
+    		  else if (atk/1>10) {atkBuckets[3]++;a3++;}
+    		  else if (atk/1>5) {atkBuckets[2]++;a2++;}
+    		  else if (atk/1>0) {atkBuckets[1]++;a1++;}
+    		  else if (atk/1===0) {atkBuckets[0]++;a0++;}
+    		  else console.error("Invalid atk ("+atk+")");
+    		  
+    		  if (def/1==15) {defBuckets[4]++;d4++;}
+    		  else if (def/1>10) {defBuckets[3]++;d3++;}
+    		  else if (def/1>5) {defBuckets[2]++;d2++;}
+    		  else if (def/1>0) {defBuckets[1]++;d1++;}
+    		  else if (def/1===0) {defBuckets[0]++;d0++;}
+    		  else console.error("Invalid def ("+def+")");
+    		  
+    		  if (sta/1==15) {staBuckets[4]++;s4++;}
+    		  else if (sta/1>10) {staBuckets[3]++;s3++;}
+    		  else if (sta/1>5) {staBuckets[2]++;s2++;}
+    		  else if (sta/1>0) {staBuckets[1]++;s1++;}
+    		  else if (sta/1===0) {staBuckets[0]++;s0++;}
+    		  else console.error("Invalid sta ("+sta+")");
+    		  
+    		  /*console.log("Finished rank "+i+" loop of atk("+atk+") def("+def+") sta("+sta+") and counts are now:");
+    		  console.log("atkBuckets: "+JSON.stringify(atkBuckets));
+          console.log("defBuckets: "+JSON.stringify(defBuckets));
+          console.log("staBuckets: "+JSON.stringify(staBuckets));*/
+          
+          counted++;
+        }
+      }
+      
+      /* Write this mon's output to row */
+      outCell(a0, row);
+      outCell(a1, row);
+      outCell(a2, row);
+      outCell(a3, row);
+      outCell(a4, row);
+      outCell(d0, row);
+      outCell(d1, row);
+      outCell(d2, row);
+      outCell(d3, row);
+      outCell(d4, row);
+      outCell(s0, row);
+      outCell(s1, row);
+      outCell(s2, row);
+      outCell(s3, row);
+      outCell(s4, row);
+      
+      /*console.log("calculateBuckets: ending with:");
+      console.log("atkBuckets: "+JSON.stringify(atkBuckets));
+      console.log("defBuckets: "+JSON.stringify(defBuckets));
+      console.log("staBuckets: "+JSON.stringify(staBuckets));*/
+      
+      if (perfTiming) {var calculateBucketst1 = performance.now();
+      console.log("calculateBuckets: Execution took "+(calculateBucketst1-calculateBucketst0).toFixed(1)+"ms");}
+    }
+    
     function checkURI() {
       if (perfTiming) {var checkURIt0 = performance.now();}
 
@@ -477,6 +566,15 @@
               else { document.getElementById('mega').checked = false;}
               validParams = true;
               break;
+            case "buckets":
+              if (values[i].split("=")[1] == "true") { document.getElementById('buckets').checked = true;}
+              else { document.getElementById('buckets').checked = false;}
+              validParams = true;
+              break;
+            case "limit":
+              document.getElementById('limit').value = values[i].split("=")[1];
+              validParams = true;
+              break;
             case "t": /* Enable performance timing output in console for debugging */
               perfTiming = values[i].split("=")[1];
               break;
@@ -496,7 +594,7 @@
       {
         console.log("No inputs detected, awaiting user input");
         if (perfTiming) {var checkURIt1 = performance.now();
-        console.log("start: Execution took "+(checkURIt1-checkURIt0).toFixed(1)+"ms");}
+        console.log("checkURI: Execution took "+(checkURIt1-checkURIt0).toFixed(1)+"ms");}
         return false;
       }
     }
