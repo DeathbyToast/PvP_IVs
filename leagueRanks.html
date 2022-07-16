@@ -225,7 +225,11 @@
       
       /*update the URL with search parameters*/
       var URL = window.location.href.split("?")[0];
-      uri = URL + "?cp="+league+"&max="+maxLvl+"&mega="+mega+"&all="+all+"&buckets"+buckets+"&all="+all;
+      uri = URL + "?";
+      if (league/1!=1500) {uri+="cp="+league;}
+      if (maxLvl/1!=51) {uri+="&max="+maxLvl;}
+      if (mega) {uri+="&mega="+mega;}
+      if (all) {uri+="&all="+all;}
       if (buckets) {uri += "&buckets"+buckets+"&limit="+limit;}
       uri = encodeURI(uri);
       var newTitle = "PvP IVs - "+leagueName+" Rankings (Level "+maxLvl+")";
