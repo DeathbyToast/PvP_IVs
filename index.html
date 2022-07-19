@@ -420,10 +420,12 @@
         var limit = document.getElementById('limit').value;
         var keys = Object.keys(ranks);
         var maxStatProd = keys[0].split(".")[0];
+        console.log("evos:"+JSON.stringify(evos));
         var evos = pokeListObj[mon].split(',').slice(4, pokeListObj[mon].split(',').length);
         var evoLen = evos.length;
         
         /* properly parse settings bits as true/false */
+        console.log("splitSettings:"+JSON.stringify(splitSettings));
         for (var i=0; i<splitSettings.length; i++) { splitSettings[i] = (splitSettings[i] == 1) ? true : false;}
         
         /*we have at least one rank to output, let's print! */
@@ -508,6 +510,7 @@
         }
         
         /* Generate user inputted IV rows for main output table */
+        console.log("aIV:"+JSON.stringify(aIV));
         for (i=0; i<aIV.length; i++) {
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
@@ -1214,15 +1217,15 @@
       
       function cmpCalcs(ranks, keys, dec) {
         if (perfTiming) {var T0 = performance.now();}
-        /*console.log("cmpCalcs: received: ranks: "+JSON.stringify(ranks)+", keys:"+JSON.stringify(keys))*/
-        /*var print = false;*/
+        /*console.log("cmpCalcs: received: ranks: "+JSON.stringify(ranks)+", keys:"+JSON.stringify(keys));
+        var print = false;*/
 
         /*walk all (4096) entries in ranks and compare*/
-        for (var i=0; (i<ranks.numRanks && (keys[i].indexOf(".")>-1)); i++) {
+        for (var i=0; (i<ranks.numRanks && keys[i].indexOf(".")>-1); i++) {
             for (var j=0; j<ranks[keys[i]].length; j++) {
-              /*if ((ranks[keys[i]][j].IVs.A/1 == 9) && (ranks[keys[i]][j].IVs.D/1 == 13) && (ranks[keys[i]][j].IVs.S/1 == 8)) {
+              if ((ranks[keys[i]][j].IVs.A/1 == 9) && (ranks[keys[i]][j].IVs.D/1 == 13) && (ranks[keys[i]][j].IVs.S/1 == 8)) {
                 print = true;
-              }*/
+              }
               if (numOut(ranks[keys[i]][j].battle.A,dec)/1 > numOut(ranks[keys[0]][0].battle.A,dec)/1) {
                 /*if (print) { console.log("R1 set to W because numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" > numOut(ranks[keys[0]][0].battle.A,1): "+numOut(ranks[keys[0]][0].battle.A,1));}*/
                 ranks[keys[i]][j].IVs.R1 = "W";
@@ -1236,15 +1239,15 @@
                 ranks[keys[i]][j].IVs.R1 = "T";
                 ranks[keys[i]][j].IVs.T100=0;
               }
-              for (var k=1,iters=1; ((iters<100) && (iters<ranks.numRanks)); k++) {
+              for (var k=1,iters=1; (iters<100 && iters<ranks.numRanks && keys[k].indexOf(".")>-1); k++) {
                 /*console.log("Iterating through k="+k+": "+JSON.stringify(ranks[keys[k]]));*/
                 for (var l=0; ((l<ranks[keys[k]].length) && (iters<100)); l++) {
                   if (numOut(ranks[keys[i]][j].battle.A,dec)/1 > numOut(ranks[keys[k]][l].battle.A,dec)/1) {ranks[keys[i]][j].IVs.T100+=1;}
-                  iters = iters + 1;
+                  iters++;
                   /*if (print) { console.log("T100 increased to "+ranks[keys[i]][j].IVs.T100+" with numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" > numOut(ranks[keys[k]][l].battle.A,1): "+numOut(ranks[keys[k]][l].battle.A,1));}*/
                 }
               }
-            /*if (print) {print = false;}*/
+            if (print) {print = false;}
             }
         }
         if (perfTiming) {stopTiming(T0, "cmpCalcs");}
