@@ -342,13 +342,27 @@
             
             for (i=0;i<5;i++){
               for (j=0;j<5;j++){
+                if (!(ivBuckets[i][j][0]) && !(ivBuckets[i][j][1]) && !(ivBuckets[i][j][2]) && !(ivBuckets[i][j][3]) && !(ivBuckets[i][j][4])) {
+                  trashString += i+"attack&"+j+"defense&"+"0-4hp,";
+                  continue;
+                } else if (!(ivBuckets[i][j][0]) && !(ivBuckets[i][j][1]) && !(ivBuckets[i][j][2]) && !(ivBuckets[i][j][3]) && (ivBuckets[i][j][4])) {
+                  trashString += i+"attack&"+j+"defense&"+"0-3hp,";
+                  continue;
+                } else if (!(ivBuckets[i][j][0]) && !(ivBuckets[i][j][1]) && !(ivBuckets[i][j][2]) && ivBuckets[i][j][3] && ivBuckets[i][j][4]) {
+                  trashString += i+"attack&"+j+"defense&"+"0-2hp,";
+                  continue;
+                } else if (!(ivBuckets[i][j][0]) && !(ivBuckets[i][j][1]) && ivBuckets[i][j][2] && ivBuckets[i][j][3] && ivBuckets[i][j][4]) {
+                  trashString += i+"attack&"+j+"defense&"+"0-1hp,";
+                  continue;
+                }
                 for(k=0;k<5;k++){
                   if (!(ivBuckets[i][j][k])) {
-                    trashString += i+"attack&"+j+"defense"+k+"hp,";
+                    trashString += i+"attack&"+j+"defense&"+k+"hp,";
                     console.log("Safe to trash "+i+"attack&"+j+"defense"+k+"hp");
                   }
                 }
               }
+              trashString += "<br />"
             }
           }
           
