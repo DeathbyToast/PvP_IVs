@@ -92,6 +92,10 @@
       #totalRanks {
         display: inline;
       }
+      p[id=IVinputShow], small[id=IVinputHide] {
+        text-decoration: underline;
+        text-decoration-color: blue;
+      }
     </style>
   </head>
   <body class="light-theme" onload="checkURI()">
@@ -205,6 +209,11 @@
           <td id="minusCell"><button class="circle minus" id="minus[0]" onclick="doTheRemoval()"></button></td>
         </tr>
       </table>
+      <p id="IVinputShow" onclick="showIVinput()"><i><small>Show IV input textbox</small></i></p>
+      <textarea id="ivInput" rows="4" cols="27" oninput="readIVs()" placeholder="/*Paste Your IVs here&#10;Atk&emsp;IV&emsp;Def&emsp;IV&emsp;Sta&emsp;IV*/&#10;13&#09;15&#09;12&#10;14&#09;11&#09;6" hidden></textarea><!--Atk IV	Def IV	Sta IV
+13	15	12
+14	11	6-->
+      <p onclick="hideIVinput()"><i><small id="IVinputHide" hidden>Hide IV input textbox</small></i></p>
       <textarea id="CustomGroupExport" hidden></textarea>
       
       <div style="overflow-x:auto;" id="megaNote"></div>
@@ -253,6 +262,50 @@
           }
         });
         /* end Awesomeplete https://leaverou.github.io/awesomplete/ */
+      }
+      
+      function showIVinput() {
+        document.getElementById("IVinputShow").style.display = "none";
+        document.getElementById("ivInput").style.display = "inline-block";
+        document.getElementById("IVinputHide").style.display = "inline-block";
+      }
+      
+      function hideIVinput() {
+        document.getElementById("IVinputShow").style.display = "inline-block";
+        document.getElementById("ivInput").style.display = "none";
+        document.getElementById("IVinputHide").style.display = "none";
+      }
+      
+      function readIVs() {
+        var ivStr = document.getElementById("ivInput").value.split(/\r?\n/);
+        console.log("readIVs::IVs:ivStr:"+ivStr+", ivStr.length: "+ivStr.length);
+        
+        /* Start by clearing all existing IV Input Rows */
+        for (var i=0; i<aIV.length; i++) {
+          /* magic to actually remove all the rows one by one */
+          var tr = document.getElementById('aIV['+i+']').parentNode;
+          tr.parentNode.parentNode.removeChild(tr.parentNode);
+        }
+        /* clear the value arrays */
+        aIV.splice(0, aIV.length);
+        dIV.splice(0, dIV.length);
+        sIV.splice(0, sIV.length);
+        shdw.splice(0, shdw.length);
+        
+        for (var j=0; j<ivStr.length; j++)
+        {
+          if (!(/\d/.test(ivStr[j]))) { /* Ensure that we have IVs to process */
+            console.log("ivStr["+j+"]("+ivStr[j]+") has no numbers, skipping");
+            continue;
+          }
+          
+          var userIVs = ivStr[j].match(/\d+/g);
+          if (userIVs.length<2) {continue;} /* skip blank/incomplete entries */
+          console.log("readIVs::IVs:insering userIVs: "+userIVs+" (length:"+userIVs.length+")");
+          doTheInsert(userIVs[0],userIVs[1],userIVs[2],userIVs[3]);
+        }
+        console.log("readIVs: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);
+        main();
       }
     
       function adjustFloors(pokeName) {
@@ -356,7 +409,6 @@
           var tr = document.getElementById('aIV['+i+']').parentNode;
           tr.parentNode.parentNode.removeChild(tr.parentNode);
         }
-        
         /* clear the value arrays */
         aIV.splice(0, aIV.length);
         dIV.splice(0, dIV.length);
@@ -543,7 +595,13 @@
                   var evoKeys = Object.keys(evoRanks);
                   var evoMaxStatProd = evoKeys[0].split(".")[0];
                   /*create link for evo table entry*/
-                  uri = URL + "?mon="+evos[e]+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i];
+                  uri = URL + "?mon="+evos[e];
+                  if (limit/1 != 10) uri += "&r="+limit;
+                  if (league/1 != 1500) uri += "&cp="+league;
+                  if (floor/1 >0) uri += "&f="+floor;
+                  if (minLvl/1 >1) uri += "&min="+minLvl;
+                  if (maxLvl/1 != 51) uri += "&max="+maxLvl;
+                  uri += "&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i];
                   if (shdw[i]) {
                     uri += "_" + shdw[i];
                   }
@@ -730,7 +788,6 @@
           if (pokeListObj[input.value]) {
             /*console.log("Found a valid input.value of:"+JSON.stringify(input.value));*/
             mon = input.value;
-            /* We have a valid mon, hide the 'getting started' mon selection help text */
           }
         }
         
@@ -741,6 +798,7 @@
           return;
         } else { /* Have a valid mon, remove instructions */
           document.getElementById('instructionsBox').innerHTML = "";
+          document.getElementById("IVinputShow").style.display = "none";
         }
         
         /*ensure we clear the prior output between runs*/
@@ -790,8 +848,10 @@
         
         /*update the URL with search parameters*/
         /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000000&fel=1500&mA=119.7&mD=112.6&mHP=113";*/
-        var uri = URL + "?mon="+mon+"&r="+printLimit+"&cp="+league;
+        var uri = URL + "?mon="+mon;
         /* Only print remaining params if they aren't default values */
+        if (printLimit/1 != 10) uri += "&r="+printLimit;
+        if (league/1 != 1500) uri += "&cp="+league;
         if (document.getElementById('floor').value>0) {uri += "&f="+document.getElementById('floor').value;}
         if (document.getElementById('minLvl').value>1) {uri += "&min="+document.getElementById('minLvl').value;}
         if (document.getElementById('maxLvl').value!=51) {uri += "&max="+document.getElementById('maxLvl').value;}
@@ -1455,16 +1515,14 @@
                 lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
               }
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
-              if(!evo) {
-                if (maxLvl > 41 && ranks.maxLvl>41) {html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40, shdw)+"</td>";}
-                if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0,shdw)+"</td>";}
-                if (cmp) {
-                    html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
-                    html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
-                }
+              if (!evo && maxLvl > 41 && ranks.maxLvl>41) {html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40, shdw)+"</td>";}
+              if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0,shdw)+"</td>";}
+              if (!evo && cmp) {
+                html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
+                html+="<td>"+ranks[keys[i]][j].IVs.T100+"%"+"</td>"; /*T100 CMP*/
               }
-              html+="<td>"+numOut(ranks[keys[i]][j].battle.A,dec)+"</td>"; /*GL Atk Total*/
-              html+="<td>"+numOut(ranks[keys[i]][j].battle.D,dec)+"</td>"; /*GL Def Total*/
+              html+="<td>"+numOut(ranks[keys[i]][j].battle.A,dec);html+= shdw ? "<p style='color:purple'>("+numOut(ranks[keys[i]][j].battle.A*1.2,dec)+")</p></td>": "</td>"; /*GL Atk Total*/
+              html+="<td>"+numOut(ranks[keys[i]][j].battle.D,dec);html+= shdw ? "<p style='color:purple'>("+numOut(ranks[keys[i]][j].battle.D*0.8,dec)+")</p></td>": "</td>"; /*GL Def Total*/
               html+="<td>"+ranks[keys[i]][j].battle.S+"</td>"; /*GL Sta IV*/
               html+="<td>"+keys[i].split(".")[0]+"</td></tr>"; /*Stat Product*/
               /*console.log("Found rank="+actualRank);*/
