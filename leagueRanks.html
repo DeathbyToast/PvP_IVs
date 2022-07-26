@@ -226,13 +226,13 @@
       /* Initialize 3D ivBuckets Array */
       var ivBuckets = new Array(5).fill(0);
       
-      for (i=0;i<5;i++) {
-        ivBuckets[i] = new Array(5).fill(0);
+      for (j=0;j<5;j++) {
+        ivBuckets[j] = new Array(5).fill(0);
       }
       
-      for (i=0;i<5;i++) {
-        for (j=0; j<5;j++) {
-          ivBuckets[i][j] = new Array(5).fill(0);
+      for (j=0;j<5;j++) {
+        for (k=0; k<5;k++) {
+          ivBuckets[j][k] = new Array(5).fill(0);
         }
       }
       
@@ -286,7 +286,7 @@
               tooBigMons += monName+"(L"+minLvl+"+), ";
             }
           } else {
-              tooSmallMons += monName+"("+maxCP+"), ";
+            tooSmallMons += monName+"("+maxCP+"), ";
           }
         }
 
@@ -358,10 +358,10 @@
                 for(k=0;k<5;k++){
                   if (!(ivBuckets[i][j][k])) {
                     trashString += i+"attack&"+j+"defense&"+k+"hp,";
-                    console.log("Safe to trash "+i+"attack&"+j+"defense"+k+"hp");
+                    /*console.log("Safe to trash "+i+"attack&"+j+"defense"+k+"hp");*/
                   }
                 }
-              }
+              } /* Line break for search string output by attack IV*/
               trashString += "<br />"
             }
           }
@@ -552,6 +552,9 @@
     		  ivBuckets[atkBkt][defBkt][hpBkt] = true;
     		  if (atkBkt===0 && defBkt===0 && hpBkt===0) {
     		    console.log("Found a 0-0-0 IV spread: rank "+i+" "+monName);
+    		  }
+    		  if (atkBkt>1 && defBkt<3 && hpBkt<3) {
+    		    console.log("Found a "+atk+"-"+def+"-"+sta+" IV spread: rank "+i+" "+monName);
     		  }
     		  
     		  /*console.log("Finished rank "+i+" loop of atk("+atk+") def("+def+") sta("+sta+") and counts are now:");
