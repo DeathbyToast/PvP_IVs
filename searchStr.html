@@ -255,7 +255,6 @@
             case "set":
               var settings = (''+values[i].split("=")[1]);
                 document.getElementById('trash').checked = settings[0]==1 ? true : false;
-                document.getElementById('onlyZero').checked = settings[1]==1 ? true : false;
                 document.getElementById('trashHundo').checked = settings[2]==1 ? true : false;
                 document.getElementById('trashZero').checked = settings[3]==1 ? true : false;
                 document.getElementById('allZero').checked = settings[6]==1 ? true : false;
@@ -353,7 +352,6 @@
       var trash = document.getElementById('trash').checked;
       var trashHundo = document.getElementById('trashHundo').checked;
       var trashZero = document.getElementById('trashZero').checked;
-      var onlyZero = document.getElementById('onlyZero').checked;
       var lang = document.getElementById('lang').value.split(',');
       var maxLvl = document.getElementById('maxLvl').value;
       var newMon = (mon) ? true : false;
@@ -361,18 +359,7 @@
       /* See if this was a request for all-mon Zero IV string */
       if (document.getElementById('allZero').checked) {
         document.getElementById('getStarted').style.display = "none";
-        var cpLimit = document.getElementById('cpLimit').value;
-        var dexSkips = document.getElementById('dexSkips').value;
-        document.getElementById("cpLimit").style.display = "inline-block";
-        document.getElementById("cpLimitLbl").style.display = "inline-block";
-        document.getElementById("dexSkips").style.display = "inline-block";
-        document.getElementById("dexSkipsLbl").style.display = "inline-block";
-        
-        /* convert to array for concat, then sort, then de-dupe */
-        dexSkips = dexSkips.substring(0, dexSkips.length).split`,`.map(x=>+x);
-        dexSkips = [...new Set(dexSkips.concat(boxRewrd,raidOnly,boxMyth,raidMyth).sort())];
-        /* can only find zero IVs from wild spawns, merge, sort, and de-dupe non-wild spawning dex nums */
-        findAllZeros(cpLimit, dexSkips);
+        findAllZeros(lang);
         
         /* Ensure we update the URL before returning */
         updateURI(false,league,leagueName,lang[0],);
@@ -635,7 +622,7 @@
       }
       
       /* output the user's request! */
-      outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, output, lang, maxLvl);
+      outputStr(evoVals, trash, trashHundo, trashZero, league, output, lang, maxLvl);
       
       /* update the URL with search parameters */
       updateURI(mon,league,leagueName,lang[0],evoVals.length);
@@ -677,7 +664,6 @@
       }
   
       binary = document.getElementById('trash').checked ? "1" : "0";
-      binary += document.getElementById('onlyZero').checked ? "1" : "0";
       binary += document.getElementById('trashHundo').checked ? "1" : "0";
       binary += document.getElementById('trashZero').checked ? "1" : "0";
       binary += document.getElementById('allZero').checked ? "1" : "0";
@@ -742,78 +728,26 @@
         &!129,hp10,hp14,hp18,hp21,hp24,hp27,hp29,hp31,hp33,hp35,hp37,hp39-40,hp42-43,hp45-46,hp48-50,hp52-57,hp59-62
         
       */
-    function findAllZeros(cpLimit, dexSkips) {
+    function findAllZeros(lang) {
       if (true) {var findAllZerosT0 = performance.now();}
       
       var lang = document.getElementById('lang').value.split(',');
       var output = document.getElementById('output');
-      output.value = ''; /* ensure old output is cleared */
-      var segments = '';
-      var ids = '';
-      console.log("fAZ:: cpLimit: "+cpLimit+", dexSkips: "+JSON.stringify(dexSkips));
+      var message = "This string ignores PvP rankings, and only finds 0% IV (0/0/0) mon.<br />For PvP rankings please uncheck 'Find ALL 0% mon' (below)";
       
-      var message = "This string ignores PvP rankings, and only potential 0% IV (0/0/0) mon. For PvP rankings please uncheck 'Find ALL 0% mon' (below)";
-      document.getElementById('feedbackBox').innerHTML = "<p><i>"+message+"</i></p>";
-
-      for (var i=0; i<pokeList.length; i++) {
-        
-        /* Skip placeholder entries */
-        if (pokeList[i].label.includes("_PLACEHOLDER")) {
-          console.log("Skipped Placeholder mon: "+pokeList[i].label);
-          continue;
-        }
-        
-        /* Skip placeholder entries */
-        if (pokeList[i].label.includes("_SPECULATIVE")) {
-          console.log("Skipped Speculative mon: "+pokeList[i].label);
-          continue;
-        }
-        
-        /* Strip out the dex information */
-        var dex = (pokeList[i].value.split(",")[0]);
-        /* Remove b from dex info but preserve the rest for proper output */
-        if (dex.includes("b")) {
-          dex = dex.split("b")[0] + dex.split("b")[1];
-        }
-        
-        /* Ensure it can spawn in the wild */
-        if (dex.includes("&mega")) {
-          console.log("Skipped Mega Evo #"+dex+"("+pokeList[i].label+")");
-          continue;
-        }
-        
-        /* Strip out "&" info and convert dex to numerical id */
-        id = dex.split("&")[0]/1;
-        
-        /* Check for dex numbers that user wants to skip */
-        if (dexSkips.includes(id/1)) {
-          console.log("User asked to skip #"+id+"("+pokeList[i].label+"), Skipping!");
-          continue;
-        }
-        
-        var cps = [], hps = [], results;
-        var maxCP = new Array(5).fill(0), maxHP = new Array(5).fill(0);
-        var monStats = pokeList[i].value.split(',');
-        cps[0] = new Set();
-        hps[0] = new Set();
-    
-        
-        results = getZeroCPs(parseInt(monStats[1]), parseInt(monStats[2]), parseInt(monStats[3]), maxCP, maxHP, cps[0], hps[0]);
-        cps[0] = results[0];
-        hps[0] = results[1];
-        
-        /* Skip forms above CP limit which aren't common wild spawns */
-        if (results[2][0]/1 > cpLimit/1) {
-          console.log("Skipped #"+id+"("+pokeList[i].label+"), over maxCP("+results[2][0]/1+")");
-          continue;
-        }
-        segments += outputZeroCPsHPs(cps.slice(), hps.slice(), dex, lang);
-        ids += dex+',';
+      output.value = "0attack&0defense&0hp";
+      
+      /* Ensure additional regional search terms are translated as needed*/
+      if (lang[0] !== "en")
+      {
+        /* lang : cpstr,  hpstr,  mega,   alola,  eggsonly, galar,  ground, steel,  grass,  psychic, fire,     attack,   defense */
+        /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11], lang[12], lang[13]*/
+        /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
+        output.value = output.value.replace(/attack/gi,  lang[12]);
+        output.value = output.value.replace(/defense/gi, lang[13]);
+        output.value = output.value.replace(/hp/gi,      lang[2]);
       }
-      /* trim trailing ',' */
-      ids = ids.replace(/,\s*$/, "");
-      output.value = ids+"&0*"+segments;
-        document.getElementById('feedbackBox').innerHTML += "<p><i>Output Search String Length: "+output.value.length.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+" characters</i></p>";
+      document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       
       if (perfTiming) {var findAllZerosT1 = performance.now();
       console.log("findAllZeros: Execution took "+(findAllZerosT1-findAllZerosT0).toFixed(1)+"ms");}
@@ -860,7 +794,7 @@
       return segment;
     }
     
-    function getRanks(evoVals, trash, trashHundo, trashZero, onlyZero, league, maxLvl) {
+    function getRanks(evoVals, trash, trashHundo, trashZero, league, maxLvl) {
       if (perfTiming) {var getRanksT0 = performance.now();}
       console.log("gR::Received evoVals:"+JSON.stringify(evoVals));
       
@@ -873,7 +807,7 @@
         if (evoVals[i][0]){console.log("Loop #"+i+": evoVals["+i+"]:"+JSON.stringify(evoVals[i]));}
         
         if (i==0) {/* base mon */
-          if ((trash) && (!onlyZero)) {
+          if (trash) {
             message += "trashes all "+evoVals[i][4]+" except ";
             if (!trashHundo) {message += "perfect IV (15/15/15) and ";}
             if (!trashZero) {message += "zero IV (0/0/0) and ";}
@@ -930,11 +864,11 @@
     }
     
     /* Given valid family stats in evoVals, outputs a Search String for the user */
-    function outputStr(evoVals, trash, trashHundo, trashZero, onlyZero, league, output, lang, maxLvl) {
+    function outputStr(evoVals, trash, trashHundo, trashZero, league, output, lang, maxLvl) {
       if (perfTiming) {var outputStrT0 = performance.now();}
   
       /* create our rank object to compute cps/hps from for output string */
-      const mergedRanks = getRanks(evoVals, trash, trashHundo, trashZero, onlyZero, league, maxLvl);
+      const mergedRanks = getRanks(evoVals, trash, trashHundo, trashZero, league, maxLvl);
   
       var rKeys = Object.keys(mergedRanks), message;
       output.value = ''; /* ensure old output is cleared */
@@ -952,103 +886,84 @@
       var maxCP = new Array(5).fill(0), maxHP = new Array(5).fill(0);
       var searchLvl = document.getElementById('searchLvl').value.split(",").map(x=>+x);
       var maxSearchLvl = 0;
-  
-      if (onlyZero) {
-        if (trash) {
-          message = "This string only finds 0% IVs, and is NOT a trash string. Please uncheck 'Trash String' (below)";
-        document.getElementById('feedbackBox').innerHTML = "<p><i>"+message+"</i></p>";
-        } else {
-          message = "This string ignores PvP rankings. For PvP rankings please uncheck 'Only Find 0% IVs' (below)";
-          document.getElementById('feedbackBox').innerHTML = "<p><i>"+message+"</i></p>";
-        }
+      
+      if ((!trashZero) && (trash)) {
         results = getZeroCPs(evoVals[0][1], evoVals[0][2], evoVals[0][3], maxCP, maxHP, cps[0], hps[0]);
         cps[0] = results[0];
         hps[0] = results[1];
         maxCP = results[2];
         maxHP = results[3];
-        outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], lang, trash, trashHundo, onlyZero);
-        message = "String finds only potential 0% IV (0/0/0) "+evoVals[0][4]+", not PvP ranks";
-        document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
-        return output;
-      } else {
-        if ((!trashZero) && (trash)) {
-          results = getZeroCPs(evoVals[0][1], evoVals[0][2], evoVals[0][3], maxCP, maxHP, cps[0], hps[0]);
-          cps[0] = results[0];
-          hps[0] = results[1];
-          maxCP = results[2];
-          maxHP = results[3];
-        }
+      }
         
-        /* generate all the cps and hps for matching */
-        /* for ranks 1 to user cutoff, up to maxSearchLvl/league limit */
-        for (i=0; i<rKeys.length; i++) {
-          for (j=0; j<mergedRanks[rKeys[i]].length; j++) {
-            
-            /** Compare the max PvP level for this evo
-              * (mergedRanks[rKeys[i]][j].L) to levels
-              * selected by the user to search for
-              * (searchLvl[k]) to ensure that we don't
-              * output CPs/HPs that are too high of a
-              * level for the requested final PvP mon
-              */
-            for (k=0; k<searchLvl.length; k++)
+      /* generate all the cps and hps for matching */
+      /* for ranks 1 to user cutoff, up to maxSearchLvl/league limit */
+      for (i=0; i<rKeys.length; i++) {
+        for (j=0; j<mergedRanks[rKeys[i]].length; j++) {
+          
+          /** Compare the max PvP level for this evo
+            * (mergedRanks[rKeys[i]][j].L) to levels
+            * selected by the user to search for
+            * (searchLvl[k]) to ensure that we don't
+            * output CPs/HPs that are too high of a
+            * level for the requested final PvP mon
+            */
+          for (k=0; k<searchLvl.length; k++)
+          {
+            if (mergedRanks[rKeys[i]][j].L < searchLvl[k])
             {
-              if (mergedRanks[rKeys[i]][j].L < searchLvl[k])
-              {
-                /* Need to skip these levels when outputting, they're too high for PvP */
-                /*console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") < ("+searchLvl[k]+")searchLvl["+k+"], skipping L"+searchLvl[k]+" in final Search String");*/
-              }
-              else
-              {
-                /* We either found or skipped over the level we needed to start at, exit loop */
-                /*console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") >= ("+searchLvl[k]+")searchLvl["+k+"], stopping search! Starting output at L"+searchLvl[k]+" in final Search String");*/
-                maxSearchLvl = k;
-                break;
-              }
+              /* Need to skip these levels when outputting, they're too high for PvP */
+              /*console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") < ("+searchLvl[k]+")searchLvl["+k+"], skipping L"+searchLvl[k]+" in final Search String");*/
             }
-      
-            /* Generate CPs and HPs to search for up to maxSearchLvl cutoff */
-            for(k=maxSearchLvl; k<searchLvl.length; k++) {
-              lookupLvl = (searchLvl[k]-1)*2;
-              var cp = Math.max(10, Math.floor((evoVals[0][1]/1 + mergedRanks[rKeys[i]][j].IVs.A) * Math.sqrt(evoVals[0][2]/1 + mergedRanks[rKeys[i]][j].IVs.D) * Math.sqrt(evoVals[0][3]/1 + mergedRanks[rKeys[i]][j].IVs.S) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
-              /*console.log("Generated cp("+cp+") at lookupLvl("+lookupLvl+"), searchLvl["+k+"]:"+searchLvl[k]);*/
-              
-              /* generate hps for more accurate search string matching */
-              var hp = Math.max(10, Math.floor((evoVals[0][3]/1 + mergedRanks[rKeys[i]][j].IVs.S) * cpm[lookupLvl]));
-              
-              /* bucket CPs and HPs into appraisal ratings for more accurrate matching */
-              switch (mergedRanks[rKeys[i]][j].IVs.star) {
-                case "0*":
-                  cps[0].add(cp);
-                  hps[0].add(hp);
-                  if (maxCP[0] < cp) {maxCP[0] = cp;}
-                  if (maxHP[0] < hp) {maxHP[0] = hp;}
-                  break;
-                case "1*":
-                  cps[1].add(cp);
-                  hps[1].add(hp);
-                  if (maxCP[1] < cp) {maxCP[1] = cp;}
-                  if (maxHP[1] < hp) {maxHP[1] = hp;}
-                  break;
-                case "2*":
-                  cps[2].add(cp);
-                  hps[2].add(hp);
-                  if (maxCP[2] < cp) {maxCP[2] = cp;}
-                  if (maxHP[2] < hp) {maxHP[2] = hp;}
-                  break;
-                case "3*":
-                  cps[3].add(cp);
-                  hps[3].add(hp);
-                  if (maxCP[3] < cp) {maxCP[3] = cp;}
-                  if (maxHP[3] < hp) {maxHP[3] = hp;}
-                  break;
-                case "4*":
-                  cps[4].add(cp);
-                  hps[4].add(hp);
-                  if (maxCP[4] < cp) {maxCP[4] = cp;}
-                  if (maxHP[4] < hp) {maxHP[4] = hp;}
-                  break;
-              }
+            else
+            {
+              /* We either found or skipped over the level we needed to start at, exit loop */
+              /*console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") >= ("+searchLvl[k]+")searchLvl["+k+"], stopping search! Starting output at L"+searchLvl[k]+" in final Search String");*/
+              maxSearchLvl = k;
+              break;
+            }
+          }
+    
+          /* Generate CPs and HPs to search for up to maxSearchLvl cutoff */
+          for(k=maxSearchLvl; k<searchLvl.length; k++) {
+            lookupLvl = (searchLvl[k]-1)*2;
+            var cp = Math.max(10, Math.floor((evoVals[0][1]/1 + mergedRanks[rKeys[i]][j].IVs.A) * Math.sqrt(evoVals[0][2]/1 + mergedRanks[rKeys[i]][j].IVs.D) * Math.sqrt(evoVals[0][3]/1 + mergedRanks[rKeys[i]][j].IVs.S) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
+            /*console.log("Generated cp("+cp+") at lookupLvl("+lookupLvl+"), searchLvl["+k+"]:"+searchLvl[k]);*/
+            
+            /* generate hps for more accurate search string matching */
+            var hp = Math.max(10, Math.floor((evoVals[0][3]/1 + mergedRanks[rKeys[i]][j].IVs.S) * cpm[lookupLvl]));
+            
+            /* bucket CPs and HPs into appraisal ratings for more accurrate matching */
+            switch (mergedRanks[rKeys[i]][j].IVs.star) {
+              case "0*":
+                cps[0].add(cp);
+                hps[0].add(hp);
+                if (maxCP[0] < cp) {maxCP[0] = cp;}
+                if (maxHP[0] < hp) {maxHP[0] = hp;}
+                break;
+              case "1*":
+                cps[1].add(cp);
+                hps[1].add(hp);
+                if (maxCP[1] < cp) {maxCP[1] = cp;}
+                if (maxHP[1] < hp) {maxHP[1] = hp;}
+                break;
+              case "2*":
+                cps[2].add(cp);
+                hps[2].add(hp);
+                if (maxCP[2] < cp) {maxCP[2] = cp;}
+                if (maxHP[2] < hp) {maxHP[2] = hp;}
+                break;
+              case "3*":
+                cps[3].add(cp);
+                hps[3].add(hp);
+                if (maxCP[3] < cp) {maxCP[3] = cp;}
+                if (maxHP[3] < hp) {maxHP[3] = hp;}
+                break;
+              case "4*":
+                cps[4].add(cp);
+                hps[4].add(hp);
+                if (maxCP[4] < cp) {maxCP[4] = cp;}
+                if (maxHP[4] < hp) {maxHP[4] = hp;}
+                break;
             }
           }
         }
@@ -1061,7 +976,7 @@
       }
         
       /* output the CPs and HPs */
-      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], lang, trash, trashHundo, onlyZero);
+      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], lang, trash, trashHundo);
       var origOut = output.value;
       
       if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
@@ -1210,12 +1125,12 @@
       return output;
     }
     
-    function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, output, id, lang, trash, trashHundo, onlyZero) {
+    function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, output, id, lang, trash, trashHundo) {
       if (perfTiming) {var outputCPsHPsBucketsT0 = performance.now();}
       
       var emptyBuf = "";
       output.value = id; /* add dex num */
-      var maxLoops = 5;/* Even for onlyZero=true need all 5 appraisals */
+      var maxLoops = 5;/* Always need all 5 appraisals */
       
       /* output cps and hps */
       for (var i=0; i<maxLoops; i++) {
@@ -1230,7 +1145,7 @@
         /* skip empty sets */
         if (cps[i].size > 0) {
           /* only flip CPs/HPs if non-zero */
-          if ((trash) && (!onlyZero)) {
+          if (trash) {
             cps[i] = trashFlip(cps[i], maxCP[i]);
             
             /* skip empty hps */
@@ -1244,7 +1159,7 @@
           cps[i].sort((a, b) => a - b);
           output.value += '&!'+i+'*,' + get_matching_string(cps[i], lang[1]);
           
-          if ((!trash) || (onlyZero)) {
+          if (!trash) {
             output.value += '&!'+i+'*';
           }
           
@@ -1254,7 +1169,7 @@
             hps[i].sort((a, b) => a - b);
             output.value += ',' + get_matching_string(hps[i], lang[2]);
           }
-        } else if ((!trash) || (onlyZero)) { /* skip empty appraisal sets in search string */
+        } else if (!trash) { /* skip empty appraisal sets in search string */
           emptyBuf += '&!'+i+'*';
         }
 
@@ -1264,8 +1179,8 @@
       /* Ensure additional regional search terms are translated as needed*/
       if (lang[0] !== "en")
       {
-        /* lang : cpstr,  hpstr,  mega,   alola,  eggsonly, galar,  ground, steel,  grass,  psychic, fire */
-        /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11] */
+        /* lang : cpstr,  hpstr,  mega,   alola,  eggsonly, galar,  ground, steel,  grass,  psychic, fire,     attack,   defense*/
+        /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11], lang[12], lang[13] */
         /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
         output.value = output.value.replace(/mega/gi,    lang[3]);
         output.value = output.value.replace(/alola/gi,   lang[4]);
@@ -1393,22 +1308,21 @@
     <label>Trash String:<input id="trash" type="checkbox" oninput="main()"><br /></label>
     <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="main()"></label><br />
     <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br /></div>
-    <label>Only Find 0% IVs:<input id="onlyZero" type="checkbox" oninput="main()"><br /></label>
     <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="main()"><br /></label>
     <div id="cpLimitDiv"><label id="cpLimitLbl" for="cpLimit" style="display: none;">CP Limit:</label><input type="number" id="cpLimit" oninput="main(true)" value="1500" style="display: none;"></div>
     <div id="dexSkipsDiv"><label id="dexSkipsLbl" for="dexSkips" style="display: none;">Dex Skips:</label><input id="dexSkips" oninput="main(true)" value="144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,800,801,802,807,888,889,890,891,892,893,894,895,896,897,898" style="display: none;"></div>
     <label>Custom IV Search:<input id="customIVs" type="checkbox" oninput="main()"><br /></label>
     <div id="IVentryDiv"> <label id="IVentryLbl" for="IVentry"  style="display: none;">Custom IVs:</label><input id="IVentry" oninput="main(true)" value="11/12/13,4-5-6 1+2+3" style="display: none;"></div>
     <label>Language:<select id="lang" oninput="main()">
-    		<option value="en,cp,hp,mega,alola,eggsonly,galar,ground,steel,grass,psychic,fire">English</option>
-    		<option value="fr,pc,pv,mega,alola,oeufseulement,galar,sol,acier,plante,psy,feu">French</option>
-    		<option value="de,wp,kp,mega,alola,nurausEiern,galar,boden,stahl,pflanze,psycho,feuer">German</option>
-    		<option value="es,pc,puntos de salud,mega,alola,huevosolo,galar,tierra,acero,planta,ps&#xed;quico,fuego">Spanish</option>
-    		<option value="it,pl,punti salute,mega,dialola,solouovo,galar,terra,acciaio,erba,psico,fuoco">Italian</option>
-    		<option value="ja,cp,hp,mega,&#x3042;&#x308d;&#x30fc;&#x3089;,&#x305f;&#x307e;&#x3054;&#x306e;&#x307f;,&#x30ac;&#x30e9;&#x30eb;,&#x3058;&#x3081;&#x3093;,&#x306f;&#x304c;&#x306d;,&#x304f;&#x3055;,&#x30a8;&#x30b9;&#x30d1;&#x30fc;,&#x307b;&#x306e;&#x304a;">Japanese</option>
-    		<option value="ko,cp,hp,mega,&#xc54c;&#xb85c;&#xb77c;,&#xc54c;,&#xd558;&#xb098;,&#xb545;,&#xac15;&#xcca0;,&#xd480;,&#xc5d0;&#xc2a4;&#xd37c;,&#xbd88;&#xaf43;">Korean</option>
-    		<option value="pt,pc,ps,mega,alola,apenasovos,galar,terrestre,A&#xe7;o,planta,Ps&#xed;quico,fogo">Portuguese</option>
-    		<option value="zh,cp,hp,mega,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;">Chinese</option>
+    		<option value="en,cp,hp,mega,alola,eggsonly,galar,ground,steel,grass,psychic,fire,attack,defense">English</option>
+    		<option value="fr,pc,pv,mega,alola,oeufseulement,galar,sol,acier,plante,psy,feu,attack,defense">French</option>
+    		<option value="de,wp,kp,mega,alola,nurausEiern,galar,boden,stahl,pflanze,psycho,feuer,angriffs-wert,verteidigungs-wert">German</option>
+    		<option value="es,pc,puntos de salud,mega,alola,huevosolo,galar,tierra,acero,planta,ps&#xed;quico,fuego,attack,defense">Spanish</option>
+    		<option value="it,pl,punti salute,mega,dialola,solouovo,galar,terra,acciaio,erba,psico,fuoco,attack,defense">Italian</option>
+    		<option value="ja,cp,hp,mega,&#x3042;&#x308d;&#x30fc;&#x3089;,&#x305f;&#x307e;&#x3054;&#x306e;&#x307f;,&#x30ac;&#x30e9;&#x30eb;,&#x3058;&#x3081;&#x3093;,&#x306f;&#x304c;&#x306d;,&#x304f;&#x3055;,&#x30a8;&#x30b9;&#x30d1;&#x30fc;,&#x307b;&#x306e;&#x304a;,attack,defense">Japanese</option>
+    		<option value="ko,cp,hp,mega,&#xc54c;&#xb85c;&#xb77c;,&#xc54c;,&#xd558;&#xb098;,&#xb545;,&#xac15;&#xcca0;,&#xd480;,&#xc5d0;&#xc2a4;&#xd37c;,&#xbd88;&#xaf43;,attack,defense">Korean</option>
+    		<option value="pt,pc,ps,mega,alola,apenasovos,galar,terrestre,A&#xe7;o,planta,Ps&#xed;quico,fogo,attack,defense">Portuguese</option>
+    		<option value="zh,cp,hp,mega,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;,attack,defense">Chinese</option>
     </select>
     </label><br />
     <label>IV Floor:<select id="floor" oninput="main()">
