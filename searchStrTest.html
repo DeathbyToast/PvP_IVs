@@ -1207,7 +1207,7 @@
       /* ivBuckets[atk0|1|2|3|4][def0|1|2|3|4][sta0|1|2|3|4][cp|maxCP|hp|maxHP][0*|1*|2*|3*|4*] */
       if (perfTiming) {var outputCPsHPsIVsBucketsT0 = performance.now();}
       
-      var emptyBuf = "";
+      var emptyApr = new Array(5).fill(true), emptyBuf = "";
       output.value = id; /* add dex num */
       var maxLoops = 5;/* Always need all 5 appraisals */
       var CP = 0, maxCP = 1, HP = 2, maxHP = 3, attack=lang[12], defense=lang[13], hpstr=lang[2]; /* just for readability */
@@ -1222,19 +1222,10 @@
               /* ivBuckets[a][d][s][2][apr];/*hp*/
               /* ivBuckets[a][d][s][3][apr];/*maxHp*/
               
-              /* handle 4* case */
-              if (apr == 4) {
-                if ((trash) && (!trashHundo)) {
-                  emptyBuf += '&!'+apr+'*';
-                  continue;
-                } else if (ivBuckets[a][d][s][0][4].size > 0) {
-                  if (!trash) {emptyBuf += ',4*';continue;}
-                }
-              }
-              
               /* skip empty sets */
               if (ivBuckets[a][d][s][CP][apr].size > 0) {
                 console.log("Attempting to output a("+a+"), d("+d+"), s("+s+"), apr("+apr+"): "+(new Array(...ivBuckets[a][d][s][CP][apr]).join(' ')));
+                if (emptyApr[apr]) {emptyApr[apr] = false;}
                 /* only flip CPs/HPs if non-zero */
                 if (trash) {
                   ivBuckets[a][d][s][CP][apr] = trashFlip(ivBuckets[a][d][s][CP][apr], ivBuckets[a][d][s][maxCP][apr]);
@@ -1260,14 +1251,31 @@
                   ivBuckets[a][d][s][HP][apr].sort((a, b) => a - b);
                   output.value += ',' + get_matching_string(ivBuckets[a][d][s][HP][apr], lang[2]/*hp*/);
                 }
-              } else if (!trash) { /* TODO: FIX THIS! skip empty appraisal sets in search string */
-                emptyBuf += '&!'+apr+'*';
               }
             }
           }
         }
       }
-      //output.value += emptyBuf; /* add trash stuff */
+      /* TODO: Is this needed? handle 4* case */
+      /*if (apr == 4) {
+        if (ivBuckets[a][d][s][CP][apr].size > 0) {
+          if (!trash) {emptyBuf += ',4*';continue;}
+        }
+      }*/
+      /* TODO: Is this needed? */
+      /*if ((trash) && (!trashHundo)) {
+        emptyBuf += '&!'+apr+'*';
+      }*/
+      
+      /* TODO: FIX THIS! skip empty appraisal sets in search string */
+      if (!trash) {
+        for (apr=0; apr<5; apr++) {
+          if (emptyApr[apr]) {
+            emptyBuf += '&!'+apr+'*';
+          }
+        }
+      }
+      output.value += emptyBuf; /* add trash stuff */
       
       /* Ensure additional regional search terms are translated as needed*/
       if (lang[0] !== "en")
