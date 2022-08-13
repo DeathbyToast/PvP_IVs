@@ -255,10 +255,11 @@
             case "set":
               var settings = (''+values[i].split("=")[1]);
                 document.getElementById('trash').checked = settings[0]==1 ? true : false;
-                document.getElementById('trashHundo').checked = settings[2]==1 ? true : false;
-                document.getElementById('trashZero').checked = settings[3]==1 ? true : false;
-                document.getElementById('allZero').checked = settings[6]==1 ? true : false;
-                document.getElementById('customIVs').checked = settings[7]==1 ? true : false;
+                document.getElementById('trashHundo').checked = settings[1]==1 ? true : false;
+                document.getElementById('trashZero').checked = settings[2]==1 ? true : false;
+                document.getElementById('allZero').checked = settings[3]==1 ? true : false;
+                document.getElementById('customIVs').checked = settings[4]==1 ? true : false;
+                document.getElementById('attrAppr').checked = settings[5]==1 ? true : false;
               break;
               
             case "l":
@@ -668,7 +669,8 @@
       binary += document.getElementById('trashZero').checked ? "1" : "0";
       binary += document.getElementById('allZero').checked ? "1" : "0";
       binary += document.getElementById('customIVs').checked ? "1" : "0";
-      
+      binary += document.getElementById('attrAppr').checked ? "1" : "0";
+
       console.log("encodeSettings: Computed binary as "+binary);
       
       return [binary,rStr];
@@ -1442,7 +1444,6 @@
     </script>
     <h3>Settings:</h3>
     <label>Trash String:<input id="trash" type="checkbox" oninput="main()"><br /></label>
-    <label>Use Attribute Appraisals:<input id="attrAppr" type="checkbox" oninput="main()"><br /></label>
     <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="main()"></label><br />
     <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br /></div>
     <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="main()"><br /></label>
@@ -1450,6 +1451,7 @@
     <div id="dexSkipsDiv"><label id="dexSkipsLbl" for="dexSkips" style="display: none;">Dex Skips:</label><input id="dexSkips" oninput="main(true)" value="144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,800,801,802,807,888,889,890,891,892,893,894,895,896,897,898" style="display: none;"></div>
     <label>Custom IV Search:<input id="customIVs" type="checkbox" oninput="main()"><br /></label>
     <div id="IVentryDiv"> <label id="IVentryLbl" for="IVentry"  style="display: none;">Custom IVs:</label><input id="IVentry" oninput="main(true)" value="11/12/13,4-5-6 1+2+3" style="display: none;"></div>
+    <label>Use Attribute Appraisals:<input id="attrAppr" type="checkbox" oninput="main()"><br /></label>
     <label>Language:<select id="lang" oninput="main()">
     		<option value="en,cp,hp,mega1-,alola,eggsonly,galar,ground,steel,grass,psychic,fire,attack,defense,xs,xl,xxl">English</option>
     		<option value="fr,pc,pv,m&#xE9;ga1–,alola,oeufseulement,galar,sol,acier,plante,psy,feu,attaque,d&#xE9;fense,xs,xl,xxl">French</option>
