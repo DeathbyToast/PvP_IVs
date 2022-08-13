@@ -751,9 +751,22 @@
         
         /* Print out link to custom IV Search String if any ranks were filtered out*/
         if (filtered) {
+          var searchMon = mon;
+          var value = pokeListObj[mon].split(',');
           /* Trim trailing comma off string */
           outIVs = outIVs.replace(/,\s*$/, "");
-          searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"&o=000011&IVentry="+outIVs+"'>Generate "+mon+" Search String for only these filtered IVs</a></p>";
+          /* Ensure that mon is a base form, if not find the base form! */
+          if (!(value[0].includes("b"))) {
+            /* Not a base form, check evolutions */
+            var monFamilyNames = value.slice(4,value.length);
+            for (var i=0; i<monFamilyNames.length; i++) {
+              if ((pokeListObj[monFamilyNames[i]].split(",")[0]).includes("b")) {
+                /*console.log("Found the base mon! "+pokeListObj[monFamilyNames[i]].split(",")[0]+", setting searchMon="+monFamilyNames[i]);*/
+                searchMon = monFamilyNames[i];
+              }
+            }
+          }
+          searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+searchMon+"&cp="+league+"&o=000011&IVentry="+outIVs+"'>Generate "+searchMon+" Search String for only these filtered IVs</a></p>";
         }
         
         document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback + html + ranges + searchLink + "<br>" + trades;
