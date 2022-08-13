@@ -1064,17 +1064,33 @@
   
       output.value = ''; /* ensure old output is cleared */
       var message = "String finds "+monName+" with IVs: "+JSON.stringify(customIVs);
-      var cps = [], hps = [], results, i, j, k;
+      var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
+      var results, i, j, k;
       cps[0] = new Set();
       hps[0] = new Set();
+      aIV[0] = new Set();
+      dIV[0] = new Set();
+      sIV[0] = new Set();
       cps[1] = new Set();
       hps[1] = new Set();
+      aIV[1] = new Set();
+      dIV[1] = new Set();
+      sIV[1] = new Set();
       cps[2] = new Set();
       hps[2] = new Set();
+      aIV[2] = new Set();
+      dIV[2] = new Set();
+      sIV[2] = new Set();
       cps[3] = new Set();
       hps[3] = new Set();
+      aIV[3] = new Set();
+      dIV[3] = new Set();
+      sIV[3] = new Set();
       cps[4] = new Set();
       hps[4] = new Set();
+      aIV[4] = new Set();
+      dIV[4] = new Set();
+      sIV[4] = new Set();
       var maxCP = new Array(5).fill(0), maxHP = new Array(5).fill(0);
       /* Reverse searchLvl so we start at L0 and generate string up to League CP cutoff */
       var searchLvl = document.getElementById('searchLvl').value.split(",").map(x=>+x).reverse();
@@ -1085,8 +1101,13 @@
         for (k=0; k<searchLvl.length; k++) {
           lookupLvl = (searchLvl[k]-1)*2;
           
-          var cp = Math.max(10, Math.floor((baseAtk/1 + customIVs[i].A/1) * Math.sqrt(baseDef/1 + customIVs[i].D/1) * Math.sqrt(baseSta/1 + customIVs[i].S/1) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
-          var finalEvoCP = Math.max(10, Math.floor((finalEvoAtk/1 + customIVs[i].A/1) * Math.sqrt(finalEvoDef/1 + customIVs[i].D/1) * Math.sqrt(finalEvoSta/1 + customIVs[i].S/1) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
+          var atk = customIVs[i].A;
+          var def = customIVs[i].D;
+          var sta = customIVs[i].S;
+          var atkBkt = -1, defBkt = -1, hpBkt = -1;
+          
+          var cp = Math.max(10, Math.floor((baseAtk/1 + atk/1) * Math.sqrt(baseDef/1 + def/1) * Math.sqrt(baseSta/1 + sta/1) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
+          var finalEvoCP = Math.max(10, Math.floor((finalEvoAtk/1 + atk/1) * Math.sqrt(finalEvoDef/1 + def/1) * Math.sqrt(finalEvoSta/1 + sta/1) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
           
           /* Check if this level+IVs combo is over league CP cap*/
           if (finalEvoCP/1 > league/1) {
@@ -1094,40 +1115,61 @@
             break;
           }
           /* generate hps for more accurate search string matching */
-          var hp = Math.max(10, Math.floor((baseSta/1 + customIVs[i].S/1) * cpm[lookupLvl]));
+          var hp = Math.max(10, Math.floor((baseSta/1 + sta/1) * cpm[lookupLvl]));
+          
+          /* generate IV buckets for more accurate search string matching */
+          /* 0 is 0IV, 1 is 1-5IV, 2 is 6-10IV, 3 is 11-14IV, 4 is 15IV */
+          if (atk/1==15) {atkBkt=4;} else {atkBkt=Math.ceil(atk/5);}
+          if (def/1==15) {defBkt=4;} else {defBkt=Math.ceil(def/5);}
+          if (sta/1==15) {hpBkt=4;} else {hpBkt=Math.ceil(sta/5);}
           
           /* bucket CPs and HPs into appraisal ratings for more accurrate matching */
-          var IVsum = customIVs[i].A/1 + customIVs[i].D/1 + customIVs[i].S/1;
+          var IVsum = atk/1 + def/1 + sta/1;
     		  var Star = "NA";
           if (IVsum<23){Star="0*";}else if(IVsum<30){Star="1*";}else if (IVsum<37){Star="2*";}else if(IVsum<45){Star="3*";}else{Star="4*";}
           switch (Star) {
             case "0*":
               cps[0].add(cp);
               hps[0].add(hp);
+              aIV[0].add(atkBkt);
+              dIV[0].add(defBkt);
+              sIV[0].add(hpBkt);
               if (maxCP[0] < cp) {maxCP[0] = cp;}
               if (maxHP[0] < hp) {maxHP[0] = hp;}
               break;
             case "1*":
               cps[1].add(cp);
               hps[1].add(hp);
+              aIV[1].add(atkBkt);
+              dIV[1].add(defBkt);
+              sIV[1].add(hpBkt);
               if (maxCP[1] < cp) {maxCP[1] = cp;}
               if (maxHP[1] < hp) {maxHP[1] = hp;}
               break;
             case "2*":
               cps[2].add(cp);
               hps[2].add(hp);
+              aIV[2].add(atkBkt);
+              dIV[2].add(defBkt);
+              sIV[2].add(hpBkt);
               if (maxCP[2] < cp) {maxCP[2] = cp;}
               if (maxHP[2] < hp) {maxHP[2] = hp;}
               break;
             case "3*":
               cps[3].add(cp);
               hps[3].add(hp);
+              aIV[3].add(atkBkt);
+              dIV[3].add(defBkt);
+              sIV[3].add(hpBkt);
               if (maxCP[3] < cp) {maxCP[3] = cp;}
               if (maxHP[3] < hp) {maxHP[3] = hp;}
               break;
             case "4*":
               cps[4].add(cp);
               hps[4].add(hp);
+              aIV[4].add(atkBkt);
+              dIV[4].add(defBkt);
+              sIV[4].add(hpBkt);
               if (maxCP[4] < cp) {maxCP[4] = cp;}
               if (maxHP[4] < hp) {maxHP[4] = hp;}
               break;
@@ -1136,7 +1178,7 @@
       }
         
       /* output the CPs and HPs */
-      outputCPsHPsBuckets(cps.slice(), false, hps.slice(), false, false, false, false, output, dexNum, lang, false, true, false);
+      outputCPsHPsBuckets(cps.slice(), false, hps.slice(), false, aIV, dIV, sIV, output, dexNum, lang, false, true, false);
       var origOut = output.value;
       
       if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
