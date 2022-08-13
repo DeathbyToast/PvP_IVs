@@ -1239,10 +1239,10 @@
                 /* output CPs */
                 ivBuckets[a][d][s][CP][apr] = Array.from(ivBuckets[a][d][s][CP][apr]);
                 ivBuckets[a][d][s][CP][apr].sort((a, b) => a - b);
-                output.value += '&!'+apr+'*' +'&!'+attack+a +'&!'+defense+d+'&!'+hpstr+s +','+get_matching_string(ivBuckets[a][d][s][CP][apr], lang[1]/*cp*/);
+                output.value += '&!'+attack+a +'&!'+defense+d+'&!'+hpstr+s +'&!'+apr+'*,'+get_matching_string(ivBuckets[a][d][s][CP][apr], lang[1]/*cp*/);
                 
                 if (!trash) {
-                  output.value += '&!'+apr+'*';
+                  output.value += '&!'+attack+a +'&!'+defense+d+'&!'+hpstr+s +'&!'+apr+'*';
                 }
                 
                 /* skip empty hps */
@@ -1267,7 +1267,7 @@
         emptyBuf += '&!'+apr+'*';
       }*/
       
-      /* TODO: FIX THIS! skip empty appraisal sets in search string */
+      /* TODO: Implement skipping empty IV buckets in search string */
       if (!trash) {
         for (apr=0; apr<5; apr++) {
           if (emptyApr[apr]) {
@@ -1276,6 +1276,8 @@
         }
       }
       output.value += emptyBuf; /* add trash stuff */
+      
+      console.log("ivBuckets: "+JSON.stringify(ivBuckets));
       
       /* Ensure additional regional search terms are translated as needed*/
       if (lang[0] !== "en")
