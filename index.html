@@ -753,7 +753,7 @@
         if (filtered) {
           /* Trim trailing comma off string */
           outIVs = outIVs.replace(/,\s*$/, "");
-          searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"&o=00011001&IVentry="+outIVs+"'>Generate "+mon+" Search String for only these filtered IVs</a></p>";
+          searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"&o=000011&IVentry="+outIVs+"'>Generate "+mon+" Search String for only these filtered IVs</a></p>";
         }
         
         document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback + html + ranges + searchLink + "<br>" + trades;
