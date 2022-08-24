@@ -169,7 +169,8 @@
     }
   
     function checkURI() {
-      if (perfTiming) {var checkURIT0 = performance.now();}
+      var checkURIT0,checkURIT1;
+      if (perfTiming) {checkURIT0 = performance.now();}
       var URL = window.location.href.split("?")[1];
       /*var URL = "mon=Deino&cp=All&r=11-12-13-10_14-15-16-17_18-19-10-10_f_f&set=00011000&l=en&m=51";*/
       /*URL = "mon=Deino&cp=All&r=&set=000101&l=en&IVentry=0/14/15,0/15/14";*/
@@ -302,7 +303,7 @@
           document.getElementById('league').value = document.getElementById('cpLimit').value;
         }
         
-        if (perfTiming) {var checkURIT1 = performance.now();
+        if (perfTiming) {checkURIT1 = performance.now();
         console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
         main();
         return true;
@@ -310,14 +311,15 @@
       else
       {
         console.log("No inputs detected, awaiting user input");
-        if (perfTiming) {var checkURIT1 = performance.now();
+        if (perfTiming) {checkURIT1 = performance.now();
         console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
         return false;
       }
     }
     
     function main(mon) {
-      if (perfTiming) {var mainT0 = performance.now();}
+      var mainT0, mainT1;
+      if (perfTiming) {mainT0 = performance.now();}
       
       /* Reset all evoLimits / name divs */
       for (var i=1; i<10; i++) {
@@ -356,6 +358,7 @@
       var lang = document.getElementById('lang').value.split(',');
       var maxLvl = document.getElementById('maxLvl').value;
       var newMon = (mon) ? true : false;
+      var customIVs;
       
       /* See if this was a request for all-mon Zero IV string */
       if (document.getElementById('allZero').checked) {
@@ -363,7 +366,7 @@
         findAllZeros(lang);
         
         /* Ensure we update the URL before returning */
-        updateURI(false,league,leagueName,lang[0],);
+        updateURI(false,league,leagueName,lang[0],0);
         return;
       } else {
         document.getElementById("cpLimit").style.display = "none";
@@ -376,7 +379,7 @@
       if (document.getElementById('customIVs').checked) {
         console.log("Custom IV entry detected");
         document.getElementById('getStarted').style.display = "none";
-        var customIVs = document.getElementById('IVentry').value;
+        customIVs = document.getElementById('IVentry').value;
         document.getElementById("IVentry").style.display = "inline-block";
         document.getElementById("IVentryLbl").style.display = "inline-block";
         
@@ -423,7 +426,6 @@
       var output = document.getElementById('output');
       var target = document.getElementById("target");
       var evoVals = [];
-      var needTargets = false;
       /* Constants for minimum CP "cutoffs" to simplify results */
       const LLcutoff = 400;
       const GLcutoff = 1000;
@@ -549,7 +551,7 @@
         outputCustomIVsStr(customIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, evoVals[0][0], evoVals[0][4]);
         
         /* Ensure we update the URL before returning */
-        updateURI(mon,league,leagueName,lang[0],);
+        updateURI(mon,league,leagueName,lang[0],0);
         return;
       }
       
@@ -628,7 +630,7 @@
       /* update the URL with search parameters */
       updateURI(mon,league,leagueName,lang[0],evoVals.length);
       
-      if (perfTiming) {var mainT1 = performance.now();
+      if (perfTiming) {mainT1 = performance.now();
       console.log("main: Execution took "+(mainT1-mainT0).toFixed(1)+"ms");}
       return true;
     }
@@ -636,7 +638,7 @@
     function encodeSettings(evoLen)
     {
       /* build binary encoding of settings */
-      var binary = "", i;
+      var binary = "", i,j;
       var rStr = "", tempStr = [];
   
       for (i=1; ((i<10) && (i<evoLen+2)); i++) {
@@ -706,10 +708,11 @@
       uri = encodeURI(uri + "?mon="+mon+"&cp="+league+"&r="+rStr+"&set="+binary+"&l="+lang);
 
       /* conditional for All Zero mode */
+      var newTitle;
       if (!mon) {
-        var newTitle = "PvP IVs - All Zero 0% Search String (cp<"+league+")";
+        newTitle = "PvP IVs - All Zero 0% Search String (cp<"+league+")";
       } else {
-        var newTitle = "PvP IVs - "+mon+" "+leagueName+" Search String";
+        newTitle = "PvP IVs - "+mon+" "+leagueName+" Search String";
       }
       document.title = newTitle;
       window.history.pushState(null, newTitle, uri);
@@ -731,9 +734,9 @@
         
       */
     function findAllZeros(lang) {
-      if (true) {var findAllZerosT0 = performance.now();}
+      var findAllZerosT0, findAllZerosT1;
+      if (true) {findAllZerosT0 = performance.now();}
       
-      var lang = document.getElementById('lang').value.split(',');
       var output = document.getElementById('output');
       var message = "This string ignores PvP rankings, and only finds 0% IV (0/0/0) mon.<br />For PvP rankings please uncheck 'Find ALL 0% mon' (below)";
       
@@ -751,53 +754,15 @@
       }
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       
-      if (perfTiming) {var findAllZerosT1 = performance.now();
+      if (perfTiming) {findAllZerosT1 = performance.now();
       console.log("findAllZeros: Execution took "+(findAllZerosT1-findAllZerosT0).toFixed(1)+"ms");}
       
       return;
     }
     
-    function outputZeroCPsHPs(cps, hps, id, lang) {
-      if (perfTiming) {var outputZeroCPsHPsT0 = performance.now();}
-        
-      /* skip empty sets */
-      if (cps[0].size > 0) {
-        
-        /* output CPs */
-        cps[0] = Array.from(cps[0]);
-        cps[0].sort((a, b) => a - b);
-        var segment = '&!'+id+',' + get_matching_string(cps[0], lang[1]);
-        
-        /* skip empty hps */
-        if (hps[0].size > 0) {
-          hps[0] = Array.from(hps[0]);
-          hps[0].sort((a, b) => a - b);
-          segment += '&!'+id+',' + get_matching_string(hps[0], lang[2]);
-        }
-        /* Ensure additional regional search terms are translated as needed*/
-        if (lang[0] !== "en")
-        {
-          /* lang : cpstr,  hpstr,  mega,   alola,  eggsonly, galar,  ground, steel,  grass,  psychic, fire */
-          /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11] */
-          /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
-          output.value = output.value.replace(/mega/gi,    lang[3]);
-          output.value = output.value.replace(/alola/gi,   lang[4]);
-          output.value = output.value.replace(/eggsonly/gi,lang[5]);
-          output.value = output.value.replace(/galar/gi,   lang[6]);
-          output.value = output.value.replace(/ground/gi,  lang[7]);
-          output.value = output.value.replace(/steel/gi,   lang[8]);
-          output.value = output.value.replace(/grass/gi,   lang[9]);
-          output.value = output.value.replace(/psychic/gi, lang[10]);
-          output.value = output.value.replace(/fire/gi,    lang[11]);
-        }
-      }
-      if (perfTiming) {var outputZeroCPsHPsT1 = performance.now();
-      console.log("outputZeroCPsHPs: Execution took "+(outputZeroCPsHPsT1-outputZeroCPsHPsT0).toFixed(1)+"ms");}
-      return segment;
-    }
-    
     function getRanks(evoVals, trash, trashHundo, trashZero, league, maxLvl) {
-      if (perfTiming) {var getRanksT0 = performance.now();}
+      var getRanksT0, getRanksT1;
+      if (perfTiming) {getRanksT0 = performance.now();}
       /*console.log("gR::Received evoVals:"+JSON.stringify(evoVals));*/
       
       var message = "String ", numRanks = 0, rKeys, i, j, l, leagueLim;
@@ -860,19 +825,20 @@
       message += " up to PvP Level "+pvpLvls+".";
       
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
-      if (perfTiming) {var getRanksT1 = performance.now();
+      if (perfTiming) {getRanksT1 = performance.now();
       console.log("getRanks: Execution took "+(getRanksT1-getRanksT0).toFixed(1)+"ms");}
       return finalRanks;
     }
     
     /* Given valid family stats in evoVals, outputs a Search String for the user */
     function outputStr(evoVals, trash, trashHundo, trashZero, league, output, lang, maxLvl) {
-      if (perfTiming) {var outputStrT0 = performance.now();}
+      var outputStrT0, outputStrT1;
+      if (perfTiming) {outputStrT0 = performance.now();}
   
       /* create our rank object to compute cps/hps from for output string */
       const mergedRanks = getRanks(evoVals, trash, trashHundo, trashZero, league, maxLvl);
   
-      var rKeys = Object.keys(mergedRanks), message;
+      var rKeys = Object.keys(mergedRanks), lookupLvl;
       output.value = ''; /* ensure old output is cleared */
       var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
       var results, i, actualRank=1, j, k, limit = rKeys.length;
@@ -1042,31 +1008,22 @@
         }
       }
       
-      if (evoVals[0][4] == "Burmy") {
-        if (finalVals[4] == "Mothim") {
-          console.log("Found Mothim!");
-          output.value += "&male";
-        } else if (finalVals[4].indexOf("Wormadam") > -1 ) {
-          console.log("Found:"+evoVals[0][4]);
-          output.value += "&female";
-        }
-      }
-      
-      if (perfTiming) {var outputStrT1 = performance.now();
+      if (perfTiming) {outputStrT1 = performance.now();
       console.log("outputStr: Execution took "+(outputStrT1-outputStrT0).toFixed(1)+"ms");}
       return output;
     }
     
     /* Given custom IVs customIVs, outputs a Search String for the user */
     function outputCustomIVsStr(customIVs, baseAtk, baseDef, baseSta, finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, dexNum, monName) {
-      if (perfTiming) {var outputCustomIVsStrT0 = performance.now();}
+      var outputCustomIVsStrT0, outputCustomIVsStrT1;
+      if (perfTiming) {outputCustomIVsStrT0 = performance.now();}
       
       /*console.log("Received customIVs: "+JSON.stringify(customIVs)+", baseAtk: "+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", league:"+league+", output:"+output+", maxLvl:"+maxLvl+", dexNum:"+dexNum+", monName:"+monName);*/
   
       output.value = ''; /* ensure old output is cleared */
       var message = "String finds "+monName+" with IVs: "+JSON.stringify(customIVs);
       var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
-      var results, i, j, k;
+      var i, k, lookupLvl;
       cps[0] = new Set();
       hps[0] = new Set();
       aIV[0] = new Set();
@@ -1196,31 +1153,22 @@
         }
       }
       
-      if (monName == "Burmy") {
-        if (finalVals[4] == "Mothim") {
-          console.log("Found Mothim!");
-          output.value += "&male";
-        } else if (finalVals[4].indexOf("Wormadam") > -1 ) {
-          console.log("Found:"+monName);
-          output.value += "&female";
-        }
-      }
-      
       /* Fix UI to remove base mon selection and update message appropriately */
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       document.getElementById('feedbackBox').innerHTML = "";
       document.getElementById('targetDiv').style.display = "none";
       
-      if (perfTiming) {var outputStrT1 = performance.now();
-      console.log("outputStr: Execution took "+(outputStrT1-outputStrT0).toFixed(1)+"ms");}
+      if (perfTiming) {outputCustomIVsStrT1 = performance.now();
+      console.log("outputCustomIVsStrT0: Execution took "+(outputCustomIVsStrT1-outputCustomIVsStrT0).toFixed(1)+"ms");}
       return output;
     }
     
     function groupAttr(input, lang) {
+      var output;
       if (Array.isArray(input)) { /* https://stackoverflow.com/a/48657553 */
-        var output = new Set( input.reduce( ( a, c ) => a.concat( [...c] ), [] ) )
+        output = new Set( input.reduce( ( a, c ) => a.concat( [...c] ), [] ) );
       } else {
-        var output = input;
+        output = input;
       }
       output = Array.from(output);
       output.sort((a, b) => a - b);
@@ -1235,13 +1183,14 @@
           else {splitStr[i] = splitStr[i] + lang;}
         }
         /* Ensure we merge the strings back together to return */
-        checkStr = splitStr.join(",")
+        checkStr = splitStr.join(",");
       }
       return checkStr;
     }
     
     function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, atkBkts, defBkts, staBkts, output, id, lang, trash, trashHundo) {
-      if (perfTiming) {var outputCPsHPsBucketsT0 = performance.now();}
+      var outputCPsHPsBucketsT0, outputCPsHPsBucketsT1;
+      if (perfTiming) {outputCPsHPsBucketsT0 = performance.now();}
       
       var emptyBuf = "";
       output.value = id; /* add dex num */
@@ -1324,13 +1273,14 @@
         output.value = output.value.replace(/xxl/gi,     lang[16]);
       }
       
-      if (perfTiming) {var outputCPsHPsBucketsT1 = performance.now();
+      if (perfTiming) {outputCPsHPsBucketsT1 = performance.now();
       console.log("outputCPsHPsBuckets: Execution took "+(outputCPsHPsBucketsT1-outputCPsHPsBucketsT0).toFixed(1)+"ms");}
       return true;
     }
     
     function getZeroCPs(baseatk, basedef, basesta, maxCP, maxHP, cps, hps) {
-      if (perfTiming) {var getZeroCPsT0 = performance.now();}
+      var getZeroCPsT0, getZeroCPsT1;
+      if (perfTiming) {getZeroCPsT0 = performance.now();}
   
       /* generate all the cps and hps for matching */
       var maxLvl = (30 - 1)*2; /* highest level possible without IV boost (L30) */
@@ -1348,41 +1298,18 @@
         cps.add(cp);
         hps.add(hp);
       }
-      if (perfTiming) {var getZeroCPsT1 = performance.now();
+      if (perfTiming) {getZeroCPsT1 = performance.now();
       console.log("getZeroCPs: Execution took "+(getZeroCPsT1-getZeroCPsT0).toFixed(1)+"ms");}
       return [cps, hps, maxCP, maxHP];
     }
     
-    function getCustomCPs(baseatk, basedef, basesta, maxCP, maxHP, aIV, dIV, sIV, cps, hps) {
-      if (perfTiming) {var getCustomCPsT0 = performance.now();}
-  
-      /* generate all the cps and hps for matching */
-      var maxLvl = (30 - 1)*2; /* highest level possible without IV boost (L30) */
-  
-      /* skip half level CPs in search strings to improve accuracy */
-      for( var level = maxLvl; level >= 0; level = level - 2 ) {
-        var cp = Math.max(10, Math.floor((baseatk/1 + aIV/1) * Math.sqrt(basedef/1 + dIV/1) * Math.sqrt(basesta/1 + sIV/1) * cpm[level] * cpm[level] / 10));
-  
-        /* generate hps for more accurate search string matching */
-        var hp = Math.max(10, Math.floor((basesta/1 + sIV/1) * cpm[level]));
-  
-        /* update counters for maxCP and maxHP */
-        if (maxCP[0] < cp) {maxCP[0] = cp;}
-        if (maxHP[0] < hp) {maxHP[0] = hp;}
-        cps.add(cp);
-        hps.add(hp);
-      }
-      if (perfTiming) {var getCustomCPsT1 = performance.now();
-      console.log("getCustomCPs: Execution took "+(getCustomCPsT1-getCustomCPsT0).toFixed(1)+"ms");}
-      return [cps, hps, maxCP, maxHP];
-    }
-    
     function trashFlip(cps, maxCP, attr) {
-      if (perfTiming) {var trashFlipT0 = performance.now();}
+      var trashFlipT0, trashFlipT1;
+      if (perfTiming) {trashFlipT0 = performance.now();}
       var i=10;
       if (attr) {
         i=0; /* https://stackoverflow.com/a/48657553 */
-        cps = new Set( cps.reduce( ( a, c ) => a.concat( [...c] ), [] ) )
+        cps = new Set( cps.reduce( ( a, c ) => a.concat( [...c] ), [] ) );
       }
       if (cps instanceof Set) {
         for (i; i<=maxCP; i++) {
@@ -1392,13 +1319,13 @@
     				cps.add(i);
     		  }
         }
-        if (perfTiming) {var trashFlipT1 = performance.now();
+        if (perfTiming) {trashFlipT1 = performance.now();
         console.log("trashFlip: Execution took "+(trashFlipT1-trashFlipT0).toFixed(1)+"ms");}
         return cps;
       } else {
         console.error("trashFlip: received cps as "+typeof cps+" instead of expected set");
         document.getElementById('errorBox').innerHTML = "ERROR: Please try again. If this persists, please send us your Search's URL via <a href='https://discord.gg/UD4Temq'>Discord!</a>";
-        if (perfTiming) {var trashFlipT1 = performance.now();
+        if (perfTiming) {trashFlipT1 = performance.now();
         console.log("trashFlip: Execution took "+(trashFlipT1-trashFlipT0).toFixed(1)+"ms");}
         return false;
       }
@@ -1407,10 +1334,7 @@
     function getRanges(array) { /* https://stackoverflow.com/a/54205694 */
       return array.reduce((l => (r, v, i, a) => {
         if (l[1] > v) return r;
-        r.push(l[1] === v
-          ? (r.pop(), l.join('-'))
-          : (l = [v, v]).slice(0, 1).toString()
-        );
+        r.push(l[1] === v ? (r.pop(), l.join('-')) : (l = [v, v]).slice(0, 1).toString());
         l[1]++;
         return r;
       })([]), []);
@@ -1419,7 +1343,8 @@
     
     /* Only accepts a SORTED array of numbers to output */
     function get_matching_string(a, t) {
-      if (perfTiming) {var get_matching_stringT0 = performance.now();}
+      var get_matching_stringT0, get_matching_stringT1;
+      if (perfTiming) {get_matching_stringT0 = performance.now();}
       var list = '', last = -1;
       
     	for( var i = 0; i < a.length; i++ ) {
@@ -1439,16 +1364,17 @@
     		}
     	}
     	
-    	if (perfTiming) {var get_matching_stringT1 = performance.now();
+    	if (perfTiming) {get_matching_stringT1 = performance.now();
       console.log("get_matching_string: Execution took "+(get_matching_stringT1-get_matching_stringT0).toFixed(1)+"ms");}
     	return list.substr(1);
     }
     
     function autocopy(e) {
-      if (perfTiming) {var autocopyT0 = performance.now();}
+      var autocopyT0, autocopyT1;
+      if (perfTiming) {autocopyT0 = performance.now();}
     	e.select();
     	document.execCommand('copy');
-    	if (perfTiming) {var autocopyT1 = performance.now();
+    	if (perfTiming) {autocopyT1 = performance.now();
       console.log("autocopy: Execution took "+(autocopyT1-autocopyT0).toFixed(1)+"ms");}
       return true;
     }
@@ -1547,6 +1473,7 @@
         <option value="29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1">1-29 (Wild Caught, Except L30)</option>
         <option value="30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1" selected>1-30 (Wild Caught)</option>
         <option value="35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1">1-35 (Weather Boosted)</option>
+        <option value="35,34,33,32,31">31-35 (ONLY Weather Boosted)</option>
         <option value="34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1">1-34 (WB, Except L35)</option>
         <option value="33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1">1-33 (WB, Except L34, L35)</option>
         <option value="25,20,15">15,20,25 (Raid/Quest)</option>
