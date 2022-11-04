@@ -720,14 +720,18 @@
           statProd = statProd.split('</td><td>');
           statProd = statProd[statProd.length-1];
           if (splitSettings[4])  {
-            trades = tradePcnts(ranks, keys, statProd, floor, aIV.length, aIV[aIV.length-1], dIV[aIV.length-1], sIV[aIV.length-1]);
+            trades = tradePcnts(ranks, keys, statProd, floor, aIV.length, aIV[aIV.length-1], dIV[aIV.length-1], sIV[aIV.length-1], false);
           }
           /*TODO: FIX THIS Generate Search String links for each IV set*/
           /*https://pvpivs.com/searchStr.html?mon=Dusknoir&cp=1500&r=f_10_f_f&o=1001100&l=en*/
-          if (!filterMod) {
-            for (i=0; i<rIV.length; i++) {
+          /*if (!filterMod) {
+            for (i=0; i<rIV.length; i++) {*/
               /*searchLink += "<p><a href='https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"set=00011001&m="+maxLvl+"'>Generate "+mon+" Search String to Trash below Rank "+rIV[i]+"</a></p>";*/
-            }
+            /*}
+          }*/
+        } else {
+          if (splitSettings[4])  {
+            trades = tradePcnts(ranks, keys, statProd, floor, false, false, false, false, league);
           }
         }
         
@@ -1321,12 +1325,12 @@
         return ranks;
       }
       
-      function tradePcnts(ranks, keys, rank, floor, numIVs, aIV, dIV, sIV) {
+      function tradePcnts(ranks, keys, rank, floor, numIVs, aIV, dIV, sIV, league) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         /*Keep track of eligible/total higher ranked mons*/
         var lGo=0,hGo=0,lGr=0,hGr=0,lUf=0,hUf=0,lBf=0,hBf=0,lLf=0,hLf=0,hNo=0;
-        /*console.log("tradePcnts: received numRanks:"+ranks.numRanks+", keys[0]:"+keys[0]+", rank:"+rank+", floor:"+floor+", numIVs:"+numIVs+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV);*/
+        console.log("tradePcnts: received numRanks:"+ranks.numRanks+", keys[0]:"+keys[0]+", rank:"+rank+", floor:"+floor+", numIVs:"+numIVs+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", league:"+league);
 
         var totalMons = 0;
         let i=0;
@@ -1424,56 +1428,84 @@
           case "Lucky":lfCls=" class='"+clsVal+"'";break;
         }
         
+        console.log("numIVs:"+numIVs);
+        
         var outHTML = "";
-        if (numIVs/1 > 1) {
-          outHTML += "<p><i>Trade Improvement % Table for IVs:"+ aIV+"/"+dIV+"/"+sIV+"</i></p>";
+        if (numIVs/1 > 0) {
+          outHTML += "<p><i>Trade Improvement % Table for IVs:"+ aIV+"/"+dIV+"/"+sIV+"</i></p><table id='tradeTable'><th>Friendship</th><th>Chance to Improve</th><th>Higher Rank</th><th>Same/ Lower</th>";
+        } else {
+          outHTML += "<p><i>Chance to Stay Under "+league+"CP:</i></p><table id='tradeTable'><th>Friendship</th>";
         }
-        outHTML += "<table id='tradeTable'><th>Friendship</th><th>Chance to Improve</th><th>Higher Rank</th><th>Same/ Lower</th>";
+
         var printIVU = false;
         if ((iGo+iGr+iUf+iBf+iLf+iNo) > 0)
         { /* Don't print these columns if they're empty */
-          outHTML += "<th>Invalid</th><th>Valid</th><th>% Under</th>";
+          outHTML += "<th>Invalid</th><th>Valid</th><th>Under %</th>";
           printIVU = true;
         }
         outHTML += "<th>Total</th>";
         
+        console.log("Floor:"+floor+", ranks.numRanks:"+ranks.numRanks);
+        
         if ((floor/1 < 1) && (ranks.numRanks)) { /*don't print unless the IV floor is 0, or if there are no eligible mons*/
-          outHTML += "<tr"+nfCls+"><td>None (IV&ge;0)</td><td>"+(cNo/10000).toFixed(3)+"%</td><td>"+hNo+"</td><td>"+(ranks.numRanks-hNo)/1+"</td>";
+          outHTML += "<tr"+nfCls+"><td>None (IV&ge;0)</td>";
+          if (numIVs/1 > 0) {
+            outHTML += "<td>"+(cNo/10000).toFixed(3)+"%</td><td>"+hNo+"</td><td>"+(ranks.numRanks-hNo)/1+"</td>";
+          }
           if (printIVU) { outHTML += "<td>"+iNo+"</td><td>"+vNo+"</td><td>"+(1*uNo).toFixed(2)+"%</td>"; }
           outHTML += "<td>"+tNo+"</td></tr>";
         }
         
+        console.log("before outHTML:"+outHTML);
+        
         if ((floor/1 < 2) && vGo) { /*don't print if the IV floor is above 1, or if there are no eligible Gof mons*/
-          outHTML += "<tr"+gdfCls+"><td>Good (IV&ge;1)</td><td>"+(cGo/10000).toFixed(3)+"%</td><td>"+hGo+"</td><td>"+lGo+"</td>";
+          outHTML += "<tr"+gdfCls+"><td>Good (IV&ge;1)</td>";
+          if (numIVs/1 > 0) {
+            outHTML += "<td>"+(cGo/10000).toFixed(3)+"%</td><td>"+hGo+"</td><td>"+lGo+"</td>";
+          }
           if (printIVU) { outHTML += "<td>"+iGo+"</td><td>"+vGo+"</td><td>"+(1*uGo).toFixed(2)+"%</td>"; }
           outHTML += "<td>"+tGo+"</td></tr>";
         }
         
+        console.log("before outHTML:"+outHTML);
+        
         if ((floor/1 < 3) && vGr) { /*don't print if IV floor is above 2, or if there are no eligible Grf mons*/
-          outHTML += "<tr"+grfCls+"><td>Great (IV&ge;2)</td><td>"+(cGr/10000).toFixed(3)+"%</td><td>"+hGr+"</td><td>"+lGr+"</td>";
+          outHTML += "<tr"+grfCls+"><td>Great (IV&ge;2)</td>";
+          if (numIVs/1 > 0) {
+            outHTML += "<td>"+(cGr/10000).toFixed(3)+"%</td><td>"+hGr+"</td><td>"+lGr+"</td>";
+          }
           if (printIVU) { outHTML += "<td>"+iGr+"</td><td>"+vGr+"</td><td>"+(1*uGr).toFixed(2)+"%</td>"; }
           outHTML += "<td>"+tGr+"</td></tr>";
         }
         
         if ((floor/1 < 4) && vUf) { /*don't print if IV floor is above 3, or if there are no eligible Uf mons*/
-          outHTML += "<tr"+ufCls+"><td>Ultra (IV&ge;3)</td><td>"+(cUf/10000).toFixed(3)+"%</td><td>"+hUf+"</td><td>"+lUf+"</td>";
+          outHTML += "<tr"+ufCls+"><td>Ultra (IV&ge;3)</td>";
+          if (numIVs/1 > 0) {
+            outHTML += "<td>"+(cUf/10000).toFixed(3)+"%</td><td>"+hUf+"</td><td>"+lUf+"</td>";
+          }
           if (printIVU) { outHTML += "<td>"+iUf+"</td><td>"+vUf+"</td><td>"+(1*uUf).toFixed(2)+"%</td>"; }
           outHTML += "<td>"+tUf+"</td></tr>";
         }
         
         if ((floor/1 < 6) && vBf){ /*don't print if IV floor is above 5, or if there are no eligible Bf mons*/
-          outHTML += "<tr"+bfCls+"><td>Best (IV&ge;5)</td><td>"+(cBf/10000).toFixed(3)+"%</td><td>"+hBf+"</td><td>"+lBf+"</td>";
+          outHTML += "<tr"+bfCls+"><td>Best (IV&ge;5)</td>";
+          if (numIVs/1 > 0) {
+            outHTML += "<td>"+(cBf/10000).toFixed(3)+"%</td><td>"+hBf+"</td><td>"+lBf+"</td>";
+          }
           if (printIVU) { outHTML += "<td>"+iBf+"</td><td>"+vBf+"</td><td>"+(1*uBf).toFixed(2)+"%</td>"; }
           outHTML += "<td>"+tBf+"</td></tr>";
         }
         
         if ((floor/1 < 13) && vLf) { /*don't print if IV floor is above 12, or if there are no eligible Lf mons*/
-        outHTML += "<tr"+lfCls+"><td>Lucky (IV&ge;12)</td><td>"+(cLf/10000).toFixed(3)+"%</td><td>"+hLf+"</td><td>"+lLf+"</td>";
+          outHTML += "<tr"+lfCls+"><td>Lucky (IV&ge;12)</td>";
+          if (numIVs/1 > 0) {
+            outHTML += "<td>"+(cLf/10000).toFixed(3)+"%</td><td>"+hLf+"</td><td>"+lLf+"</td>";
+          }
           if (printIVU) { outHTML += "<td>"+iLf+"</td><td>"+vLf+"</td><td>"+(1*uLf).toFixed(2)+"%</td>"; }
-          outHTML += "<td>"+tLf+"</td></tr></table>";
-        }
+          outHTML += "<td>"+tLf+"</td></tr>";
+          }
         if (perfTiming) {stopTiming(T0, "tradePcnts");}
-        return outHTML;
+        return outHTML+"</table>";
       }
       
       function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, mA, mD, mHP, numIVs, mon, evo, uri, maxLvl, dust, dec, mlCP) {
