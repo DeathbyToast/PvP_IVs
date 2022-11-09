@@ -72,19 +72,28 @@
     <br />
     <input id="pokeList" onfocus="this.value=''" placeholder="Final Mon"/>
     <label>League:<select id="league" oninput="main()">
+      <option value="Raid">Raid / Hatch</option>
       <option value="500">Little Leagues</option>
-        <option value="1500" selected>Great League</option>
-    		<option value="2500">Ultra League</option>
-    		<option value="false">Master League</option>
+      <option value="1500" selected>Great League</option>
+    	<option value="2500">Ultra League</option>
+    	<option value="false">Master League</option>
   		<option value="All">All Leagues</option></select>
   	</label><br />
-    <label id="getStarted"><i>Please first select an evolution family above, then boxes to select Top # Ranks per evo will appear...</i><br /></label>
+    <label id="getStarted"><i>Please first select an evolution family above, then boxes to select limits per evo will appear...</i><br /></label>
     <div id="targetDiv" hidden><label id="targetLbl" for="target" style="display: none;">Find:</label><select id="target" oninput="main()"></select> As:</div>
     <div class="evoLimits" id="evoLimits[1]"><input id="evoCB[1]" class="evoCBs" type="checkbox" onclick="main()"><div id="evoName[1]"></div>
       <div id="LLlimitDiv[1]"><label id="labelLLlimit[1]" for="LLlimit[1]">LL:</label><input type="number" value="10" id="LLlimit[1]" min="1" max="4096" oninput="main()"></div>
       <div id="GLlimitDiv[1]"><label id="labelGLlimit[1]" for="GLlimit[1]">GL:</label><input type="number" value="10" id="GLlimit[1]" min="1" max="4096" oninput="main()"></div>
       <div id="ULlimitDiv[1]"><label id="labelULlimit[1]" for="ULlimit[1]">UL:</label><input type="number" value="10" id="ULlimit[1]" min="1" max="4096" oninput="main()"></div>
       <div id="MLlimitDiv[1]"><label id="labelMLlimit[1]" for="MLlimit[1]">ML:</label><input type="number" value="10" id="MLlimit[1]" min="1" max="4096" oninput="main()"></div>
+      <div id="RaidlimitDiv[1]">
+        <label id="labelRaidlimit[1]">IV% (A/D/S) Floors:
+          <select id="ivLim[1]" oninput="main()"><option value="45">100</option><option value="44">98</option><option value="43">96</option><option value="42">93</option><option value="41">91</option><option value="40">89</option><option value="39">87</option><option value="38">84</option><option value="37">82</option><option value="36">80</option><option value="35">78</option><option value="34">76</option><option value="33">73</option><option value="32">71</option><option value="31">69</option><option value="30">67</option></select>
+          <select id="aLim[1]" oninput="main()"><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
+          <select id="dLim[1]" oninput="main()"><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
+          <select id="sLim[1]" oninput="main()"><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
+        </label>
+      </div>
     <br /></div>
     <div class="evoLimits" id="evoLimits[2]"><input id="evoCB[2]" class="evoCBs" type="checkbox" onclick="main()"><div id="evoName[2]"></div>
       <div id="LLlimitDiv[2]"><label id="labelLLlimit[2]" for="LLlimit[2]">LL:</label><input type="number" value="10" id="LLlimit[2]" min="1" max="4096" oninput="main()"></div>
@@ -169,7 +178,8 @@
     }
   
     function checkURI() {
-      if (perfTiming) {var checkURIT0 = performance.now();}
+      var checkURIT0,checkURIT1;
+      if (perfTiming) {checkURIT0 = performance.now();}
       var URL = window.location.href.split("?")[1];
       /*var URL = "mon=Deino&cp=All&r=11-12-13-10_14-15-16-17_18-19-10-10_f_f&set=00011000&l=en&m=51";*/
       /*URL = "mon=Deino&cp=All&r=&set=000101&l=en&IVentry=0/14/15,0/15/14";*/
@@ -203,6 +213,13 @@
                   document.getElementById('evoCB['+(j+1)+']').checked = true;
                   
                   switch (document.getElementById('league').value) {
+                    case "Raid":
+                      document.getElementById('LLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: inline-block;";
+                      break;
                     case "All":
                       document.getElementById('LLlimit['+(j+1)+']').value = limits[0];
                       document.getElementById('GLlimit['+(j+1)+']').value = limits[1];
@@ -212,6 +229,7 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";
                       document.getElementById('ULlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: inline-block;";
                       document.getElementById('MLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: inline-block;";
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";
                       break;
                     case "500":
                       document.getElementById('LLlimit['+(j+1)+']').value = limits[0];
@@ -219,6 +237,7 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
                       document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";
                       document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";
                       break;
                     case "1500":
                       document.getElementById('GLlimit['+(j+1)+']').value = limits[0];
@@ -226,6 +245,7 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";
                       document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";
                       document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";
                       break;
                     case "2500":
                       document.getElementById('ULlimit['+(j+1)+']').value = limits[0];
@@ -233,6 +253,7 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
                       document.getElementById('ULlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: inline-block;";
                       document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";
                       break;
                     default:
                       document.getElementById('MLlimit['+(j+1)+']').value = limits[0];
@@ -240,6 +261,7 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
                       document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";
                       document.getElementById('MLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: inline-block;";
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";
                   }
                 } else {
                   if (j>0) {document.getElementById('evoCB['+(j+1)+']').value = false;}
@@ -255,10 +277,11 @@
             case "set":
               var settings = (''+values[i].split("=")[1]);
                 document.getElementById('trash').checked = settings[0]==1 ? true : false;
-                document.getElementById('trashHundo').checked = settings[2]==1 ? true : false;
-                document.getElementById('trashZero').checked = settings[3]==1 ? true : false;
-                document.getElementById('allZero').checked = settings[6]==1 ? true : false;
-                document.getElementById('customIVs').checked = settings[7]==1 ? true : false;
+                document.getElementById('trashHundo').checked = settings[1]==1 ? true : false;
+                document.getElementById('trashZero').checked = settings[2]==1 ? true : false;
+                document.getElementById('allZero').checked = settings[3]==1 ? true : false;
+                document.getElementById('customIVs').checked = settings[4]==1 ? true : false;
+                document.getElementById('attrAppr').checked = settings[5]==1 ? true : false;
               break;
               
             case "l":
@@ -301,7 +324,7 @@
           document.getElementById('league').value = document.getElementById('cpLimit').value;
         }
         
-        if (perfTiming) {var checkURIT1 = performance.now();
+        if (perfTiming) {checkURIT1 = performance.now();
         console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
         main();
         return true;
@@ -309,14 +332,15 @@
       else
       {
         console.log("No inputs detected, awaiting user input");
-        if (perfTiming) {var checkURIT1 = performance.now();
+        if (perfTiming) {checkURIT1 = performance.now();
         console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
         return false;
       }
     }
     
     function main(mon) {
-      if (perfTiming) {var mainT0 = performance.now();}
+      var mainT0, mainT1;
+      if (perfTiming) {mainT0 = performance.now();}
       
       /* Reset all evoLimits / name divs */
       for (var i=1; i<10; i++) {
@@ -332,7 +356,7 @@
         }
       }
       if (mon) { /* Clear target when new mon is selected */
-        console.log("target before:"+JSON.stringify(document.getElementById('target').innerHTML));
+        console.log("target before clearing (new mon selected):"+JSON.stringify(document.getElementById('target').innerHTML));
         document.getElementById('target').innerHTML = "";
         console.log("target after:"+JSON.stringify(document.getElementById('target').innerHTML));
       }
@@ -355,6 +379,7 @@
       var lang = document.getElementById('lang').value.split(',');
       var maxLvl = document.getElementById('maxLvl').value;
       var newMon = (mon) ? true : false;
+      var customIVs;
       
       /* See if this was a request for all-mon Zero IV string */
       if (document.getElementById('allZero').checked) {
@@ -362,7 +387,7 @@
         findAllZeros(lang);
         
         /* Ensure we update the URL before returning */
-        updateURI(false,league,leagueName,lang[0],);
+        updateURI(false,league,leagueName,lang[0],0);
         return;
       } else {
         document.getElementById("cpLimit").style.display = "none";
@@ -375,7 +400,7 @@
       if (document.getElementById('customIVs').checked) {
         console.log("Custom IV entry detected");
         document.getElementById('getStarted').style.display = "none";
-        var customIVs = document.getElementById('IVentry').value;
+        customIVs = document.getElementById('IVentry').value;
         document.getElementById("IVentry").style.display = "inline-block";
         document.getElementById("IVentryLbl").style.display = "inline-block";
         
@@ -418,11 +443,10 @@
       
       document.getElementById('getStarted').style.display = "none";
       var value = pokeListObj[mon].split(',');
-      console.log("Value:"+JSON.stringify(value));
+      /*console.log("Value:"+JSON.stringify(value));*/
       var output = document.getElementById('output');
       var target = document.getElementById("target");
       var evoVals = [];
-      var needTargets = false;
       /* Constants for minimum CP "cutoffs" to simplify results */
       const LLcutoff = 400;
       const GLcutoff = 1000;
@@ -456,7 +480,7 @@
         }
       }
       
-      console.log("Building evoVals array from monFamilyNames: "+JSON.stringify(monFamilyNames));
+      /*console.log("Building evoVals array from monFamilyNames: "+JSON.stringify(monFamilyNames));*/
       /**
        * Finds mon base stats from their names via PokeListAA
        *
@@ -548,7 +572,7 @@
         outputCustomIVsStr(customIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, evoVals[0][0], evoVals[0][4]);
         
         /* Ensure we update the URL before returning */
-        updateURI(mon,league,leagueName,lang[0],);
+        updateURI(mon,league,leagueName,lang[0],0);
         return;
       }
       
@@ -593,6 +617,10 @@
          * evoVals[][7] = Great  League #ranks
          * evoVals[][8] = Ultra  League #ranks
          * evoVals[][9] = Master League #ranks
+         * evoVals[][10] = Raid Overall IV Floor
+         * evoVals[][11] = Raid Attack IV Floor
+         * evoVals[][12] = Raid Defense IV Floor
+         * evoVals[][13] = Raid Stamina IV Floor
          **/
         
         /* Unhide and fill evoName[]s as appropriate */
@@ -603,12 +631,17 @@
         document.getElementById('GLlimitDiv['+i+']').style.display = ((evoVals[i][5] > GLcutoff) && ((league == "All") || (league == "1500"))) ? "inline-block" : "none";
         document.getElementById('ULlimitDiv['+i+']').style.display = ((evoVals[i][5] > ULcutoff) && ((league == "All") || (league == "2500"))) ? "inline-block" : "none";
         document.getElementById('MLlimitDiv['+i+']').style.display = ((evoVals[i][5] > MLcutoff) && ((league == "All") || (league == "false"))) ? "inline-block" : "none";
+        document.getElementById('RaidlimitDiv['+i+']').style.display = (league == "Raid") ? "inline-block" : "none";
         console.log("Added "+evoVals[i][4]+" to list, un-hid evoLimits["+i+"]");
         
         evoVals[i][6] = ((evoVals[i][5] > LLcutoff) && ((league == "All") || (league ==  "500"))) ? document.getElementById('LLlimit['+i+']').value/1:0*1;
         evoVals[i][7] = ((evoVals[i][5] > GLcutoff) && ((league == "All") || (league == "1500"))) ? document.getElementById('GLlimit['+i+']').value/1:0*1;
         evoVals[i][8] = ((evoVals[i][5] > ULcutoff) && ((league == "All") || (league == "2500"))) ? document.getElementById('ULlimit['+i+']').value/1:0*1;
         evoVals[i][9] = ((evoVals[i][5] > MLcutoff) && ((league == "All") || (league == "false"))) ? document.getElementById('MLlimit['+i+']').value/1:0*1;
+        evoVals[i][10] = (league == "Raid") ? document.getElementById('ivLim['+i+']').value/1:0*1;
+        evoVals[i][11] = (league == "Raid") ? document.getElementById('aLim['+i+']').value/1:0*1;
+        evoVals[i][12] = (league == "Raid") ? document.getElementById('dLim['+i+']').value/1:0*1;
+        evoVals[i][13] = (league == "Raid") ? document.getElementById('sLim['+i+']').value/1:0*1;
       }
       console.log("Finished building evoVals[]: "+JSON.stringify(evoVals));
       
@@ -627,7 +660,7 @@
       /* update the URL with search parameters */
       updateURI(mon,league,leagueName,lang[0],evoVals.length);
       
-      if (perfTiming) {var mainT1 = performance.now();
+      if (perfTiming) {mainT1 = performance.now();
       console.log("main: Execution took "+(mainT1-mainT0).toFixed(1)+"ms");}
       return true;
     }
@@ -635,7 +668,7 @@
     function encodeSettings(evoLen)
     {
       /* build binary encoding of settings */
-      var binary = "", i;
+      var binary = "", i,j;
       var rStr = "", tempStr = [];
   
       for (i=1; ((i<10) && (i<evoLen+2)); i++) {
@@ -668,7 +701,8 @@
       binary += document.getElementById('trashZero').checked ? "1" : "0";
       binary += document.getElementById('allZero').checked ? "1" : "0";
       binary += document.getElementById('customIVs').checked ? "1" : "0";
-      
+      binary += document.getElementById('attrAppr').checked ? "1" : "0";
+
       console.log("encodeSettings: Computed binary as "+binary);
       
       return [binary,rStr];
@@ -704,10 +738,11 @@
       uri = encodeURI(uri + "?mon="+mon+"&cp="+league+"&r="+rStr+"&set="+binary+"&l="+lang);
 
       /* conditional for All Zero mode */
+      var newTitle;
       if (!mon) {
-        var newTitle = "PvP IVs - All Zero 0% Search String (cp<"+league+")";
+        newTitle = "PvP IVs - All Zero 0% Search String (cp<"+league+")";
       } else {
-        var newTitle = "PvP IVs - "+mon+" "+leagueName+" Search String";
+        newTitle = "PvP IVs - "+mon+" "+leagueName+" Search String";
       }
       document.title = newTitle;
       window.history.pushState(null, newTitle, uri);
@@ -729,9 +764,9 @@
         
       */
     function findAllZeros(lang) {
-      if (true) {var findAllZerosT0 = performance.now();}
+      var findAllZerosT0, findAllZerosT1;
+      if (true) {findAllZerosT0 = performance.now();}
       
-      var lang = document.getElementById('lang').value.split(',');
       var output = document.getElementById('output');
       var message = "This string ignores PvP rankings, and only finds 0% IV (0/0/0) mon.<br />For PvP rankings please uncheck 'Find ALL 0% mon' (below)";
       
@@ -749,54 +784,16 @@
       }
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       
-      if (perfTiming) {var findAllZerosT1 = performance.now();
+      if (perfTiming) {findAllZerosT1 = performance.now();
       console.log("findAllZeros: Execution took "+(findAllZerosT1-findAllZerosT0).toFixed(1)+"ms");}
       
       return;
     }
     
-    function outputZeroCPsHPs(cps, hps, id, lang) {
-      if (perfTiming) {var outputZeroCPsHPsT0 = performance.now();}
-        
-      /* skip empty sets */
-      if (cps[0].size > 0) {
-        
-        /* output CPs */
-        cps[0] = Array.from(cps[0]);
-        cps[0].sort((a, b) => a - b);
-        var segment = '&!'+id+',' + get_matching_string(cps[0], lang[1]);
-        
-        /* skip empty hps */
-        if (hps[0].size > 0) {
-          hps[0] = Array.from(hps[0]);
-          hps[0].sort((a, b) => a - b);
-          segment += '&!'+id+',' + get_matching_string(hps[0], lang[2]);
-        }
-        /* Ensure additional regional search terms are translated as needed*/
-        if (lang[0] !== "en")
-        {
-          /* lang : cpstr,  hpstr,  mega,   alola,  eggsonly, galar,  ground, steel,  grass,  psychic, fire */
-          /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11] */
-          /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
-          output.value = output.value.replace(/mega/gi,    lang[3]);
-          output.value = output.value.replace(/alola/gi,   lang[4]);
-          output.value = output.value.replace(/eggsonly/gi,lang[5]);
-          output.value = output.value.replace(/galar/gi,   lang[6]);
-          output.value = output.value.replace(/ground/gi,  lang[7]);
-          output.value = output.value.replace(/steel/gi,   lang[8]);
-          output.value = output.value.replace(/grass/gi,   lang[9]);
-          output.value = output.value.replace(/psychic/gi, lang[10]);
-          output.value = output.value.replace(/fire/gi,    lang[11]);
-        }
-      }
-      if (perfTiming) {var outputZeroCPsHPsT1 = performance.now();
-      console.log("outputZeroCPsHPs: Execution took "+(outputZeroCPsHPsT1-outputZeroCPsHPsT0).toFixed(1)+"ms");}
-      return segment;
-    }
-    
     function getRanks(evoVals, trash, trashHundo, trashZero, league, maxLvl) {
-      if (perfTiming) {var getRanksT0 = performance.now();}
-      console.log("gR::Received evoVals:"+JSON.stringify(evoVals));
+      var getRanksT0, getRanksT1;
+      if (perfTiming) {getRanksT0 = performance.now();}
+      /*console.log("gR::Received evoVals:"+JSON.stringify(evoVals));*/
       
       var message = "String ", numRanks = 0, rKeys, i, j, l, leagueLim;
       var newRanks = {}, finalRanks = {};
@@ -830,7 +827,7 @@
               else if (leagueArray[l] == "2500") {leagueLim = evoVals[i][8]/1;}
               else {leagueLim = evoVals[i][9]/1;} /* Master League */
               
-              console.log("calculated "+evoVals[i][4]+" for "+leagueArray[l]+" with evoVals["+i+"][0]:"+evoVals[i][0]);
+              /*console.log("calculated "+evoVals[i][4]+" for "+leagueArray[l]+" with evoVals["+i+"][0]:"+evoVals[i][0]);*/
               newRanks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), document.getElementById('floor').value, 0, maxLvl, false, leagueArray[l], evoVals[i][4]);
               rKeys = Object.keys(newRanks);
               for (j=leagueLim/1; j<rKeys.length; j++) {delete newRanks[rKeys[j]];}
@@ -858,61 +855,48 @@
       message += " up to PvP Level "+pvpLvls+".";
       
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
-      if (perfTiming) {var getRanksT1 = performance.now();
+      if (perfTiming) {getRanksT1 = performance.now();
       console.log("getRanks: Execution took "+(getRanksT1-getRanksT0).toFixed(1)+"ms");}
       return finalRanks;
     }
     
     /* Given valid family stats in evoVals, outputs a Search String for the user */
     function outputStr(evoVals, trash, trashHundo, trashZero, league, output, lang, maxLvl) {
-      if (perfTiming) {var outputStrT0 = performance.now();}
+      var outputStrT0, outputStrT1;
+      if (perfTiming) {outputStrT0 = performance.now();}
   
       /* create our rank object to compute cps/hps from for output string */
       const mergedRanks = getRanks(evoVals, trash, trashHundo, trashZero, league, maxLvl);
   
-      var rKeys = Object.keys(mergedRanks), message;
+      var rKeys = Object.keys(mergedRanks), lookupLvl;
       output.value = ''; /* ensure old output is cleared */
-      var cps = [], hps = [], results, i, j, k;
+      var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
+      var results, i, actualRank=1, j, k, limit = rKeys.length;
       cps[0] = new Set();
       hps[0] = new Set();
+      aIV[0] = new Set();
+      dIV[0] = new Set();
+      sIV[0] = new Set();
       cps[1] = new Set();
       hps[1] = new Set();
+      aIV[1] = new Set();
+      dIV[1] = new Set();
+      sIV[1] = new Set();
       cps[2] = new Set();
       hps[2] = new Set();
+      aIV[2] = new Set();
+      dIV[2] = new Set();
+      sIV[2] = new Set();
       cps[3] = new Set();
       hps[3] = new Set();
+      aIV[3] = new Set();
+      dIV[3] = new Set();
+      sIV[3] = new Set();
       cps[4] = new Set();
       hps[4] = new Set();
-      
-      /* Initialize 3D ivBuckets Array */
-      var ivBuckets = new Array(5);
-      for (i=0; i<5; i++) {
-        ivBuckets[i] = new Array(5);
-        for (j=0; j<5; j++) {
-          ivBuckets[i][j] = new Array(5);
-          for (k=0; k<5; k++) {
-            ivBuckets[i][j][k] = new Array(4);
-            /* cp buckets by star appraisal */
-            ivBuckets[i][j][k][0] = new Array(5);
-            ivBuckets[i][j][k][0][0] = new Set();
-            ivBuckets[i][j][k][0][1] = new Set();
-            ivBuckets[i][j][k][0][2] = new Set();
-            ivBuckets[i][j][k][0][3] = new Set();
-            ivBuckets[i][j][k][0][4] = new Set();
-            ivBuckets[i][j][k][1] = new Array(5); /* maxCP */
-            
-            /* hp buckets by star appraisal */
-            ivBuckets[i][j][k][2] = new Array(5);
-            ivBuckets[i][j][k][2][0] = new Set();
-            ivBuckets[i][j][k][2][1] = new Set();
-            ivBuckets[i][j][k][2][2] = new Set();
-            ivBuckets[i][j][k][2][3] = new Set();
-            ivBuckets[i][j][k][2][4] = new Set();
-            ivBuckets[i][j][k][3] = new Array(5); /* maxHP */
-          }
-        }
-      }
-      
+      aIV[4] = new Set();
+      dIV[4] = new Set();
+      sIV[4] = new Set();
       var maxCP = new Array(5).fill(0), maxHP = new Array(5).fill(0);
       var searchLvl = document.getElementById('searchLvl').value.split(",").map(x=>+x);
       var maxSearchLvl = 0;
@@ -927,14 +911,13 @@
         
       /* generate all the cps and hps for matching */
       /* for ranks 1 to user cutoff, up to maxSearchLvl/league limit */
-      for (i=0; i<rKeys.length; i++) {
+      for (i=0,actualRank=1; actualRank/1 <= limit/1; i++) {
         for (j=0; j<mergedRanks[rKeys[i]].length; j++) {
           
           var atk = mergedRanks[rKeys[i]][j].IVs.A;
           var def = mergedRanks[rKeys[i]][j].IVs.D;
           var sta = mergedRanks[rKeys[i]][j].IVs.S;
-          console.log("Computing "+atk+"/"+def+"/"+sta);
-          var atkBkt = 0, defBkt = 0, hpBkt = 0;
+          var atkBkt = -1, defBkt = -1, hpBkt = -1;
           
           /** Compare the max PvP level for this evo
             * (mergedRanks[rKeys[i]][j].L) to levels
@@ -943,104 +926,90 @@
             * output CPs/HPs that are too high of a
             * level for the requested final PvP mon
             */
-          for (k=0; k<searchLvl.length; k++)
-          {
-            if (mergedRanks[rKeys[i]][j].L < searchLvl[k])
+          /* Ensure we haven't already hit our rank limit */
+          if (actualRank/1 <= limit/1) {
+              
+            for (k=0; k<searchLvl.length; k++)
             {
-              /* Need to skip these levels when outputting, they're too high for PvP */
-              /*console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") < ("+searchLvl[k]+")searchLvl["+k+"], skipping L"+searchLvl[k]+" in final Search String");*/
+              if (mergedRanks[rKeys[i]][j].L < searchLvl[k])
+              {
+                /* Need to skip these levels when outputting, they're too high for PvP */
+                /*console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") < ("+searchLvl[k]+")searchLvl["+k+"], skipping L"+searchLvl[k]+" in final Search String");*/
+              }
+              else
+              {
+                /* We either found or skipped over the level we needed to start at, exit loop */
+                /*console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") >= ("+searchLvl[k]+")searchLvl["+k+"], stopping search! Starting output at L"+searchLvl[k]+" in final Search String");*/
+                maxSearchLvl = k;
+                break;
+              }
             }
-            else
-            {
-              /* We either found or skipped over the level we needed to start at, exit loop */
-              /*console.log("mergedRanks[rKeys["+i+"]]["+j+"].L("+mergedRanks[rKeys[i]][j].L+") >= ("+searchLvl[k]+")searchLvl["+k+"], stopping search! Starting output at L"+searchLvl[k]+" in final Search String");*/
-              maxSearchLvl = k;
-              break;
+      
+            /* Generate CPs and HPs to search for up to maxSearchLvl cutoff */
+            for(k=maxSearchLvl; k<searchLvl.length; k++) {
+              lookupLvl = (searchLvl[k]-1)*2;
+              var cp = Math.max(10, Math.floor((evoVals[0][1]/1 + atk) * Math.sqrt(evoVals[0][2]/1 + def) * Math.sqrt(evoVals[0][3]/1 + sta) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
+              /*console.log("Generated cp("+cp+") at lookupLvl("+lookupLvl+"), searchLvl["+k+"]:"+searchLvl[k]);*/
+              
+              /* generate hps for more accurate search string matching */
+              var hp = Math.max(10, Math.floor((evoVals[0][3]/1 + sta) * cpm[lookupLvl]));
+              
+              /* generate IV buckets for more accurate search string matching */
+        		  /* 0 is 0IV, 1 is 1-5IV, 2 is 6-10IV, 3 is 11-14IV, 4 is 15IV */
+        		  if (atk/1==15) {atkBkt=4;} else {atkBkt=Math.ceil(atk/5);}
+        		  if (def/1==15) {defBkt=4;} else {defBkt=Math.ceil(def/5);}
+        		  if (sta/1==15) {hpBkt=4;} else {hpBkt=Math.ceil(sta/5);}
+              
+              /* bucket CPs and HPs into appraisal ratings for more accurrate matching */
+              switch (mergedRanks[rKeys[i]][j].IVs.star) {
+                case "0*":
+                  cps[0].add(cp);
+                  hps[0].add(hp);
+                  aIV[0].add(atkBkt);
+                  dIV[0].add(defBkt);
+                  sIV[0].add(hpBkt);
+                  if (maxCP[0] < cp) {maxCP[0] = cp;}
+                  if (maxHP[0] < hp) {maxHP[0] = hp;}
+                  break;
+                case "1*":
+                  cps[1].add(cp);
+                  hps[1].add(hp);
+                  aIV[1].add(atkBkt);
+                  dIV[1].add(defBkt);
+                  sIV[1].add(hpBkt);
+                  if (maxCP[1] < cp) {maxCP[1] = cp;}
+                  if (maxHP[1] < hp) {maxHP[1] = hp;}
+                  break;
+                case "2*":
+                  cps[2].add(cp);
+                  hps[2].add(hp);
+                  aIV[2].add(atkBkt);
+                  dIV[2].add(defBkt);
+                  sIV[2].add(hpBkt);
+                  if (maxCP[2] < cp) {maxCP[2] = cp;}
+                  if (maxHP[2] < hp) {maxHP[2] = hp;}
+                  break;
+                case "3*":
+                  cps[3].add(cp);
+                  hps[3].add(hp);
+                  aIV[3].add(atkBkt);
+                  dIV[3].add(defBkt);
+                  sIV[3].add(hpBkt);
+                  if (maxCP[3] < cp) {maxCP[3] = cp;}
+                  if (maxHP[3] < hp) {maxHP[3] = hp;}
+                  break;
+                case "4*":
+                  cps[4].add(cp);
+                  hps[4].add(hp);
+                  aIV[4].add(atkBkt);
+                  dIV[4].add(defBkt);
+                  sIV[4].add(hpBkt);
+                  if (maxCP[4] < cp) {maxCP[4] = cp;}
+                  if (maxHP[4] < hp) {maxHP[4] = hp;}
+                  break;
+              }
             }
-          }
-    
-          /* Generate CPs and HPs to search for up to maxSearchLvl cutoff */
-          for(k=maxSearchLvl; k<searchLvl.length; k++) {
-            lookupLvl = (searchLvl[k]-1)*2;
-            var cp = Math.max(10, Math.floor((evoVals[0][1]/1 + atk) * Math.sqrt(evoVals[0][2]/1 + def) * Math.sqrt(evoVals[0][3]/1 + sta) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
-            /*console.log("Generated cp("+cp+") at lookupLvl("+lookupLvl+"), searchLvl["+k+"]:"+searchLvl[k]);*/
-            
-            /* generate hps for more accurate search string matching */
-            var hp = Math.max(10, Math.floor((evoVals[0][3]/1 + mergedRanks[rKeys[i]][j].IVs.S) * cpm[lookupLvl]));
-            
-            /* generate IV buckets for more accurate search string matching */
-      		  /* 0 is 0IV, 1 is 1-5IV, 2 is 6-10IV, 3 is 11-14IV, 4 is 15IV */
-      		  if (atk/1==15) {atkBkt=4;} else {atkBkt=Math.ceil(atk/5);}
-      		  if (def/1==15) {defBkt=4;} else {defBkt=Math.ceil(def/5);}
-      		  if (sta/1==15) {hpBkt=4;} else {hpBkt=Math.ceil(sta/5);}
-            
-            /* bucket CPs and HPs into appraisal ratings for more accurate matching */
-            switch (mergedRanks[rKeys[i]][j].IVs.star) {
-              case "0*":
-                ivBuckets[atkBkt][defBkt][hpBkt][0][0].add(cp);
-                if (ivBuckets[atkBkt][defBkt][hpBkt][1][0] < cp) {
-                  ivBuckets[atkBkt][defBkt][hpBkt][1][0] = cp;} /*maxCP*/
-                ivBuckets[atkBkt][defBkt][hpBkt][2][0].add(hp);
-                if (ivBuckets[atkBkt][defBkt][hpBkt][3][0] < hp) {
-                  ivBuckets[atkBkt][defBkt][hpBkt][3][0] = hp;} /*maxHP*/
-                cps[0].add(cp);
-                hps[0].add(hp);
-                if (maxCP[0] < cp) {maxCP[0] = cp;}
-                if (maxHP[0] < hp) {maxHP[0] = hp;}
-                break;
-              case "1*":
-                ivBuckets[atkBkt][defBkt][hpBkt][0][1].add(cp);
-                //console.log("1*: Added cp("+cp+") ivBuckets["+atkBkt+"]["+defBkt+"]["+hpBkt+"][0][1]: "+(new Array(...ivBuckets[atkBkt][defBkt][hpBkt][0][1]).join(' ')));
-                if (ivBuckets[atkBkt][defBkt][hpBkt][1][1] < cp) {
-                  ivBuckets[atkBkt][defBkt][hpBkt][1][1] = cp;} /*maxCP*/
-                ivBuckets[atkBkt][defBkt][hpBkt][2][1].add(hp);
-                //console.log("1*: Added hp("+hp+") ivBuckets["+atkBkt+"]["+defBkt+"]["+hpBkt+"][2][1]: "+(new Array(...ivBuckets[atkBkt][defBkt][hpBkt][2][1]).join(' ')));
-                if (ivBuckets[atkBkt][defBkt][hpBkt][3][1] < hp) {
-                  ivBuckets[atkBkt][defBkt][hpBkt][3][1] = hp;} /*maxHP*/
-                cps[1].add(cp);
-                hps[1].add(hp);
-                /* how to print set for debugging https://stackoverflow.com/a/61282729 */
-                /*console.log("1*: Added cp("+cp+") and hp("+hp+") to cps[1]:"+new Array(...cps[1]).join(' ')+", hps[1]:"+new Array(...hps[1]).join(' '));*/
-                if (maxCP[1] < cp) {maxCP[1] = cp;}
-                if (maxHP[1] < hp) {maxHP[1] = hp;}
-                break;
-              case "2*":
-                ivBuckets[atkBkt][defBkt][hpBkt][0][2].add(cp);
-                if (ivBuckets[atkBkt][defBkt][hpBkt][1][2] < cp) {
-                  ivBuckets[atkBkt][defBkt][hpBkt][1][2] = cp;} /*maxCP*/
-                ivBuckets[atkBkt][defBkt][hpBkt][2][2].add(hp);
-                if (ivBuckets[atkBkt][defBkt][hpBkt][3][2] < hp) {
-                  ivBuckets[atkBkt][defBkt][hpBkt][3][2] = hp;} /*maxHP*/
-                cps[2].add(cp);
-                hps[2].add(hp);
-                if (maxCP[2] < cp) {maxCP[2] = cp;}
-                if (maxHP[2] < hp) {maxHP[2] = hp;}
-                break;
-              case "3*":
-                ivBuckets[atkBkt][defBkt][hpBkt][0][3].add(cp);
-                if (ivBuckets[atkBkt][defBkt][hpBkt][1][3] < cp) {
-                  ivBuckets[atkBkt][defBkt][hpBkt][1][3] = cp;} /*maxCP*/
-                ivBuckets[atkBkt][defBkt][hpBkt][2][3].add(hp);
-                if (ivBuckets[atkBkt][defBkt][hpBkt][3][3] < hp) {
-                  ivBuckets[atkBkt][defBkt][hpBkt][3][3] = hp;} /*maxHP*/
-                cps[3].add(cp);
-                hps[3].add(hp);
-                if (maxCP[3] < cp) {maxCP[3] = cp;}
-                if (maxHP[3] < hp) {maxHP[3] = hp;}
-                break;
-              case "4*":
-                ivBuckets[atkBkt][defBkt][hpBkt][0][4].add(cp);
-                if (ivBuckets[atkBkt][defBkt][hpBkt][1][4] < cp) {
-                  ivBuckets[atkBkt][defBkt][hpBkt][1][4] = cp;} /*maxCP*/
-                ivBuckets[atkBkt][defBkt][hpBkt][2][4].add(hp);
-                if (ivBuckets[atkBkt][defBkt][hpBkt][3][4] < hp) {
-                  ivBuckets[atkBkt][defBkt][hpBkt][3][4] = hp;} /*maxHP*/
-                cps[4].add(cp);
-                hps[4].add(hp);
-                if (maxCP[4] < cp) {maxCP[4] = cp;}
-                if (maxHP[4] < hp) {maxHP[4] = hp;}
-                break;
-            }
+            actualRank = actualRank + 1;
           }
         }
       }
@@ -1052,121 +1021,7 @@
       }
         
       /* output the CPs and HPs */
-      //outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, output, evoVals[0][0], lang, trash, trashHundo);
-      outputCPsHPsIVsBuckets(ivBuckets, output, evoVals[0][0], lang, trash, trashHundo);
-      var origOut = output.value;
-      console.log("origOut: "+JSON.stringify(origOut));
-      
-      /*if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
-        /*let excessOut = output.value.substring(0); /* ensure we don't mutilate actual output */
-        /*let div = document.getElementById("overflowArea"); /* div where overflows are created */
-        /*div.innerHTML = "<i style='font-size:0.6em'>&lt;2000 character strings for iOS Text Replacement compatibility:</i><br />";
-        for (i=1;excessOut.length>0;i++) {
-          let newOverflow = document.createElement("textarea");
-          newOverflow.id = "overflow"+i; newOverflow.rows=1; newOverflow.style="width: 50%; height: 50%;"; newOverflow.setAttribute('onclick', "autocopy(this)"); div.appendChild(newOverflow);
-          let cut = excessOut.slice(0, 2001).lastIndexOf(",")+1; /*correct for 0 index with + 1*/
-          /*document.getElementById("overflow"+i).value = (excessOut.length>2000) ? excessOut.slice(0, cut) : excessOut;
-          console.log("TotalLen:"+origOut.length+", cut:"+cut+", excessOut.length:"+excessOut.length);
-          excessOut = (excessOut.length>2000) ? excessOut.substring(cut) : 0;
-        }
-      }*/
-      
-      if (evoVals[0][4] == "Burmy") {
-        if (finalVals[4] == "Mothim") {
-          console.log("Found Mothim!");
-          output.value += "&male";
-        } else if (finalVals[4].indexOf("Wormadam") > -1 ) {
-          console.log("Found:"+evoVals[0][4]);
-          output.value += "&female";
-        }
-      }
-      
-      if (perfTiming) {var outputStrT1 = performance.now();
-      console.log("outputStr: Execution took "+(outputStrT1-outputStrT0).toFixed(1)+"ms");}
-      return output;
-    }
-    
-    /* Given custom IVs customIVs, outputs a Search String for the user */
-    function outputCustomIVsStr(customIVs, baseAtk, baseDef, baseSta, finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, dexNum, monName) {
-      if (perfTiming) {var outputCustomIVsStrT0 = performance.now();}
-      
-      /*console.log("Received customIVs: "+JSON.stringify(customIVs)+", baseAtk: "+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", league:"+league+", output:"+output+", maxLvl:"+maxLvl+", dexNum:"+dexNum+", monName:"+monName);*/
-  
-      output.value = ''; /* ensure old output is cleared */
-      var message = "String finds "+monName+" with IVs: "+JSON.stringify(customIVs);
-      var cps = [], hps = [], results, i, j, k;
-      cps[0] = new Set();
-      hps[0] = new Set();
-      cps[1] = new Set();
-      hps[1] = new Set();
-      cps[2] = new Set();
-      hps[2] = new Set();
-      cps[3] = new Set();
-      hps[3] = new Set();
-      cps[4] = new Set();
-      hps[4] = new Set();
-      var maxCP = new Array(5).fill(0), maxHP = new Array(5).fill(0);
-      /* Reverse searchLvl so we start at L0 and generate string up to League CP cutoff */
-      var searchLvl = document.getElementById('searchLvl').value.split(",").map(x=>+x).reverse();
-      
-      /* generate all the cps and hps for matching */
-      /* for all customIV spreads, up to league CP limit */
-      for (i=0; i<customIVs.length; i++) {
-        for (k=0; k<searchLvl.length; k++) {
-          lookupLvl = (searchLvl[k]-1)*2;
-          
-          var cp = Math.max(10, Math.floor((baseAtk/1 + customIVs[i].A/1) * Math.sqrt(baseDef/1 + customIVs[i].D/1) * Math.sqrt(baseSta/1 + customIVs[i].S/1) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
-          var finalEvoCP = Math.max(10, Math.floor((finalEvoAtk/1 + customIVs[i].A/1) * Math.sqrt(finalEvoDef/1 + customIVs[i].D/1) * Math.sqrt(finalEvoSta/1 + customIVs[i].S/1) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
-          
-          /* Check if this level+IVs combo is over league CP cap*/
-          if (finalEvoCP/1 > league/1) {
-            console.log(customIVs[i]+" at L:"+lookupLvl+" finalEvoCP:"+finalEvoCP+" is over league limit ("+league+", finished with this IV set");
-            break;
-          }
-          /* generate hps for more accurate search string matching */
-          var hp = Math.max(10, Math.floor((baseSta/1 + customIVs[i].S/1) * cpm[lookupLvl]));
-          
-          /* bucket CPs and HPs into appraisal ratings for more accurrate matching */
-          var IVsum = customIVs[i].A/1 + customIVs[i].D/1 + customIVs[i].S/1;
-    		  var Star = "NA";
-          if (IVsum<23){Star="0*";}else if(IVsum<30){Star="1*";}else if (IVsum<37){Star="2*";}else if(IVsum<45){Star="3*";}else{Star="4*";}
-          switch (Star) {
-            case "0*":
-              cps[0].add(cp);
-              hps[0].add(hp);
-              if (maxCP[0] < cp) {maxCP[0] = cp;}
-              if (maxHP[0] < hp) {maxHP[0] = hp;}
-              break;
-            case "1*":
-              cps[1].add(cp);
-              hps[1].add(hp);
-              if (maxCP[1] < cp) {maxCP[1] = cp;}
-              if (maxHP[1] < hp) {maxHP[1] = hp;}
-              break;
-            case "2*":
-              cps[2].add(cp);
-              hps[2].add(hp);
-              if (maxCP[2] < cp) {maxCP[2] = cp;}
-              if (maxHP[2] < hp) {maxHP[2] = hp;}
-              break;
-            case "3*":
-              cps[3].add(cp);
-              hps[3].add(hp);
-              if (maxCP[3] < cp) {maxCP[3] = cp;}
-              if (maxHP[3] < hp) {maxHP[3] = hp;}
-              break;
-            case "4*":
-              cps[4].add(cp);
-              hps[4].add(hp);
-              if (maxCP[4] < cp) {maxCP[4] = cp;}
-              if (maxHP[4] < hp) {maxHP[4] = hp;}
-              break;
-          }
-        }
-      }
-        
-      /* output the CPs and HPs */
-      outputCPsHPsBuckets(cps.slice(), false, hps.slice(), false, output, dexNum, lang, false, true, false);
+      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, aIV, dIV, sIV, output, evoVals[0][0], lang, trash, trashHundo);
       var origOut = output.value;
       
       if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
@@ -1183,13 +1038,148 @@
         }
       }
       
-      if (monName == "Burmy") {
-        if (finalVals[4] == "Mothim") {
-          console.log("Found Mothim!");
-          output.value += "&male";
-        } else if (finalVals[4].indexOf("Wormadam") > -1 ) {
-          console.log("Found:"+monName);
-          output.value += "&female";
+      if (perfTiming) {outputStrT1 = performance.now();
+      console.log("outputStr: Execution took "+(outputStrT1-outputStrT0).toFixed(1)+"ms");}
+      return output;
+    }
+    
+    /* Given custom IVs customIVs, outputs a Search String for the user */
+    function outputCustomIVsStr(customIVs, baseAtk, baseDef, baseSta, finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, dexNum, monName) {
+      var outputCustomIVsStrT0, outputCustomIVsStrT1;
+      if (perfTiming) {outputCustomIVsStrT0 = performance.now();}
+      
+      /*console.log("Received customIVs: "+JSON.stringify(customIVs)+", baseAtk: "+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", league:"+league+", output:"+output+", maxLvl:"+maxLvl+", dexNum:"+dexNum+", monName:"+monName);*/
+  
+      output.value = ''; /* ensure old output is cleared */
+      var message = "String finds "+monName+" with IVs: "+JSON.stringify(customIVs);
+      var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
+      var i, k, lookupLvl;
+      cps[0] = new Set();
+      hps[0] = new Set();
+      aIV[0] = new Set();
+      dIV[0] = new Set();
+      sIV[0] = new Set();
+      cps[1] = new Set();
+      hps[1] = new Set();
+      aIV[1] = new Set();
+      dIV[1] = new Set();
+      sIV[1] = new Set();
+      cps[2] = new Set();
+      hps[2] = new Set();
+      aIV[2] = new Set();
+      dIV[2] = new Set();
+      sIV[2] = new Set();
+      cps[3] = new Set();
+      hps[3] = new Set();
+      aIV[3] = new Set();
+      dIV[3] = new Set();
+      sIV[3] = new Set();
+      cps[4] = new Set();
+      hps[4] = new Set();
+      aIV[4] = new Set();
+      dIV[4] = new Set();
+      sIV[4] = new Set();
+      var maxCP = new Array(5).fill(0), maxHP = new Array(5).fill(0);
+      /* Reverse searchLvl so we start at L0 and generate string up to League CP cutoff */
+      var searchLvl = document.getElementById('searchLvl').value.split(",").map(x=>+x).reverse();
+      
+      /* generate all the cps and hps for matching */
+      /* for all customIV spreads, up to league CP limit */
+      for (i=0; i<customIVs.length; i++) {
+        for (k=0; k<searchLvl.length; k++) {
+          lookupLvl = (searchLvl[k]-1)*2;
+          
+          var atk = customIVs[i].A;
+          var def = customIVs[i].D;
+          var sta = customIVs[i].S;
+          var atkBkt = -1, defBkt = -1, hpBkt = -1;
+          
+          var cp = Math.max(10, Math.floor((baseAtk/1 + atk/1) * Math.sqrt(baseDef/1 + def/1) * Math.sqrt(baseSta/1 + sta/1) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
+          var finalEvoCP = Math.max(10, Math.floor((finalEvoAtk/1 + atk/1) * Math.sqrt(finalEvoDef/1 + def/1) * Math.sqrt(finalEvoSta/1 + sta/1) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
+          
+          /* Check if this level+IVs combo is over league CP cap*/
+          if (finalEvoCP/1 > league/1) {
+            console.log(customIVs[i]+" at L:"+lookupLvl+" finalEvoCP:"+finalEvoCP+" is over league limit ("+league+", finished with this IV set");
+            break;
+          }
+          /* generate hps for more accurate search string matching */
+          var hp = Math.max(10, Math.floor((baseSta/1 + sta/1) * cpm[lookupLvl]));
+          
+          /* generate IV buckets for more accurate search string matching */
+          /* 0 is 0IV, 1 is 1-5IV, 2 is 6-10IV, 3 is 11-14IV, 4 is 15IV */
+          if (atk/1==15) {atkBkt=4;} else {atkBkt=Math.ceil(atk/5);}
+          if (def/1==15) {defBkt=4;} else {defBkt=Math.ceil(def/5);}
+          if (sta/1==15) {hpBkt=4;} else {hpBkt=Math.ceil(sta/5);}
+          
+          /* bucket CPs and HPs into appraisal ratings for more accurrate matching */
+          var IVsum = atk/1 + def/1 + sta/1;
+    		  var Star = "NA";
+          if (IVsum<23){Star="0*";}else if(IVsum<30){Star="1*";}else if (IVsum<37){Star="2*";}else if(IVsum<45){Star="3*";}else{Star="4*";}
+          switch (Star) {
+            case "0*":
+              cps[0].add(cp);
+              hps[0].add(hp);
+              aIV[0].add(atkBkt);
+              dIV[0].add(defBkt);
+              sIV[0].add(hpBkt);
+              if (maxCP[0] < cp) {maxCP[0] = cp;}
+              if (maxHP[0] < hp) {maxHP[0] = hp;}
+              break;
+            case "1*":
+              cps[1].add(cp);
+              hps[1].add(hp);
+              aIV[1].add(atkBkt);
+              dIV[1].add(defBkt);
+              sIV[1].add(hpBkt);
+              if (maxCP[1] < cp) {maxCP[1] = cp;}
+              if (maxHP[1] < hp) {maxHP[1] = hp;}
+              break;
+            case "2*":
+              cps[2].add(cp);
+              hps[2].add(hp);
+              aIV[2].add(atkBkt);
+              dIV[2].add(defBkt);
+              sIV[2].add(hpBkt);
+              if (maxCP[2] < cp) {maxCP[2] = cp;}
+              if (maxHP[2] < hp) {maxHP[2] = hp;}
+              break;
+            case "3*":
+              cps[3].add(cp);
+              hps[3].add(hp);
+              aIV[3].add(atkBkt);
+              dIV[3].add(defBkt);
+              sIV[3].add(hpBkt);
+              if (maxCP[3] < cp) {maxCP[3] = cp;}
+              if (maxHP[3] < hp) {maxHP[3] = hp;}
+              break;
+            case "4*":
+              cps[4].add(cp);
+              hps[4].add(hp);
+              aIV[4].add(atkBkt);
+              dIV[4].add(defBkt);
+              sIV[4].add(hpBkt);
+              if (maxCP[4] < cp) {maxCP[4] = cp;}
+              if (maxHP[4] < hp) {maxHP[4] = hp;}
+              break;
+          }
+        }
+      }
+        
+      /* output the CPs and HPs */
+      outputCPsHPsBuckets(cps.slice(), false, hps.slice(), false, aIV, dIV, sIV, output, dexNum, lang, false, true, false);
+      var origOut = output.value;
+      
+      if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
+        let excessOut = output.value.substring(0); /* ensure we don't mutilate actual output */
+        let div = document.getElementById("overflowArea"); /* div where overflows are created */
+        div.innerHTML = "<i style='font-size:0.6em'>&lt;2000 character strings for iOS Text Replacement compatibility:</i><br />";
+        for (i=1;excessOut.length>0;i++) {
+          let newOverflow = document.createElement("textarea");
+          newOverflow.id = "overflow"+i; newOverflow.rows=1; newOverflow.style="width: 50%; height: 50%;"; newOverflow.setAttribute('onclick', "autocopy(this)"); div.appendChild(newOverflow);
+          let cut = excessOut.slice(0, 2001).lastIndexOf(",")+1; /*correct for 0 index with + 1*/
+          document.getElementById("overflow"+i).value = (excessOut.length>2000) ? excessOut.slice(0, cut) : excessOut;
+          console.log("TotalLen:"+origOut.length+", cut:"+cut+", excessOut.length:"+excessOut.length);
+          excessOut = (excessOut.length>2000) ? excessOut.substring(cut) : 0;
         }
       }
       
@@ -1198,117 +1188,55 @@
       document.getElementById('feedbackBox').innerHTML = "";
       document.getElementById('targetDiv').style.display = "none";
       
-      if (perfTiming) {var outputStrT1 = performance.now();
-      console.log("outputStr: Execution took "+(outputStrT1-outputStrT0).toFixed(1)+"ms");}
+      if (perfTiming) {outputCustomIVsStrT1 = performance.now();
+      console.log("outputCustomIVsStrT0: Execution took "+(outputCustomIVsStrT1-outputCustomIVsStrT0).toFixed(1)+"ms");}
       return output;
     }
     
-    function outputCPsHPsIVsBuckets(ivBuckets, output, id, lang, trash, trashHundo) {
-      /* ivBuckets[atk0|1|2|3|4][def0|1|2|3|4][sta0|1|2|3|4][cp|maxCP|hp|maxHP][0*|1*|2*|3*|4*] */
-      if (perfTiming) {var outputCPsHPsIVsBucketsT0 = performance.now();}
-      
-      var emptyApr = new Array(5).fill(true), emptyBuf = "";
-      output.value = id; /* add dex num */
-      var maxLoops = 5;/* Always need all 5 appraisals */
-      var CP = 0, maxCP = 1, HP = 2, maxHP = 3, attack=lang[12], defense=lang[13], hpstr=lang[2]; /* just for readability */
-      
-      for (var a=0; a<5; a++) {
-        for (var d=0; d<5; d++) {
-          for (var s=0; s<5; s++) {
-            for (var apr=0; apr<5; apr++) {
-              /*console.log("Running loop with a("+a+"), d("+d+"), s("+s+"), apr("+apr+")");*/
-              /* ivBuckets[a][d][s][0][apr];/*cp*/
-              /* ivBuckets[a][d][s][1][apr];/*maxCp*/
-              /* ivBuckets[a][d][s][2][apr];/*hp*/
-              /* ivBuckets[a][d][s][3][apr];/*maxHp*/
-              
-              /* skip empty sets */
-              if (ivBuckets[a][d][s][CP][apr].size > 0) {
-                console.log("Attempting to output a("+a+"), d("+d+"), s("+s+"), apr("+apr+"): "+(new Array(...ivBuckets[a][d][s][CP][apr]).join(' ')));
-                if (emptyApr[apr]) {emptyApr[apr] = false;}
-                /* only flip CPs/HPs if non-zero */
-                if (trash) {
-                  ivBuckets[a][d][s][CP][apr] = trashFlip(ivBuckets[a][d][s][CP][apr], ivBuckets[a][d][s][maxCP][apr]);
-                  
-                  /* skip empty hps */
-                  if (ivBuckets[a][d][s][HP][apr].size > 0) {
-                    ivBuckets[a][d][s][HP][apr] = trashFlip(ivBuckets[a][d][s][HP][apr], ivBuckets[a][d][s][maxHP][apr]);
-                  }
-                }
-                
-                /* output CPs */
-                ivBuckets[a][d][s][CP][apr] = Array.from(ivBuckets[a][d][s][CP][apr]);
-                ivBuckets[a][d][s][CP][apr].sort((a, b) => a - b);
-                output.value += '&!'+attack+a +'&!'+defense+d+'&!'+hpstr+s +'&!'+apr+'*,'+get_matching_string(ivBuckets[a][d][s][CP][apr], lang[1]/*cp*/);
-                
-                if (!trash) {
-                  output.value += '&!'+attack+a +'&!'+defense+d+'&!'+hpstr+s +'&!'+apr+'*';
-                }
-                
-                /* skip empty hps */
-                if (ivBuckets[a][d][s][HP][apr].size > 0) {
-                  ivBuckets[a][d][s][HP][apr] = Array.from(ivBuckets[a][d][s][HP][apr]);
-                  ivBuckets[a][d][s][HP][apr].sort((a, b) => a - b);
-                  output.value += ',' + get_matching_string(ivBuckets[a][d][s][HP][apr], lang[2]/*hp*/);
-                }
-              }
-            }
-          }
-        }
+    function groupAttr(input, lang) {
+      var output;
+      if (Array.isArray(input)) { /* https://stackoverflow.com/a/48657553 */
+        output = new Set( input.reduce( ( a, c ) => a.concat( [...c] ), [] ) );
+      } else {
+        output = input;
       }
-      /* TODO: Is this needed? handle 4* case */
-      /*if (apr == 4) {
-        if (ivBuckets[a][d][s][CP][apr].size > 0) {
-          if (!trash) {emptyBuf += ',4*';continue;}
+      output = Array.from(output);
+      output.sort((a, b) => a - b);
+      var checkStr = getRanges(output) + lang;
+      
+      /* Can possibly return 0-1,2attack by default */
+      var splitStr = checkStr.split(',');
+      if (splitStr.length>1) {
+        for (var i=0; i<splitStr.length; i++) {
+          /* Add missing attack/defense/HP lang as needed */
+          if (splitStr[i].includes(lang)) {continue;}
+          else {splitStr[i] = splitStr[i] + lang;}
         }
-      }*/
-      /* TODO: Is this needed? */
-      /*if ((trash) && (!trashHundo)) {
-        emptyBuf += '&!'+apr+'*';
-      }*/
-      
-      /* TODO: Implement skipping empty IV buckets in search string */
-      if (!trash) {
-        for (apr=0; apr<5; apr++) {
-          if (emptyApr[apr]) {
-            emptyBuf += '&!'+apr+'*';
-          }
-        }
+        /* Ensure we merge the strings back together to return */
+        checkStr = splitStr.join(",");
       }
-      output.value += emptyBuf; /* add trash stuff */
-      
-      console.log("ivBuckets: "+JSON.stringify(ivBuckets));
-      
-      /* Ensure additional regional search terms are translated as needed*/
-      if (lang[0] !== "en")
-      {
-        /* lang : cpstr,  hpstr,  mega,   alola,  eggsonly, galar,  ground, steel,  grass,  psychic, fire,     attack,   defense,  xs,       xl,       xxl*/
-        /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11], lang[12], lang[13], lang[14], lang[15], lang[16]*/
-        /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
-        output.value = output.value.replace(/mega/gi,    lang[3]);
-        output.value = output.value.replace(/alola/gi,   lang[4]);
-        output.value = output.value.replace(/eggsonly/gi,lang[5]);
-        output.value = output.value.replace(/galar/gi,   lang[6]);
-        output.value = output.value.replace(/ground/gi,  lang[7]);
-        output.value = output.value.replace(/steel/gi,   lang[8]);
-        output.value = output.value.replace(/grass/gi,   lang[9]);
-        output.value = output.value.replace(/psychic/gi, lang[10]);
-        output.value = output.value.replace(/fire/gi,    lang[11]);
-        output.value = output.value.replace(/xs/gi,      lang[14]);
-        output.value = output.value.replace(/xl/gi,      lang[15]);
-        output.value = output.value.replace(/xxl/gi,     lang[16]);
-      }
-      
-      if (perfTiming) {var outputCPsHPsIVsBucketsT1 = performance.now();
-      console.log("outputCPsHPsIVsBuckets: Execution took "+(outputCPsHPsIVsBucketsT1-outputCPsHPsIVsBucketsT0).toFixed(1)+"ms");}
-      return true;
+      return checkStr;
     }
     
-    function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, output, id, lang, trash, trashHundo) {
-      if (perfTiming) {var outputCPsHPsBucketsT0 = performance.now();}
+    function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, atkBkts, defBkts, staBkts, output, id, lang, trash, trashHundo) {
+      var outputCPsHPsBucketsT0, outputCPsHPsBucketsT1;
+      if (perfTiming) {outputCPsHPsBucketsT0 = performance.now();}
       
       var emptyBuf = "";
       output.value = id; /* add dex num */
+      
+      /* Output Attribute Appraisal Groupings if selected */
+      if (document.getElementById('attrAppr').checked) {
+        console.log("User has selected to use Attribute Appraisals, outputting...");
+        if (!trash) {
+          output.value += "&" + groupAttr(atkBkts, lang[12]) + "&" + groupAttr(defBkts, lang[13]) + "&" + groupAttr(staBkts, lang[2]); /* add IV Buckets dex num */
+        } else {
+          atkBkts = trashFlip(atkBkts, 4, true);
+          defBkts = trashFlip(defBkts, 4, true);
+          staBkts = trashFlip(staBkts, 4, true);
+          output.value += "&" + groupAttr(atkBkts, lang[12]) + "&" + groupAttr(defBkts, lang[13]) + "&" + groupAttr(staBkts, lang[2]); /* add IV Buckets dex num */
+        }
+      }
       var maxLoops = 5;/* Always need all 5 appraisals */
       
       /* output cps and hps */
@@ -1325,11 +1253,11 @@
         if (cps[i].size > 0) {
           /* only flip CPs/HPs if non-zero */
           if (trash) {
-            cps[i] = trashFlip(cps[i], maxCP[i]);
+            cps[i] = trashFlip(cps[i], maxCP[i], false);
             
             /* skip empty hps */
             if (hps[i].size > 0) {
-              hps[i] = trashFlip(hps[i], maxHP[i]);
+              hps[i] = trashFlip(hps[i], maxHP[i], false);
             }
           }
           
@@ -1375,13 +1303,14 @@
         output.value = output.value.replace(/xxl/gi,     lang[16]);
       }
       
-      if (perfTiming) {var outputCPsHPsBucketsT1 = performance.now();
+      if (perfTiming) {outputCPsHPsBucketsT1 = performance.now();
       console.log("outputCPsHPsBuckets: Execution took "+(outputCPsHPsBucketsT1-outputCPsHPsBucketsT0).toFixed(1)+"ms");}
       return true;
     }
     
     function getZeroCPs(baseatk, basedef, basesta, maxCP, maxHP, cps, hps) {
-      if (perfTiming) {var getZeroCPsT0 = performance.now();}
+      var getZeroCPsT0, getZeroCPsT1;
+      if (perfTiming) {getZeroCPsT0 = performance.now();}
   
       /* generate all the cps and hps for matching */
       var maxLvl = (30 - 1)*2; /* highest level possible without IV boost (L30) */
@@ -1399,61 +1328,53 @@
         cps.add(cp);
         hps.add(hp);
       }
-      if (perfTiming) {var getZeroCPsT1 = performance.now();
+      if (perfTiming) {getZeroCPsT1 = performance.now();
       console.log("getZeroCPs: Execution took "+(getZeroCPsT1-getZeroCPsT0).toFixed(1)+"ms");}
       return [cps, hps, maxCP, maxHP];
     }
     
-    /* TODO: Validate this is old code and delete it */
-    function getCustomCPs(baseatk, basedef, basesta, maxCP, maxHP, aIV, dIV, sIV, cps, hps) {
-      if (perfTiming) {var getCustomCPsT0 = performance.now();}
-  
-      /* generate all the cps and hps for matching */
-      var maxLvl = (30 - 1)*2; /* highest level possible without IV boost (L30) */
-  
-      /* skip half level CPs in search strings to improve accuracy */
-      for( var level = maxLvl; level >= 0; level = level - 2 ) {
-        var cp = Math.max(10, Math.floor((baseatk/1 + aIV/1) * Math.sqrt(basedef/1 + dIV/1) * Math.sqrt(basesta/1 + sIV/1) * cpm[level] * cpm[level] / 10));
-  
-        /* generate hps for more accurate search string matching */
-        var hp = Math.max(10, Math.floor((basesta/1 + sIV/1) * cpm[level]));
-  
-        /* update counters for maxCP and maxHP */
-        if (maxCP[0] < cp) {maxCP[0] = cp;}
-        if (maxHP[0] < hp) {maxHP[0] = hp;}
-        cps.add(cp);
-        hps.add(hp);
+    function trashFlip(cps, maxCP, attr) {
+      var trashFlipT0, trashFlipT1;
+      if (perfTiming) {trashFlipT0 = performance.now();}
+      var i=10;
+      if (attr) {
+        i=0; /* https://stackoverflow.com/a/48657553 */
+        cps = new Set( cps.reduce( ( a, c ) => a.concat( [...c] ), [] ) );
       }
-      if (perfTiming) {var getCustomCPsT1 = performance.now();
-      console.log("getCustomCPs: Execution took "+(getCustomCPsT1-getCustomCPsT0).toFixed(1)+"ms");}
-      return [cps, hps, maxCP, maxHP];
-    }
-    
-    function trashFlip(cps, maxCP) {
-      if (perfTiming) {var trashFlipT0 = performance.now();}
       if (cps instanceof Set) {
-        for (var i=10; i<=maxCP; i++) {
+        for (i; i<=maxCP; i++) {
           if( cps.has(i) ) {
     				cps.delete(i);
     			} else {
     				cps.add(i);
     		  }
         }
-        if (perfTiming) {var trashFlipT1 = performance.now();
+        if (perfTiming) {trashFlipT1 = performance.now();
         console.log("trashFlip: Execution took "+(trashFlipT1-trashFlipT0).toFixed(1)+"ms");}
         return cps;
       } else {
         console.error("trashFlip: received cps as "+typeof cps+" instead of expected set");
         document.getElementById('errorBox').innerHTML = "ERROR: Please try again. If this persists, please send us your Search's URL via <a href='https://discord.gg/UD4Temq'>Discord!</a>";
-        if (perfTiming) {var trashFlipT1 = performance.now();
+        if (perfTiming) {trashFlipT1 = performance.now();
         console.log("trashFlip: Execution took "+(trashFlipT1-trashFlipT0).toFixed(1)+"ms");}
         return false;
       }
     }
     
+    function getRanges(array) { /* https://stackoverflow.com/a/54205694 */
+      return array.reduce((l => (r, v, i, a) => {
+        if (l[1] > v) return r;
+        r.push(l[1] === v ? (r.pop(), l.join('-')) : (l = [v, v]).slice(0, 1).toString());
+        l[1]++;
+        return r;
+      })([]), []);
+    }
+
+    
     /* Only accepts a SORTED array of numbers to output */
     function get_matching_string(a, t) {
-      if (perfTiming) {var get_matching_stringT0 = performance.now();}
+      var get_matching_stringT0, get_matching_stringT1;
+      if (perfTiming) {get_matching_stringT0 = performance.now();}
       var list = '', last = -1;
       
     	for( var i = 0; i < a.length; i++ ) {
@@ -1473,16 +1394,17 @@
     		}
     	}
     	
-    	if (perfTiming) {var get_matching_stringT1 = performance.now();
+    	if (perfTiming) {get_matching_stringT1 = performance.now();
       console.log("get_matching_string: Execution took "+(get_matching_stringT1-get_matching_stringT0).toFixed(1)+"ms");}
     	return list.substr(1);
     }
     
     function autocopy(e) {
-      if (perfTiming) {var autocopyT0 = performance.now();}
+      var autocopyT0, autocopyT1;
+      if (perfTiming) {autocopyT0 = performance.now();}
     	e.select();
     	document.execCommand('copy');
-    	if (perfTiming) {var autocopyT1 = performance.now();
+    	if (perfTiming) {autocopyT1 = performance.now();
       console.log("autocopy: Execution took "+(autocopyT1-autocopyT0).toFixed(1)+"ms");}
       return true;
     }
@@ -1495,11 +1417,12 @@
     <div id="cpLimitDiv"><label id="cpLimitLbl" for="cpLimit" style="display: none;">CP Limit:</label><input type="number" id="cpLimit" oninput="main(true)" value="1500" style="display: none;"></div>
     <div id="dexSkipsDiv"><label id="dexSkipsLbl" for="dexSkips" style="display: none;">Dex Skips:</label><input id="dexSkips" oninput="main(true)" value="144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,800,801,802,807,888,889,890,891,892,893,894,895,896,897,898" style="display: none;"></div>
     <label>Custom IV Search:<input id="customIVs" type="checkbox" oninput="main()"><br /></label>
-    <div id="IVentryDiv"> <label id="IVentryLbl" for="IVentry"  style="display: none;">Custom IVs:</label><input id="IVentry" oninput="main(true)" value="11/12/13,4-5-6 1+2+3" style="display: none;"></div>
+    <div id="IVentryDiv"> <label id="IVentryLbl" for="IVentry"  style="display: none;">Custom IVs:</label><input id="IVentry" oninput="main()" value="11/12/13,4-5-6 1+2+3" style="display: none;"></div>
+    <label>Use Attribute Appraisals:<input id="attrAppr" type="checkbox" oninput="main()" checked><br /></label>
     <label>Language:<select id="lang" oninput="main()">
     		<option value="en,cp,hp,mega1-,alola,eggsonly,galar,ground,steel,grass,psychic,fire,attack,defense,xs,xl,xxl">English</option>
     		<option value="fr,pc,pv,m&#xE9;ga1–,alola,oeufseulement,galar,sol,acier,plante,psy,feu,attaque,d&#xE9;fense,xs,xl,xxl">French</option>
-    		<option value="de,wp,kp,mega1,alola,nurausEiern,galar,boden,stahl,pflanze,psycho,feuer,angriff,verteidigung,xs,xl,xxl">German</option>
+    		<option value="de,wp,kp,mega1,alola,nurausEiern,galar,boden,stahl,pflanze,psycho,feuer,angriffs-wert,verteidigungs-wert,xs,xl,xxl">German</option>
     		<option value="es,pc,puntos de salud,mega1–,alola,huevosolo,galar,tierra,acero,planta,ps&#xed;quico,fuego,ataque,defensa,xs,xl,xxl">Spanish</option>
     		<option value="it,pl,punti salute,mega1–,dialola,solouovo,galar,terra,acciaio,erba,psico,fuoco,attacco,difesa,xs,xl,xxl">Italian</option>
     		<option value="ja,cp,hp,&#x30E1;&#x30AC;1–,&#x3042;&#x308d;&#x30fc;&#x3089;,&#x305f;&#x307e;&#x3054;&#x306e;&#x307f;,&#x30ac;&#x30e9;&#x30eb;,&#x3058;&#x3081;&#x3093;,&#x306f;&#x304c;&#x306d;,&#x304f;&#x3055;,&#x30a8;&#x30b9;&#x30d1;&#x30fc;,&#x307b;&#x306e;&#x304a;,&#x30B3;&#x30A6;&#x30B2;&#x30AD;,&#x30DC;&#x30A6;&#x30AE;&#xFF6E;,xs,xl,xxl">Japanese</option>
@@ -1580,9 +1503,13 @@
         <option value="29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1">1-29 (Wild Caught, Except L30)</option>
         <option value="30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1" selected>1-30 (Wild Caught)</option>
         <option value="35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1">1-35 (Weather Boosted)</option>
+        <option value="35,34,33,32,31">31-35 (ONLY Weather Boosted)</option>
         <option value="34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1">1-34 (WB, Except L35)</option>
         <option value="33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1">1-33 (WB, Except L34, L35)</option>
         <option value="25,20,15">15,20,25 (Raid/Quest)</option>
+        <option value="20">20, 25 (Raid, WB Raid)</option>
+        <option value="20">25 (Only WB Raid)</option>
+        <option value="20">20 (Only Raid)</option>
         <option value="15">15 (Only Quest)</option>
       </select></div>
       <br /><div id=overflowArea></div>
