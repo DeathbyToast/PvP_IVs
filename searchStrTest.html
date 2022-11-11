@@ -79,21 +79,19 @@
     	<option value="false">Master League</option>
   		<option value="All">All Leagues</option></select>
   	</label><br />
-    <label id="getStarted"><i>Please first select an evolution family above, then boxes to select limits per evo will appear...</i><br /></label>
-    <div id="targetDiv" hidden><label id="targetLbl" for="target" style="display: none;">Find:</label><select id="target" oninput="main()"></select> As:</div>
+    <label id="getStarted"><i>Please first select an evolution family above, then boxes to select limits will appear...</i><br /></label>
+    <div id="targetDiv" hidden><label id="targetLbl" for="target" style="display: none;">Find:</label><select id="target" oninput="main()"></select>As:<!--div id="asDiv"> As: </div--></div>
+    <div id="RaidlimitDiv" hidden>
+      <label id="labelIVlimit" for="ivLim"> With Minimum IVs&#8805;</label><select id="ivLim" oninput="main()"><option value="45">100%</option><option value="44">98%</option><option value="43">96%</option><option selected value="42">93%</option><option value="41">91%</option><option value="40">89%</option><option value="39">87%</option><option value="38">84%</option><option value="37">82%</option><option value="36">80%</option><option value="35">78%</option><option value="34">76%</option><option value="33">73%</option><option value="32">71%</option><option value="31">69%</option><option value="30">67%</option></select>
+      <label id="labelaLimit" for="aLim">, Attack&#8805;</label><select id="aLim" oninput="main()"><option value="">&nbsp;</option><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
+      <label id="labeldLimit" for="dLim">, Defense&#8805;</label><select id="dLim" oninput="main()"><option value="">&nbsp;</option><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
+      <label id="labelsLimit" for="sLim">, Stamina&#8805;</label><select id="sLim" oninput="main()"><option value="">&nbsp;</option><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
+    </div>
     <div class="evoLimits" id="evoLimits[1]"><input id="evoCB[1]" class="evoCBs" type="checkbox" onclick="main()"><div id="evoName[1]"></div>
       <div id="LLlimitDiv[1]"><label id="labelLLlimit[1]" for="LLlimit[1]">LL:</label><input type="number" value="10" id="LLlimit[1]" min="1" max="4096" oninput="main()"></div>
       <div id="GLlimitDiv[1]"><label id="labelGLlimit[1]" for="GLlimit[1]">GL:</label><input type="number" value="10" id="GLlimit[1]" min="1" max="4096" oninput="main()"></div>
       <div id="ULlimitDiv[1]"><label id="labelULlimit[1]" for="ULlimit[1]">UL:</label><input type="number" value="10" id="ULlimit[1]" min="1" max="4096" oninput="main()"></div>
       <div id="MLlimitDiv[1]"><label id="labelMLlimit[1]" for="MLlimit[1]">ML:</label><input type="number" value="10" id="MLlimit[1]" min="1" max="4096" oninput="main()"></div>
-      <div id="RaidlimitDiv[1]">
-        <label id="labelRaidlimit[1]">IV% (A/D/S) Floors:
-          <select id="ivLim[1]" oninput="main()"><option value="45">100</option><option value="44">98</option><option value="43">96</option><option value="42">93</option><option value="41">91</option><option value="40">89</option><option value="39">87</option><option value="38">84</option><option value="37">82</option><option value="36">80</option><option value="35">78</option><option value="34">76</option><option value="33">73</option><option value="32">71</option><option value="31">69</option><option value="30">67</option></select>
-          <select id="aLim[1]" oninput="main()"><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
-          <select id="dLim[1]" oninput="main()"><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
-          <select id="sLim[1]" oninput="main()"><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
-        </label>
-      </div>
     <br /></div>
     <div class="evoLimits" id="evoLimits[2]"><input id="evoCB[2]" class="evoCBs" type="checkbox" onclick="main()"><div id="evoName[2]"></div>
       <div id="LLlimitDiv[2]"><label id="labelLLlimit[2]" for="LLlimit[2]">LL:</label><input type="number" value="10" id="LLlimit[2]" min="1" max="4096" oninput="main()"></div>
@@ -214,54 +212,54 @@
                   
                   switch (document.getElementById('league').value) {
                     case "Raid":
-                      document.getElementById('LLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: inline-block;";
+                      document.getElementById('LLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: inline-block;";*/
                       break;
                     case "All":
                       document.getElementById('LLlimit['+(j+1)+']').value = limits[0];
                       document.getElementById('GLlimit['+(j+1)+']').value = limits[1];
                       document.getElementById('ULlimit['+(j+1)+']').value = limits[2];
                       document.getElementById('MLlimit['+(j+1)+']').value = limits[3];
-                      document.getElementById('LLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";
-                      document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";
-                      document.getElementById('ULlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: inline-block;";
-                      document.getElementById('MLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: inline-block;";
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('LLlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";*/
+                      document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";*/
+                      document.getElementById('ULlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: inline-block;";*/
+                      document.getElementById('MLlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: inline-block;";*/
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";*/
                       break;
                     case "500":
                       document.getElementById('LLlimit['+(j+1)+']').value = limits[0];
-                      document.getElementById('LLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";
-                      document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('LLlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";*/
+                      document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";*/
                       break;
                     case "1500":
                       document.getElementById('GLlimit['+(j+1)+']').value = limits[0];
-                      document.getElementById('LLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";
-                      document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('LLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";*/
+                      document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";*/
                       break;
                     case "2500":
                       document.getElementById('ULlimit['+(j+1)+']').value = limits[0];
-                      document.getElementById('LLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('ULlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: inline-block;";
-                      document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('LLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('ULlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: inline-block;";*/
+                      document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";*/
                       break;
                     default:
                       document.getElementById('MLlimit['+(j+1)+']').value = limits[0];
-                      document.getElementById('LLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";
-                      document.getElementById('MLlimit['+(j+1)+']').style="display: inline-block;"; document.getElementById('labelMLlimit['+(j+1)+']').style="display: inline-block;";
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";
+                      document.getElementById('LLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('MLlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: inline-block;";*/
+                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";*/
                   }
                 } else {
                   if (j>0) {document.getElementById('evoCB['+(j+1)+']').value = false;}
@@ -437,6 +435,7 @@
         document.getElementById('getStarted').style.display = "block";
         document.getElementById('output').value = "";
         document.getElementById('targetDiv').style.display = "none";
+        //document.getElementById('asDiv').style.display = "none";
         document.getElementById('targetLbl').style.display = "none";
         return;
       }
@@ -460,6 +459,7 @@
       /* Build drop down for user to fine tune family evo for string to target */
       if (target.options.length < 1) {
         document.getElementById('targetDiv').style.display = "inline-block";
+        //document.getElementById('asDiv').style.display = "inline-block";
         document.getElementById('targetLbl').style.display = "inline-block";
         /* Add names to target select box */
         for (i=0; i<monFamilyNames.length; i++) {
@@ -536,6 +536,7 @@
         /* There are evolutions, unhide base option */
         console.log("Evos detected, showing target...");
         document.getElementById("targetDiv").style.display = "inline-block";
+        //document.getElementById('asDiv').style.display = "inline-block";
         document.getElementById("targetLbl").style.display = "inline-block";
   
         /* If base could also be an evo, add duplicate entry */
@@ -552,6 +553,7 @@
         /* Otherwise reset to default hidden status, default text */
         console.log("No evos detected, hiding target...");
         document.getElementById("targetDiv").style.display = "none";
+        //document.getElementById('asDiv').style.display = "none";
         document.getElementById("targetLbl").style.display = "none";
         /* Duplicate the only entry to ensure we have a final mon to output */
         evoVals.push([...evoVals[0]]); /* Don't just copy pointer, copy values! */
@@ -563,8 +565,61 @@
       /* Ensure we have a clean dex number to output */
       evoVals[0][0] = evoVals[0][0].split("b").join("");
       
-       /* If this was a request for custom IV Search String, output custom IV string */
+      /* If this was a request for custom IV Search String, output custom IV string */
       if (document.getElementById('customIVs').checked) {
+        /* Set final evo stats if they exist, otherwise copy base mon stats */
+        var finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
+        var finalEvoDef = evoVals[2]?.[2] ? evoVals[2][2] : evoVals[0][2];
+        var finalEvoSta = evoVals[2]?.[3] ? evoVals[2][3] : evoVals[0][3];
+        outputCustomIVsStr(customIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, evoVals[0][0], evoVals[0][4]);
+        
+        /* Ensure we update the URL before returning */
+        updateURI(mon,league,leagueName,lang[0],0);
+        return;
+      }
+      
+      /* Raid IV Search String Handler */
+      if (league == "Raid") {
+        
+        /* Un-hide User Input boxes */
+        document.getElementById('RaidlimitDiv').style.display = "inline-block";
+        
+        /* Create "customIVs" formatted string to output via outputCustomIVsStr */
+        var attackIVlim = document.getElementById('aLim').value ? document.getElementById('aLim').value:-1*1;
+        var defenseIVlim = document.getElementById('dLim').value ? document.getElementById('dLim').value:-1*1;
+        var staminaIVlim = document.getElementById('sLim').value ? document.getElementById('sLim').value:-1*1;
+        var IVlim = document.getElementById('ivLim').value ? document.getElementById('ivLim').value:-1*1;
+        console.log("Read IV limits as:"+attackIVlim+"/"+defenseIVlim+"/"+staminaIVlim+", "+IVlim);
+        customIVs = {};
+        
+        for (var a=15, i=0; a/1>=attackIVlim/1; a--) {
+          for (var d=15; d/1>=defenseIVlim/1; d--) {
+            for (var s=15; s/1>=staminaIVlim/1; s--) {
+              var IVsum = a/1+d/1+s/1;
+              if (IVsum/1>=IVlim/1) {
+                console.log(a+"+"+d+"+"+s+"="+IVsum+" > "+IVlim/1);
+                customIVs[i] = {};
+                customIVs[i].A = a/1;
+                customIVs[i].D = d/1;
+                customIVs[i].S = s/1;
+                i++;
+              }
+            }
+          }
+        }
+        console.log("customIVs:"+JSON.stringify(customIVs));
+        
+        /*
+        document.getElementById('evoName['+i+']').innerHTML = (league != "Raid") ? evoVals[i][4]+" ("+evoVals[i][5]+")":"";
+        document.getElementById('evoName['+i+']').style.display = (league != "Raid") ? "inline-block":"none";
+        document.getElementById('evoName['+i+']').innerHTML = evoVals[i][4]+" ("+evoVals[i][5]+")";
+        document.getElementById('evoName['+i+']').style.display = league != "Raid" ? "inline-block;" : "none";
+        document.getElementById('evoLimits['+i+']').style.display = league != "Raid" ? "inline-block;" : "none";
+        document.getElementById('RaidlimitDiv['+i+']').style.display = (league == "Raid") ? "inline-block" : "none";
+        */
+        
+        
+        
         /* Set final evo stats if they exist, otherwise copy base mon stats */
         var finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
         var finalEvoDef = evoVals[2]?.[2] ? evoVals[2][2] : evoVals[0][2];
@@ -625,13 +680,12 @@
         
         /* Unhide and fill evoName[]s as appropriate */
         document.getElementById('evoName['+i+']').innerHTML = evoVals[i][4]+" ("+evoVals[i][5]+")";
-        document.getElementById('evoName['+i+']').style="display: inline-block;";
-        document.getElementById('evoLimits['+i+']').style="display: inline-block;";
+        document.getElementById('evoName['+i+']').style.display = "inline-block";
+        document.getElementById('evoLimits['+i+']').style.display = "inline-block";
         document.getElementById('LLlimitDiv['+i+']').style.display = ((evoVals[i][5] > LLcutoff) && ((league == "All") || (league == "500"))) ? "inline-block" : "none";
         document.getElementById('GLlimitDiv['+i+']').style.display = ((evoVals[i][5] > GLcutoff) && ((league == "All") || (league == "1500"))) ? "inline-block" : "none";
         document.getElementById('ULlimitDiv['+i+']').style.display = ((evoVals[i][5] > ULcutoff) && ((league == "All") || (league == "2500"))) ? "inline-block" : "none";
         document.getElementById('MLlimitDiv['+i+']').style.display = ((evoVals[i][5] > MLcutoff) && ((league == "All") || (league == "false"))) ? "inline-block" : "none";
-        document.getElementById('RaidlimitDiv['+i+']').style.display = (league == "Raid") ? "inline-block" : "none";
         console.log("Added "+evoVals[i][4]+" to list, un-hid evoLimits["+i+"]");
         
         evoVals[i][6] = ((evoVals[i][5] > LLcutoff) && ((league == "All") || (league ==  "500"))) ? document.getElementById('LLlimit['+i+']').value/1:0*1;
@@ -1187,6 +1241,7 @@
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       document.getElementById('feedbackBox').innerHTML = "";
       document.getElementById('targetDiv').style.display = "none";
+      //document.getElementById('asDiv').style.display = "none";
       
       if (perfTiming) {outputCustomIVsStrT1 = performance.now();
       console.log("outputCustomIVsStrT0: Execution took "+(outputCustomIVsStrT1-outputCustomIVsStrT0).toFixed(1)+"ms");}
