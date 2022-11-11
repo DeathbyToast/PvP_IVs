@@ -1050,7 +1050,7 @@ var pokeListObj = {
     "Shadow_Rider_Calyrex": "898b,324,194,205",
     "Wyrdeer": "899,206,145,230,Stantler",
     "Kleavor": "900,253,181,277,Scyther",
-    "Ursaluna": "901,243,181,277,Ursaring",
+    "Ursaluna": "901,243,181,277,Ursaring,Teddiursa",
     "Basculegion_Male": "902,217,144,260,Basculin_Hisuian",
     "Basculegion_Female": "902,199,144,260,Basculin_Hisuian",
     "Sneasler": "903,259,158,190,Sneasel_Hisuian",
