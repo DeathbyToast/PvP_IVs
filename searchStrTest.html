@@ -87,6 +87,9 @@
       <label id="labeldLimit" for="dLim">, Defense&#8805;</label><select id="dLim" oninput="main()"><option value="">&nbsp;</option><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
       <label id="labelsLimit" for="sLim">, Stamina&#8805;</label><select id="sLim" oninput="main()"><option value="">&nbsp;</option><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
     </div>
+    <div id="RaidOverrideDiv" hidden>
+      <label id="LabeladdIV" for="addIV">Must Include IVs:</label><input id="addIV" oninput="main()"><label id="LabelexcludeIV" for="excludeIV">, Must Exclude IVs:</label><input id="excludeIV" oninput="main()">
+    </div>
     <div class="evoLimits" id="evoLimits[1]"><input id="evoCB[1]" class="evoCBs" type="checkbox" onclick="main()"><div id="evoName[1]"></div>
       <div id="LLlimitDiv[1]"><label id="labelLLlimit[1]" for="LLlimit[1]">LL:</label><input type="number" value="10" id="LLlimit[1]" min="1" max="4096" oninput="main()"></div>
       <div id="GLlimitDiv[1]"><label id="labelGLlimit[1]" for="GLlimit[1]">GL:</label><input type="number" value="10" id="GLlimit[1]" min="1" max="4096" oninput="main()"></div>
@@ -408,9 +411,6 @@
         for (i=0; i<customIVs.length; i++) {
           /* Strip out IV separators and save each IV */
           customIVs[i] = customIVs[i].split(/[^0-9]+/);
-          //customIVs[i].A = customIVs[i][0];
-          //customIVs[i].D = customIVs[i][1];
-          //customIVs[i].S = customIVs[i][2];
           console.log("customIVs["+i+"]:"+JSON.stringify(customIVs[i]));
         }
         
@@ -439,6 +439,7 @@
         document.getElementById('output').value = "";
         document.getElementById('targetDiv').style.display = "none";
         document.getElementById('RaidlimitDiv').style.display = "none";
+        document.getElementById('RaidOverrideDiv').style.display = "none";
         document.getElementById('targetLbl').style.display = "none";
         document.getElementById('asDiv').style.display = "none";
         return;
@@ -464,6 +465,7 @@
       if (target.options.length < 1) {
         document.getElementById('targetDiv').style.display = "inline-block";
         document.getElementById('RaidlimitDiv').style.display = "none";
+        document.getElementById('RaidOverrideDiv').style.display = "none";
         document.getElementById('targetLbl').style.display = "inline-block";
         document.getElementById('asDiv').style.display = "inline-block";
         
@@ -543,6 +545,7 @@
         console.log("Evos detected, showing target...");
         document.getElementById("targetDiv").style.display = "inline-block";
         document.getElementById('RaidlimitDiv').style.display = "none";
+        document.getElementById('RaidOverrideDiv').style.display = "none";
         //document.getElementById('asDiv').style.display = "inline-block";
         //document.getElementById("targetLbl").style.display = "inline-block";
   
@@ -561,6 +564,7 @@
         console.log("No evos detected, hiding target...");
         document.getElementById("targetDiv").style.display = "none";
         document.getElementById('RaidlimitDiv').style.display = "none";
+        document.getElementById('RaidOverrideDiv').style.display = "none";
         document.getElementById("targetLbl").style.display = "none";
         document.getElementById('asDiv').style.display = "none";
         
@@ -580,7 +584,7 @@
         var finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
         var finalEvoDef = evoVals[2]?.[2] ? evoVals[2][2] : evoVals[0][2];
         var finalEvoSta = evoVals[2]?.[3] ? evoVals[2][3] : evoVals[0][3];
-        outputCustomIVsStr(customIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, evoVals[0][0], evoVals[0][4]);
+        outputCustomIVsStr(customIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, evoVals[0][0], evoVals[0][4], trash, trashHundo);
         
         /* Ensure we update the URL before returning */
         updateURI(mon,league,leagueName,lang[0],0);
@@ -592,6 +596,7 @@
         
         /* Un-hide User Input boxes */
         document.getElementById('RaidlimitDiv').style.display = "inline-block";
+        document.getElementById('RaidOverrideDiv').style.display = "inline-block";
         document.getElementById('targetDiv').style.display = "inline-block";
         document.getElementById("targetLbl").style.display = "inline-block";
         document.getElementById('asDiv').style.display = "none";
@@ -600,28 +605,66 @@
         var attackIVlim = document.getElementById('aLim').value ? document.getElementById('aLim').value:-1*1;
         var defenseIVlim = document.getElementById('dLim').value ? document.getElementById('dLim').value:-1*1;
         var staminaIVlim = document.getElementById('sLim').value ? document.getElementById('sLim').value:-1*1;
-        var IVlim = document.getElementById('ivLim').value ? document.getElementById('ivLim').value:-1*1;
-        //console.log("Read IV limits as:"+attackIVlim+"/"+defenseIVlim+"/"+staminaIVlim+", "+IVlim);
+        var IVlim = document.getElementById('ivLim').value ? document.getElementById('ivLim').value:"";
+        
+        /* Separate and format addIV and excludeIV, starting with whitespace, set to false if blank to skip processing */
+        var addIV = document.getElementById('addIV').value.split(/[ ,]+/) == "" ? false : document.getElementById('addIV').value.split(/[ ,]+/);
+        var excludeIV = document.getElementById('excludeIV').value.split(/[ ,]+/) == "" ? false : document.getElementById('excludeIV').value.split(/[ ,]+/);
+        
+        /* Strip out IV separators and save each IV */
+        for (i=0; i<addIV.length; i++) {
+          addIV[i] = addIV[i].split(/[^0-9]+/);
+        }
+        for (i=0; i<excludeIV.length; i++) {
+          excludeIV[i] = excludeIV[i].split(/[^0-9]+/);
+        }
+        console.log("Read IV limits as:"+attackIVlim+"/"+defenseIVlim+"/"+staminaIVlim+", "+IVlim+", addIV: "+JSON.stringify(addIV)+", excludeIV: "+JSON.stringify(excludeIV));
+        
+        /* Create customIVs set for output */
         customIVs = [];
         
         for (var a=15; a/1>=attackIVlim/1; a--) {
           for (var d=15; d/1>=defenseIVlim/1; d--) {
-            for (var s=15; s/1>=staminaIVlim/1; s--) {
-              var IVsum = a/1+d/1+s/1;
-              if (IVsum/1>=IVlim/1) {
-                //console.log(a+"+"+d+"+"+s+"="+IVsum+" > "+IVlim/1);
-                customIVs.push([a,d,s]);
+            loop3:
+              for (var s=15; s/1>=staminaIVlim/1; s--) {
+                /* Check to make sure the user didn't Exclude this IV */
+                for (i=0; i<excludeIV.length; i++) {
+                  if ((a/1 == excludeIV[i][0]) && (d/1 == excludeIV[i][1]) && (s/1 == excludeIV[i][2])) {
+                    console.log("Found a match! Excluding IV: "+a+"/"+d+"/"+s);
+                    continue loop3; /*Ignore this IV set, it is excluded */
+                  }
+                }
+                if ((a/1+d/1+s/1)>=IVlim/1) {
+                  customIVs.push([a,d,s]);
+                }
               }
-            }
           }
         }
-        //console.log("customIVs:"+JSON.stringify(customIVs));
+        /* Check to make sure the user's Added IVs are included */
+        for (i=0; i<addIV.length; i++) {
+          console.log("Checking addIV["+i+"]: "+JSON.stringify(addIV[i]));
+          var included = false;
+          for (j=0; j<customIVs.length; j++) {
+            if ((addIV[i][0]/1 == customIVs[j][0]/1) && (addIV[i][1]/1 == customIVs[j][1]/1) && (addIV[i][2]/1 == customIVs[j][2]/1)) {
+              included = true;
+              console.log("Found a match! IV already included: "+addIV[i][0]/1+"/"+addIV[i][1]/1+"/"+addIV[i][2]/1);
+              break;
+            }
+          }/* If we didn't find the IV the user wants added, then add it to customIVs */
+          console.log("included: "+included);
+          if (included == false) {
+            customIVs.push([addIV[i][0]/1,addIV[i][1]/1,addIV[i][2]/1]);
+            console.log("Pushed ("+addIV[i]+") to customIVs");
+          }
+        }
+        
+        console.log("customIVs:"+JSON.stringify(customIVs));
         
         /* Set final evo stats if they exist, otherwise copy base mon stats */
         var finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
         var finalEvoDef = evoVals[2]?.[2] ? evoVals[2][2] : evoVals[0][2];
         var finalEvoSta = evoVals[2]?.[3] ? evoVals[2][3] : evoVals[0][3];
-        outputCustomIVsStr(customIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, evoVals[0][0], evoVals[0][4]);
+        outputCustomIVsStr(customIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, evoVals[0][0], evoVals[0][4], trash, trashHundo);
         
         /* Ensure we update the URL before returning */
         updateURI(mon,league,leagueName,lang[0],0);
@@ -1095,14 +1138,16 @@
     }
     
     /* Given custom IVs customIVs, outputs a Search String for the user */
-    function outputCustomIVsStr(customIVs, baseAtk, baseDef, baseSta, finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, dexNum, monName) {
+    function outputCustomIVsStr(customIVs, baseAtk, baseDef, baseSta, finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, dexNum, monName, trash, trashHundo) {
       var outputCustomIVsStrT0, outputCustomIVsStrT1;
       if (perfTiming) {outputCustomIVsStrT0 = performance.now();}
       
       console.log("Received customIVs: "+JSON.stringify(customIVs)+", baseAtk: "+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", league:"+league+", output:"+output+", maxLvl:"+maxLvl+", dexNum:"+dexNum+", monName:"+monName);
   
       output.value = ''; /* ensure old output is cleared */
-      var message = "String finds "+monName+" with IVs: "+JSON.stringify(customIVs);
+      var message = "String finds "+monName+" with ";
+      message += (trash) ? "IVs except: ":"IVs: ";
+      message += JSON.stringify(customIVs);
       var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
       var i, k, lookupLvl;
       cps[0] = new Set();
@@ -1215,9 +1260,15 @@
           }
         }
       }
+      
+      /* get actual maxCP and maxHP using spread syntax */
+      if (trash) {
+        maxCP.fill(Math.max(...maxCP));
+        maxHP.fill(Math.max(...maxHP));
+      }
         
       /* output the CPs and HPs */
-      outputCPsHPsBuckets(cps.slice(), false, hps.slice(), false, aIV, dIV, sIV, output, dexNum, lang, false, true, false);
+      outputCPsHPsBuckets(cps.slice(), false, hps.slice(), false, aIV, dIV, sIV, output, dexNum, lang, trash, trashHundo);
       var origOut = output.value;
       
       if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
@@ -1239,6 +1290,7 @@
       document.getElementById('feedbackBox').innerHTML = "";
       document.getElementById('targetDiv').style.display = (league == "Raid") ? "inline-block" : "none";
       document.getElementById('RaidlimitDiv').style.display = (league == "Raid") ? "inline-block" : "none";
+      document.getElementById('RaidOverrideDiv').style.display = (league == "Raid") ? "inline-block" : "none";
       document.getElementById('asDiv').style.display = "none";
       
       if (perfTiming) {outputCustomIVsStrT1 = performance.now();
