@@ -80,7 +80,7 @@
   		<option value="All">All Leagues</option></select>
   	</label><br />
     <label id="getStarted"><i>Please first select an evolution family above, then boxes to select limits will appear...</i><br /></label>
-    <div id="targetDiv" hidden><label id="targetLbl" for="target" style="display: none;">Find:</label><select id="target" oninput="main()"></select>As:<!--div id="asDiv"> As: </div--></div>
+    <div id="targetDiv" hidden><label id="targetLbl" for="target" style="display: none;">Find:</label><select id="target" oninput="main()"></select><div id="asDiv">&nbsp;As: </div></div>
     <div id="RaidlimitDiv" hidden>
       <label id="labelIVlimit" for="ivLim"> With Minimum IVs&#8805;</label><select id="ivLim" oninput="main()"><option value="45">100%</option><option value="44">98%</option><option value="43">96%</option><option selected value="42">93%</option><option value="41">91%</option><option value="40">89%</option><option value="39">87%</option><option value="38">84%</option><option value="37">82%</option><option value="36">80%</option><option value="35">78%</option><option value="34">76%</option><option value="33">73%</option><option value="32">71%</option><option value="31">69%</option><option value="30">67%</option></select>
       <label id="labelaLimit" for="aLim">, Attack&#8805;</label><select id="aLim" oninput="main()"><option value="">&nbsp;</option><option value="15">15</option><option value="14">14</option><option value="13">13</option><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
@@ -404,14 +404,17 @@
         
         /* Separate and format customIVs, starting with whitespace */
         customIVs = customIVs.split(/[ ,]+/);
+        console.log("Starting to process customIVs: "+JSON.stringify(customIVs));
         for (i=0; i<customIVs.length; i++) {
           /* Strip out IV separators and save each IV */
           customIVs[i] = customIVs[i].split(/[^0-9]+/);
-          customIVs[i].A = customIVs[i][0];
-          customIVs[i].D = customIVs[i][1];
-          customIVs[i].S = customIVs[i][2];
+          //customIVs[i].A = customIVs[i][0];
+          //customIVs[i].D = customIVs[i][1];
+          //customIVs[i].S = customIVs[i][2];
+          console.log("customIVs["+i+"]:"+JSON.stringify(customIVs[i]));
         }
-        /*console.log("Finished processing customIVs: "+JSON.stringify(customIVs));*/
+        
+        console.log("Finished processing customIVs: "+JSON.stringify(customIVs));
         document.getElementById('feedbackBox').innerHTML = "<p><i>Read custom IVs as: "+JSON.stringify(customIVs)+"</i></p>";
         /* Finish later after initial evoVals building */
       } else {
@@ -435,8 +438,9 @@
         document.getElementById('getStarted').style.display = "block";
         document.getElementById('output').value = "";
         document.getElementById('targetDiv').style.display = "none";
-        //document.getElementById('asDiv').style.display = "none";
+        document.getElementById('RaidlimitDiv').style.display = "none";
         document.getElementById('targetLbl').style.display = "none";
+        document.getElementById('asDiv').style.display = "none";
         return;
       }
       
@@ -459,8 +463,10 @@
       /* Build drop down for user to fine tune family evo for string to target */
       if (target.options.length < 1) {
         document.getElementById('targetDiv').style.display = "inline-block";
-        //document.getElementById('asDiv').style.display = "inline-block";
+        document.getElementById('RaidlimitDiv').style.display = "none";
         document.getElementById('targetLbl').style.display = "inline-block";
+        document.getElementById('asDiv').style.display = "inline-block";
+        
         /* Add names to target select box */
         for (i=0; i<monFamilyNames.length; i++) {
           var option = document.createElement("option");
@@ -536,8 +542,9 @@
         /* There are evolutions, unhide base option */
         console.log("Evos detected, showing target...");
         document.getElementById("targetDiv").style.display = "inline-block";
+        document.getElementById('RaidlimitDiv').style.display = "none";
         //document.getElementById('asDiv').style.display = "inline-block";
-        document.getElementById("targetLbl").style.display = "inline-block";
+        //document.getElementById("targetLbl").style.display = "inline-block";
   
         /* If base could also be an evo, add duplicate entry */
         /* Example test cases: Rhyhorn, Electabuzz */
@@ -553,8 +560,10 @@
         /* Otherwise reset to default hidden status, default text */
         console.log("No evos detected, hiding target...");
         document.getElementById("targetDiv").style.display = "none";
-        //document.getElementById('asDiv').style.display = "none";
+        document.getElementById('RaidlimitDiv').style.display = "none";
         document.getElementById("targetLbl").style.display = "none";
+        document.getElementById('asDiv').style.display = "none";
+        
         /* Duplicate the only entry to ensure we have a final mon to output */
         evoVals.push([...evoVals[0]]); /* Don't just copy pointer, copy values! */
       }
@@ -583,42 +592,30 @@
         
         /* Un-hide User Input boxes */
         document.getElementById('RaidlimitDiv').style.display = "inline-block";
+        document.getElementById('targetDiv').style.display = "inline-block";
+        document.getElementById("targetLbl").style.display = "inline-block";
+        document.getElementById('asDiv').style.display = "none";
         
         /* Create "customIVs" formatted string to output via outputCustomIVsStr */
         var attackIVlim = document.getElementById('aLim').value ? document.getElementById('aLim').value:-1*1;
         var defenseIVlim = document.getElementById('dLim').value ? document.getElementById('dLim').value:-1*1;
         var staminaIVlim = document.getElementById('sLim').value ? document.getElementById('sLim').value:-1*1;
         var IVlim = document.getElementById('ivLim').value ? document.getElementById('ivLim').value:-1*1;
-        console.log("Read IV limits as:"+attackIVlim+"/"+defenseIVlim+"/"+staminaIVlim+", "+IVlim);
-        customIVs = {};
+        //console.log("Read IV limits as:"+attackIVlim+"/"+defenseIVlim+"/"+staminaIVlim+", "+IVlim);
+        customIVs = [];
         
-        for (var a=15, i=0; a/1>=attackIVlim/1; a--) {
+        for (var a=15; a/1>=attackIVlim/1; a--) {
           for (var d=15; d/1>=defenseIVlim/1; d--) {
             for (var s=15; s/1>=staminaIVlim/1; s--) {
               var IVsum = a/1+d/1+s/1;
               if (IVsum/1>=IVlim/1) {
-                console.log(a+"+"+d+"+"+s+"="+IVsum+" > "+IVlim/1);
-                customIVs[i] = {};
-                customIVs[i].A = a/1;
-                customIVs[i].D = d/1;
-                customIVs[i].S = s/1;
-                i++;
+                //console.log(a+"+"+d+"+"+s+"="+IVsum+" > "+IVlim/1);
+                customIVs.push([a,d,s]);
               }
             }
           }
         }
-        console.log("customIVs:"+JSON.stringify(customIVs));
-        
-        /*
-        document.getElementById('evoName['+i+']').innerHTML = (league != "Raid") ? evoVals[i][4]+" ("+evoVals[i][5]+")":"";
-        document.getElementById('evoName['+i+']').style.display = (league != "Raid") ? "inline-block":"none";
-        document.getElementById('evoName['+i+']').innerHTML = evoVals[i][4]+" ("+evoVals[i][5]+")";
-        document.getElementById('evoName['+i+']').style.display = league != "Raid" ? "inline-block;" : "none";
-        document.getElementById('evoLimits['+i+']').style.display = league != "Raid" ? "inline-block;" : "none";
-        document.getElementById('RaidlimitDiv['+i+']').style.display = (league == "Raid") ? "inline-block" : "none";
-        */
-        
-        
+        //console.log("customIVs:"+JSON.stringify(customIVs));
         
         /* Set final evo stats if they exist, otherwise copy base mon stats */
         var finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
@@ -1102,7 +1099,7 @@
       var outputCustomIVsStrT0, outputCustomIVsStrT1;
       if (perfTiming) {outputCustomIVsStrT0 = performance.now();}
       
-      /*console.log("Received customIVs: "+JSON.stringify(customIVs)+", baseAtk: "+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", league:"+league+", output:"+output+", maxLvl:"+maxLvl+", dexNum:"+dexNum+", monName:"+monName);*/
+      console.log("Received customIVs: "+JSON.stringify(customIVs)+", baseAtk: "+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", league:"+league+", output:"+output+", maxLvl:"+maxLvl+", dexNum:"+dexNum+", monName:"+monName);
   
       output.value = ''; /* ensure old output is cleared */
       var message = "String finds "+monName+" with IVs: "+JSON.stringify(customIVs);
@@ -1140,14 +1137,14 @@
       /* generate all the cps and hps for matching */
       /* for all customIV spreads, up to league CP limit */
       for (i=0; i<customIVs.length; i++) {
-        for (k=0; k<searchLvl.length; k++) {
-          lookupLvl = (searchLvl[k]-1)*2;
-          
-          var atk = customIVs[i].A;
-          var def = customIVs[i].D;
-          var sta = customIVs[i].S;
-          var atkBkt = -1, defBkt = -1, hpBkt = -1;
-          
+        
+        var atk = customIVs[i][0];
+        var def = customIVs[i][1];
+        var sta = customIVs[i][2];
+        console.log("Read atk="+atk+", def="+def+", sta="+sta);
+        var atkBkt = -1, defBkt = -1, hpBkt = -1;
+        
+        for (k=0; k<searchLvl.length; k++) {lookupLvl = (searchLvl[k]-1)*2;
           var cp = Math.max(10, Math.floor((baseAtk/1 + atk/1) * Math.sqrt(baseDef/1 + def/1) * Math.sqrt(baseSta/1 + sta/1) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
           var finalEvoCP = Math.max(10, Math.floor((finalEvoAtk/1 + atk/1) * Math.sqrt(finalEvoDef/1 + def/1) * Math.sqrt(finalEvoSta/1 + sta/1) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
           
@@ -1240,8 +1237,9 @@
       /* Fix UI to remove base mon selection and update message appropriately */
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       document.getElementById('feedbackBox').innerHTML = "";
-      document.getElementById('targetDiv').style.display = "none";
-      //document.getElementById('asDiv').style.display = "none";
+      document.getElementById('targetDiv').style.display = (league == "Raid") ? "inline-block" : "none";
+      document.getElementById('RaidlimitDiv').style.display = (league == "Raid") ? "inline-block" : "none";
+      document.getElementById('asDiv').style.display = "none";
       
       if (perfTiming) {outputCustomIVsStrT1 = performance.now();
       console.log("outputCustomIVsStrT0: Execution took "+(outputCustomIVsStrT1-outputCustomIVsStrT0).toFixed(1)+"ms");}
