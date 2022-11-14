@@ -219,7 +219,8 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
                       document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";*/
                       document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";*/
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: inline-block;";*/
+                      document.getElementById('RaidlimitDiv').style="display: inline-block;";
+                      document.getElementById('RaidOverrideDiv').style="display: inline-block;";
                       break;
                     case "All":
                       document.getElementById('LLlimit['+(j+1)+']').value = limits[0];
@@ -230,7 +231,8 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";*/
                       document.getElementById('ULlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: inline-block;";*/
                       document.getElementById('MLlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: inline-block;";*/
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('RaidlimitDiv').style.display="none";
+                      document.getElementById('RaidOverrideDiv').style.display="none";
                       break;
                     case "500":
                       document.getElementById('LLlimit['+(j+1)+']').value = limits[0];
@@ -238,7 +240,8 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
                       document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";*/
                       document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";*/
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('RaidlimitDiv').style.display="none";
+                      document.getElementById('RaidOverrideDiv').style.display="none";
                       break;
                     case "1500":
                       document.getElementById('GLlimit['+(j+1)+']').value = limits[0];
@@ -246,7 +249,8 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: inline-block;";*/
                       document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";*/
                       document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";*/
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('RaidlimitDiv').style.display="none";
+                      document.getElementById('RaidOverrideDiv').style.display="none";
                       break;
                     case "2500":
                       document.getElementById('ULlimit['+(j+1)+']').value = limits[0];
@@ -254,7 +258,8 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
                       document.getElementById('ULlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: inline-block;";*/
                       document.getElementById('MLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: none;";*/
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('RaidlimitDiv').style.display="none";
+                      document.getElementById('RaidOverrideDiv').style.display="none";
                       break;
                     default:
                       document.getElementById('MLlimit['+(j+1)+']').value = limits[0];
@@ -262,7 +267,8 @@
                       document.getElementById('GLlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelGLlimit['+(j+1)+']').style="display: none;";*/
                       document.getElementById('ULlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelULlimit['+(j+1)+']').style="display: none;";*/
                       document.getElementById('MLlimit['+(j+1)+']').style="display: inline-block;"; /*document.getElementById('labelMLlimit['+(j+1)+']').style="display: inline-block;";*/
-                      document.getElementById('Raidlimit['+(j+1)+']').style="display: none;"; /*document.getElementById('labelRaidlimit['+(j+1)+']').style="display: none;";*/
+                      document.getElementById('RaidlimitDiv').style.display="none";
+                      document.getElementById('RaidOverrideDiv').style.display="none";
                   }
                 } else {
                   if (j>0) {document.getElementById('evoCB['+(j+1)+']').value = false;}
@@ -315,6 +321,30 @@
             case "IVentry":
               document.getElementById('customIVs').checked = true;
               document.getElementById('IVentry').value = values[i].split("=")[1];
+              break;
+              
+            case "ivLim":
+              document.getElementById('ivLim').value = values[i].split("=")[1];
+              break;
+              
+            case "a":
+              document.getElementById('aLim').value = values[i].split("=")[1];
+              break;
+              
+            case "d":
+              document.getElementById('dLim').value = values[i].split("=")[1];
+              break;
+              
+            case "s":
+              document.getElementById('sLim').value = values[i].split("=")[1];
+              break;
+            
+            case "addIV":
+              document.getElementById('addIV').value = values[i].split("=")[1];
+              break;
+            
+            case "excludeIV":
+              document.getElementById('excludeIV').value = values[i].split("=")[1];
               break;
           }
         }
@@ -811,20 +841,29 @@
         /* Override CP Limit for allZero mode */
         league = document.getElementById('cpLimit').value;
         /* Piggyback dex skips onto lang field */
-        lang = lang + "&skips="+document.getElementById('dexSkips').value;
+        lang += "&skips="+document.getElementById('dexSkips').value;
       }
       
       if (document.getElementById('customIVs').checked) {
         /* Piggyback IVentry onto lang field */
-        lang = lang + "&IVentry="+document.getElementById('IVentry').value;
+        lang += "&IVentry="+document.getElementById('IVentry').value;
       }
       
       if (document.getElementById('maxLvl').value != "51") {
-        lang = lang + "&m="+document.getElementById('maxLvl').value;
+        lang += "&m="+document.getElementById('maxLvl').value;
       }
       
       if (document.getElementById('searchLvl').value != "30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1") {
-        lang = lang + "&s="+document.getElementById('searchLvl').value;
+        lang += "&s="+document.getElementById('searchLvl').value;
+      }
+      
+      if (document.getElementById('league').value == "Raid") {
+        lang += document.getElementById("ivLim").value != "" ? "&ivLim="+document.getElementById("ivLim").value/1:"";
+        lang += document.getElementById("aLim").value != "" ? "&a="+document.getElementById("aLim").value/1:"";
+        lang += document.getElementById("dLim").value != "" ? "&d="+document.getElementById("dLim").value/1:"";
+        lang += document.getElementById("sLim").value != "" ? "&s="+document.getElementById("sLim").value/1:"";
+        lang += document.getElementById("addIV").value != "" ? "&addIV="+document.getElementById("addIV").value/1:"";
+        lang += document.getElementById("excludeIV").value != "" ? "&notIV="+document.getElementById("excludeIV").value/1:"";
       }
       
       /* update the URL with search parameters */
@@ -1108,6 +1147,7 @@
         }
       }
       
+      /* TODO: Why is this All League only?? */
       /* get actual maxCP and maxHP using spread syntax */
       if ((league == "All") && (trash)) {
         maxCP.fill(Math.max(...maxCP));
