@@ -795,29 +795,32 @@
       var binary = "", i,j;
       var rStr = "", tempStr = [];
   
-      for (i=1; ((i<10) && (i<evoLen+2)); i++) {
-        if ((getComputedStyle(document.getElementById("evoLimits["+i+"]"), null).display == "inline-block") && (document.getElementById('evoCB['+i+']').checked)) {
-          if (document.getElementById('league').value == "All") {tempStr = [];
-            if (getComputedStyle(document.getElementById("LLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("LLlimit["+i+"]").value/1);}
-            if (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("GLlimit["+i+"]").value/1);}
-            if (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("ULlimit["+i+"]").value/1);}
-            if (getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("MLlimit["+i+"]").value/1);}
-            if (tempStr.length > 0) {
-              for (j=0; j<tempStr.length; j++) {
-                if (j===0) {rStr += "_"+tempStr[j];}
-                else {rStr += "-" + tempStr[j];}
-              }
-            } else {rStr += "_f";}
+      
+      if (document.getElementById('league').value !== "Raid") {/*Skip all of this if making Raid mode URL*/
+        for (i=1; ((i<10) && (i<evoLen+2)); i++) {
+          if ((getComputedStyle(document.getElementById("evoLimits["+i+"]"), null).display == "inline-block") && (document.getElementById('evoCB['+i+']').checked)) {
+            if (document.getElementById('league').value == "All") {tempStr = [];
+              if (getComputedStyle(document.getElementById("LLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("LLlimit["+i+"]").value/1);}
+              if (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("GLlimit["+i+"]").value/1);}
+              if (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("ULlimit["+i+"]").value/1);}
+              if (getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("MLlimit["+i+"]").value/1);}
+              if (tempStr.length > 0) {
+                for (j=0; j<tempStr.length; j++) {
+                  if (j===0) {rStr += "_"+tempStr[j];}
+                  else {rStr += "-" + tempStr[j];}
+                }
+              } else {rStr += "_f";}
+            } else {
+              if (((document.getElementById('league').value ==  "500")) && (getComputedStyle(document.getElementById("LLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("LLlimit["+i+"]").value/1;}
+              if (((document.getElementById('league').value == "1500")) && (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("GLlimit["+i+"]").value/1;}
+              if ((document.getElementById('league').value == "2500") && (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("ULlimit["+i+"]").value/1;}
+              if ((document.getElementById('league').value === false) && (getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("MLlimit["+i+"]").value/1;}
+            }
           } else {
-            if (((document.getElementById('league').value ==  "500")) && (getComputedStyle(document.getElementById("LLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("LLlimit["+i+"]").value/1;}
-            if (((document.getElementById('league').value == "1500")) && (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("GLlimit["+i+"]").value/1;}
-            if ((document.getElementById('league').value == "2500") && (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("ULlimit["+i+"]").value/1;}
-            if ((document.getElementById('league').value === false) && (getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("MLlimit["+i+"]").value/1;}
+            rStr += "_f";
           }
-        } else {
-          rStr += "_f";
+          if ((i==1) && (rStr.charAt(0)) == "_") {rStr = rStr.substring(1);} /* remove leading "_" */
         }
-        if ((i==1) && (rStr.charAt(0)) == "_") {rStr = rStr.substring(1);} /* remove leading "_" */
       }
   
       binary = document.getElementById('trash').checked ? "1" : "0";
@@ -826,8 +829,7 @@
       binary += document.getElementById('allZero').checked ? "1" : "0";
       binary += document.getElementById('customIVs').checked ? "1" : "0";
       binary += document.getElementById('attrAppr').checked ? "1" : "0";
-
-      console.log("encodeSettings: Computed binary as "+binary);
+      /*console.log("encodeSettings: Computed binary as "+binary);*/
       
       return [binary,rStr];
     }
@@ -862,8 +864,11 @@
         lang += document.getElementById("aLim").value != "" ? "&a="+document.getElementById("aLim").value/1:"";
         lang += document.getElementById("dLim").value != "" ? "&d="+document.getElementById("dLim").value/1:"";
         lang += document.getElementById("sLim").value != "" ? "&s="+document.getElementById("sLim").value/1:"";
-        lang += document.getElementById("addIV").value != "" ? "&addIV="+document.getElementById("addIV").value/1:"";
-        lang += document.getElementById("excludeIV").value != "" ? "&notIV="+document.getElementById("excludeIV").value/1:"";
+        lang += document.getElementById("addIV").value != "" ? "&addIV="+document.getElementById("addIV").value:"";
+        lang += document.getElementById("excludeIV").value != "" ? "&notIV="+document.getElementById("excludeIV").value:"";
+        console.log("updateURI:: Recognized Raid league, added:"+lang+" to URL");
+        console.log("updateURI:: addIV.value:"+document.getElementById("addIV").value);
+        console.log("updateURI:: excludeIV.value:"+document.getElementById("excludeIV").value);
       }
       
       /* update the URL with search parameters */
