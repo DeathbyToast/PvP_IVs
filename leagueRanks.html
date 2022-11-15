@@ -263,9 +263,11 @@
           /* Skip filter if user checks box for ALL results or Level 1 */
           if ((all) || (maxLvl == 1) ||
              /* Filter out too low of max CP values to increase calculation speed */
-             ((league == 500  && maxCP > 400)  ||
-              (league == 1500 && maxCP > 1300) ||
-              (league == 2500 && maxCP > 2300) ||
+             /* Include Wobbuffet (max 1160CP) for Great League cutoff, and */
+             /* Altaria (2266), Dewgong (2245), and Quagsire (2252) for Ultra */
+             ((league == 500  && maxCP > 410)  ||
+              (league == 1500 && maxCP > 1150) ||
+              (league == 2500 && maxCP > 2200) ||
               (maxCP > 2500))) {
             var row = document.createElement("tr");
   
