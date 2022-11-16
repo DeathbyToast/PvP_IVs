@@ -27,3 +27,15 @@ if (localStorage.getItem("colorTheme") === "dark-theme") {
 ) {
     toggleTheme();
 }
+
+function advCollapsible() {
+  if(document.getElementById("advCollapsible").style.display == "block") {
+    document.getElementById("advCollapsible").style.display = "none";
+    document.getElementById("advArrow").classList.remove("up");
+    document.getElementById("advArrow").classList.add("down");
+  } else {
+    document.getElementById("advCollapsible").style.display = "block";
+    document.getElementById("advArrow").classList.remove("down");
+    document.getElementById("advArrow").classList.add("up");
+  }
+}
