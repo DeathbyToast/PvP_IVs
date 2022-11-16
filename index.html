@@ -1866,7 +1866,8 @@
       }
       </script>
       <div style="overflow-x:auto;" id="timing_outputs"></div>
-      <h3>Settings:</h3>
+      <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
+      <div id=advCollapsible hidden>
       <label>IV Floor:<select id="floor" oninput="setUserPreference('floor')">
         <option value="0">0: Wild Caught</option>
         <option value="1">1: Trade, Good Friend</option>
@@ -1995,9 +1996,8 @@
       <label>Show Min Level CP (Raid/Hatch):<input id="mlCP" type="checkbox" oninput="setUserPreference('mlCP')"></label><br />
       <label>Remember My Settings:<input id="save" type="checkbox" oninput="saveCurrentSettings()"></label><br />
       <button id="resetButton" type="resetSettings" onclick="localStorage.clear();location.reload();">Reset All Saved Settings to Defaults</button>
-
-      <br />
-      <div style="overflow-x:auto;">
+      </div>
+      <br /><div style="overflow-x:auto;">
         <p style="color:silver;font-size:0.6em">This site uses Google Analytics and the Google
         <a style="color:#AED6F1" href="https://policies.google.com/privacy">Privacy Policy</a> and
         <a style="color:#AED6F1" href="https://policies.google.com/terms">Terms of Service</a> apply.<br /><br />
