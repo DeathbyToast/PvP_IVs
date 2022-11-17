@@ -148,6 +148,7 @@
     <br /><br />
       <textarea id="output" rows="10" style="width: 95%; height: 50%;" onclick="autocopy(this)"></textarea>
       <div id="outputSummaryBox"></div>
+      <div id="attrApprTrashBox"></div>
       <div id="feedbackBox"></div><br />
     <br /><br />
       <!-- Footer Code Below -->
@@ -184,7 +185,7 @@
     function checkURI() {
       var checkURIT0,checkURIT1;
       if (perfTiming) {checkURIT0 = performance.now();}
-      var URL = window.location.href.split("?")[1];
+      var URL = window.location.href.split("?")[1],i,j;
       /*var URL = "mon=Deino&cp=All&r=11-12-13-10_14-15-16-17_18-19-10-10_f_f&set=00011000&l=en&m=51";*/
       /*URL = "mon=Deino&cp=All&r=&set=000101&l=en&IVentry=0/14/15,0/15/14";*/
       /*URL = "mon=Teddiursa&cp=Raid&r=&set=001001&l=en&ivLim=43&a=15&d=7&s=14&addIV=14/15/15,15/12/15&notIV=1-1-1";*/
@@ -193,7 +194,7 @@
       {
         URL = decodeURI(URL);
         /*console.log("Read URL as: "+URL);*/
-        var values = URL.split("&"), i, j;
+        var values = URL.split("&");
         /*console.log("Values array as: "+JSON.stringify(values));*/
         for (i=0; i<values.length; i++)
         {
@@ -374,11 +375,11 @@
     }
     
     function main(mon) {
-      var mainT0, mainT1;
+      var mainT0, mainT1,i,j;
       if (perfTiming) {mainT0 = performance.now();}
       
       /* Reset all evoLimits / name divs */
-      for (var i=1; i<10; i++) {
+      for (i=1; i<10; i++) {
         document.getElementById('evoName['+i+']').innerHTML = "";
         document.getElementById('evoName['+i+']').style.display = "none";
         document.getElementById('evoLimits['+i+']').style.display = "none";
@@ -399,6 +400,19 @@
       document.getElementById("errorBox").innerHTML = "";
       document.getElementById("overflowArea").innerHTML = "";
       document.getElementById("outputSummaryBox").innerHTML = "";
+      
+      /* Clear warning to user if they've already seen it */
+      if (document.getElementById('attrApprTrashBox').innerHTML != "") {
+        if (document.getElementById('attrApprTrashBox').innerHTML == "<p><i>NOTE: Automatically unchecked 'Use Attribute Appraisals' to maximize trashing string performance. This setting can be changed under 'Advanced' below..</i></p>") {
+          /* Remove the duplicate period so the user to read it, but clear the message next time */
+          document.getElementById('attrApprTrashBox').innerHTML = "<p><i>NOTE: Automatically unchecked 'Use Attribute Appraisals' to maximize trashing string performance. This setting can be changed under 'Advanced' below.</i></p>";
+        } else if (document.getElementById('attrApprTrashBox').innerHTML == "<p><i>NOTE: Automatically checked 'Use Attribute Appraisals' to maximize trashing string performance. This setting can be changed under 'Advanced' below..</i></p>") {
+          document.getElementById('attrApprTrashBox').innerHTML = "<p><i>NOTE: Automatically checked 'Use Attribute Appraisals' to maximize trashing string performance. This setting can be changed under 'Advanced' below.</i></p>";
+        } else {
+          /* Clear as user has already seen this warning */
+          document.getElementById('attrApprTrashBox').innerHTML = "";
+        }
+      }
       
       /* Hide/Show advanced Settings as appropriate */
       if (document.getElementById('trash').checked) {document.getElementById('trashAdv').style.display = "block";}
@@ -463,8 +477,7 @@
             input.value = inputMon;
           }
           mon = input.value;
-          console.log("SET MON TO:"+mon);
-          /* We have a valid mon, hide the 'getting started' mon selection help text */
+          /*console.log("SET MON TO:"+mon);*/
         }
       }
       
@@ -481,6 +494,7 @@
         return;
       }
       
+      /* We have a valid mon, hide the 'getting started' mon selection help text */
       document.getElementById('getStarted').style.display = "none";
       var value = pokeListObj[mon].split(',');
       var output = document.getElementById('output');
@@ -503,7 +517,6 @@
           var option = document.createElement("option");
           option.text = monFamilyNames[i];
           target.add(option);
-          console.log("Added "+monFamilyNames[i]+" to target options list");
         }
         
         /** Initialize evoVals as defined:
@@ -532,7 +545,6 @@
         [evoVals[0], evoVals[1]] = [evoVals[1], evoVals[0]];
         console.log("Corrected evoVals: "+JSON.stringify(evoVals));
       }
-      console.log("Sorted evoVals:"+JSON.stringify(evoVals));
       
       /* Only run if there are evolutions, skip for Heatmor, etc */
       if (evoVals.length > 1) {
@@ -541,10 +553,7 @@
         if (newMon) {
           if (evoVals[0][0].includes("&eggsonly")) {
             target.value = evoVals[1][4];
-          } else {
-            target.value = evoVals[0][4];
-          }
-          console.log("New mon selected ("+mon+"), initialized target to "+target.options[target.selectedIndex].text);
+          } else {target.value = evoVals[0][4];}
         }
         /* Ensure that base mon (evoVals[0]) matches user selected target */
         if (target.value != evoVals[0][4]) {
@@ -555,15 +564,13 @@
           }
         }
         
-        /* There are evolutions, unhide base option */
-        console.log("Evos detected, showing target...");
+        /* There are evolutions, unhide target options */
         document.getElementById("targetDiv").style.display = "inline-block";
         document.getElementById('targetLbl').style.display = "inline-block";
         document.getElementById('asDiv').style.display = "inline-block";
         
         /* Remove impossible evolutions from evoVals based on target */
         if (document.getElementById('noBadEvos').checked) {
-          console.log("Checking "+evoVals[0][4]+"("+evoVals[0][5]+")");
           for (i=1; i<evoVals.length; i++) {
             if ((evoVals[0][5]/1 > evoVals[i][5]/1) ||
                ((evoVals[0][4] == "Kakuna" && evoVals[i][4] == "Weedle") ||
@@ -575,7 +582,7 @@
                   (evoVals[0][4] == "Wurmple" && evoVals[i][4] == "Silcoon") ||
                   (evoVals[0][4] == "Trapinch" && evoVals[i][4] == "Vibrava")) {
                     /* Don't remove Kakuna/Silcoon/Vibrava as evos of Weedle/Wurmple/Trapinch */
-                    console.log("False alarm, not an impossible evolution, continuing...");
+                    /*console.log("False alarm, not an impossible evolution, continuing...");*/
                     continue;
               }
               console.log("Detected impossible evolution, removing "+evoVals[i][4]+"("+evoVals[i][5]+")");
@@ -584,7 +591,6 @@
               i--;
             }
           }
-          console.log("evoVals without impossible evolutions:"+JSON.stringify(evoVals));
         }
   
         /* If base could also be an evo, add duplicate entry */
@@ -593,13 +599,12 @@
             ((evoVals[0][5] > GLcutoff) && ((league == "1500") || (league ==  "All"))) ||
             ((evoVals[0][5] > ULcutoff) && ((league == "2500") || (league ==  "All"))) ||
             ((evoVals[0][5] > MLcutoff) && ((league =="false") || (league ==  "All")))) {
-          console.log("Detected base ("+evoVals[0][4]+") that could be evo, duplicating...");
+          /*console.log("Detected base ("+evoVals[0][4]+") that could be evo, duplicating...");*/
           evoVals.push([...evoVals[0]]); /* Don't just copy pointer, copy values! */
-          console.log("evoVals after duplication push: "+JSON.stringify(evoVals));
         }
       } else {
         /* Otherwise reset to default hidden status, default text */
-        console.log("No evos detected, hiding target...");
+        /*console.log("No evos detected, hiding target...");*/
         document.getElementById("targetDiv").style.display = "none";
         document.getElementById("targetLbl").style.display = "none";
         document.getElementById('asDiv').style.display = "none";
@@ -613,13 +618,14 @@
       
       /* Ensure we have a clean dex number to output */
       evoVals[0][0] = evoVals[0][0].split("b").join("");
+      var finalEvoAtk, finalEvoDef, finalEvoSta;
       
       /* If this was a request for custom IV Search String, output custom IV string */
       if (document.getElementById('customIVs').checked) {
         /* Set final evo stats if they exist, otherwise copy base mon stats */
-        var finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
-        var finalEvoDef = evoVals[2]?.[2] ? evoVals[2][2] : evoVals[0][2];
-        var finalEvoSta = evoVals[2]?.[3] ? evoVals[2][3] : evoVals[0][3];
+        finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
+        finalEvoDef = evoVals[2]?.[2] ? evoVals[2][2] : evoVals[0][2];
+        finalEvoSta = evoVals[2]?.[3] ? evoVals[2][3] : evoVals[0][3];
         outputCustomIVsStr(customIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, evoVals[0][0], evoVals[0][4], trash, trashHundo);
         
         /* Ensure we update the URL before returning */
@@ -654,7 +660,6 @@
         for (i=0; i<excludeIV.length; i++) {
           excludeIV[i] = excludeIV[i].split(/[^0-9]+/);
         }
-        console.log("Read IV limits as:"+attackIVlim+"/"+defenseIVlim+"/"+staminaIVlim+", "+IVlim+", addIV: "+JSON.stringify(addIV)+", excludeIV: "+JSON.stringify(excludeIV));
         
         /* Create customIVs set for output */
         customIVs = [];
@@ -678,7 +683,6 @@
         }
         /* Check to make sure the user's Added IVs are included */
         for (i=0; i<addIV.length; i++) {
-          console.log("Checking addIV["+i+"]: "+JSON.stringify(addIV[i]));
           var included = false;
           for (j=0; j<customIVs.length; j++) {
             if ((addIV[i][0]/1 == customIVs[j][0]/1) && (addIV[i][1]/1 == customIVs[j][1]/1) && (addIV[i][2]/1 == customIVs[j][2]/1)) {
@@ -694,12 +698,10 @@
           }
         }
         
-        console.log("customIVs:"+JSON.stringify(customIVs));
-        
         /* Set final evo stats if they exist, otherwise copy base mon stats */
-        var finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
-        var finalEvoDef = evoVals[2]?.[2] ? evoVals[2][2] : evoVals[0][2];
-        var finalEvoSta = evoVals[2]?.[3] ? evoVals[2][3] : evoVals[0][3];
+        finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
+        finalEvoDef = evoVals[2]?.[2] ? evoVals[2][2] : evoVals[0][2];
+        finalEvoSta = evoVals[2]?.[3] ? evoVals[2][3] : evoVals[0][3];
         outputCustomIVsStr(customIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, lang, maxLvl, evoVals[0][0], evoVals[0][4], trash, trashHundo);
         
         /* Ensure we update the URL before returning */
@@ -740,9 +742,7 @@
         /** Fill evoVals as defined:
          * ex: ["485",251,213,209,"Heatran",3754,10,10,10]
          * evoVals[][0] = dexNum or "false" if unchecked */
-        console.log("document.getElementById("+evoVals[i][4]+").checked: "+document.getElementById('evoCB['+i+']').checked);
         evoVals[i][0] = document.getElementById('evoCB['+i+']').checked ? evoVals[i][0] : false;
-        console.log("document.getElementById("+evoVals[i][4]+").checked: "+document.getElementById('evoCB['+i+']').checked);
         /**...below already filled previously...
          * ...evoVals[][1] = base attack stat
          * ...evoVals[][2] = base defense stat
@@ -764,7 +764,7 @@
         document.getElementById('GLlimitDiv['+i+']').style.display = ((evoVals[i][5] > GLcutoff) && ((league == "All") || (league == "1500"))) ? "inline-block" : "none";
         document.getElementById('ULlimitDiv['+i+']').style.display = ((evoVals[i][5] > ULcutoff) && ((league == "All") || (league == "2500"))) ? "inline-block" : "none";
         document.getElementById('MLlimitDiv['+i+']').style.display = ((evoVals[i][5] > MLcutoff) && ((league == "All") || (league == "false"))) ? "inline-block" : "none";
-        console.log("Added "+evoVals[i][4]+" to list, un-hid evoLimits["+i+"]");
+        /*console.log("Added "+evoVals[i][4]+" to list, un-hid evoLimits["+i+"]");*/
         
         evoVals[i][6] = ((evoVals[i][5] > LLcutoff) && ((league == "All") || (league ==  "500"))) ? document.getElementById('LLlimit['+i+']').value/1:0*1;
         evoVals[i][7] = ((evoVals[i][5] > GLcutoff) && ((league == "All") || (league == "1500"))) ? document.getElementById('GLlimit['+i+']').value/1:0*1;
@@ -1355,7 +1355,14 @@
       }
       output = Array.from(output);
       output.sort((a, b) => a - b);
-      var checkStr = getRanges(output) + lang;
+      output = getRanges(output);
+      if (output.length<1) {
+        console.log("No output("+JSON.stringify(output)+"), returning empty string('')");
+        return "";
+      }
+      
+      /* Otherwise if we have something to output, keep going */
+      var checkStr = output + lang;
       
       /* Can possibly return 0-1,2attack by default */
       var splitStr = checkStr.split(',');
@@ -1368,7 +1375,7 @@
         /* Ensure we merge the strings back together to return */
         checkStr = splitStr.join(",");
       }
-      return checkStr;
+      return "&" + checkStr;
     }
     
     function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, atkBkts, defBkts, staBkts, output, id, lang, trash, trashHundo) {
@@ -1380,14 +1387,13 @@
       
       /* Output Attribute Appraisal Groupings if selected */
       if (document.getElementById('attrAppr').checked) {
-        console.log("User has selected to use Attribute Appraisals, outputting...");
         if (!trash) {
-          output.value += "&" + groupAttr(atkBkts, lang[12]) + "&" + groupAttr(defBkts, lang[13]) + "&" + groupAttr(staBkts, lang[2]); /* add IV Buckets dex num */
+          output.value += groupAttr(atkBkts, lang[12]) + groupAttr(defBkts, lang[13]) + groupAttr(staBkts, lang[2]); /* add IV Buckets to dex num */
         } else {
           atkBkts = trashFlip(atkBkts, 4, true);
           defBkts = trashFlip(defBkts, 4, true);
           staBkts = trashFlip(staBkts, 4, true);
-          output.value += "&" + groupAttr(atkBkts, lang[12]) + "&" + groupAttr(defBkts, lang[13]) + "&" + groupAttr(staBkts, lang[2]); /* add IV Buckets dex num */
+          output.value += groupAttr(atkBkts, lang[12]) + groupAttr(defBkts, lang[13]) + groupAttr(staBkts, lang[2]); /* add IV Buckets to dex num */
         }
       }
       var maxLoops = 5;/* Always need all 5 appraisals */
@@ -1561,10 +1567,22 @@
       console.log("autocopy: Execution took "+(autocopyT1-autocopyT0).toFixed(1)+"ms");}
       return true;
     }
+    
+    /* Uncheck "Use Attribute Appraisals" by default when user selects trash string */
+    function trashCheck() {
+      if (document.getElementById("trash").checked && document.getElementById("attrAppr").checked) {
+        document.getElementById("attrAppr").checked = false;
+        document.getElementById('attrApprTrashBox').innerHTML = "<p><i>NOTE: Automatically unchecked 'Use Attribute Appraisals' to maximize trashing string performance. This setting can be changed under 'Advanced' below..</i></p>";
+      } else if (!document.getElementById("trash").checked && !document.getElementById("attrAppr").checked) {
+        document.getElementById("attrAppr").checked = true;
+        document.getElementById('attrApprTrashBox').innerHTML = "<p><i>NOTE: Automatically checked 'Use Attribute Appraisals' to maximize trashing string performance. This setting can be changed under 'Advanced' below..</i></p>";
+      }
+      main();
+    }
     </script>
     <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
     <div id=advCollapsible hidden>
-    <label>Trash String:<input id="trash" type="checkbox" oninput="main()"><br /></label>
+    <label>Trash String:<input id="trash" type="checkbox" oninput="trashCheck()"><br /></label>
     <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="main()"></label><br />
     <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br /></div>
     <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="main()"><br /></label>
