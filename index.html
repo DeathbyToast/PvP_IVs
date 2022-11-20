@@ -228,6 +228,7 @@
         
       <script>
       var lastLeague;
+      var inputMon = "";
       var perfTiming = false; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
       var mxlMod = false; /*track if max Lvl was adjusted*/
@@ -257,7 +258,15 @@
         Awesomplete.$.bind(input, {
           "awesomplete-selectcomplete": function(evt) {
             /*console.log("User Selected "+evt.text.label+", passing to main and exiting Awesomplete");*/
-            if (evt.text.label.indexOf("_SPECULATIVE") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";}if (evt.text.label.indexOf("_PLACEHOLDER") > -1)  {document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";}
+            if (evt.text.label.indexOf("_SPECULATIVE") > -1)
+            {
+              document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";
+            }
+            if (evt.text.label.indexOf("_PLACEHOLDER") > -1)
+            {
+              document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";
+            }
+            inputMon = evt.text.label;
             main(evt.text.label);
           }
         });
@@ -726,7 +735,7 @@
           /*https://pvpivs.com/searchStr.html?mon=Dusknoir&cp=1500&r=f_10_f_f&o=1001100&l=en*/
           /*if (!filterMod) {
             for (i=0; i<rIV.length; i++) {*/
-              /*searchLink += "<p><a href='https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"set=00011001&m="+maxLvl+"'>Generate "+mon+" Search String to Trash below Rank "+rIV[i]+"</a></p>";*/
+              /*searchLink += "<p><a href='https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"set=101000&m="+maxLvl+"'>Generate "+mon+" Search String to Trash below Rank "+rIV[i]+"</a></p>";*/
             /*}
           }*/
         } else {
@@ -785,9 +794,14 @@
         
         /* Awesomeplete sends "undefined" when it did not find a valid input */
         if (mon == undefined) { /* Determine if we have a valid, previously selected mon we can use */
-          if (pokeListObj[input.value]) {
-            /*console.log("Found a valid input.value of:"+JSON.stringify(input.value));*/
+          if ((pokeListObj[input.value]) || (pokeListObj[inputMon])) {
+            console.log("Found a valid input.value of:"+JSON.stringify(input.value));
+            /* Correct for autocomplete input being cleared accidentally */
+            if ((!(pokeListObj[input.value])) && (pokeListObj[inputMon])) {
+              input.value = inputMon;
+            }
             mon = input.value;
+            /*console.log("SET MON TO:"+mon);*/
           }
         }
         
@@ -907,14 +921,14 @@
         if (perfTiming) {stopTiming(T0, "main");}
       }
       
-      function displayPvPokeEvoGroup(inputMon) {
+      function displayPvPokeEvoGroup(inputName) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
         /*show textbox with PvPoke Custom Group Export data*/
         if (document.getElementById("cge").checked == true)
         {
-          var name = inputMon;
+          var name = inputName;
           /* Game Master uses Alola, but PvPoke uses Alolan, need to fix for valid data export */
           console.log("displayPvPokeEvoGroup starting...");
           if (name.includes("_Alola")) {
