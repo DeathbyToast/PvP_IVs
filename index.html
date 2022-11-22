@@ -576,7 +576,7 @@
               
               if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml == "")) {
                 console.log("i:"+i+" Detected too high CP after getMonRank");
-                document.getElementById('feedbackBox').innerHTML += "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") & min level ("+minLvl+") is too big for "+leagueName+"<br>Please check Settings: Min Level and try again</i></p><br>";
+                document.getElementById('feedbackBox').innerHTML += "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") & min level ("+minLvl+") is too big for "+leagueName+"<br>Please check Advanced: Min Level and try again</i></p><br>";
               } else {html += gmRhtml;}
               
               /* See if we need to output evo familyTable*/
@@ -634,7 +634,7 @@
               }
             } else {
               console.log("i:"+i+" Detected IV below Floor:"+floor+" aIV[i]:"+aIV[i]+" dIV[i]:"+dIV[i]+" sIV[i]:"+sIV[i]);
-              document.getElementById('feedbackBox').innerHTML += "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") is below the IV Floor ("+floor+")<br>Please check Settings: IV Floor and try again</i></p><br>";
+              document.getElementById('feedbackBox').innerHTML += "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") is below the IV Floor ("+floor+")<br>Please check Advanced: IV Floor and try again</i></p><br>";
             }
           } else {
             console.log("i:"+i+" Missing an IV, detected: aIV["+i+"]:"+aIV[i]+" dIV["+i+"]:"+dIV[i]+" sIV["+i+"]:"+sIV[i]);
@@ -842,7 +842,7 @@
         /*ensure we actually generated something to output*/
         if (ranks.numRanks/1 < 1) {
           /*nothing to output, print Error and exit*/
-          document.getElementById('instructionsBox').innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Settings and try again</i></p><br />";
+          document.getElementById('instructionsBox').innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Advanced and try again</i></p><br />";
           document.getElementById('feedbackBox').innerHTML = "";
           console.log("No ranks generated!");
           if (perfTiming) {stopTiming(T0, "main");}
