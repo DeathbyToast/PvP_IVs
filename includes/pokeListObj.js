@@ -1,7 +1,7 @@
 var boxRewrd = ["Articuno","Zapdos","Moltres","Lugia","Ho_Oh","Regirock","Regice","Registeel","Latias","Latios","Kyogre","Groudon","Rayquaza","Regigigas","Cresselia","Nihilego","Buzzwole","Pheromosa","Xurkitree","Guzzlord"];
 /*Raikou, Entei, and Suicune wild spawned at Johto Fest 2022, Uxie,Mesprit,Azelf are wild-spawning legendaries and Meltan,Melmetal are wild-spawning mythicals*/
 var raidOnly = ["Dialga","Palkia","Heatran","Giratina_Altered","Cobalion","Terrakion","Virizion","Tornadus_Incarnate","Tornadus_Therian","Thundurus_Incarnate","Thundurus_Therian","Reshiram","Zekrom","Landorus_Incarnate","Landorus_Therian","Kyurem","Kyurem_Black","Kyurem_White","Xerneas","Yveltal","Zygarde_SPECULATIVE","Type_Null","Silvally","Tapu_Koko","Tapu_Lele","Tapu_Bulu","Tapu_Fini","Cosmog","Cosmoem","Solgaleo","Lunala","Necrozma","Necrozma_Dusk_Mane","Necrozma_Dawn_Wings","Ultra_Necrozma","Zacian_Hero_of_Many_Battles","Zacian_Crowned_Sword","Zamazenta_Hero_of_Many_Battles","Zamazenta_Crowned_Sword","Eternatus","Kubfu","Urshifu","Regieleki","Regidrago","Glastrier","Spectrier","Calyrex","Ice_Rider_Calyrex","Shadow_Rider_Calyrex","Enamorus","Enamorus_Therian","Ting_Lu","Chien_Pao","Wo_Chien","Chi_Yu","Koraidon","Miraidon"];
-var boxMyth = ["Mew","Celebi","Jirachi","Phione","Manaphy","Shaymin_Land","Shaymin_Sky","Arceus","Victini","Keldeo","Meloetta_Aria","Meloetta_Pirouette","Diancie","Mega_Diancie_PLACEHOLDER","Hoopa_Confined","Hoopa_Unbound","Volcanion","Magearna","Marshadow","Zeraora","Zarude"];
+var boxMyth = ["Mew","Celebi","Jirachi","Phione","Manaphy","Shaymin_Land","Shaymin_Sky","Arceus","Victini","Keldeo","Meloetta_Aria","Meloetta_Pirouette","Diancie","Mega_Diancie","Hoopa_Confined","Hoopa_Unbound","Volcanion","Magearna","Marshadow","Zeraora","Zarude"];
 var raidMyth = ["Deoxys","Deoxys_Attack","Deoxys_Defense","Deoxys_Speed","Darkrai","Genesect"];
 var shadowLegend = ["Articuno","Zapdos","Moltres","Mewtwo","Raikou","Entei","Suicune","Lugia","Ho_Oh"];
 
@@ -806,9 +806,10 @@ var pokeListObj = {
     "Furfrou": "676b,164,167,181",
     "Espurr": "677b,120,114,158,Meowstic",
     "Meowstic": "678,166,167,179,Espurr",
-    "Honedge_SPECULATIVE": "679b,135,139,128,Doublade_SPECULATIVE",
-    "Doublade_SPECULATIVE": "680,188,206,153,Honedge_SPECULATIVE",
-    "Aegislash_PLACEHOLDER": "681b,1,1,1",
+    "Honedge": "679b,135,139,128,Doublade,Aegislash_Blade,Aegislash_Shield",
+    "Doublade": "680,188,206,153,Honedge,Aegislash_Blade,Aegislash_Shield",
+    "Aegislash_Blade_SPECULATIVE": "681,291,97,155,Honedge,Doublade,Aegislash_Shield",
+    "Aegislash_Shield_SPECULATIVE": "681,97,291,155,Honedge,Doublade,Aegislash_Blade",
     "Spritzee": "682b,110,113,186,Aromatisse",
     "Aromatisse": "683,173,150,226,Spritzee",
     "Swirlix": "684b,109,119,158,Slurpuff",
@@ -856,7 +857,7 @@ var pokeListObj = {
     "Yveltal": "717b,250,185,246",
     "Zygarde_SPECULATIVE": "718b,185,211,389",
     "Diancie": "719b&!mega,190,285,137",
-    "Mega_Diancie_PLACEHOLDER": "719b&mega,1,1,1",
+    "Mega_Diancie": "719&mega,342,235,137",
     "Hoopa_Confined": "720b,261,187,173",
     "Hoopa_Unbound": "720b,311,191,173",
     "Volcanion": "721b,252,216,190",
