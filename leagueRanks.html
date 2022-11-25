@@ -272,7 +272,7 @@
             var row = document.createElement("tr");
   
             /* Check for higher minIVs or minLvls for non-wild spawning mon */
-            const [minIVs, minLvl] = adjustFloors((pokeListObj[monNames[i]].split(",")[0]).split("&")[0], monNames[i], maxLvl);
+            const [minIVs, minLvl] = adjustFloors(monNames[i], maxLvl);
             /* Do the rank calculations for each mon */
             var ranks = calculate(parseInt(monStats[1]), parseInt(monStats[2]), parseInt(monStats[3]), minIVs, minLvl, maxLvl, false, league, monNames[i]);
             var keys = Object.keys(ranks);
@@ -408,25 +408,25 @@
     }
     
     /*returns minIVs, minLvl*/
-    function adjustFloors(dexNum, monName, maxLvl) {
+    function adjustFloors(monName, maxLvl) {
       /*check if we need to adjust IV Floor or Min Level*/
-      if (boxRewrd.includes(dexNum/1)) {
-        console.log("Detected box reward mon:"+monName+" ("+dexNum+")");
+      if (boxRewrd.includes(monName)) {
+        console.log("Detected box reward mon:"+monName);
         /*set min IVs to 1 and min Level to 15*/
         return [1, 15];
       } else
-      if (raidOnly.includes(dexNum/1)) {
-        console.log("Detected Raid+Trade mon:"+monName+" ("+dexNum+")");
+      if (raidOnly.includes(monName)) {
+        console.log("Detected Raid+Trade mon:"+monName);
         /*set min IVs to 1 and min Level to 20*/
         return [1, 20];
       } else
-      if (boxMyth.includes(dexNum/1)) {
-        console.log("Detected Mythical mon:"+monName+" ("+dexNum+")");
+      if (boxMyth.includes(monName)) {
+        console.log("Detected Mythical mon:"+monName);
         /*set min IVs to 10 and min Level to 15*/
         return [10, 15];
       } else
-      if (raidMyth.includes(dexNum/1)) {
-        console.log("Detected Raid no Trade mon:"+monName+" ("+dexNum+")");
+      if (raidMyth.includes(monName)) {
+        console.log("Detected Raid no Trade mon:"+monName);
         /*set min IVs to 10 and min Level to 20*/
         return [10, 20];
       } else
