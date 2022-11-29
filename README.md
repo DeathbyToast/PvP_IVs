@@ -7,7 +7,7 @@ Description of features and functionality for the Pokémon Go PvP IVs website: h
   1. Enter a Pokémon in the box at the top, which will autocomplete after two characters are entered
   2. Either click to select (or touch on mobile), or use arrow keys / enter to select the desired Pokémon
 * You can then enter your specific IVs (Atk: attack, Def: defense, Sta: stamina) to see where your Pokémon's PvP IVs Rank!
- * To the left of the IV boxes is a checkbox to indicate that you'd like to see Shadow atk/def buffs/debuffs applied to the results. As this is a flat 20% atk buff and 20% def debuff, it does not re-order rankings or impact CMP. It is not currently possible to show both shadow and non-shadow IVs together in the same table
+ * To the left of the IV boxes is a checkbox to indicate that you'd like to see Shadow atk/def buffs/debuffs applied to the results. As this is a flat 20% atk buff and 20% def debuff, it does not re-order rankings or impact CMP.
 * You can also use the green "+" button to add another row and compare multiple IVs at the same time! To remove any select the red "-" next to the row containing the IVs you'd like to remove from the comparison. *The additional IVs can also be shared via the auto-generated URL on the page!*
 #### Advanced Settings:
  * Starting at the top, this box controls the Top number (#) of PvP IVs Ranks to show in the output table. Changing this field will actually re-generate the results each time, but the code has been optimized enough that this shouldn't be noticeable...*but if it causes you lag please let me know and I can look into removing the recalculation step*
