@@ -1,48 +1,56 @@
 # PvP_IVs
 Description of features and functionality for the Pokémon Go PvP IVs website: https://pvpivs.com. If you have any questions, feel free to comment / open issues here on GitHub or reach out on [our Discord](https://discord.gg/UD4Temq) (tag @DeathByToast#0529)
 
-## [PvP IVs Rankings](https://pvpivs.com/searchStr.html)
-#### Basics:
-* To generate Top 10 IVs for any Pokémon:
+## [PvP IVs Rankings (Single Pokémon)](https://pvpivs.com/)
+#### Generating Top IVs for any Pokémon:
   1. Enter a Pokémon in the box at the top, which will autocomplete after two characters are entered
-  2. Either click to select (or touch on mobile), or use arrow keys / enter to select the desired Pokémon
-* You can then enter your specific IVs (Atk: attack, Def: defense, Sta: stamina) to see where your Pokémon's PvP IVs Rank!
- * To the left of the IV boxes is a checkbox to indicate that you'd like to see Shadow atk/def buffs/debuffs applied to the results. As this is a flat 20% atk buff and 20% def debuff, it does not re-order rankings or impact CMP.
-* You can also use the green "+" button to add another row and compare multiple IVs at the same time! To remove any select the red "-" next to the row containing the IVs you'd like to remove from the comparison. *The additional IVs can also be shared via the auto-generated URL on the page!*
+  2. Touch, click, or use arrow keys / enter to select the desired Pokémon which will load your results.
+  3. To customize your results, you can select a different league or adjust the number of Top IVs shown using the boxes at the top of the page to the left of where you selected your Pokémon. *Your results can be shared using the auto-generated URL in your browser's address bar!*
+
+#### Checking Specific PvP IVs Ranks:
+  1. Just below where you select Pokémon, you can enter your specific IVs (Atk: attack, Def: defense, Sta: stamina) to see your Pokémon's PvP IVs. The table will auto-update when it has three valid IVs selected.
+    * *You can also click on `Show IV input textbox` to bulk input IVs, but this option disappears as soon as a Pokémon is selected. Bulk IVs can also be input via the URL parameter `&IVs=`*
+  2. To the left of the IV boxes is a shadow checkbox which adds the atk/def buffs/debuffs to this IV set. As this is a flat 20% atk buff and 20% def debuff, it does not re-order rankings or impact CMP.
+  3. You can also use the green `+` button to add another row and compare multiple IVs at the same time.
+  4. To remove any IVs, select the red `-` next to the row containing the IVs you'd like to remove from the comparison.
+
+#### Rank Table Columns:
+  * `#`: Rank number
+  * `Lvl`: final level that is still under the League CP maximum
+  * `CP`: final CP that is reached
+  * `L<Min Level> CP`: If user selects `Show Min Level CP (Raid/Hatch)`, displays CP at `Min Level`
+  * `Atk IV`/`Def`/`Stam`: The Attack/Defense/Stamina PvP IVs that this row corresponds to
+  * `Perfect`: Relative PvP perfection percentage compared to the Rank 1 PvP IVs
+  * `Dust`: If `Show Stardust Power-Up Costs` is selected, shows the amount of stardust needed to power up from `Min Level` to `Lvl`
+  * If `Include CMP Tie Breaking` is selected, adds the following two columns:
+    * `R1 CMP`: `W` (win) / `T` (tie) / `L` (loss) shows whether this specific set of PvP IVs will win a CMP tie against the Rank 1 (R1) Pokémon for this PvP League
+    * `T100 CMP`: Counts the number of CMP wins vs the Top 100 PvP IVs for this Pokémon and this PvP League. Does not compare against all possible (up to 4096) possible PvP IVs to optimize performance *(this checkbox adds 100* * *100 comparisons on-top of the initial 4096 + sort)*
+    
+* `PvP Atk`/`Def`/`HP`: "Battle Stats" which are the computed Attack/Defense/HP stats used in the actual battles, comprising of the Pokémon's base stat + IV + CPM[Level]
+* `Stat Prod`: Stat Product is the mathematical product of [PvP Atk * PvP Def * PvP HP ](https://github.com/DeathbyToast/PvP_IVs/blob/not-minified/includes/calculate.js#L43)
+
+##### Atk/Def/HP ranges:
+* Display the (minimum - maximum) possible stats for this specific Pokémon in this PvP League, and are also clickable as links which will lead to the highest Stat Product PvP IVs that still reach that min/max battle stat (IVs + base stats at CPM[Lvl])
+* Generate <Pokémon> Search String to Trash below Rank ZZZ: where ZZZ is the calculated rank for these PvP IVs for this PvP League. These link(s) redirect to the Search String generator with the respective fields filled in. Very helpful for on-the-go inventory management on Community Days!
+
 #### Advanced Settings:
- * Starting at the top, this box controls the Top number (#) of PvP IVs Ranks to show in the output table. Changing this field will actually re-generate the results each time, but the code has been optimized enough that this shouldn't be noticeable...*but if it causes you lag please let me know and I can look into removing the recalculation step*
- * League: Allows for the results to be toggled between the three PvP Leagues: Great (<1501CP) / Ultra (<2501CP) / Master (any CP)
- * IV Floor: Adjusts the minimum possible PvP IVs to calculate the results for. Useful for comparing traded, weather-boosted, or non-tradeable (raid-only) PvP IVs
- * Min(imum) Level: Generally used in conjunction with non-tradeable (mythical) or raid-exclusive PvP IVs
- * Max(imum) Level: Used to check for Best-Buddy (Level 41) friendship and how it impacts PvP IVs. *Once CP Multipliers for Levels beyond 41 are added to the Game Master file, I'll happily extend this up to Level 45 (or beyond)*
-##### Display Trade Improvement %:
-   * *Only available once all three IVs have been inputted*
+ * *The drop down arrow to the right of the word "Advanced" toggles hiding/unhiding the Advanced Settings*
+ * `IV Floor`: Adjusts the minimum possible PvP IVs to calculate the results for. Useful for comparing traded, weather-boosted, or non-tradeable (raid-only) PvP IVs
+ * `Min Level`: Adjusts minimum level for calculations, often used with non-tradeable (mythical) or raid-exclusive PvP IVs
+ * `Max Level`: Adjusts maximum level for calculations to check for XL (Level 41-50) or Best-Buddy (Level 41 or 51) impacts on PvP IVs
+ * `PvP Stat Decimal Places`: Controls how many decimal places are displayed for PvP Attack and Defense
+ * `Include CMP Tie Breaking`: Adds `R1 CMP` and `T100 CMP` columns to the PvP IVs rankings table as described above
+ * `Export PvPoke Custom Group`: Outputs the user's IVs in a textbox which can be copied and pasted into PvPoke's Matrix Battle function to compare actual performance across multiple IVs to determine which is the best to invest in
+* **Show Family Evolutions**: Computes the same (up to) 4096 rankings for the inputted IV combination(s) and displays the respective PvP ranks along with links to the respective results tables. Helpful for a quick-glance to see if that Bulbasaur is better as an Ivysaur or a Venusaur (without having to input the data twice!)
+    * **NOTE:** This does currently show speculative Mega Evolution base stats, but until these are added to the Game Master file please treat these as subject to change! Niantic still has yet to [correct certain base stats](https://www.reddit.com/r/TheSilphArena/comments/amnynx/psa_be_careful_about_spending_resources_on_these/) in their game...
+* **Family Evos League**: aaaa
+* **Show Trade Improvement %**: aaaa
    * The table populates all eligible rows (limited by the IV Floor) sorted by friendship, as this is designed to help decide if it is worth saving specific Pokémon to trade at various friendship levels to get higher PvP IVs in the re-roll of the traded IVs.
    * As an example, a hatched 10/12/15 Medicham is rank 161. The highlighted row is green because the chance to roll higher PvP IVs is >60% ([orange/ok is >40%, red/bad is <40%](https://github.com/DeathbyToast/PvP_IVs/blob/master/index.html#L936)). The highlighted row is always the highest chance to improve PvP IVs / ranking as an indication of which level of friendship to target to optimize the chance of rolling better rank mon.
    * **This is one of my favorite ways to answer the question of: should I save these for trades?** Generally if it is <2% chance to improve, the answer is a no (unless it can't be wild-caught and is very meta-relevant like Cresselia or Registeel)
-  ##### Include CMP Tie Breaking:
-   * Adds two columns to the PvP IVs rankings table, specifically:
-    * **R1 CMP**: W (win) / T (tie) / L (loss) shows whether this specific set of PvP IVs will win a CMP tie against the Rank 1 (R1) Pokémon for this PvP League
-    * **T100 CMP**: Counts the number of CMP wins vs the Top 100 PvP IVs for this Pokémon and this PvP League. Does not compare against all possible (up to 4096) possible PvP IVs to optimize performance. As this again is generated on the fly, it can be a bit computationally expensive as it adds 100 * 100 comparisons on-top of the initial 4096 + sort. I've considered caching this, but haven't found the time worth it yet...T100 is good enough for my purposes so far!
-  #### Additional Features:
-   * Family Evolutions: Computes the same (up to) 4096 rankings for the inputted IV combination(s) and displays the respective PvP ranks along with links to the respective results tables. Helpful for a quick-glance to see if that Bulbasaur is better as an Ivysaur or a Venusaur (without having to input the data twice!)
-    * **NOTE:** This does currently show speculative Mega Evolution base stats, but until these are added to the Game Master file please treat these as subject to change! Niantic still has yet to [correct certain base stats](https://www.reddit.com/r/TheSilphArena/comments/amnynx/psa_be_careful_about_spending_resources_on_these/) in their game...
-   * Atk/Def/HP ranges: these display the (minimum - maximum) possible stats for this specific Pokémon in this PvP League, and are also clickable as links which will lead to the highest Stat Product PvP IVs that still reach that min/max battle stat (IVs + base stats at CPM[Lvl])
-   * Top XX Great/Ultra/Master League PvP <Pokémon> of YYYY: where XX is the "Top # Ranks" input, and YYYY is the total number of possible PvP IVs calculated with the given inputs for the selected Great/Ultra/Master League
-   * Generate <Pokémon> Search String to Trash below Rank ZZZ: where ZZZ is the calculated rank for these PvP IVs for this PvP League. These link(s) redirect to the Search String generator with the respective fields filled in. Very helpful for on-the-go inventory management on Community Days!
-   #### Rank Table Headers: 
-   * Each is specific to the respective PvP IVs for the selected Pokémon in the selected PvP League
-     * \#: Rank number
-     * Lvl: final level that is still under the League CP maximum
-     * CP: final CP that is reached
-     * Atk/Def/Sta IV: Attack/Defense/Stamina PvP IVs respectively
-     * Apr: Corresponds to the in-game appraisal (star) rating given
-     * Perfect: Relative PvP perfection percentage compared to the Rank 1 PvP IVs
-     * *If CMP Tie Breaking is Included:*
-       * **R1 CMP**: W (win) / T (tie) / L (loss) shows whether this specific set of PvP IVs will win a CMP tie against the Rank 1 (R1) Pokémon for this PvP League
-       * **T100 CMP**: Counts the number of CMP wins vs the Top 100 PvP IVs for this Pokémon and this PvP League. Does not compare against all possible (up to 4096) possible PvP IVs to optimize performance. As this again is generated on the fly, it can be a bit computationally expensive as it adds 100 * 100 comparisons on-top of the initial 4096 + sort. I've considered caching this, but haven't found the time worth it yet...T100 is good enough for my purposes so far!
-    * PvP Atk/Def/HP: "Battle Stats" which are the computed Attack/Defense/*HP* stats used in the actual battles, comprising of the Pokémon's base stat + IV + CPM[Level]
-    * Stat Prod: Stat Product, which is the product (literally) of the [PvP Atk * PvP Def * PvP HP ](https://github.com/DeathbyToast/PvP_IVs/blob/master/includes/sortingHat.js#L37)
+
+## [PvP IVs Rankings (League / All Pokémon)](https://pvpivs.com/leagueRanks.html)
+#### Basics:
 
 ## [Search Strings](https://pvpivs.com/searchStr.html) generator
 #### Basic usage to generate Search String for any Pokémon:
