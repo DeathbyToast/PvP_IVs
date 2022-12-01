@@ -249,8 +249,8 @@
       if (maxLvl/1!=51) {uri+="&max="+maxLvl;}
       if (mega) {uri+="&mega="+mega;}
       if (all) {uri+="&all="+all;}
-      if (buckets) {uri += "&buckets"+buckets+"&limit="+limit;}
-      if (impossible) {uri += "&impossible"+impossible;}
+      if (buckets) {uri += "&buckets="+buckets+"&limit="+limit;}
+      if (impossible) {uri += "&impossible="+impossible;}
       uri = encodeURI(uri);
       var newTitle = "PvP IVs - "+leagueName+" Rankings (Level "+maxLvl+")";
       document.title = newTitle;
