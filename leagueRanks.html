@@ -144,9 +144,13 @@
           <option value="54">54 (SPECULATIVE)</option>
           <option value="55">55 (SPECULATIVE)</option>
         </select></label><br />
-      <label>Include Mega Evolutions:<input id="mega" type="checkbox"></label><br />
-      <label>Include Entire Pokedex:<input id="all" type="checkbox"></label><br />
-      <label>Include Top <input type="number" value="10" id="limit" min="1" max="4096"> Buckets:<input id="buckets" type="checkbox"></label><br />
+      <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
+      <div id=advCollapsible hidden>
+        <label>Include Mega Evolutions:<input id="mega" type="checkbox"></label><br />
+        <label>Include Entire Pokedex:<input id="all" type="checkbox"></label><br />
+        <label>Include Top <input type="number" value="10" id="limit" min="1" max="4096"> Buckets:<input id="buckets" type="checkbox"></label><br />
+        <label>Include Impossible IVs:<input id="impossible" type="checkbox"></label><br />
+      </div>
       <br /><button onclick="start()">Calculate</button>
     </section>
       
@@ -169,7 +173,7 @@
     
     /* Ensure that any changes to the URL are processed correctly */
     /* checkURI will also call start() if valid params are found */
-    checkURI();
+    /* checkURI(); *//* not sure why this duplicate call is here */
     
     function start() {
       if (true) {var startT0 = performance.now();}
@@ -197,6 +201,7 @@
       var feedback = document.getElementById('feedbackBox');
       var buckets = document.getElementById('buckets').checked;
       var limit = document.getElementById('limit').value;
+      var impossible = document.getElementById('impossible').checked;
       var i = 0;
       
       /* Reset progress bar between runs */
@@ -245,6 +250,7 @@
       if (mega) {uri+="&mega="+mega;}
       if (all) {uri+="&all="+all;}
       if (buckets) {uri += "&buckets"+buckets+"&limit="+limit;}
+      if (impossible) {uri += "&impossible"+impossible;}
       uri = encodeURI(uri);
       var newTitle = "PvP IVs - "+leagueName+" Rankings (Level "+maxLvl+")";
       document.title = newTitle;
@@ -272,7 +278,7 @@
             var row = document.createElement("tr");
   
             /* Check for higher minIVs or minLvls for non-wild spawning mon */
-            const [minIVs, minLvl] = adjustFloors(monNames[i], maxLvl);
+            const [minIVs, minLvl] = adjustFloors(monNames[i], maxLvl, impossible);
             /* Do the rank calculations for each mon */
             var ranks = calculate(parseInt(monStats[1]), parseInt(monStats[2]), parseInt(monStats[3]), minIVs, minLvl, maxLvl, false, league, monNames[i]);
             var keys = Object.keys(ranks);
@@ -408,28 +414,32 @@
     }
     
     /*returns minIVs, minLvl*/
-    function adjustFloors(monName, maxLvl) {
-      /*check if we need to adjust IV Floor or Min Level*/
-      if (boxRewrd.includes(monName)) {
-        console.log("Detected box reward mon:"+monName);
-        /*set min IVs to 1 and min Level to 15*/
-        return [1, 15];
-      } else
-      if (raidOnly.includes(monName)) {
-        console.log("Detected Raid+Trade mon:"+monName);
-        /*set min IVs to 1 and min Level to 20*/
-        return [1, 20];
-      } else
-      if (boxMyth.includes(monName)) {
-        console.log("Detected Mythical mon:"+monName);
-        /*set min IVs to 10 and min Level to 15*/
-        return [10, 15];
-      } else
-      if (raidMyth.includes(monName)) {
-        console.log("Detected Raid no Trade mon:"+monName);
-        /*set min IVs to 10 and min Level to 20*/
-        return [10, 20];
-      } else
+    function adjustFloors(monName, maxLvl, impossible) {
+      
+      /* ensure that the user wants us to exclude impossible IVs */
+      if (!(impossible)) {
+        /*check if we need to adjust IV Floor or Min Level*/
+        if (boxRewrd.includes(monName)) {
+          console.log("Detected box reward mon:"+monName);
+          /*set min IVs to 1 and min Level to 15*/
+          return [1, 15];
+        } else
+        if (raidOnly.includes(monName)) {
+          console.log("Detected Raid+Trade mon:"+monName);
+          /*set min IVs to 1 and min Level to 20*/
+          return [1, 20];
+        } else
+        if (boxMyth.includes(monName)) {
+          console.log("Detected Mythical mon:"+monName);
+          /*set min IVs to 10 and min Level to 15*/
+          return [10, 15];
+        } else
+        if (raidMyth.includes(monName)) {
+          console.log("Detected Raid no Trade mon:"+monName);
+          /*set min IVs to 10 and min Level to 20*/
+          return [10, 20];
+        }
+      }
       if (maxLvl/1 == 1) {
         /*support Level One league*/
         return [15,1];
@@ -558,11 +568,6 @@
     		  if (atkBkt>1 && defBkt<3 && hpBkt<3) {
     		    console.log("Found a "+atk+"-"+def+"-"+sta+" IV spread: rank "+i+" "+monName);
     		  }
-    		  
-    		  /*console.log("Finished rank "+i+" loop of atk("+atk+") def("+def+") sta("+sta+") and counts are now:");
-    		  console.log("atkBuckets: "+JSON.stringify(atkBuckets));
-          console.log("defBuckets: "+JSON.stringify(defBuckets));
-          console.log("staBuckets: "+JSON.stringify(staBuckets));*/
           
           counted++;
         }
@@ -584,11 +589,6 @@
       outCell(s2, row);
       outCell(s3, row);
       outCell(s4, row);
-      
-      /*console.log("calculateBuckets: ending with:");
-      console.log("atkBuckets: "+JSON.stringify(atkBuckets));
-      console.log("defBuckets: "+JSON.stringify(defBuckets));
-      console.log("staBuckets: "+JSON.stringify(staBuckets));*/
       
       if (perfTiming) {var calculateBucketst1 = performance.now();
       console.log("calculateBuckets: Execution took "+(calculateBucketst1-calculateBucketst0).toFixed(1)+"ms");}
@@ -621,20 +621,29 @@
               if (values[i].split("=")[1] == "true") { document.getElementById('all').checked = true;}
               else { document.getElementById('all').checked = false;}
               validParams = true;
+              advCollapsible();
               break;
             case "mega":
               if (values[i].split("=")[1] == "true") { document.getElementById('mega').checked = true;}
               else { document.getElementById('mega').checked = false;}
               validParams = true;
+              advCollapsible();
               break;
             case "buckets":
               if (values[i].split("=")[1] == "true") { document.getElementById('buckets').checked = true;}
               else { document.getElementById('buckets').checked = false;}
               validParams = true;
+              advCollapsible();
               break;
             case "limit":
               document.getElementById('limit').value = values[i].split("=")[1];
               validParams = true;
+              advCollapsible();
+              break;
+            case "impossible":
+              document.getElementById('impossible').value = values[i].split("=")[1];
+              validParams = true;
+              advCollapsible();
               break;
             case "t": /* Enable performance timing output in console for debugging */
               perfTiming = values[i].split("=")[1];
