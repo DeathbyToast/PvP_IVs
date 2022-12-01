@@ -171,10 +171,6 @@
     var perfTiming = false; /* used for timing execution */
     var lastPercent;
     
-    /* Ensure that any changes to the URL are processed correctly */
-    /* checkURI will also call start() if valid params are found */
-    /* checkURI(); *//* not sure why this duplicate call is here */
-    
     function start() {
       if (true) {var startT0 = performance.now();}
       
@@ -618,20 +614,17 @@
               validParams = true;
               break;
             case "all":
-              if (values[i].split("=")[1] == "true") { document.getElementById('all').checked = true;}
-              else { document.getElementById('all').checked = false;}
+              document.getElementById('all').checked = values[i].split("=")[1] == "true" ? true : false;
               validParams = true;
               advCollapsible();
               break;
             case "mega":
-              if (values[i].split("=")[1] == "true") { document.getElementById('mega').checked = true;}
-              else { document.getElementById('mega').checked = false;}
+              document.getElementById('mega').checked = values[i].split("=")[1] == "true" ? true : false;
               validParams = true;
               advCollapsible();
               break;
             case "buckets":
-              if (values[i].split("=")[1] == "true") { document.getElementById('buckets').checked = true;}
-              else { document.getElementById('buckets').checked = false;}
+              document.getElementById('buckets').checked = values[i].split("=")[1] == "true" ? true : false;
               validParams = true;
               advCollapsible();
               break;
@@ -641,7 +634,7 @@
               advCollapsible();
               break;
             case "impossible":
-              document.getElementById('impossible').value = values[i].split("=")[1];
+              document.getElementById('impossible').checked = values[i].split("=")[1] == "true" ? true : false;
               validParams = true;
               advCollapsible();
               break;
