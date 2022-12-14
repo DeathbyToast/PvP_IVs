@@ -937,6 +937,7 @@
           var cgeData = "";
           var maxWidth = 0;
           for (var i=0; i<aIV.length; i++) {
+            var validIVs = false;
             var mon = name;
             if (shdw[i]) {
               mon = name + "_shadow";
@@ -944,6 +945,10 @@
             if (aIV[i] == "") {
               console.log("skipping incomplete row, i:"+i+", aIV:"+aIV[i]+", dIV:"+dIV[i]+", sIV:"+sIV[i]);
               continue;
+            } else {
+              if (validIVs == false) {
+                validIVs = true;
+              }
             }
             var row = mon+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
             if (row.length > maxWidth) {
@@ -959,8 +964,13 @@
           }
           document.getElementById("CustomGroupExport").style.display = "inline-block";
           document.getElementById("CustomGroupExport").cols = maxWidth;
-          document.getElementById("CustomGroupExport").rows = sIV.length;
-          document.getElementById("CustomGroupExport").value = cgeData;
+          if (validIVs == false) {/* User doesn't have any valid IVs entered, replace box with error message */
+            document.getElementById("CustomGroupExport").rows = 3;
+            document.getElementById("CustomGroupExport").value = "No valid IVs input, failed to output PvPoke Custom Group";
+          } else { /* We have at least one set of valid IVs, output the PvPoke Custom Group */
+            document.getElementById("CustomGroupExport").rows = sIV.length;
+            document.getElementById("CustomGroupExport").value = cgeData;
+          }
         } else if (document.getElementById("CustomGroupExport").style.display == "inline-block") { /*hide textbox if user has unchecked the option*/
           document.getElementById("CustomGroupExport").style.display = "none";
         }
