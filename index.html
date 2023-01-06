@@ -241,7 +241,6 @@
       let lvl=[];
       let mA = 0, mD = 0, mHP = 0; /*min stat filter vars*/
       let filterMod = false; /*track if stat filters were adjusted*/
-      let lastShadow = false;
       
       var input = document.getElementById("pokeList");
       var monNames = Object.keys(pokeListObj);
@@ -593,7 +592,7 @@
                   /*create link for evo table entry*/
                   uri = URL + "?mon="+evos[e];
                   if (limit/1 != 10) uri += "&r="+limit;
-                  if (league/1 != 1500) uri += "&cp="+league;
+                  uri += "&cp="+league; /* Must include league */
                   if (floor/1 >0) uri += "&f="+floor;
                   if (minLvl/1 >1) uri += "&min="+minLvl;
                   if (maxLvl/1 != 51) uri += "&max="+maxLvl;
@@ -865,7 +864,7 @@
         var uri = URL + "?mon="+mon;
         /* Only print remaining params if they aren't default values */
         if (printLimit/1 != 10) uri += "&r="+printLimit;
-        if (league/1 != 1500) uri += "&cp="+league;
+        uri += "&cp="+league; /* Must include league */
         if (document.getElementById('floor').value>0) {uri += "&f="+document.getElementById('floor').value;}
         if (document.getElementById('minLvl').value>1) {uri += "&min="+document.getElementById('minLvl').value;}
         if (document.getElementById('maxLvl').value!=51) {uri += "&max="+document.getElementById('maxLvl').value;}
@@ -936,8 +935,9 @@
           }
           var cgeData = "";
           var maxWidth = 0;
+          var validIVs;
           for (var i=0; i<aIV.length; i++) {
-            var validIVs = false;
+            validIVs = false;
             var mon = name;
             if (shdw[i]) {
               mon = name + "_shadow";
