@@ -1890,8 +1890,6 @@
       }
       </script>
       <div style="overflow-x:auto;" id="timing_outputs"></div>
-      <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
-      <div id=advCollapsible hidden>
       <label>IV Floor:<select id="floor" oninput="setUserPreference('floor')">
         <option value="0">0: Wild Caught</option>
         <option value="1">1: Trade, Good Friend</option>
@@ -1903,6 +1901,8 @@
         <option value="10">10: Raid / Hatch</option>
         <option value="12">12: Lucky Trade</option>
       </select></label><br />
+      <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
+      <div id=advCollapsible hidden>
       <label>Min Level:<select title="What Level Floor to Search?" id="minLvl" oninput="setUserPreference('minLvl')">
         <option value="1">1: Wild Caught</option>
         <option value="2">2</option>
