@@ -365,12 +365,12 @@
           /* Override CP Limit for allZero mode */
           document.getElementById('league').value = document.getElementById('cpLimit').value;
         }
-        /* Conditional for 2022 Community Day mode */
+        /* Conditional for 2022 Community Day mode
         if (document.getElementById('cd22').checked) {
           console.log("Detected 2022 CD mode");
-          /* Override CP Limit for cd22 mode */
+          /* Override CP Limit for cd22 mode
           document.getElementById('league').value = document.getElementById('cpLimit').value;
-        }
+        }*/
         
         if (perfTiming) {checkURIT1 = performance.now();
         console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
@@ -448,15 +448,15 @@
         /* Ensure we update the URL before returning */
         updateURI(false,league,leagueName,lang[0],0);
         return;
-      } else if (document.getElementById('cd22').checked) {
-        /* See if this was a request for 2022 CD mon string */
+      } else /*if (document.getElementById('cd22').checked) {
+        /* See if this was a request for 2022 CD mon string
         document.getElementById('getStarted').style.display = "none";
-        findCD22();
+        findCD22();*/
         
-        /* Ensure we update the URL before returning */
+        /* Ensure we update the URL before returning
         updateURI(false,league,leagueName,lang[0],0);
         return;
-      }
+      }*/
       {
         document.getElementById("cpLimit").style.display = "none";
         document.getElementById("cpLimitLbl").style.display = "none";
@@ -893,12 +893,12 @@
         lang += document.getElementById("excludeIV").value != "" ? "&notIV="+document.getElementById("excludeIV").value:"";
       }
       
-      if (document.getElementById('cd22').checked) {
-        /* Override CP Limit for 2022 CD mode */
+      /*if (document.getElementById('cd22').checked) {
+        /* Override CP Limit for 2022 CD mode
         league = document.getElementById('cpLimit').value;
-        /* Piggyback dex skips onto lang field */
+        /* Piggyback dex skips onto lang field
         lang += "&cd22="+document.getElementById('cd22').checked;
-      }
+      }*/
       
       /* update the URL with search parameters */
       var uri = window.location.href.split("?")[0];
@@ -1240,7 +1240,8 @@
       console.log("Received customIVs: "+JSON.stringify(customIVs)+", baseAtk: "+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", league:"+league+", output:"+output+", maxLvl:"+maxLvl+", dexNum:"+dexNum+", monName:"+monName);
   
       output.value = ''; /* ensure old output is cleared */
-      var message = "String finds "+monName+" with ";
+      var message = "<i>Warning: Custom IV Search Strings can have a very high false positive rate (>90%). It will find all "+monName+" you have with your Custom IVs, along with other IVs at the same CPs/HPs</i><br /><br />";
+      message += "This string finds "+monName+" with ";
       message += (trash) ? "IVs except: ":"IVs: ";
       message += JSON.stringify(customIVs);
       var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
@@ -1626,19 +1627,6 @@
       main();
     }
     </script>
-    <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
-    <div id=advCollapsible hidden>
-    <label>Trash String:<input id="trash" type="checkbox" oninput="trashCheck()"><br /></label>
-    <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="main()"></label><br />
-    <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br /></div>
-    <label>Find 2022 Community Day mon:<input id="cd22" type="checkbox" oninput="main()"><br /></label>
-    <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="main()"><br /></label>
-    <div id="cpLimitDiv"><label id="cpLimitLbl" for="cpLimit" style="display: none;">CP Limit:</label><input type="number" id="cpLimit" oninput="main(true)" value="1500" style="display: none;"></div>
-    <div id="dexSkipsDiv"><label id="dexSkipsLbl" for="dexSkips" style="display: none;">Dex Skips:</label><input id="dexSkips" oninput="main(true)" value="144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,800,801,802,807,888,889,890,891,892,893,894,895,896,897,898" style="display: none;"></div>
-    <label>Custom IV Search:<input id="customIVs" type="checkbox" oninput="main()"><br /></label>
-    <div id="IVentryDiv"> <label id="IVentryLbl" for="IVentry"  style="display: none;">Custom IVs:</label><input id="IVentry" oninput="main()" value="11/12/13,4-5-6 1+2+3" style="display: none;"></div>
-    <label>Use Attribute Appraisals:<input id="attrAppr" type="checkbox" oninput="main()" checked><br /></label>
-    <label>Remove Impossible Evolutions:<input id="noBadEvos" type="checkbox" oninput="main()" checked><br /></label>
     <label>Language:<select id="lang" oninput="main()">
     		<option value="en,cp,hp,mega1-,alola,eggsonly,galar,ground,steel,grass,psychic,fire,attack,defense,xs,xl,xxl">English</option>
     		<option value="fr,pc,pv,m&#xE9;ga1–,alola,oeufseulement,galar,sol,acier,plante,psy,feu,attaque,d&#xE9;fense,xs,xl,xxl">French</option>
@@ -1651,6 +1639,19 @@
     		<option value="zh,cp,hp,&#36229;&#32026;1-,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;,attack,defense,xs,xl,xxl">Chinese</option>
     </select>
     </label><br />
+    <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
+    <div id=advCollapsible hidden>
+    <label>Trash String:<input id="trash" type="checkbox" oninput="trashCheck()"><br /></label>
+    <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="main()"></label><br />
+    <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br /></div>
+    <!--label>Find 2022 Community Day mon:<input id="cd22" type="checkbox" oninput="main()"><br /></label-->
+    <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="main()"><br /></label>
+    <div id="cpLimitDiv"><label id="cpLimitLbl" for="cpLimit" style="display: none;">CP Limit:</label><input type="number" id="cpLimit" oninput="main(true)" value="1500" style="display: none;"></div>
+    <div id="dexSkipsDiv"><label id="dexSkipsLbl" for="dexSkips" style="display: none;">Dex Skips:</label><input id="dexSkips" oninput="main(true)" value="144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,800,801,802,807,888,889,890,891,892,893,894,895,896,897,898" style="display: none;"></div>
+    <label>Custom IV Search:<input id="customIVs" type="checkbox" oninput="main()"><br /></label>
+    <div id="IVentryDiv"> <label id="IVentryLbl" for="IVentry"  style="display: none;">Custom IVs:</label><input id="IVentry" oninput="main()" value="11/12/13,4-5-6 1+2+3" style="display: none;"></div>
+    <label>Use Attribute Appraisals:<input id="attrAppr" type="checkbox" oninput="main()" checked><br /></label>
+    <label>Remove Impossible Evolutions:<input id="noBadEvos" type="checkbox" oninput="main()" checked><br /></label>
     <label>IV Floor:<select id="floor" oninput="main()">
         <option value="0">0: Wild Caught</option>
         <option value="1">1: Trade, Good Friend</option>
