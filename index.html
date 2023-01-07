@@ -260,10 +260,11 @@
             if (evt.text.label.indexOf("_SPECULATIVE") > -1)
             {
               document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";
-            }
-            if (evt.text.label.indexOf("_PLACEHOLDER") > -1)
+            } else if (evt.text.label.indexOf("_PLACEHOLDER") > -1)
             {
               document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";
+            } else {
+              document.getElementById('megaNote').innerHTML = ""; /* Clear the previous notes if any */
             }
             inputMon = evt.text.label;
             main(evt.text.label);
@@ -430,7 +431,6 @@
         
         /* clear min stat filters, filterMod, and lastLeague */
         mA = 0; mD = 0; mHP = 0; filterMod = false; lastLeague = undefined;
-        
         
         /*reset Min Level if we adjusted it previously*/
         if (mnlMod) {
