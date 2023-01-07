@@ -488,6 +488,13 @@
         var evos = pokeListObj[mon].split(',').slice(4, pokeListObj[mon].split(',').length);
         var evoLen = evos.length;
         
+        /* Processing for mirror selected league on family evos */
+        if (evoLeague == "mirror") {
+          evoLeague = league;
+          evoLeagueName = leagueName;
+          console.log("Detected mirror, mirroed to evoLeague:"+evoLeague+", evoLeagueName:"+evoLeagueName);
+        }
+        
         /* properly parse settings bits as true/false */
         console.log("splitSettings:"+JSON.stringify(splitSettings));
         for (var i=0; i<splitSettings.length; i++) { splitSettings[i] = (splitSettings[i] == 1) ? true : false;}
@@ -1889,7 +1896,7 @@
         main();
       }
       </script>
-      <div style="overflow-x:auto;" id="timing_outputs"></div>
+      <div style="overflow-x:auto;" id="timing_outputs"></div><br />
       <label>IV Floor:<select id="floor" oninput="setUserPreference('floor')">
         <option value="0">0: Wild Caught</option>
         <option value="1">1: Trade, Good Friend</option>
@@ -2009,8 +2016,9 @@
       <label>Show Family Evolutions:<input id="family" type="checkbox" oninput="toggleFamilyEvos()"></label><br />
       <div id="familyEvoLeagueDiv"><label id="familyEvoLeagueLbl" for="familyEvoLeague" style="display: none;">Family Evos League:
         <select id="familyEvoLeague" oninput="setUserPreference('familyEvoLeague')">
+          <option value="mirror" label="Mirror Selected">Little Leagues</option>
           <option value="500" label="Little Leagues">Little Leagues</option>
-          <option value="1500" selected label="Great League">Great League</option>
+          <option value="1500" label="Great League">Great League</option>
       		<option value="2500" label="Ultra League">Ultra League</option>
       		<option value="false" label="Master League">Master League</option>
       	</select></label>
