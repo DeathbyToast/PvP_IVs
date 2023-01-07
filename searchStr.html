@@ -189,7 +189,7 @@
       /*var URL = "mon=Deino&cp=All&r=11-12-13-10_14-15-16-17_18-19-10-10_f_f&set=00011000&l=en&m=51";*/
       /*URL = "mon=Deino&cp=All&r=&set=000101&l=en&IVentry=0/14/15,0/15/14";*/
       /*URL = "mon=Teddiursa&cp=Raid&r=&set=001001&l=en&ivLim=43&a=15&d=7&s=14&addIV=14/15/15,15/12/15&notIV=1-1-1";*/
-      /*URL = "mon=Spheal&cp=1500&r=f&set=000011&l=en&IVentry=4-14-2,4-9-8,2-9-2,4-10-7,4-15-0,2-10-1,9-14-13,4-11-5,9-15-11";*/
+      URL = "mon=Chespin&cp=1500&o=000011&IVentry=1-15-15,0-8-13,2-13-15,1-14-15,0-15-15,0-6-15,0-9-12,1-6-13";
       
       if (URL)
       {
@@ -295,7 +295,7 @@
                 document.getElementById('allZero').checked = settings[3]==1 ? true : false;
                 document.getElementById('customIVs').checked = settings[4]==1 ? true : false;
                 document.getElementById('attrAppr').checked = settings[5]==1 ? true : false;
-                document.getElementById('cd22').checked = settings[6]==1 ? true : false;
+                /*document.getElementById('cd22').checked = settings[6]==1 ? true : false;*/
               break;
               
             case "l":
@@ -325,9 +325,9 @@
               document.getElementById('dexSkips').value = values[i].split("=")[1];
               break;
             
-            case "cd22":
+            /*case "cd22":
               document.getElementById('cd22').checked = values[i].split("=")[1];
-              break;
+              break;*/
             
             case "IVentry":
               document.getElementById('customIVs').checked = true;
@@ -854,7 +854,7 @@
       binary += document.getElementById('allZero').checked ? "1" : "0";
       binary += document.getElementById('customIVs').checked ? "1" : "0";
       binary += document.getElementById('attrAppr').checked ? "1" : "0";
-      binary += document.getElementById('cd22').checked ? "1" : "0";
+      /*binary += document.getElementById('cd22').checked ? "1" : "0";*/
       
       return [binary,rStr];
     }
