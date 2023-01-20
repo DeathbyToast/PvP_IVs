@@ -1240,7 +1240,8 @@
       console.log("Received customIVs: "+JSON.stringify(customIVs)+", baseAtk: "+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", league:"+league+", output:"+output+", maxLvl:"+maxLvl+", dexNum:"+dexNum+", monName:"+monName);
   
       output.value = ''; /* ensure old output is cleared */
-      var message = "<i>Warning: Custom IV Search Strings can have a very high false positive rate (>90%). It will find all "+monName+" you have with your Custom IVs, along with other IVs at the same CPs/HPs</i><br /><br />";
+      var message = "";
+      if (league != "Raid") {message = "<i>Warning: Custom IV Search Strings can have a very high false positive rate (>90%). It will find all "+monName+" you have with your Custom IVs, along with other IVs at the same CPs/HPs</i><br /><br />";}
       message += "This string finds "+monName+" with ";
       message += (trash) ? "IVs except: ":"IVs: ";
       message += JSON.stringify(customIVs);
