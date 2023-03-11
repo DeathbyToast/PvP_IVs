@@ -1048,7 +1048,7 @@ var pokeListObj = {
     "Urshifu": "892,231,162,205,Kubfu",
     "Zarude": "893b,242,215,233",
     "Regieleki": "894b,228,114,173",
-    "Regidrago": "895b,184,92,364",
+    "Regidrago": "895b,202,101,400",
     "Glastrier": "896b,224,203,205",
     "Spectrier": "897b,273,146,205",
     "Calyrex": "898b,147,147,205",
