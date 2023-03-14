@@ -520,26 +520,6 @@
           html+="<th>Dust</th>";
         }
         
-        /*include cmp columns if checked*/
-        if (splitSettings[1] == true) {
-          cmpLimit = document.getElementById('cmpLim').value/1;
-          if (ranks.numRanks/1 < cmpLimit/1) {
-            /* If cmpLim is set too high, adjust down to numRanks */
-            cmpLimit = ranks.numRanks/1;
-          }
-          html+="<th>R1 CMP</th><th>T"+cmpLimit+" CMP</th>";
-          ranks = cmpCalcs(ranks, keys, dec, cmpLimit);
-        }
-        if (perfTiming) {Tc = performance.now();}
-        
-        html+="<th>PvP Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th>";
-        
-        /*include bulk product if enabled*/
-        if (splitSettings[6]) {
-          html+="<th>Bulk Prod</th>";
-        }
-        html+="</tr>";
-        
         /*print main table output and count actual outputted rows/ranks*/
         var actualRank = 1; var rowsOutput = 0;
         var minAtk = ranks.minAtk.value, maxAtk = ranks.maxAtk.value;
@@ -560,6 +540,26 @@
           mHP = (filterMod == true) ? mHP : ranks.minHP.value;
           console.log("After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);
         }
+        
+        /*include cmp columns if checked*/
+        if (splitSettings[1] == true) {
+          cmpLimit = document.getElementById('cmpLim').value/1;
+          if (ranks.numRanks/1 < cmpLimit/1) {
+            /* If cmpLim is set too high, adjust down to numRanks */
+            cmpLimit = ranks.numRanks/1;
+          }
+          html+="<th>R1 CMP</th><th>T"+cmpLimit+" CMP</th>";
+          ranks = cmpCalcs(ranks, keys, dec, cmpLimit, filterMod);
+        }
+        if (perfTiming) {Tc = performance.now();}
+        
+        html+="<th>PvP Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th>";
+        
+        /*include bulk product if enabled*/
+        if (splitSettings[6]) {
+          html+="<th>Bulk Prod</th>";
+        }
+        html+="</tr>";
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
@@ -1339,10 +1339,11 @@
         }
       }
       
-      function cmpCalcs(ranks, keys, dec, cmpLimit) {
+      function cmpCalcs(ranks, keys, dec, cmpLimit, filterMod) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         /*console.log("cmpCalcs: received: ranks: "+JSON.stringify(ranks)+", keys:"+JSON.stringify(keys));*/
+        console.log("cmpCalcs:: received: dec: "+JSON.stringify(dec)+", cmpLimit:"+JSON.stringify(cmpLimit)+", filterMod:"+JSON.stringify(filterMod));
         var debugPrint = false;
         var printLimit = document.getElementById('limit').value;
         
@@ -1353,10 +1354,10 @@
               /* Show detailed debugging information for specific IV set if debugPrint is enabled */
               /*if ((ranks[keys[i]][j].IVs.A/1 == aI1) && (ranks[keys[i]][j].IVs.D/1 == 14) && (ranks[keys[i]][j].IVs.S/1 == 12)) {debugPrint = true;}*/
               
-              /* Check if this IV is one of the user's IVs*/
+              /* Ensure we iterate through the user's IVs (always at least one partial entry, __/15/15) */
               for (var v=0; v<aIV.length; v++) {
-                if (monChecked < (printLimit/1+aIV.length/1)-1 || (ranks[keys[i]][j].IVs.A/1 == aIV[v] && ranks[keys[i]][j].IVs.D/1 == dIV[v] && ranks[keys[i]][j].IVs.S/1 == sIV[v])) {
-                  /* This is either a userIV or within printed Top Ranks, must process R1 CMP */
+                if (filterMod || monChecked < (printLimit/1+aIV.length/1)-1 || (ranks[keys[i]][j].IVs.A/1 == aIV[v] && ranks[keys[i]][j].IVs.D/1 == dIV[v] && ranks[keys[i]][j].IVs.S/1 == sIV[v])) {
+                  /* User has set filters OR this is either a userIV OR within printed Top Ranks, must process R1 CMP */
                   
                   if (numOut(ranks[keys[i]][j].battle.A,dec)/1 > numOut(ranks[keys[0]][0].battle.A,dec)/1) {
                     /*if (debugPrint) { console.log("R1 set to W because numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" > numOut(ranks[keys[0]][0].battle.A,1): "+numOut(ranks[keys[0]][0].battle.A,1));}*/
@@ -1381,17 +1382,17 @@
                   }
                   /* Ensure we convert count of CMP wins to percentage */
                   ranks[keys[i]][j].IVs.cmp = numOut(ranks[keys[i]][j].IVs.cmp/cmpLimit * 100,0);
-                  console.log("CMP values updated for #"+monChecked+": "+ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S);
+                  /*console.log("CMP values updated for #"+monChecked+": "+ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S);*/
                   monChecked++;
                   
                   if (debugPrint) {debugPrint = false;}
-                  /* If user has entered no IVs, see if we're done checking ranks */
-                  if (!aIV[0] && monChecked>cmpLimit/1) {break;}
+                  /* If user entered no IVs and set no filters, see if we're done checking ranks */
+                  if (!aIV[0] && !filterMod && monChecked>cmpLimit/1) {break;}
                 }
               }
             }
-            /* If user has entered no IVs, see if we're done checking ranks */
-            if (!aIV[0] && monChecked>cmpLimit/1) {break;}
+            /* If user entered no IVs and set no filters, see if we're done checking ranks */
+            if (!aIV[0] && !filterMod && monChecked>cmpLimit/1) {break;}
         }
         if (perfTiming) {stopTiming(T0, "cmpCalcs");}
         return ranks;
