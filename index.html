@@ -1014,7 +1014,7 @@
         
         var offset = 3; /* Account for mlCP column */
         if (document.getElementById('mlCP').checked) {offset+=1;}
-        if (row.rowIndex/1 > aIV.length/1) {
+        if (row.rowIndex/1 >= aIV.length/1) {
           
           /* Get the IVs we're trying to add */
           var atk = row.cells[offset].innerHTML;
@@ -1025,8 +1025,11 @@
           /* Ensure we aren't duplicating IVs */
           for (var i=0; i<aIV.length; i++) {
             if ((atk/1 == aIV[i]) && (def/1 == dIV[i]) && (sta == sIV[i])) {
-              uniqueIVs = false;
-              break;
+              /* Ensure that attack is not null, to allow 0/15/15 to overwrite default row */
+              if (!(document.getElementById("aIV[0]").value === '')) {
+                uniqueIVs = false;
+                break;
+              }
             }
           }
           
@@ -1043,7 +1046,7 @@
             }
           }
         } else {
-          console.log("Skipping adding row as we clicked on the Header or Highlighted Row:"+row.rowIndex);
+          console.log("Skipping adding row as we clicked on the Header or Highlighted Row (row.rowIndex"+row.rowIndex+" > "+aIV.length+"aIV.length)");
         }
         if (perfTiming) {stopTiming(T0, "addToCompare");}
       }
@@ -1913,6 +1916,28 @@
         dIV.push(def);
         sIV.push(sta);
         shdw.push(sha);
+        
+        if (aIV.length/1 == 2) {
+          /*Need to check if we still have -/15/15 row and remove it*/
+          if ((document.getElementById('aIV[0]').value === '') && (document.getElementById('dIV[0]').value === '15') && (document.getElementById('sIV[0]').value === '15')) {
+            /* Confirmed that first row is default row (-/15/15) and needs to be removed*/
+            
+            var td = document.getElementById('aIV[0]').parentNode;
+            var tr = td.parentNode; /*the row for -/15/15 to be removed*/
+            
+            /* Update remaining row element */
+            document.getElementById("shdw[1]").id = "shdw[0]";
+            document.getElementById("aIV[1]").id = "aIV[0]";
+            document.getElementById("dIV[1]").id = "dIV[0]";
+            document.getElementById("sIV[1]").id = "sIV[0]";
+            
+            aIV.splice(0, 1);
+            dIV.splice(0, 1);
+            sIV.splice(0, 1);
+            shdw.splice(0, 1);
+            tr.parentNode.removeChild(tr);
+          }
+        }
         
         if (perfTiming) {stopTiming(T0, "doTheInsert");}
       }
