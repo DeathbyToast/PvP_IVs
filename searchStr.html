@@ -1444,7 +1444,7 @@
         /* Ensure we merge the strings back together to return */
         checkStr = splitStr.join(",");
       }
-      return "&" + checkStr;
+      return "," + checkStr;
     }
     
     function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, atkBkts, defBkts, staBkts, output, id, lang, trash) {
@@ -1454,17 +1454,14 @@
       var emptyBuf = "";
       output.value = id; /* add dex num */
       
-      /* Output Attribute Appraisal Groupings if selected */
-      if (document.getElementById('attrAppr').checked) {
-        if (!trash) {
-          output.value += groupAttr(atkBkts, lang[12]) + groupAttr(defBkts, lang[13]) + groupAttr(staBkts, lang[2]); /* add IV Buckets to dex num */
-        } else {
-          atkBkts = trashFlip(atkBkts, 4, true);
-          defBkts = trashFlip(defBkts, 4, true);
-          staBkts = trashFlip(staBkts, 4, true);
-          /* Need to flip & to , for defense and hp attribute appraisals for them to work properly */
-          output.value += groupAttr(atkBkts, lang[12]) + groupAttr(defBkts, lang[13]).replace(/&/g, ",") + groupAttr(staBkts, lang[2]).replace(/&/g, ","); /* add IV Buckets to dex num */
+      /* Flip attribute appraisals if this is a trash string */
+      if (trash && document.getElementById('attrAppr').checked) {
+        for (i=0; i<atkBkts.length; i++) {
+          atkBkts[i] = trashFlip(atkBkts[i], 4, true);
+          defBkts[i] = trashFlip(defBkts[i], 4, true);
+          staBkts[i] = trashFlip(staBkts[i], 4, true);
         }
+        console.log("atkBkts:"+atkBkts);
       }
 
       /* output cps and hps */
@@ -1487,13 +1484,15 @@
           /* output CPs */
           cps[i] = Array.from(cps[i]);
           cps[i].sort((a, b) => a - b);
-          /* Correct attribute appraisal trashing behavior */
-          if (trash && first && document.getElementById('attrAppr').checked) {
-            output.value += ',!'+i+'*,' + get_matching_string(cps[i], lang[1]);
-            first = false;
-          } else {
-            output.value += '&!'+i+'*,' + get_matching_string(cps[i], lang[1]);
-          }
+          /* Add attribute appraisals between CP/HP groupings for improved accuracy */
+          output.value += '&!'+i+'*' + groupAttr(atkBkts[i], lang[12]);
+          /* Need to intersperce &!i* between search strings, but not trash strings */
+          if (!trash) {output.value += '&!'+i+'*';}
+          output.value += groupAttr(defBkts[i], lang[13]);
+          if (!trash) {output.value += '&!'+i+'*';}
+          output.value += groupAttr(staBkts[i], lang[2]);
+          if (!trash) {output.value += '&!'+i+'*';}
+          output.value += "," + get_matching_string(cps[i], lang[1]);
           
           if (!trash) {
             output.value += '&!'+i+'*';
@@ -1555,10 +1554,7 @@
       var trashFlipT0, trashFlipT1;
       if (perfTiming) {trashFlipT0 = performance.now();}
       var i=10;
-      if (attr) {
-        i=0; /* https://stackoverflow.com/a/48657553 */
-        cps = new Set( cps.reduce( ( a, c ) => a.concat( [...c] ), [] ) );
-      }
+      if (attr) {i=0;}
       if (cps instanceof Set) {
         for (i; i<=maxCP; i++) {
           if( cps.has(i) ) {
