@@ -71,7 +71,7 @@
   <section>
     <br />
     <input id="pokeList" onfocus="this.value=''" placeholder="Final Mon"/>
-    <label>League:<select id="league" oninput="main()">
+    <label>League:<select id="league" oninput="main(Awesomplete.input,true)">
       <option value="Raid">Raid / Hatch</option>
       <option value="500">Little Leagues</option>
       <option value="1500" selected>Great League</option>
@@ -175,7 +175,7 @@
         "awesomplete-selectcomplete": function(evt) {
           /*console.log("User Selected "+evt.text.label+", passing to main and exiting Awesomplete");*/
           inputMon = evt.text.label;
-          main(evt.text.label);
+          main(evt.text.label,true);
           }
       });
       /* end Awesomeplete https://leaverou.github.io/awesomplete/ */
@@ -185,10 +185,7 @@
       var checkURIT0,checkURIT1;
       if (perfTiming) {checkURIT0 = performance.now();}
       var URL = window.location.href.split("?")[1],i,j;
-      /*var URL = "mon=Deino&cp=All&r=11-12-13-10_14-15-16-17_18-19-10-10_f_f&set=00011000&l=en&m=51";*/
-      /*URL = "mon=Deino&cp=All&r=&set=000101&l=en&IVentry=0/14/15,0/15/14";*/
-      /*URL = "mon=Teddiursa&cp=Raid&r=&set=001001&l=en&ivLim=43&a=15&d=7&s=14&addIV=14/15/15,15/12/15&notIV=1-1-1";*/
-      /*URL = "mon=Chespin&cp=1500&o=000011&IVentry=1-15-15,0-8-13,2-13-15,1-14-15,0-15-15,0-6-15,0-9-12,1-6-13";*/
+      /*URL = "mon=Togekiss&cp=All&r=0-10-12-0_f_f_f&set=00100&l=en";*/
       
       if (URL)
       {
@@ -293,7 +290,6 @@
                 document.getElementById('trashZero').checked = settings[2]==1 ? true : false;
                 document.getElementById('allZero').checked = settings[3]==1 ? true : false;
                 document.getElementById('customIVs').checked = settings[4]==1 ? true : false;
-                /*document.getElementById('cd22').checked = settings[6]==1 ? true : false;*/
               break;
               
             case "l":
@@ -318,14 +314,6 @@
             case "t": /* Enable performance timing output in console for debugging */
               perfTiming = values[i].split("=")[1];
               break;
-            
-            case "skips":
-              document.getElementById('dexSkips').value = values[i].split("=")[1];
-              break;
-            
-            /*case "cd22":
-              document.getElementById('cd22').checked = values[i].split("=")[1];
-              break;*/
             
             case "IVentry":
               document.getElementById('customIVs').checked = true;
@@ -357,22 +345,10 @@
               break;
           }
         }
-        /* Conditional for All Zero mode */
-        if (document.getElementById('allZero').checked) {
-          console.log("Detected All Zero mode");
-          /* Override CP Limit for allZero mode */
-          document.getElementById('league').value = document.getElementById('cpLimit').value;
-        }
-        /* Conditional for 2022 Community Day mode
-        if (document.getElementById('cd22').checked) {
-          console.log("Detected 2022 CD mode");
-          /* Override CP Limit for cd22 mode
-          document.getElementById('league').value = document.getElementById('cpLimit').value;
-        }*/
         
         if (perfTiming) {checkURIT1 = performance.now();
         console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
-        main();
+        main(Awesomplete.input,true);
         return true;
       }
       else
@@ -384,7 +360,7 @@
       }
     }
     
-    function main(mon) {
+    function main(mon, newMon) {
       var mainT0, mainT1,i,j;
       if (perfTiming) {mainT0 = performance.now();}
       
@@ -421,7 +397,6 @@
       var trash = document.getElementById('trash').checked;
       var lang = document.getElementById('lang').value.split(',');
       var maxLvl = document.getElementById('maxLvl').value;
-      var newMon = (mon) ? true : false;
       var customIVs;
       
       /* See if this was a request for all-mon Zero IV string */
@@ -432,20 +407,6 @@
         /* Ensure we update the URL before returning */
         updateURI(false,league,leagueName,lang[0],0);
         return;
-      } else /*if (document.getElementById('cd22').checked) {
-        /* See if this was a request for 2022 CD mon string
-        document.getElementById('getStarted').style.display = "none";
-        findCD22();*/
-        
-        /* Ensure we update the URL before returning
-        updateURI(false,league,leagueName,lang[0],0);
-        return;
-      }*/
-      {
-        document.getElementById("cpLimit").style.display = "none";
-        document.getElementById("cpLimitLbl").style.display = "none";
-        document.getElementById("dexSkips").style.display = "none";
-        document.getElementById("dexSkipsLbl").style.display = "none";
       }
       
       /* See if this was a request for custom IV Search String */
@@ -836,7 +797,6 @@
       binary += document.getElementById('trashZero').checked ? "1" : "0";
       binary += document.getElementById('allZero').checked ? "1" : "0";
       binary += document.getElementById('customIVs').checked ? "1" : "0";
-      /*binary += document.getElementById('cd22').checked ? "1" : "0";*/
       
       return [binary,rStr];
     }
@@ -845,13 +805,6 @@
     {
       /* build binary encoding of settings for URL output */
       const [binary, rStr] = encodeSettings(evoLen);
-      
-      if (document.getElementById('allZero').checked) {
-        /* Override CP Limit for allZero mode */
-        league = document.getElementById('cpLimit').value;
-        /* Piggyback dex skips onto lang field */
-        lang += "&skips="+document.getElementById('dexSkips').value;
-      }
       
       if (document.getElementById('customIVs').checked) {
         /* Piggyback IVentry onto lang field */
@@ -875,13 +828,6 @@
         lang += document.getElementById("excludeIV").value != "" ? "&notIV="+document.getElementById("excludeIV").value:"";
       }
       
-      /*if (document.getElementById('cd22').checked) {
-        /* Override CP Limit for 2022 CD mode
-        league = document.getElementById('cpLimit').value;
-        /* Piggyback dex skips onto lang field
-        lang += "&cd22="+document.getElementById('cd22').checked;
-      }*/
-      
       /* update the URL with search parameters */
       var uri = window.location.href.split("?")[0];
       uri = encodeURI(uri + "?mon="+mon+"&cp="+league+"&r="+rStr+"&set="+binary+"&l="+lang);
@@ -900,18 +846,6 @@
       return;
     }
     
-    /* leaner version of existing function which just spits out CPs + HPs for allZero String
-     * Formatting Goal: (https://www.reddit.com/r/TheSilphRoad/comments/hm4t6u/mass_transfer_search_string/fx4oeyw/?context=1)
-        
-        213,129&0*
-        
-        &!213,cp10,cp14,cp20,cp26,cp32,cp38,cp43,cp49,cp55,cp61,cp66,cp72,cp77,cp83,cp89,cp94,cp100,cp105,cp111,cp116,cp122,cp128,cp133,cp139,cp144,cp150,cp155,cp161,cp166
-        &!213,hp10,hp14,hp18,hp21,hp24,hp27,hp29,hp31,hp33,hp35,hp37,hp39-40,hp42-43,hp45-46,hp48-50,hp52-57,hp59-62
-                  
-        &!129,cp10-11,cp16,cp20,cp25,cp30,cp34,cp39,cp44,cp48,cp52,cp57,cp61,cp65,cp70,cp74,cp79,cp83,cp87,cp92,cp96,cp101,cp105,cp109,cp114,cp118,cp123,cp127,cp131
-        &!129,hp10,hp14,hp18,hp21,hp24,hp27,hp29,hp31,hp33,hp35,hp37,hp39-40,hp42-43,hp45-46,hp48-50,hp52-57,hp59-62
-        
-      */
     function findAllZeros(lang) {
       var findAllZerosT0, findAllZerosT1;
       if (true) {findAllZerosT0 = performance.now();}
@@ -938,23 +872,6 @@
         console.log("findAllZeros: Execution took "+(findAllZerosT1-findAllZerosT0).toFixed(1)+"ms");
       }
       
-      return;
-    }
-    
-    function findCD22() {
-      var findCD22T0, findCD22T1;
-      if (true) {findCD22T0 = performance.now();}
-      
-      var output = document.getElementById('output');
-      var message = "This string ignores PvP rankings, and only finds 2022 Community Day mon that can evolve.<br />For PvP rankings please uncheck 'Find 2022 Community Day mon' (below)";
-      
-      output.value = "1-3,27-28,66-68,74-76,133-136,147-149,187-189,196-197,216-217,258-260,263-264,315,333-334,355-356,363-365,396-398,403-407,443-445,470-471,477,495-503,524-526,607-609,633-635,661-663,700,759-760,862,901&evolve";
-      document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
-      
-      if (perfTiming) {
-        findCD22T1 = performance.now();
-        console.log("findCD22: Execution took "+(findCD22T1-findCD22T0).toFixed(1)+"ms");
-      }
       return;
     }
     
@@ -1190,7 +1107,7 @@
         }
       }
       
-      if (!hasZeroOneTwoThreeIVs && hasWeatherBoostedLvl) {
+      if (!hasZeroOneTwoThreeIVs && hasWeatherBoostedLvl && league!="All") {
         var searchLvlName = document.getElementById('searchLvl').options[document.getElementById('searchLvl').selectedIndex].innerHTML;
         var leagueName = document.getElementById('league').options[document.getElementById('league').selectedIndex].innerHTML;
         var baseMonName = evoVals[0][4];
@@ -1624,10 +1541,7 @@
     <label>Trash String:<input id="trash" type="checkbox" oninput="main()"><br /></label>
     <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="main()"></label><br />
     <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br /></div>
-    <!--label>Find 2022 Community Day mon:<input id="cd22" type="checkbox" oninput="main()"><br /></label-->
     <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="main()"><br /></label>
-    <div id="cpLimitDiv"><label id="cpLimitLbl" for="cpLimit" style="display: none;">CP Limit:</label><input type="number" id="cpLimit" oninput="main(true)" value="1500" style="display: none;"></div>
-    <div id="dexSkipsDiv"><label id="dexSkipsLbl" for="dexSkips" style="display: none;">Dex Skips:</label><input id="dexSkips" oninput="main(true)" value="144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,800,801,802,807,888,889,890,891,892,893,894,895,896,897,898" style="display: none;"></div>
     <label>Custom IV Search:<input id="customIVs" type="checkbox" oninput="main()"><br /></label>
     <div id="IVentryDiv"> <label id="IVentryLbl" for="IVentry"  style="display: none;">Custom IVs:</label><input id="IVentry" oninput="main()" value="11/12/13,4-5-6 1+2+3" style="display: none;"></div>
     <label>Remove Impossible Evolutions:<input id="noBadEvos" type="checkbox" oninput="main()" checked><br /></label>
