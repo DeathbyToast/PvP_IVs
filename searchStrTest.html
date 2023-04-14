@@ -1484,7 +1484,13 @@
           /* output CPs */
           cps[i] = Array.from(cps[i]);
           cps[i].sort((a, b) => a - b);
-          output.value += '&!'+i+'*' + groupAttr(atkBkts[i], lang[12]) + '&!'+i+'*' + groupAttr(defBkts[i], lang[13]) + '&!'+i+'*' + groupAttr(staBkts[i], lang[2]) + '&!'+i+'*' + "," + get_matching_string(cps[i], lang[1]);
+          output.value += '&!'+i+'*' + groupAttr(atkBkts[i], lang[12]);
+          if (!trash) {output.value += '&!'+i+'*';}
+          output.value += groupAttr(defBkts[i], lang[13]);
+          if (!trash) {output.value += '&!'+i+'*';}
+          output.value += groupAttr(staBkts[i], lang[2]);
+          if (!trash) {output.value += '&!'+i+'*';}
+          output.value += "," + get_matching_string(cps[i], lang[1]);
           
           if (!trash) {
             output.value += '&!'+i+'*';
