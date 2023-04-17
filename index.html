@@ -231,7 +231,6 @@
       var inputMon = "";
       var perfTiming = false; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
-      var mxlMod = false; /*track if max Lvl was adjusted*/
       var ivMod = false; /*track if IV floor was adjusted*/
       let aIV=[document.getElementById('aIV[0]').value];
       let dIV=[document.getElementById('dIV[0]').value];
@@ -411,7 +410,6 @@
         if (perfTiming) {T0 = performance.now();}
         
         var minLvl = document.getElementById('minLvl');
-        var maxLvl = document.getElementById('maxLvl');
         var floor = document.getElementById('floor');
         
         /* Clear all existing IV Input Rows */
@@ -435,21 +433,28 @@
         /*reset Min Level if we adjusted it previously*/
         if (mnlMod) {
           if ((minLvl.value == 8) || (minLvl.value == 15) || (minLvl.value == 20)) {
-            minLvl.value = 1;
+            /* Check if User has Saved Setting for minLvl before we reset */
+            if (localStorage.minLvl === undefined) {
+              /* User has no preference for us to load, reset to default */
+              minLvl.value = 1;
+            } else {
+              document.getElementById("minLvl").value = localStorage.minLvl;
+              console.log("Successfully reset Min Level to User's Preference of "+localStorage.minLvl);
+            }
           }
           mnlMod = false;
-        }
-        /*reset Max Level if we adjusted it previously*/
-        if (mxlMod) {
-          if ((maxLvl.value == 15) || (maxLvl.value == 20)) {
-            maxLvl.value = 40;
-          }
-          mxlMod = false;
         }
         /*reset IV Floor if we adjusted it previously*/
         if (ivMod) {
           if ((floor.value == 1) || (floor.value == 6) || (floor.value == 10)) {
-            floor.value = 0;
+            /* Check if User has Saved Setting for floor before we reset */
+            if (localStorage.floor === undefined) {
+              /* User has no preference for us to load, reset to default */
+              floor.value = 0;
+            } else {
+              document.getElementById("floor").value = localStorage.floor;
+              console.log("Successfully reset Min Level to User's Preference of "+localStorage.floor);
+            }
           }
           ivMod = false;
         }
@@ -534,11 +539,11 @@
           mD = (mD/1 > maxDef/1) ? numOut(maxDef,dec)-1 : mD;
           mHP = (mHP/1 > ranks.maxHP.value/1) ? ranks.maxHP.value/1-1 : mHP;
           /* Ensure that we don't have atk/def/HP filters above minimums unless filterMod is true */
-          console.log("Before mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);
+          if (filterMod) {console.log("Before mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
           mA = (filterMod == true) ? mA : numOut(minAtk,dec);
           mD = (filterMod == true) ? mD : numOut(minDef,dec);
           mHP = (filterMod == true) ? mHP : ranks.minHP.value;
-          console.log("After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);
+          if (filterMod) {console.log("After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
         }
         
         /*include cmp columns if checked*/
@@ -760,11 +765,11 @@
             trades = tradePcnts(ranks, keys, statProd, floor, aIV.length, aIV[aIV.length-1], dIV[aIV.length-1], sIV[aIV.length-1], false);
           }
           /*TODO: FIX THIS Generate Search String links for each IV set*/
-          /*https://pvpivs.com/searchStr.html?mon=Dusknoir&cp=1500&r=f_10_f_f&o=1001100&l=en*/
+          /*https://pvpivs.com/searchStr.html?mon=Plusle&cp=1500&r=101&set=10100*/
           /*if (!filterMod) {
-            for (i=0; i<rIV.length; i++) {*/
-              /*searchLink += "<p><a href='https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"set=101000&m="+maxLvl+"'>Generate "+mon+" Search String to Trash below Rank "+rIV[i]+"</a></p>";*/
-            /*}
+            for (i=0; i<rIV.length; i++) {
+              searchLink += "<p><a href='https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"set=101000&m="+maxLvl+"'>Generate "+mon+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
+            }
           }*/
         } else {
           if (splitSettings[4])  {
@@ -1026,7 +1031,7 @@
           for (var i=0; i<aIV.length; i++) {
             if ((atk/1 == aIV[i]) && (def/1 == dIV[i]) && (sta == sIV[i])) {
               /* Ensure that attack is not null, to allow 0/15/15 to overwrite default row */
-              if (!(document.getElementById("aIV[0]").value === '')) {
+              if (document.getElementById("aIV[0]").value !== '') {
                 uniqueIVs = false;
                 break;
               }
@@ -1046,7 +1051,7 @@
             }
           }
         } else {
-          console.log("Skipping adding row as we clicked on the Header or Highlighted Row (row.rowIndex"+row.rowIndex+" > "+aIV.length+"aIV.length)");
+          console.error("Skipping adding row as (row.rowIndex"+row.rowIndex+" < "+aIV.length+"aIV.length)");
         }
         if (perfTiming) {stopTiming(T0, "addToCompare");}
       }
@@ -1091,7 +1096,7 @@
           } else if (["limit","floor","minLvl","maxLvl"].includes(settings[i])) {
             document.getElementById(settings[i]).value = localStorage[settings[i]];
           }
-          console.log("Read user's preference for "+settings[i]+" as: "+localStorage[settings[i]]);
+          console.log("Loaded user's preference for "+settings[i]+" as: "+localStorage[settings[i]]);
         }
         if (perfTiming) {stopTiming(T0, "checkUserPreference");}
       }
@@ -1121,7 +1126,7 @@
       function updateSitemap() {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        /* TODO: Ensure output contains &amp; instead of & */
+        /* Known issue: Output contains &amp; instead of & */
         var singleRankLinks = "";
         var leagueRankLinks = "";
         var searchStrLinks = "";
@@ -1200,18 +1205,19 @@
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
           URL = window.location.href.split("?")[1];
-          /*URL = "mon=Totodile&r=20&cp=1500&f=0&min=1&max=50&set=111110&fel=1500&mA=98.3&mD=85.916664261&mHP=115&IVs=2_13_6_undefined-7_10_2_undefined-6_6_8_undefined-";*/
+          /*URL = "mon=Plusle&cp=1500&set=0100000&fel=mirror&IVs=3_11_13";"*/
+          
         } else {
           /* Enable unit testing */
           console.log("checkURI: URL passed in as:"+URL);
         }
-        
+         
         if (URL)
         {
           URL = decodeURI(URL);
-          /*console.log("Read URL as: "+URL);*/
+          /*console.log("checkURI: Read URL as: "+URL);*/
           var values = URL.split("&");
-          /*console.log("Values array as: "+JSON.stringify(values));*/
+          /*console.log("checkURI: Values array as: "+JSON.stringify(values));*/
           for (var i=0; i<values.length; i++)
           {
             switch (values[i].split("=")[0]) {
@@ -1220,6 +1226,7 @@
                 input.value = values[i].split("=")[1];
                 /* Ensure input shows in awesomplete box */
                 Awesomplete.input = input.value;
+                /*console.log("checkURI: Read mon("+values[i].split("=")[1]+") and set Awesomplete.input to:"+Awesomplete.input);*/
                 break;
               case "r":
                 document.getElementById('limit').value = values[i].split("=")[1];
@@ -1240,6 +1247,7 @@
                 break;
               case "max":
                 document.getElementById('maxLvl').value = values[i].split("=")[1];
+                console.log("checkURI: Read max("+values[i].split("=")[1]+") and set document.getElementById('maxLvl').value to:"+document.getElementById('maxLvl').value);
                 break;
               case "dec":
                 document.getElementById('dec').value = values[i].split("=")[1];
@@ -1270,17 +1278,13 @@
                 break;
               case "IVs":
                 var ivStr = (values[i].split("=")[1]).split("-");
-                /*console.log("checkURI::IVs:ivStr:"+ivStr+", ivStr.length: "+ivStr.length);*/
                 for (var j=0; j<ivStr.length; j++)
                 {
                   var userIVs = ivStr[j].split("_");
                   if (userIVs.length<2) {continue;} /* skip blank/incomplete entries */
-                  /*console.log("checkURI::IVs:insering userIVs: "+userIVs+" (length:"+userIVs.length+")");*/
                   doTheInsert(userIVs[0],userIVs[1],userIVs[2],userIVs[3]);
                 }
-                /* Need to remove first row now */
-                document.getElementById("minus[0]").click();
-                console.log("checkURI: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);
+                /*console.log("checkURI: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);*/
                 break;
               case "mA":
                 mA = values[i].split("=")[1];
@@ -1342,61 +1346,94 @@
         }
       }
       
+      function computeSingleIV_CMP(ranks, chkIVs, cmpLimit, keys, dec) {
+        
+        /* Compare chkIVs all remaining IVs up to requested CMP limit (2-cmpLimit)*/
+        for (var i=0,iters=1; (iters<cmpLimit/1 && iters<ranks.numRanks && keys[i].indexOf(".")>-1); i++) {
+          for (var j=0; ((j<ranks[keys[i]].length) && (iters<cmpLimit/1)); j++, iters++) {
+            
+            /* Rank 1 CMP Processing */
+            if (i==0 && j==0) {
+              var r1atk = numOut(ranks[keys[i]][j].battle.A,dec)/1;
+              
+              if (numOut(chkIVs.battle.A,dec)/1 > r1atk) {
+                /*console.log("R1 set to W because numOut(chkIVs.battle.A,1):"+numOut(chkIVs.battle.A,1)+" > r1atk: "+r1atk);*/
+                chkIVs.IVs.R1 = "W";
+                chkIVs.IVs.cmp=1;
+              } else if (numOut(chkIVs.battle.A,dec)/1 < r1atk) {
+                /*console.log("R1 set to L because numOut(chkIVs.battle.A,1):"+numOut(chkIVs.battle.A,1)+" < r1atk: "+r1atk);*/
+                chkIVs.IVs.R1 = "L";
+                chkIVs.IVs.cmp=0;
+              } else {
+                /*console.log("R1 set to T because numOut(chkIVs.battle.A,1):"+numOut(chkIVs.battle.A,1)+" = r1atk: "+r1atk);*/
+                chkIVs.IVs.R1 = "T";
+                chkIVs.IVs.cmp=0;
+              }
+            } else {
+              /* Process CMP for all other IVs */
+              if (numOut(chkIVs.battle.A,dec)/1 > numOut(ranks[keys[i]][j].battle.A,dec)/1) {
+                chkIVs.IVs.cmp+=1;
+              }
+            }
+          }
+        }
+        
+        /* Ensure we convert count of CMP wins to percentage */
+        chkIVs.IVs.cmp = numOut(chkIVs.IVs.cmp/cmpLimit * 100,0);
+        return;
+      }
+      
       function cmpCalcs(ranks, keys, dec, cmpLimit, filterMod) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        /*console.log("cmpCalcs: received: ranks: "+JSON.stringify(ranks)+", keys:"+JSON.stringify(keys));*/
-        console.log("cmpCalcs:: received: dec: "+JSON.stringify(dec)+", cmpLimit:"+JSON.stringify(cmpLimit)+", filterMod:"+JSON.stringify(filterMod));
-        var debugPrint = false;
-        var printLimit = document.getElementById('limit').value;
+        var i=0,j=0,k=0,monProcessed=0;
+        var checkLimit = document.getElementById('limit').value;
         
-        /* If user hasn't entered any IVs, only process up to user's cmpLimit for performance efficiency */
-        /* Also, skip any non-user IVs beyond Top Ranks (that won't be output) for performance efficiency */
-        for (var i=0, monChecked=0; i<ranks.numRanks && keys[i].indexOf(".")>-1; i++) {
-            for (var j=0; j<ranks[keys[i]].length; j++) {
-              /* Show detailed debugging information for specific IV set if debugPrint is enabled */
-              /*if ((ranks[keys[i]][j].IVs.A/1 == aI1) && (ranks[keys[i]][j].IVs.D/1 == 14) && (ranks[keys[i]][j].IVs.S/1 == 12)) {debugPrint = true;}*/
-              
-              /* Ensure we iterate through the user's IVs (always at least one partial entry, __/15/15) */
-              for (var v=0; v<aIV.length; v++) {
-                if (filterMod || monChecked < (printLimit/1+aIV.length/1)-1 || (ranks[keys[i]][j].IVs.A/1 == aIV[v] && ranks[keys[i]][j].IVs.D/1 == dIV[v] && ranks[keys[i]][j].IVs.S/1 == sIV[v])) {
-                  /* User has set filters OR this is either a userIV OR within printed Top Ranks, must process R1 CMP */
-                  
-                  if (numOut(ranks[keys[i]][j].battle.A,dec)/1 > numOut(ranks[keys[0]][0].battle.A,dec)/1) {
-                    /*if (debugPrint) { console.log("R1 set to W because numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" > numOut(ranks[keys[0]][0].battle.A,1): "+numOut(ranks[keys[0]][0].battle.A,1));}*/
-                    ranks[keys[i]][j].IVs.R1 = "W";
-                    ranks[keys[i]][j].IVs.cmp=1;
-                  } else if (numOut(ranks[keys[i]][j].battle.A,dec)/1 < numOut(ranks[keys[0]][0].battle.A,dec)/1) {
-                    /*if (debugPrint) { console.log("R1 set to L because numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" < numOut(ranks[keys[0]][0].battle.A,1): "+numOut(ranks[keys[0]][0].battle.A,1));}*/
-                    ranks[keys[i]][j].IVs.R1 = "L";
-                    ranks[keys[i]][j].IVs.cmp=0;
-                  } else {
-                    /*if (debugPrint) { console.log("R1 set to T because numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" = numOut(ranks[keys[0]][0].battle.A,1): "+numOut(ranks[keys[0]][0].battle.A,1));}*/
-                    ranks[keys[i]][j].IVs.R1 = "T";
-                    ranks[keys[i]][j].IVs.cmp=0;
+        /* Clone user IVs so that we can destructively search for them */
+        var aIVtmp = aIV.slice(0);
+        var dIVtmp = dIV.slice(0);
+        var sIVtmp = sIV.slice(0);
+        var foundUserIV = false;
+        
+        /* Just process up to user's cmpLimit for performance efficiency */
+        /* keys[i].indexOf(".")>-1 checks that this entry exists */
+        for (i=0; i<ranks.numRanks && keys[i].indexOf(".")>-1 && (aIVtmp.length>0 || monProcessed<checkLimit); i++) {
+          for (j=0; j<ranks[keys[i]].length; j++) {
+            if (filterMod) {
+              /* Check that this row will actually be output if user has set any filters, unless this is a user IV */
+              if (!(mA/1 <= numOut(ranks[keys[i]][j].battle.A,dec) && mD/1 <= numOut(ranks[keys[i]][j].battle.D,dec) && mHP/1 <= ranks[keys[i]][j].battle.S)) {
+                /* This IV is below user filters and will not be displayed unless it is a user IV. Need to check all user IVs to see if we still need to compute CMP... */
+                for (k=0,foundUserIV=false; k<aIVtmp.length;k++) {
+                  /* Need to iterate through all user IVs to check if this is a user IV before skipping it */
+                  if (ranks[keys[i]][j].IVs.A/1 == aIVtmp[k] && ranks[keys[i]][j].IVs.D/1 == dIVtmp[k] && ranks[keys[i]][j].IVs.S/1 == sIVtmp[k]) {
+                    foundUserIV = true;
+                    break;
                   }
-                  /* Check this rank (from loop above) against all remaining IVs up to requested CMP limit */
-                  for (var k=1,iters=1; (iters<cmpLimit/1 && iters<ranks.numRanks && keys[k].indexOf(".")>-1); k++) {
-                    /*console.log("Iterating through k="+k+": "+JSON.stringify(ranks[keys[k]]));*/
-                    for (var l=0; ((l<ranks[keys[k]].length) && (iters<cmpLimit/1)); l++, iters++) {
-                      if (numOut(ranks[keys[i]][j].battle.A,dec)/1 > numOut(ranks[keys[k]][l].battle.A,dec)/1) {ranks[keys[i]][j].IVs.cmp+=1;}
-                      /*if (debugPrint) { console.log("cmp increased to "+ranks[keys[i]][j].IVs.cmp+" with numOut(ranks[keys[i]][j].battle.A,1):"+numOut(ranks[keys[i]][j].battle.A,1)+" > numOut(ranks[keys[k]][l].battle.A,1): "+numOut(ranks[keys[k]][l].battle.A,1));}*/
-                    }
-                  }
-                  /* Ensure we convert count of CMP wins to percentage */
-                  ranks[keys[i]][j].IVs.cmp = numOut(ranks[keys[i]][j].IVs.cmp/cmpLimit * 100,0);
-                  /*console.log("CMP values updated for #"+monChecked+": "+ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S);*/
-                  monChecked++;
-                  
-                  if (debugPrint) {debugPrint = false;}
-                  /* If user entered no IVs and set no filters, see if we're done checking ranks */
-                  if (!aIV[0] && !filterMod && monChecked>cmpLimit/1) {break;}
+                }
+                if (!(foundUserIV)) {
+                  /* Skip if this wasn't a user IV */
+                  continue;
+                } else {
+                  /* Pad checkLimit to account for "hidden" user IV that needs to be processed */
+                  checkLimit++;
                 }
               }
             }
-            /* If user entered no IVs and set no filters, see if we're done checking ranks */
-            if (!aIV[0] && !filterMod && monChecked>cmpLimit/1) {break;}
+            /* Now that we have validated that this IV needs a CMP calculation, go ahead and compute it */
+            computeSingleIV_CMP(ranks, ranks[keys[i]][j], cmpLimit, keys, dec);
+            
+            /* Check if this was a user IV, if it was, remove from array of user IVs to process */
+            for (k=0; k<aIVtmp.length;k++) {
+              if (ranks[keys[i]][j].IVs.A/1 == aIVtmp[k] && ranks[keys[i]][j].IVs.D/1 == dIVtmp[k] && ranks[keys[i]][j].IVs.S/1 == sIVtmp[k]) {
+                /* Successfully processed CMP for this user IV, remove from arrays so we don't keep searching for it */
+                aIVtmp.splice(k,1); dIVtmp.splice(k,1); sIVtmp.splice(k,1);
+                break;
+              }
+            }
+          } /* Keep track of actual number of mon processed (for tie breaking double loop logic) */
+          monProcessed++;
         }
+        
         if (perfTiming) {stopTiming(T0, "cmpCalcs");}
         return ranks;
       }
@@ -1410,6 +1447,7 @@
 
         var totalMons = 0;
         let i=0;
+        /* keys[i].indexOf(".")>-1 checks that this entry exists */
         for (i=0; (i<ranks.numRanks && (keys[i].indexOf(".")>-1)); i++) {
             for (var j=0; j<ranks[keys[i]].length; j++) {
               /*1IV=lGo,hGo + 2IV=lGr,hGr + 3IV=lUf,hUf + 5IV=lBf,hBf + 12V=lLf,hLf*/
