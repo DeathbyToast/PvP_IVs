@@ -476,11 +476,11 @@
         setUserPreference('family');
       }
       
-      function outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, settings, dec, URL) {
+      function outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, dec, URL) {
         var T0,Tc,Ti,Tr,T1;
-        if (perfTiming) {T0 = performance.now();}/*console.log("oUR::Received aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw+", league:"+league+", leagueName:"+leagueName+", ranks"+ranks+", settings:"+settings+", dec:"+dec+", URL:"+URL);*/
+        if (perfTiming) {T0 = performance.now();}
+        /*console.log("oUR: Received aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw+", league:"+league+", leagueName:"+leagueName+", ranks"+ranks+", dec:"+dec+", URL:"+URL);*/
         
-        splitSettings = settings.split(''); /* split into characters */
         var evoLeague = document.getElementById('familyEvoLeague').value;
         var evoLeagueName = document.getElementById('familyEvoLeague').options[document.getElementById('familyEvoLeague').selectedIndex].innerHTML;
         var minLvl = document.getElementById('minLvl').value;
@@ -489,28 +489,24 @@
         var limit = document.getElementById('limit').value;
         var keys = Object.keys(ranks);
         var maxStatProd = keys[0].split(".")[0];
-        console.log("evos:"+JSON.stringify(evos));
         var evos = pokeListObj[mon].split(',').slice(4, pokeListObj[mon].split(',').length);
+        console.log("evos:"+JSON.stringify(evos));
         var evoLen = evos.length;
-        var cmpLimit = 0;
+        var settings = (document.getElementById('mlCP').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0") + (document.getElementById("bulk").checked ? "1":"0");
         
-        /* Processing for mirror selected league on family evos */
-        if (evoLeague === "mirror") {
+        /* If family evos are checked and mirror selected, mirror selected league for family evos */
+        if (document.getElementById("family").checked && evoLeague === "mirror") {
           evoLeague = league;
           evoLeagueName = leagueName;
-          console.log("Detected mirror, mirroed to evoLeague:"+evoLeague+", evoLeagueName:"+evoLeagueName);
+          console.log("oUR: Detected mirror, mirroed to evoLeague:"+evoLeague+", evoLeagueName:"+evoLeagueName);
         }
-        
-        /* properly parse settings bits as true/false */
-        console.log("splitSettings:"+JSON.stringify(splitSettings));
-        for (var i=0; i<splitSettings.length; i++) { splitSettings[i] = (splitSettings[i] === 1) ? true : false;}
         
         /*we have at least one rank to output, let's print! */
         var evoHtml = "";
         var evoFeedback = "";
         var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th>";
         
-        if (splitSettings[0]) {
+        if (document.getElementById('mlCP').checked) {
           html += "<th>L"+minLvl+" CP</th>";
         }
           
@@ -520,8 +516,9 @@
         if (maxLvl > 41 && ranks.maxLvl>41) {
           html+="<th>XL</th>";
         }
+        
         /*include stardust costs if enabled*/
-        if (splitSettings[5]) {
+        if (document.getElementById("dust").checked) {
           html+="<th>Dust</th>";
         }
         
@@ -547,21 +544,21 @@
         }
         
         /*include cmp columns if checked*/
-        if (splitSettings[1] === true) {
-          cmpLimit = document.getElementById('cmpLim').value/1;
-          if (ranks.numRanks/1 < cmpLimit/1) {
+        if (document.getElementById("cmp").checked) {
+          var cmpLim = document.getElementById('cmpLim').value;
+          if (ranks.numRanks/1 < cmpLim/1) {
             /* If cmpLim is set too high, adjust down to numRanks */
-            cmpLimit = ranks.numRanks/1;
+            cmpLim = ranks.numRanks/1;
           }
-          html+="<th>R1 CMP</th><th>T"+cmpLimit+" CMP</th>";
-          ranks = cmpCalcs(ranks, keys, dec, cmpLimit, filterMod);
+          html+="<th>R1 CMP</th><th>T"+cmpLim+" CMP</th>";
+          ranks = cmpCalcs(ranks, keys, dec, cmpLim, filterMod);
         }
         if (perfTiming) {Tc = performance.now();}
         
         html+="<th>PvP Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th>";
         
         /*include bulk product if enabled*/
-        if (splitSettings[6]) {
+        if (document.getElementById("bulk").checked) {
           html+="<th>Bulk Prod</th>";
         }
         html+="</tr>";
@@ -579,7 +576,7 @@
           if (aIV[i] && dIV[i] && sIV[i]) {
             if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
               /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
-              [gmRhtml, vAtk, vDef, vHP] = getMonRank(ranks, keys, shdw[i], splitSettings[1], maxStatProd, aIV[i], dIV[i], sIV[i], mA, mD, mHP, aIV.length, mon, false, false, maxLvl, splitSettings[5], splitSettings[6], dec, splitSettings[0]);
+              [gmRhtml, vAtk, vDef, vHP] = getMonRank(ranks, keys, shdw[i], maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, mon, false, false, maxLvl, dec);
               
               /* Keep track of which user IVs are valid and invalid per stat filters */
               if (filterMod) {
@@ -598,7 +595,7 @@
               } else {html += gmRhtml;}
               
               /* See if we need to output evo familyTable*/
-              if (evoLen && splitSettings[3]) {
+              if (evoLen && document.getElementById("family").checked) {
                 /* valid set of IVs, need to find base stats for evos */
                 for (var e=0; e<evoLen; e++) {
                   /* Ensure we don't show impossible Tyrogue evos (highest stat determines evo) */
@@ -610,18 +607,17 @@
                   var evoMaxStatProd = evoKeys[0].split(".")[0];
                   /*create link for evo table entry*/
                   uri = URL + "?mon="+evos[e];
-                  if (limit/1 != 10) uri += "&r="+limit;
+                  if (limit/1 !== "10") uri += "&r="+limit;
                   uri += "&cp="+league; /* Must include league */
-                  if (floor/1 >0) uri += "&f="+floor;
-                  if (minLvl/1 >1) uri += "&min="+minLvl;
-                  if (maxLvl/1 != 51) uri += "&max="+maxLvl;
+                  if (floor/1 > 0) uri += "&f="+floor;
+                  if (minLvl/1 > 1) uri += "&min="+minLvl;
+                  if (maxLvl/1 !== "51") uri += "&max="+maxLvl;
                   uri += "&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i];
                   if (shdw[i]) {
                     uri += "_" + shdw[i];
                   }
                   uri += "&mA=0&mD=0&mHP=0";
-
-                  let [evoGMRhtml] = getMonRank(evoRanks, evoKeys, shdw[i], splitSettings[1], evoMaxStatProd, aIV[i], dIV[i], sIV[i], 0, 0, 0, aIV.length, mon, evos[e], uri, false, splitSettings[5], splitSettings[6], dec, false);
+                  let [evoGMRhtml] = getMonRank(evoRanks, evoKeys, shdw[i], evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, mon, evos[e], uri, false, dec);
                   
                   if (evoGMRhtml) {
                     if (evoHtml) {
@@ -630,12 +626,12 @@
                     } else {
                       /*include stardust costs if enabled*/
                       var dustHeader = "";
-                      if (splitSettings[5]) {
+                      if (document.getElementById("dust").checked) {
                         dustHeader="<th>Dust</th>";
                       }
                       /*include Bulk Product if enabled*/
                       var bulkProdHeader = "";
-                      if (splitSettings[6]) {
+                      if (document.getElementById("bulk").checked) {
                         bulkProdHeader="<th>Bulk Prod</th>";
                       }
                       /*if this is the first evo, add header too*/
@@ -701,7 +697,7 @@
                 html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
                 html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
                 html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
-                if (splitSettings[0]) {html+="<td>"+Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
+                if (document.getElementById('mlCP').checked) {html+="<td>"+Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
                 html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
                 html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
@@ -712,8 +708,8 @@
                   html+="<td>"+candy+"</td>";
                   if (!nonZeroXL && candy > 0) {nonZeroXL = true;} /*XL*/
                 }
-                if (splitSettings[5]) {html+= "<td>"+stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)+"</td>";} /*Stardust*/
-                if (splitSettings[1]) {
+                if (document.getElementById("dust").checked) {html+= "<td>"+stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)+"</td>";} /*Stardust*/
+                if (document.getElementById("cmp").checked) {
                   html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
                   html+="<td>"+ranks[keys[i]][j].IVs.cmp+"%"+"</td>"; /*CMP Wins*/
                 }
@@ -721,7 +717,7 @@
                 html+="<td>"+numOut(ranks[keys[i]][j].battle.D,dec)+"</td>"; /*GL Def Total*/
                 html+="<td>"+ranks[keys[i]][j].battle.S+"</td>"; /*GL HP*/
                 html+="<td>"+keys[i].split(".")[0]+"</td>"; /*Stat Product*/
-                if (splitSettings[6]) {
+                if (document.getElementById("bulk").checked) {
                   var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0);
                   html+="<td>"+bulkprod+"</td>"; /*Bulk Product*/
                 }
@@ -758,21 +754,21 @@
         var trades = "";
         var searchLink = "";
         var statProd = html.split('</td></tr><tr><td>')[0];
-        if ((gmRhtml != "") && (statProd != null) && (aIV[aIV.length-1] && dIV[aIV.length-1] && sIV[aIV.length-1])) {
+        if ((gmRhtml !== "") && (statProd !== null) && (aIV[aIV.length-1] && dIV[aIV.length-1] && sIV[aIV.length-1])) {
           statProd = statProd.split('</td><td>');
           statProd = statProd[statProd.length-1];
-          if (splitSettings[4])  {
+          
+          if (document.getElementById("dti").checked)  {
             trades = tradePcnts(ranks, keys, statProd, floor, aIV.length, aIV[aIV.length-1], dIV[aIV.length-1], sIV[aIV.length-1], false);
           }
-          /*TODO: FIX THIS Generate Search String links for each IV set*/
-          /*https://pvpivs.com/searchStr.html?mon=Togedemaru&cp=1500&r=15_f_f&set=10100*/
+          /* Generate Search String links for each IV set, formatted like: https://pvpivs.com/searchStr.html?mon=Togedemaru&cp=1500&r=15_f_f&set=10100*/
           if (!filterMod) {
             for (i=0; i<rIV.length; i++) {
               searchLink += "<p><a href='https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"&r="+rIV[i]+"&set=10100'>Generate "+mon+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
             }
           }
         } else {
-          if (splitSettings[4])  {
+          if (document.getElementById("dti").checked)  {
             trades = tradePcnts(ranks, keys, statProd, floor, false, false, false, false, league);
           }
         }
@@ -828,7 +824,7 @@
         /* Awesomeplete sends "undefined" when it did not find a valid input */
         if (mon === undefined) { /* Determine if we have a valid, previously selected mon we can use */
           if ((pokeListObj[input.value]) || (pokeListObj[inputMon])) {
-            console.log("Found a valid input.value of:"+JSON.stringify(input.value));
+            console.log("main: Found a valid input.value of:"+JSON.stringify(input.value));
             /* Correct for autocomplete input being cleared accidentally */
             if ((!(pokeListObj[input.value])) && (pokeListObj[inputMon])) {
               input.value = inputMon;
@@ -840,7 +836,7 @@
         
         /* Exit if we don't have a valid mon yet */
         if (typeof mon === 'undefined' || mon === null || typeof pokeListObj[mon] === 'undefined') {
-          console.log("No Pok&eacute;mon received by main()");
+          console.log("main: No Pokémon received by main()");
           if (perfTiming) {stopTiming(T0, "main");}
           return;
         } else { /* Have a valid mon, remove instructions */
@@ -869,7 +865,6 @@
         if ((lastLeague) && (leagueName !== lastLeague)){ /* Reset if new League */mA = 0; mD = 0; mHP = 0;filterMod=false;}
         lastLeague = leagueName; /* Store League for next run */
         var ranks = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), document.getElementById('floor').value, document.getElementById('minLvl').value, document.getElementById('maxLvl').value, document.getElementById("dti").checked, league, mon);
-        var settings = (document.getElementById('mlCP').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0") + (document.getElementById("bulk").checked ? "1":"0");
         var URL = window.location.href.split("?")[0];
         
         /*ensure we actually generated something to output*/
@@ -889,7 +884,7 @@
           dIV[i] = document.getElementById("dIV["+i+"]").value;
           sIV[i] = document.getElementById("sIV["+i+"]").value;
         }
-        const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, settings, dec, URL);
+        const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, dec, URL);
         
         displayPvPokeEvoGroup(mon);
         
@@ -897,20 +892,22 @@
         /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000000&fel=1500&mA=119.7&mD=112.6&mHP=113";*/
         var uri = URL + "?mon="+mon;
         /* Only print remaining params if they aren't default values */
-        if (printLimit/1 != 10) uri += "&r="+printLimit;
+        if (printLimit !== "10") uri += "&r="+printLimit;
         uri += "&cp="+league; /* Must include league */
-        if (document.getElementById('floor').value>0) {uri += "&f="+document.getElementById('floor').value;}
-        if (document.getElementById('minLvl').value>1) {uri += "&min="+document.getElementById('minLvl').value;}
-        if (document.getElementById('maxLvl').value!=51) {uri += "&max="+document.getElementById('maxLvl').value;}
-        if (settings!=0000000) {
+        if (document.getElementById('floor').value > 0) {uri += "&f="+document.getElementById('floor').value;}
+        if (document.getElementById('minLvl').value > 1) {uri += "&min="+document.getElementById('minLvl').value;}
+        if (document.getElementById('maxLvl').value!== "51") {uri += "&max="+document.getElementById('maxLvl').value;}
+        var settings = (document.getElementById('mlCP').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0") + (document.getElementById("bulk").checked ? "1":"0");
+        if (settings !== "0000000") {
           /*console.log("906: About to make '&set'="+settings);*/
           uri += "&set="+settings;}
-        if (document.getElementById('familyEvoLeague').value!=1500) {uri += "&fel="+document.getElementById('familyEvoLeague').value;}
-        if (filterMod && mA != numOut(ranks.minAtk.value, dec)) {uri += "&mA="+mA;console.log("mA:"+mA+" while numOut("+ranks.minAtk.value+", "+dec+"):"+numOut(ranks.minAtk.value, dec));}
-        if (filterMod && mD != numOut(ranks.minDef.value, dec)) {uri += "&mD="+mD;}
-        if (filterMod && mHP != ranks.minHP.value) {uri += "&mHP="+mHP;}
+        if (document.getElementById('cmpLim').value !== "100") {uri += "&cmpLim="+document.getElementById('cmpLim').value;}
+        if (document.getElementById('familyEvoLeague').value !== "mirror") {uri += "&fel="+document.getElementById('familyEvoLeague').value;}
+        if (filterMod && mA !== numOut(ranks.minAtk.value, dec)) {uri += "&mA="+mA;console.log("mA:"+mA+" while numOut("+ranks.minAtk.value+", "+dec+"):"+numOut(ranks.minAtk.value, dec));}
+        if (filterMod && mD !== numOut(ranks.minDef.value, dec)) {uri += "&mD="+mD;}
+        if (filterMod && mHP !== ranks.minHP.value) {uri += "&mHP="+mHP;}
         if (document.getElementById('r1atk').checked || document.getElementById('r1def').checked || document.getElementById('r1hp').checked) {uri += "&p=" + (document.getElementById("r1atk").checked ? "1":"0") + (document.getElementById("r1def").checked ? "1":"0") + (document.getElementById("r1hp").checked ? "1":"0");}
-        if (document.getElementById('dec').value>1) {uri += "&dec="+document.getElementById('dec').value;}
+        if (document.getElementById('dec').value > 1) {uri += "&dec="+document.getElementById('dec').value;}
         if (aIV[0] && dIV[0] && sIV[0]) {
           var IVs = "";
           for (i=0; i<aIV.length; i++) {
@@ -988,7 +985,7 @@
             if (row.length > maxWidth) {
               maxWidth = row.length;
             }
-            if (cgeData!="") {
+            if (cgeData !== "") {
               var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
               cgeData += newline+mon+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
             }
@@ -1144,7 +1141,7 @@
             singleRankLinks += '&lt;url&gt;&lt;loc&gt;https://pvpivs.com/?mon='+poke+'&amp;cp='+leagues[j]+'&lt;/loc&gt;&lt;changefreq&gt;always&lt;/changefreq&gt;&lt;priority&gt;0.9&lt;/priority&gt;&lt;/url&gt;<br />';
             /* Include max level info for League Rankings */
             for (var k=0; k<levels.length; k++) {
-              if (first==true) {leagueRankLinks += '&lt;url&gt;&lt;loc&gt;https://pvpivs.com/leagueRanks.html?&amp;cp='+leagues[j]+'&amp;max='+levels[k]+'&lt;/loc&gt;&lt;changefreq&gt;always&lt;/changefreq&gt;&lt;priority&gt;0.9&lt;/priority&gt;&lt;/url&gt;<br />';
+              if (first === true) {leagueRankLinks += '&lt;url&gt;&lt;loc&gt;https://pvpivs.com/leagueRanks.html?&amp;cp='+leagues[j]+'&amp;max='+levels[k]+'&lt;/loc&gt;&lt;changefreq&gt;always&lt;/changefreq&gt;&lt;priority&gt;0.9&lt;/priority&gt;&lt;/url&gt;<br />';
               first=false;}
               else continue;
             }
@@ -1205,7 +1202,7 @@
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
           URL = window.location.href.split("?")[1];
-          /*URL = "mon=Plusle&cp=1500&set=0100000&fel=mirror&IVs=3_11_13";"*/
+          /*URL = "mon=Mamoswine&cp=1500&set=0100000&cmpLim=55&IVs=0_11_13";*/
           
         } else {
           /* Enable unit testing */
@@ -1217,6 +1214,7 @@
           URL = decodeURI(URL);
           /*console.log("checkURI: Read URL as: "+URL);*/
           var values = URL.split("&");
+          var settings = "0000000";
           /*console.log("checkURI: Values array as: "+JSON.stringify(values));*/
           for (var i=0; i<values.length; i++)
           {
@@ -1247,20 +1245,9 @@
                 break;
               case "max":
                 document.getElementById('maxLvl').value = values[i].split("=")[1];
-                console.log("checkURI: Read max("+values[i].split("=")[1]+") and set document.getElementById('maxLvl').value to:"+document.getElementById('maxLvl').value);
                 break;
               case "dec":
                 document.getElementById('dec').value = values[i].split("=")[1];
-                break;
-              case "dti":
-                document.getElementById('dti').checked = values[i].split("=")[1] ? true : false;
-                break;
-              case "cge":
-                document.getElementById('cge').checked = values[i].split("=")[1] ? true : false;
-                break;
-              case "fam":
-                document.getElementById('family').checked = values[i].split("=")[1] ? true : false;
-                toggleFamilyEvos();
                 break;
               case "fel":
                 document.getElementById('familyEvoLeague').value = values[i].split("=")[1];
@@ -1270,11 +1257,8 @@
                   document.getElementById('familyEvoLeague').value = "ML";
                 }
                 break;
-              case "cmp":
-                document.getElementById('cmp').checked = values[i].split("=")[1] ? true : false;
-                break;
-              case "shdw":
-                document.getElementById('shdw[0]').checked = values[i].split("=")[1] ? true : false;
+              case "cmpLim":
+                document.getElementById('cmpLim').value = values[i].split("=")[1];
                 break;
               case "IVs":
                 var ivStr = (values[i].split("=")[1]).split("-");
@@ -1300,9 +1284,9 @@
                 break;
               case "p":
                 var pareto = (''+values[i].split("=")[1]);
-                document.getElementById('r1atk').checked = pareto[0]==1 ? true : false;
-                document.getElementById('r1def').checked = pareto[1]==1 ? true : false;
-                document.getElementById('r1hp').checked = pareto[2]==1 ? true : false;
+                document.getElementById('r1atk').checked = pareto[0] === "1" ? true : false;
+                document.getElementById('r1def').checked = pareto[1] === "1" ? true : false;
+                document.getElementById('r1hp').checked = pareto[2] === "1" ? true : false;
                 break;
               case "t": /* Enable performance timing output in console for debugging */
                 perfTiming = values[i].split("=")[1];
@@ -1323,20 +1307,38 @@
                 if (perfTiming) {stopTiming(T0, "checkURI");}
                 return true;
               case "set":
-                /* settings = shdw,cmp,cge,family,dti,dust */
-                var settings = (''+values[i].split("=")[1]);
-                document.getElementById('mlCP').checked = settings[0]==1 ? true : false;
-                document.getElementById('cmp').checked = settings[1]==1 ? true : false;
-                document.getElementById('cge').checked = settings[2]==1 ? true : false;
-                document.getElementById('family').checked = settings[3]==1 ? true : false;
-                document.getElementById('dti').checked = settings[4]==1 ? true : false;
-                document.getElementById('dust').checked = settings[5]==1 ? true : false;
-                document.getElementById('bulk').checked = settings[6]==1 ? true : false;
-                toggleFamilyEvos();
+                settings = (''+values[i].split("=")[1]);
+                document.getElementById('mlCP').checked = settings[0] === "1" ? true : false;
+                document.getElementById('cmp').checked = settings[1] === "1" ? true : false;
+                document.getElementById('cge').checked = settings[2] === "1" ? true : false;
+                if (settings[3] === "1") {
+                  document.getElementById('family').checked = true;
+                  document.getElementById("familyEvoLeagueLbl").style.display = "inline-block";
+                } else {
+                  document.getElementById('family').checked = false;
+                  document.getElementById("familyEvoLeagueLbl").style.display = "none";
+                }
+                document.getElementById('family').checked = settings[3] === "1" ? true : false;
+                document.getElementById('dti').checked = settings[4] === "1" ? true : false;
+                document.getElementById('dust').checked = settings[5] === "1" ? true : false;
+                document.getElementById('bulk').checked = settings[6] === "1" ? true : false;
                 break;
             }
           }
           if (perfTiming) {stopTiming(T0, "checkURI");}
+          console.log("checkURI: Calling main");
+          /* Ensure we open Advanced if user URL has any Advanced settings enabled */
+          if (
+            settings !== "0000000"
+            || document.getElementById('minLvl').value > 1
+            || document.getElementById('maxLvl').value !== "51"
+            || document.getElementById('cmpLim').value !== "100"
+            || document.getElementById('familyEvoLeague').value !== "mirror"
+            || document.getElementById('dec').value > 1
+            || document.getElementById('r1atk').checked
+            || document.getElementById('r1def').checked
+            || document.getElementById('r1hp').checked
+            ) { advCollapsible(); }
           main();
         }
         else
@@ -1346,14 +1348,14 @@
         }
       }
       
-      function computeSingleIV_CMP(ranks, chkIVs, cmpLimit, keys, dec) {
+      function computeSingleIV_CMP(ranks, chkIVs, cmpLim, keys, dec) {
         
-        /* Compare chkIVs all remaining IVs up to requested CMP limit (2-cmpLimit)*/
-        for (var i=0,iters=1; (iters<cmpLimit/1 && iters<ranks.numRanks && keys[i].indexOf(".")>-1); i++) {
-          for (var j=0; ((j<ranks[keys[i]].length) && (iters<cmpLimit/1)); j++, iters++) {
+        /* Compare chkIVs all remaining IVs up to requested CMP limit */
+        for (var i=0,iters=1; (iters<cmpLim/1 && iters<ranks.numRanks && keys[i].indexOf(".")>-1); i++) {
+          for (var j=0; ((j<ranks[keys[i]].length) && (iters<cmpLim/1)); j++, iters++) {
             
             /* Rank 1 CMP Processing */
-            if (i==0 && j==0) {
+            if (i === 0 && j === 0) {
               var r1atk = numOut(ranks[keys[i]][j].battle.A,dec)/1;
               
               if (numOut(chkIVs.battle.A,dec)/1 > r1atk) {
@@ -1379,15 +1381,16 @@
         }
         
         /* Ensure we convert count of CMP wins to percentage */
-        chkIVs.IVs.cmp = numOut(chkIVs.IVs.cmp/cmpLimit * 100,0);
+        chkIVs.IVs.cmp = numOut(chkIVs.IVs.cmp/cmpLim * 100,0);
         return;
       }
       
-      function cmpCalcs(ranks, keys, dec, cmpLimit, filterMod) {
+      function cmpCalcs(ranks, keys, dec, cmpLim, filterMod) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         var i=0,j=0,k=0,monProcessed=0;
         var checkLimit = document.getElementById('limit').value;
+        /*console.log("cmpCalcs: received ranks:"+ranks+", first key:"+keys.slice(0, 1)+", dec:"+dec+", cmpLim:"+cmpLim+", filterMod:"+filterMod);*/
         
         /* Clone user IVs so that we can destructively search for them */
         var aIVtmp = aIV.slice(0);
@@ -1395,7 +1398,7 @@
         var sIVtmp = sIV.slice(0);
         var foundUserIV = false;
         
-        /* Just process up to user's cmpLimit for performance efficiency */
+        /* Just process up to user's cmpLim for performance efficiency */
         /* keys[i].indexOf(".")>-1 checks that this entry exists */
         for (i=0; i<ranks.numRanks && keys[i].indexOf(".")>-1 && (aIVtmp.length>0 || monProcessed<checkLimit); i++) {
           for (j=0; j<ranks[keys[i]].length; j++) {
@@ -1420,7 +1423,7 @@
               }
             }
             /* Now that we have validated that this IV needs a CMP calculation, go ahead and compute it */
-            computeSingleIV_CMP(ranks, ranks[keys[i]][j], cmpLimit, keys, dec);
+            computeSingleIV_CMP(ranks, ranks[keys[i]][j], cmpLim, keys, dec);
             
             /* Check if this was a user IV, if it was, remove from array of user IVs to process */
             for (k=0; k<aIVtmp.length;k++) {
@@ -1622,10 +1625,10 @@
         return outHTML+"</table>";
       }
       
-      function getMonRank(ranks, keys, shdw, cmp, maxStatProd, aIV, dIV, sIV, mA, mD, mHP, numIVs, mon, evo, uri, maxLvl, dust, bulk, dec, mlCP) {
+      function getMonRank(ranks, keys, shdw, maxStatProd, aIV, dIV, sIV, numIVs, mon, evo, uri, maxLvl, dec) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        /*console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", shdw:"+shdw+", cmp:"+cmp+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", mA:"+mA+", mD"+mD+", mHP:"+mHP+", numIVs:"+numIVs+", mon:"+mon+", uri:"+uri+", maxLvl:"+maxLvl+", dust:"+dust+", dec:"+dec+", mlCP:"+mlCP);*/
+        /*console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", shdw:"+shdw+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", numIVs:"+numIVs+", mon:"+mon+", uri:"+uri+", maxLvl:"+maxLvl+", dec:"+dec);*/
         var html = "";
         var actualRank = 1;
         var vAtk = false, vDef = false, vHP = false;
@@ -1659,7 +1662,7 @@
               if (!evo) { /*skip if this is an evoTable print*/
               
               /* Show min lvl CP (raid/hatch) if checked by user */
-              if (mlCP) {
+              if (document.getElementById('mlCP').checked) {
                 console.log("Attempting to read pokeListObj["+mon+"]:");
                 console.log(pokeListObj[mon]);
                 html+="<td>"+Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(document.getElementById('minLvl').value-1)*2] * cpm[(document.getElementById('minLvl').value-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
@@ -1670,9 +1673,13 @@
                 lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
               }
               html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
-              if (!evo && maxLvl > 41 && ranks.maxLvl>41) {html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40, shdw)+"</td>";}
-              if (dust) {html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0,shdw)+"</td>";}
-              if (!evo && cmp) {
+              if (!evo && maxLvl > 41 && ranks.maxLvl>41) {
+                html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40, shdw)+"</td>";
+              }
+              if (document.getElementById("dust").checked) {
+                html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0,shdw)+"</td>";
+              }
+              if (!evo && document.getElementById("cmp").checked) {
                 html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
                 html+="<td>"+ranks[keys[i]][j].IVs.cmp+"%"+"</td>"; /*CMP Wins*/
               }
@@ -1680,7 +1687,7 @@
               html+="<td>"+numOut(ranks[keys[i]][j].battle.D,dec);html+= shdw ? "<p style='color:purple'>("+numOut(ranks[keys[i]][j].battle.D*0.8,dec)+")</p></td>": "</td>"; /*GL Def Total*/
               html+="<td>"+ranks[keys[i]][j].battle.S+"</td>"; /*GL Sta IV*/
               html+="<td>"+keys[i].split(".")[0]+"</td>"; /*Stat Product*/
-              if (bulk) {
+              if (document.getElementById("bulk").checked) {
                 var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0);
                 html+="<td>"+bulkprod+"</td>"; /*Bulk Product*/
               }
@@ -1883,7 +1890,7 @@
                 console.log("validTyroEvo: Stamina is lowest, skipping Hitmontop evo");
                 if (perfTiming) {stopTiming(T0, "validTyroEvo");}
                 return true; /*skip Hitmontop*/
-              } else if ((sIV/1 > aIV/1) && (evo != "Hitmontop")) {
+              } else if ((sIV/1 > aIV/1) && (evo !== "Hitmontop")) {
                 console.log("validTyroEvo: Stamina is highest, skipping non-Hitmontop evo");
                 if (perfTiming) {stopTiming(T0, "validTyroEvo");}
                 return true; /*only show Hitmontop*/
@@ -1893,7 +1900,7 @@
                 console.log("validTyroEvo: Attack is lowest, skipping Hitmonlee evo");
                 if (perfTiming) {stopTiming(T0, "validTyroEvo");}
                 return true; /*skip Hitmonlee*/
-              } else if ((aIV/1 > dIV/1) && (evo != "Hitmonlee")) {
+              } else if ((aIV/1 > dIV/1) && (evo !== "Hitmonlee")) {
                 console.log("validTyroEvo: Attack is highest, skipping non-Hitmonlee evo");
                 if (perfTiming) {stopTiming(T0, "validTyroEvo");}
                 return true; /*only show Hitmonlee*/
@@ -1903,24 +1910,24 @@
                 console.log("validTyroEvo: Defense is lowest, skipping Hitmonchan evo");
                 if (perfTiming) {stopTiming(T0, "validTyroEvo");}
                 return true; /*skip Hitmonchan*/
-              } else if ((dIV/1 > sIV/1) && (evo != "Hitmonchan")) {
+              } else if ((dIV/1 > sIV/1) && (evo !== "Hitmonchan")) {
                 console.log("validTyroEvo: Defense is highest, skipping non-Hitmonchan evo");
                 if (perfTiming) {stopTiming(T0, "validTyroEvo");}
                 return true; /*only show Hitmonchan*/
               }
             }
           } else if ((aIV/1 > dIV/1) && (aIV/1 > sIV/1)) {
-              if (evo != "Hitmonlee") {/*Only show Hitmonlee*/
+              if (evo !== "Hitmonlee") {/*Only show Hitmonlee*/
                 console.log("validTyroEvo: Attack is highest, skipping non-Hitmonlee evo");
                 if (perfTiming) {stopTiming(T0, "validTyroEvo");}
                 return true; }
           } else if ((dIV/1 > sIV/1) && (dIV/1 > aIV/1)) {
-            if (evo != "Hitmonchan") {/*Only show Hitmonchan*/
+            if (evo !== "Hitmonchan") {/*Only show Hitmonchan*/
               console.log("validTyroEvo: Defense is highest, skipping non-Hitmonchan evo");
               if (perfTiming) {stopTiming(T0, "validTyroEvo");}
               return true; }
           } else if ((sIV/1 > dIV/1) && (sIV/1 > aIV/1)) {
-            if (evo != "Hitmontop") {/*Only show Hitmontop*/
+            if (evo !== "Hitmontop") {/*Only show Hitmontop*/
               console.log("validTyroEvo: Stamina is highest, skipping non-Hitmontop evo");
               if (perfTiming) {stopTiming(T0, "validTyroEvo");}
               return true; }
