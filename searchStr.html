@@ -176,7 +176,7 @@
           /*console.log("User Selected "+evt.text.label+", passing to main and exiting Awesomplete");*/
           inputMon = evt.text.label;
           main(evt.text.label);
-          }
+        }
       });
       /* end Awesomeplete https://leaverou.github.io/awesomplete/ */
     }
@@ -190,9 +190,9 @@
       if (URL)
       {
         URL = decodeURI(URL);
-        /*console.log("Read URL as: "+URL);*/
+        /*console.log("checkURI: Read URL as: "+URL);*/
         var values = URL.split("&");
-        /*console.log("Values array as: "+JSON.stringify(values));*/
+        /*console.log("checkURI: Values array as: "+JSON.stringify(values));*/
         for (i=0; i<values.length; i++)
         {
           switch (values[i].split("=")[0]) {
@@ -210,11 +210,11 @@
               
             case "r":
               var rStr = (values[i].split("=")[1]).split("_");
-              /*console.log("Received rStr:"+rStr);*/
+              /*console.log("checkURI: Received rStr:"+rStr);*/
               for (j=0; j<rStr.length; j++) {
                 if (rStr[j] != "f") {
                   var limits = (rStr[j]).split("-");
-                  /*console.log("Processing rStr["+j+"]: "+rStr[j]+" and limits:"+limits);*/
+                  /*console.log("checkURI: Processing rStr["+j+"]: "+rStr[j]+" and limits:"+limits);*/
                   document.getElementById('evoCB['+(j+1)+']').checked = true;
                   
                   switch (document.getElementById('league').value) {
@@ -348,9 +348,9 @@
           }
         }
         
-        /* Exit if we don't have a valid mon yet */
-        if (typeof mon === 'undefined' || mon === null || typeof pokeListObj[mon] === 'undefined') {
-          console.log("checkURI: No Pokémon detected, awaiting user input");
+        /* Exit if we don't have a valid input.value (mon) yet */
+        if (typeof input.value === 'undefined' || input.value === null || typeof pokeListObj[input.value] === 'undefined') {
+          console.log("checkURI: No Pokémon detected, awaiting user input (input.value==='"+input.value+"')");
           if (perfTiming) {checkURIT1 = performance.now();
           console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
           return;
@@ -817,7 +817,6 @@
     {
       /* build binary encoding of settings for URL output */
       const [binary, rStr] = encodeSettings(evoLen);
-      var lang = document.getElementById('lang').value.split(',')[0];
       var league = document.getElementById('league').value;
       var leagueName = document.getElementById('league').options[document.getElementById('league').selectedIndex].innerHTML;
       var otherParams = "";
@@ -835,6 +834,10 @@
         otherParams += "&sl="+document.getElementById('searchLvl').value;
       }
       
+      if (document.getElementById('lang').value.split(',')[0] != "en") {
+        otherParams += "&l="+document.getElementById('lang').value.split(',')[0];
+      }
+      
       if (league == "Raid") {
         otherParams += document.getElementById("ivLim").value != "" ? "&ivLim="+document.getElementById("ivLim").value/1:"";
         otherParams += document.getElementById("aLim").value != "" ? "&a="+document.getElementById("aLim").value/1:"";
@@ -846,7 +849,7 @@
       
       /* update the URL with search parameters */
       var uri = window.location.href.split("?")[0];
-      uri = encodeURI(uri + "?mon="+mon+"&cp="+league+"&r="+rStr+"&set="+binary+"&l="+lang+otherParams);
+      uri = encodeURI(uri + "?mon="+mon+"&cp="+league+"&r="+rStr+"&set="+binary+otherParams);
 
       /* conditional for All Zero mode */
       var newTitle;
@@ -859,6 +862,7 @@
       window.history.pushState(null, newTitle, uri);
       /* Update canonical link to include mon & league for improved SEO */
       document.querySelector("link[rel='canonical']").setAttribute("href", "https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league);
+      console.log("updateURI: updated URI: "+uri);
       return;
     }
     
