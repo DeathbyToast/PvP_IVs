@@ -76,7 +76,7 @@
       <option value="500">Little Leagues</option>
       <option value="1500" selected>Great League</option>
     	<option value="2500">Ultra League</option>
-    	<option value="false">Master League</option>
+    	<option value="ML">Master League</option>
   		<option value="All">All Leagues</option></select>
   	</label><br />
     <label id="getStarted"><i>Please first select an evolution family above, then boxes to select limits will appear...</i><br /></label>
@@ -185,7 +185,7 @@
       var checkURIT0,checkURIT1;
       if (perfTiming) {checkURIT0 = performance.now();}
       var URL = window.location.href.split("?")[1],i,j;
-      /*URL = "mon=Togekiss&cp=All&r=5-25-55-75_f_f_f&set=00100&l=en";*/
+      /*URL = "mon=Togekiss&cp=ML&r=8&set=10100";*/
       
       if (URL)
       {
@@ -287,18 +287,20 @@
             case "o":
             case "set":
               var settings = (''+values[i].split("=")[1]);
-                document.getElementById('trash').checked = settings[0]==1 ? true : false;
-                document.getElementById('trashHundo').checked = settings[1]==1 ? true : false;
-                document.getElementById('trashZero').checked = settings[2]==1 ? true : false;
-                document.getElementById('allZero').checked = settings[3]==1 ? true : false;
-                document.getElementById('customIVs').checked = settings[4]==1 ? true : false;
+              /* If any settings under Advanced are modified from default by this URL, open Advanced to show user */
+              if (settings !== "00100") {advCollapsible();}
+              document.getElementById('trash').checked = settings[0]==="1" ? true : false;
+              document.getElementById('trashHundo').checked = settings[1]==="1" ? true : false;
+              document.getElementById('trashZero').checked = settings[2]==="1" ? true : false;
+              document.getElementById('allZero').checked = settings[3]==="1" ? true : false;
+              document.getElementById('customIVs').checked = settings[4]==="1" ? true : false;
               break;
               
             case "l":
               var lang = document.getElementById('lang');
               var languages = lang.options.length;
               for (j=0; j<languages; j++) {
-                if (lang.options[j].value.split(",")[0] == values[i].split("=")[1]) {
+                if (lang.options[j].value.split(",")[0] === values[i].split("=")[1]) {
                   lang.options[j].selected = true;
                   break;
                 }
@@ -420,7 +422,7 @@
       }
       
       /* Awesomeplete sends "undefined" when it did not find a valid input */
-      if (mon == undefined) { /* Determine if we have a valid, previously selected mon we can use */
+      if (mon === undefined) { /* Determine if we have a valid, previously selected mon we can use */
         if ((pokeListObj[input.value]) || (pokeListObj[inputMon])) {
           console.log("main: Found a valid input.value of:"+JSON.stringify(input.value));
           /* Correct for autocomplete input being cleared accidentally */
@@ -505,7 +507,7 @@
       /* Sort evoVals by maxCP (evoVals[][5]) for consistency */
       evoVals = evoVals.sort(function(a, b) { return a[5] - b[5];});
       /* Fix base mon for Weedle/Kakuna, Wurmple/Silcoon, and Trapinch/Vibrava (lower max cp when evolved) */
-      if (evoVals[0][4] == "Kakuna" || evoVals[0][4] == "Silcoon" || evoVals[0][4] == "Vibrava") {
+      if (evoVals[0][4] === "Kakuna" || evoVals[0][4] === "Silcoon" || evoVals[0][4] === "Vibrava") {
         [evoVals[0], evoVals[1]] = [evoVals[1], evoVals[0]];
         console.log("buildSearchString: Corrected evoVals for "+evoVals[0][4]+": "+JSON.stringify(evoVals));
       }
@@ -526,7 +528,7 @@
         if (target.value != evoVals[0][4]) {
           for (i=1; i<evoVals.length; i++) {
             /* Swap evoVals[target.value] to evoVals[0] https://stackoverflow.com/a/872317 */
-            if (evoVals[i][4] == target.value) {[evoVals[0], evoVals[i]] = [evoVals[i], evoVals[0]];}
+            if (evoVals[i][4] === target.value) {[evoVals[0], evoVals[i]] = [evoVals[i], evoVals[0]];}
           }
         }
         
@@ -539,14 +541,14 @@
         if (document.getElementById('noBadEvos').checked) {
           for (i=1; i<evoVals.length; i++) {
             if ((evoVals[0][5]/1 > evoVals[i][5]/1) ||
-               ((evoVals[0][4] == "Kakuna" && evoVals[i][4] == "Weedle") ||
-                (evoVals[0][4] == "Silcoon" && evoVals[i][4] == "Wurmple") ||
-                (evoVals[0][4] == "Vibrava" && evoVals[i][4] == "Trapinch"))) {
+               ((evoVals[0][4] === "Kakuna" && evoVals[i][4] === "Weedle") ||
+                (evoVals[0][4] === "Silcoon" && evoVals[i][4] === "Wurmple") ||
+                (evoVals[0][4] === "Vibrava" && evoVals[i][4] === "Trapinch"))) {
                /* Need to remove Weedle/Wurmple/Trapinch as evos of Kakuna/Silcoon/Vibrava too */
               
-              if ((evoVals[0][4] == "Weedle" && evoVals[i][4] == "Kakuna") ||
-                  (evoVals[0][4] == "Wurmple" && evoVals[i][4] == "Silcoon") ||
-                  (evoVals[0][4] == "Trapinch" && evoVals[i][4] == "Vibrava")) {
+              if ((evoVals[0][4] === "Weedle" && evoVals[i][4] === "Kakuna") ||
+                  (evoVals[0][4] === "Wurmple" && evoVals[i][4] === "Silcoon") ||
+                  (evoVals[0][4] === "Trapinch" && evoVals[i][4] === "Vibrava")) {
                     /* Don't remove Kakuna/Silcoon/Vibrava as evos of Weedle/Wurmple/Trapinch */
                     /*console.log("buildSearchString: False alarm, not an impossible evolution, continuing...");*/
                     continue;
@@ -561,10 +563,10 @@
   
         /* If base could also be an evo, add duplicate entry */
         /* Example test cases: Rhyhorn, Electabuzz */
-        if (((evoVals[0][5] > LLcutoff) && ((league == "500") || (league ==  "All"))) ||
-            ((evoVals[0][5] > GLcutoff) && ((league == "1500") || (league ==  "All"))) ||
-            ((evoVals[0][5] > ULcutoff) && ((league == "2500") || (league ==  "All"))) ||
-            ((evoVals[0][5] > MLcutoff) && ((league =="false") || (league ==  "All")))) {
+        if (((evoVals[0][5] > LLcutoff) && ((league === "500")  || (league ===  "All"))) ||
+            ((evoVals[0][5] > GLcutoff) && ((league === "1500") || (league ===  "All"))) ||
+            ((evoVals[0][5] > ULcutoff) && ((league === "2500") || (league ===  "All"))) ||
+            ((evoVals[0][5] > MLcutoff) && ((league === "ML")   || (league ===  "All")))) {
           /*console.log("Detected base ("+evoVals[0][4]+") that could be evo, duplicating...");*/
           evoVals.push([...evoVals[0]]); /* Don't just copy pointer, copy values! */
         }
@@ -616,7 +618,7 @@
       }
       
       /* Raid IV Search String Handler */
-      if (league == "Raid") {
+      if (league === "Raid") {
         
         /* Un-hide User Input boxes */
         document.getElementById('RaidlimitDiv').style.display = "inline-block";
@@ -633,8 +635,8 @@
         var raidIVs = [];
         
         /* Separate and format addIV and excludeIV, starting with whitespace, set to false if blank to skip processing */
-        var addIV = document.getElementById('addIV').value.split(/[ ,]+/) == "" ? false : document.getElementById('addIV').value.split(/[ ,]+/);
-        var excludeIV = document.getElementById('excludeIV').value.split(/[ ,]+/) == "" ? false : document.getElementById('excludeIV').value.split(/[ ,]+/);
+        var addIV = document.getElementById('addIV').value.split(/[ ,]+/) === "" ? false : document.getElementById('addIV').value.split(/[ ,]+/);
+        var excludeIV = document.getElementById('excludeIV').value.split(/[ ,]+/) === "" ? false : document.getElementById('excludeIV').value.split(/[ ,]+/);
         
         /* Strip out IV separators and save each IV */
         for (i=0; i<addIV.length; i++) {
@@ -650,7 +652,7 @@
               for (var s=15; s/1>=staminaIVlim/1; s--) {
                 /* Check to make sure the user didn't Exclude this IV */
                 for (i=0; i<excludeIV.length; i++) {
-                  if ((a/1 == excludeIV[i][0]) && (d/1 == excludeIV[i][1]) && (s/1 == excludeIV[i][2])) {
+                  if ((a/1 === excludeIV[i][0]) && (d/1 === excludeIV[i][1]) && (s/1 === excludeIV[i][2])) {
                     /* console.log("buildSearchString: Found a match! Excluding IV: "+a+"/"+d+"/"+s); */
                     continue loop3; /*Ignore this IV set, it is excluded */
                   }
@@ -665,13 +667,13 @@
         for (i=0; i<addIV.length; i++) {
           var included = false;
           for (j=0; j<raidIVs.length; j++) {
-            if ((addIV[i][0]/1 == raidIVs[j][0]/1) && (addIV[i][1]/1 == raidIVs[j][1]/1) && (addIV[i][2]/1 == raidIVs[j][2]/1)) {
+            if ((addIV[i][0]/1 === raidIVs[j][0]/1) && (addIV[i][1]/1 === raidIVs[j][1]/1) && (addIV[i][2]/1 === raidIVs[j][2]/1)) {
               included = true;
               /*console.log("buildSearchString: Found a match! IV already included: "+addIV[i][0]/1+"/"+addIV[i][1]/1+"/"+addIV[i][2]/1);*/
               break;
             }
           }/* If we didn't find the IV the user wants added, then add it to raidIVs */
-          if (included == false) {
+          if (included === false) {
             raidIVs.push([addIV[i][0]/1,addIV[i][1]/1,addIV[i][2]/1]);
             /*console.log("buildSearchString: Pushed ("+addIV[i]+") to raidIVs");*/
           }
@@ -737,16 +739,16 @@
         document.getElementById('evoName['+i+']').innerHTML = evoVals[i][4]+" ("+evoVals[i][5]+")";
         document.getElementById('evoName['+i+']').style.display = "inline-block";
         document.getElementById('evoLimits['+i+']').style.display = "inline-block";
-        document.getElementById('LLlimitDiv['+i+']').style.display = ((evoVals[i][5] > LLcutoff) && ((league == "All") || (league == "500"))) ? "inline-block" : "none";
-        document.getElementById('GLlimitDiv['+i+']').style.display = ((evoVals[i][5] > GLcutoff) && ((league == "All") || (league == "1500"))) ? "inline-block" : "none";
-        document.getElementById('ULlimitDiv['+i+']').style.display = ((evoVals[i][5] > ULcutoff) && ((league == "All") || (league == "2500"))) ? "inline-block" : "none";
-        document.getElementById('MLlimitDiv['+i+']').style.display = ((evoVals[i][5] > MLcutoff) && ((league == "All") || (league == "false"))) ? "inline-block" : "none";
+        document.getElementById('LLlimitDiv['+i+']').style.display = ((evoVals[i][5] > LLcutoff) && ((league === "All") || (league === "500")))  ? "inline-block" : "none";
+        document.getElementById('GLlimitDiv['+i+']').style.display = ((evoVals[i][5] > GLcutoff) && ((league === "All") || (league === "1500"))) ? "inline-block" : "none";
+        document.getElementById('ULlimitDiv['+i+']').style.display = ((evoVals[i][5] > ULcutoff) && ((league === "All") || (league === "2500"))) ? "inline-block" : "none";
+        document.getElementById('MLlimitDiv['+i+']').style.display = ((evoVals[i][5] > MLcutoff) && ((league === "All") || (league === "ML")))   ? "inline-block" : "none";
         /*console.log("buildSearchString: Added "+evoVals[i][4]+" to list, un-hid evoLimits["+i+"]");*/
         
-        evoVals[i][6] = ((evoVals[i][5] > LLcutoff) && ((league == "All") || (league ==  "500"))) ? document.getElementById('LLlimit['+i+']').value/1:0*1;
-        evoVals[i][7] = ((evoVals[i][5] > GLcutoff) && ((league == "All") || (league == "1500"))) ? document.getElementById('GLlimit['+i+']').value/1:0*1;
-        evoVals[i][8] = ((evoVals[i][5] > ULcutoff) && ((league == "All") || (league == "2500"))) ? document.getElementById('ULlimit['+i+']').value/1:0*1;
-        evoVals[i][9] = ((evoVals[i][5] > MLcutoff) && ((league == "All") || (league == "false"))) ? document.getElementById('MLlimit['+i+']').value/1:0*1;
+        evoVals[i][6] = ((evoVals[i][5] > LLcutoff) && ((league === "All") || (league ===  "500"))) ? document.getElementById('LLlimit['+i+']').value/1:0*1;
+        evoVals[i][7] = ((evoVals[i][5] > GLcutoff) && ((league === "All") || (league === "1500"))) ? document.getElementById('GLlimit['+i+']').value/1:0*1;
+        evoVals[i][8] = ((evoVals[i][5] > ULcutoff) && ((league === "All") || (league === "2500"))) ? document.getElementById('ULlimit['+i+']').value/1:0*1;
+        evoVals[i][9] = ((evoVals[i][5] > MLcutoff) && ((league === "All") || (league ===   "ML"))) ? document.getElementById('MLlimit['+i+']').value/1:0*1;
       }
       console.log("buildSearchString: Finished building evoVals[]: "+JSON.stringify(evoVals));
       
@@ -779,12 +781,13 @@
       
       if (league !== "Raid") {/*Skip all of this if making Raid mode URL*/
         for (i=1; ((i<10) && (i<evoLen+2)); i++) {
-          if ((getComputedStyle(document.getElementById("evoLimits["+i+"]"), null).display == "inline-block") && (document.getElementById('evoCB['+i+']').checked)) {
-            if (league == "All") {tempStr = [];
-              if (getComputedStyle(document.getElementById("LLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("LLlimit["+i+"]").value/1);}
-              if (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("GLlimit["+i+"]").value/1);}
-              if (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("ULlimit["+i+"]").value/1);}
-              if (getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display == "inline-block") {tempStr.push(document.getElementById("MLlimit["+i+"]").value/1);}
+          if ((getComputedStyle(document.getElementById("evoLimits["+i+"]"), null).display === "inline-block") && (document.getElementById('evoCB['+i+']').checked)) {
+            if (league === "All") {
+              tempStr = [];
+              if (getComputedStyle(document.getElementById("LLlimit["+i+"]"), null).display === "inline-block") {tempStr.push(document.getElementById("LLlimit["+i+"]").value/1);}
+              if (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display === "inline-block") {tempStr.push(document.getElementById("GLlimit["+i+"]").value/1);}
+              if (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display === "inline-block") {tempStr.push(document.getElementById("ULlimit["+i+"]").value/1);}
+              if (getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display === "inline-block") {tempStr.push(document.getElementById("MLlimit["+i+"]").value/1);}
               if (tempStr.length > 0) {
                 for (j=0; j<tempStr.length; j++) {
                   if (j===0) {rStr += "_"+tempStr[j];}
@@ -792,17 +795,24 @@
                 }
               } else {rStr += "_f";}
             } else {
-              if (((league ==  "500")) && (getComputedStyle(document.getElementById("LLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("LLlimit["+i+"]").value/1;}
-              if (((league == "1500")) && (getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("GLlimit["+i+"]").value/1;}
-              if ((league == "2500") && (getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("ULlimit["+i+"]").value/1;}
-              if ((league === false) && (getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display == "inline-block")) {rStr += "_" + document.getElementById("MLlimit["+i+"]").value/1;}
+              /* Determine which league limits are displayed, and save their limits to the URL */
+              if (league === "500" && getComputedStyle(document.getElementById("LLlimit["+i+"]"), null).display === "inline-block") {
+                rStr += "_" + document.getElementById("LLlimit["+i+"]").value/1;
+              } else if (league === "1500" && getComputedStyle(document.getElementById("GLlimit["+i+"]"), null).display === "inline-block") {
+                rStr += "_" + document.getElementById("GLlimit["+i+"]").value/1;
+              } else if (league === "2500" && getComputedStyle(document.getElementById("ULlimit["+i+"]"), null).display === "inline-block") {
+                rStr += "_" + document.getElementById("ULlimit["+i+"]").value/1;
+              } else if (league === "ML" && getComputedStyle(document.getElementById("MLlimit["+i+"]"), null).display === "inline-block") {
+                rStr += "_" + document.getElementById("MLlimit["+i+"]").value/1;
+              }
             }
           } else {
             rStr += "_f";
           }
-          if ((i==1) && (rStr.charAt(0)) == "_") {rStr = rStr.substring(1);} /* remove leading "_" */
+          if ((i==1) && (rStr.charAt(0)) === "_") {rStr = rStr.substring(1);} /* remove leading "_" */
         }
       }
+      /* console.log("encodeSettings: rStr finished: "+rStr+" for league:"+league);*/
   
       binary = document.getElementById('trash').checked ? "1" : "0";
       binary += document.getElementById('trashHundo').checked ? "1" : "0";
@@ -838,7 +848,7 @@
         otherParams += "&l="+document.getElementById('lang').value.split(',')[0];
       }
       
-      if (league == "Raid") {
+      if (league === "Raid") {
         otherParams += document.getElementById("ivLim").value != "" ? "&ivLim="+document.getElementById("ivLim").value/1:"";
         otherParams += document.getElementById("aLim").value != "" ? "&a="+document.getElementById("aLim").value/1:"";
         otherParams += document.getElementById("dLim").value != "" ? "&d="+document.getElementById("dLim").value/1:"";
@@ -862,7 +872,6 @@
       window.history.pushState(null, newTitle, uri);
       /* Update canonical link to include mon & league for improved SEO */
       document.querySelector("link[rel='canonical']").setAttribute("href", "https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league);
-      console.log("updateURI: updated URI: "+uri);
       return;
     }
     
@@ -912,28 +921,28 @@
           console.log("getRanks: Loop #"+i+": evoVals["+i+"]:"+JSON.stringify(evoVals[i]));
         }
         
-        if (i==0) {/* base mon */
+        if (i===0) {/* base mon */
           if (document.getElementById('trash').checked) {
             message += "trashes all "+evoVals[i][4]+" except ";
-            if (document.getElementById('trashHundo').checked == false) {message += "perfect IV (15/15/15) and ";}
-            if (document.getElementById('trashZero').checked == false) {message += "zero IV (0/0/0) and ";}
+            if (document.getElementById('trashHundo').checked === false) {message += "perfect IV (15/15/15) and ";}
+            if (document.getElementById('trashZero').checked === false) {message += "zero IV (0/0/0) and ";}
           } else {message += "finds Level "+searchLvls+" "+evoVals[i][4]+" as ";}
         }
         else {/* all evos */
         
           var leagueArray;
         
-          if (league == "All") {
+          if (league === "All") {
             /* Add all formats to league, loop through all */
-            leagueArray = ["500", "1500", "2500", false].slice();
+            leagueArray = ["500", "1500", "2500", "ML"].slice();
           } else {leagueArray = [league];} /* convert to array for loop */
           
           for (l=0; l<leagueArray.length; l++) {
             if (evoVals[i][0]) {
               /* Must be done inside loop to work for All leagues case */
-              if (leagueArray[l] == "500") {leagueLim = evoVals[i][6]/1;}
-              else if (leagueArray[l] == "1500") {leagueLim = evoVals[i][7]/1;}
-              else if (leagueArray[l] == "2500") {leagueLim = evoVals[i][8]/1;}
+              if (leagueArray[l] === "500") {leagueLim = evoVals[i][6]/1;}
+              else if (leagueArray[l] === "1500") {leagueLim = evoVals[i][7]/1;}
+              else if (leagueArray[l] === "2500") {leagueLim = evoVals[i][8]/1;}
               else {leagueLim = evoVals[i][9]/1;} /* Master League */
               
               /*console.log("getRanks: calculated "+evoVals[i][4]+" for "+leagueArray[l]+" with evoVals["+i+"][0]:"+evoVals[i][0]);*/
@@ -944,9 +953,9 @@
             
               /* Update the message with what we just calculated */
               if (numRanks>0 && leagueLim>0) {message += ", and ";}
-              if (leagueArray[l] == "500" && leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Little";}
-              else if (leagueArray[l] == "1500" && leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Great";}
-              else if (leagueArray[l] == "2500" && leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Ultra";}
+              if (leagueArray[l] === "500" && leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Little";}
+              else if (leagueArray[l] === "1500" && leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Great";}
+              else if (leagueArray[l] === "2500" && leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Ultra";}
               else if (leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Master";}
               numRanks += leagueLim/1;
             }
@@ -956,7 +965,7 @@
       }
       
       /* Complete the message */
-      if (league == "All") {
+      if (league === "All") {
         message += " Leagues";
       } else {
         message += " League";
@@ -1049,7 +1058,7 @@
                 
                 /* Check if we should notify user to include Weather Boosted IVs */
                 if (!hasZeroOneTwoThreeIVs && searchLvl[0] < 33 && mergedRanks[rKeys[i]][j].L > 30) {
-                  if (hasWeatherBoostedLvl == false) {
+                  if (hasWeatherBoostedLvl === false) {
                     hasWeatherBoostedLvl = true;
                   }
                   if (mergedRanks[rKeys[i]][j].IVs.A/1 < 4 || mergedRanks[rKeys[i]][j].IVs.D/1 < 4 || mergedRanks[rKeys[i]][j].IVs.S/1 < 4)
@@ -1131,7 +1140,7 @@
         }
       }
       
-      if (!hasZeroOneTwoThreeIVs && hasWeatherBoostedLvl && document.getElementById('league').value !="All") {
+      if (!hasZeroOneTwoThreeIVs && hasWeatherBoostedLvl && document.getElementById('league').value !== "All") {
         var searchLvlName = document.getElementById('searchLvl').options[document.getElementById('searchLvl').selectedIndex].innerHTML;
         var leagueName = document.getElementById('league').options[document.getElementById('league').selectedIndex].innerHTML;
         var baseMonName = evoVals[0][4];
@@ -1151,7 +1160,7 @@
       
       /* TODO: Why is this All League only?? */
       /* get actual maxCP and maxHP using spread syntax */
-      if ((document.getElementById('league').value == "All") && (document.getElementById('trash').checked)) {
+      if ((document.getElementById('league').value === "All") && (document.getElementById('trash').checked)) {
         maxCP.fill(Math.max(...maxCP));
         maxHP.fill(Math.max(...maxHP));
       }
@@ -1188,7 +1197,7 @@
   
       output.value = ''; /* ensure old output is cleared */
       var message = "";
-      if (league != "Raid") {message = "<i>Warning: Custom IV Search Strings can have a very high false positive rate (>90%). It will find all "+monName+" you have with your Custom IVs, along with other IVs at the same CPs/HPs</i><br /><br />";}
+      if (league !== "Raid") {message = "<i>Warning: Custom IV Search Strings can have a very high false positive rate (>90%). It will find all "+monName+" you have with your Custom IVs, along with other IVs at the same CPs/HPs</i><br /><br />";}
       message += "This string finds "+monName+" with ";
       message += (document.getElementById('trash').checked) ? "IVs except: ":"IVs: ";
       message += JSON.stringify(customIVs);
@@ -1332,9 +1341,9 @@
       /* Fix UI to remove base mon selection and update message appropriately */
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       document.getElementById('feedbackBox').innerHTML = "";
-      document.getElementById('targetDiv').style.display = (league == "Raid" || document.getElementById('customIVs').checked) ? "inline-block" : "none";
-      document.getElementById('RaidlimitDiv').style.display = (league == "Raid") ? "inline-block" : "none";
-      document.getElementById('RaidOverrideDiv').style.display = (league == "Raid") ? "inline-block" : "none";
+      document.getElementById('targetDiv').style.display = (league === "Raid" || document.getElementById('customIVs').checked) ? "inline-block" : "none";
+      document.getElementById('RaidlimitDiv').style.display = (league === "Raid") ? "inline-block" : "none";
+      document.getElementById('RaidOverrideDiv').style.display = (league === "Raid") ? "inline-block" : "none";
       document.getElementById('asDiv').style.display = "none";
       
       if (perfTiming) {outputCustomIVsStrT1 = performance.now();
@@ -1441,10 +1450,10 @@
       
       /* Process 4* appraisals and trashHundo/trashZero */
       if (trash) { /* If this is a trash string */
-        if (document.getElementById('trashHundo').checked == false) { /* and we don't want to trash hundo IVs */
+        if (document.getElementById('trashHundo').checked === false) { /* and we don't want to trash hundo IVs */
           output.value += '&!4*'; /* Ensure hundos are not trashed */
         }
-        if (document.getElementById('trashZero').checked == false) {/* and we don't want to trash zero IVs */
+        if (document.getElementById('trashZero').checked === false) {/* and we don't want to trash zero IVs */
           output.value += '&1-4Attack,1-4Defense,1-4Hp'; /* Ensure zeros are not trashed */
         }
       } else { /* If not a trash string */
@@ -1520,7 +1529,7 @@
       var list = '', last = -1;
       
     	for( var i = 0; i < a.length; i++ ) {
-    		if( a[i] == last + 1 ) {
+    		if( a[i] === last + 1 ) {
     			list += '-';
     			last = a[i];
     			while( ++i < a.length ) {
@@ -1552,15 +1561,15 @@
     }
     </script>
     <label>Language:<select id="lang" oninput="main()">
-    		<option value="en,cp,hp,mega1-,alola,eggsonly,galar,ground,steel,grass,psychic,fire,attack,defense,xs,xl,xxl">English</option>
-    		<option value="fr,pc,pv,m&#xE9;ga1–,alola,oeufseulement,galar,sol,acier,plante,psy,feu,attaque,d&#xE9;fense,xs,xl,xxl">French</option>
-    		<option value="de,wp,kp,mega1,alola,nurausEiern,galar,boden,stahl,pflanze,psycho,feuer,angriffs-wert,verteidigungs-wert,xs,xl,xxl">German</option>
-    		<option value="es,pc,puntos de salud,mega1–,alola,huevosolo,galar,tierra,acero,planta,ps&#xed;quico,fuego,ataque,defensa,xs,xl,xxl">Spanish</option>
-    		<option value="it,pl,punti salute,mega1–,dialola,solouovo,galar,terra,acciaio,erba,psico,fuoco,attacco,difesa,xs,xl,xxl">Italian</option>
-    		<option value="ja,cp,hp,&#x30E1;&#x30AC;1–,&#x3042;&#x308d;&#x30fc;&#x3089;,&#x305f;&#x307e;&#x3054;&#x306e;&#x307f;,&#x30ac;&#x30e9;&#x30eb;,&#x3058;&#x3081;&#x3093;,&#x306f;&#x304c;&#x306d;,&#x304f;&#x3055;,&#x30a8;&#x30b9;&#x30d1;&#x30fc;,&#x307b;&#x306e;&#x304a;,&#x30B3;&#x30A6;&#x30B2;&#x30AD;,&#x30DC;&#x30A6;&#x30AE;&#xFF6E;,xs,xl,xxl">Japanese</option>
-    		<option value="ko,cp,hp,&#xBA54;&#xAC00;1–,&#xc54c;&#xb85c;&#xb77c;,&#xc54c;,&#xd558;&#xb098;,&#xb545;,&#xac15;&#xcca0;,&#xd480;,&#xc5d0;&#xc2a4;&#xd37c;,&#xbd88;&#xaf43;,attack,defense,xs,xl,xxl">Korean</option>
-    		<option value="pt,pc,ps,mega1–,alola,apenasovos,galar,terrestre,A&#xe7;o,planta,Ps&#xed;quico,fogo,ataque,defesa,xs,xl,xxl">Portuguese</option>
-    		<option value="zh,cp,hp,&#36229;&#32026;1-,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;,attack,defense,xs,xl,xxl">Chinese</option>
+      <option value="en,cp,hp,mega1-,alola,eggsonly,galar,ground,steel,grass,psychic,fire,attack,defense,xs,xl,xxl">English</option>
+  		<option value="fr,pc,pv,m&#xE9;ga1–,alola,oeufseulement,galar,sol,acier,plante,psy,feu,attaque,d&#xE9;fense,xs,xl,xxl">French</option>
+  		<option value="de,wp,kp,mega1,alola,nurausEiern,galar,boden,stahl,pflanze,psycho,feuer,angriffs-wert,verteidigungs-wert,xs,xl,xxl">German</option>
+  		<option value="es,pc,puntos de salud,mega1–,alola,huevosolo,galar,tierra,acero,planta,ps&#xed;quico,fuego,ataque,defensa,xs,xl,xxl">Spanish</option>
+  		<option value="it,pl,punti salute,mega1–,dialola,solouovo,galar,terra,acciaio,erba,psico,fuoco,attacco,difesa,xs,xl,xxl">Italian</option>
+  		<option value="ja,cp,hp,&#x30E1;&#x30AC;1–,&#x3042;&#x308d;&#x30fc;&#x3089;,&#x305f;&#x307e;&#x3054;&#x306e;&#x307f;,&#x30ac;&#x30e9;&#x30eb;,&#x3058;&#x3081;&#x3093;,&#x306f;&#x304c;&#x306d;,&#x304f;&#x3055;,&#x30a8;&#x30b9;&#x30d1;&#x30fc;,&#x307b;&#x306e;&#x304a;,&#x30B3;&#x30A6;&#x30B2;&#x30AD;,&#x30DC;&#x30A6;&#x30AE;&#xFF6E;,xs,xl,xxl">Japanese</option>
+  		<option value="ko,cp,hp,&#xBA54;&#xAC00;1–,&#xc54c;&#xb85c;&#xb77c;,&#xc54c;,&#xd558;&#xb098;,&#xb545;,&#xac15;&#xcca0;,&#xd480;,&#xc5d0;&#xc2a4;&#xd37c;,&#xbd88;&#xaf43;,attack,defense,xs,xl,xxl">Korean</option>
+  		<option value="pt,pc,ps,mega1–,alola,apenasovos,galar,terrestre,A&#xe7;o,planta,Ps&#xed;quico,fogo,ataque,defesa,xs,xl,xxl">Portuguese</option>
+  		<option value="zh,cp,hp,&#36229;&#32026;1-,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;,attack,defense,xs,xl,xxl">Chinese</option>
     </select>
     </label><br />
     <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
