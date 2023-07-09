@@ -1455,6 +1455,13 @@
         }
         if (document.getElementById('trashZero').checked === false) {/* and we don't want to trash zero IVs */
           output.value += '&1-4Attack,1-4Defense,1-4Hp'; /* Ensure zeros are not trashed */
+          /* Ensure regional search terms are translated as needed*/
+          if (lang[0] !== "en")
+          {
+            output.value = output.value.replace(/attack/gi,  lang[12]);
+            output.value = output.value.replace(/defense/gi, lang[13]);
+            output.value = output.value.replace(/hp/gi,      lang[2]);
+          }
         }
       } else { /* If not a trash string */
         if (cps[4].size > 0) { /* Check if we search for hundos */
