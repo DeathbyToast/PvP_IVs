@@ -289,7 +289,14 @@
               var settings = (''+values[i].split("=")[1]);
               /* If any settings under Advanced are modified from default by this URL, open Advanced to show user */
               if (settings !== "00100") {advCollapsible();}
-              document.getElementById('trash').checked = settings[0]==="1" ? true : false;
+              /* Ensure we show/hide advanced trash settings appropriately when setting trash checkbox */
+              if (settings[0]==="1") {
+                document.getElementById('trash').checked = true;
+                document.getElementById('trashAdv').style.display = "block";
+              } else {
+                document.getElementById('trash').checked = false;
+                document.getElementById('trashAdv').style.display = "none";
+              }
               document.getElementById('trashHundo').checked = settings[1]==="1" ? true : false;
               document.getElementById('trashZero').checked = settings[2]==="1" ? true : false;
               document.getElementById('allZero').checked = settings[3]==="1" ? true : false;
@@ -1448,7 +1455,7 @@
       } /* add trash stuff */
       output.value += emptyBuf;
       
-      /* Process 4* appraisals and trashHundo/trashZero */
+      /* Process 4* appraisals and trashHundo/trashZero/excludeXXS/excludeXXL */
       if (trash) { /* If this is a trash string */
         if (document.getElementById('trashHundo').checked === false) { /* and we don't want to trash hundo IVs */
           output.value += '&!4*'; /* Ensure hundos are not trashed */
@@ -1461,6 +1468,18 @@
             output.value = output.value.replace(/attack/gi,  lang[12]);
             output.value = output.value.replace(/defense/gi, lang[13]);
             output.value = output.value.replace(/hp/gi,      lang[2]);
+          }
+        }
+        if (document.getElementById('excludeXXL').checked === true) { /* and we don't want to trash XXL */
+          output.value += '&!XXL'; /* Ensure XXL are not trashed */
+          if (lang[0] !== "en") {
+            output.value = output.value.replace(/xxl/gi,     lang[16]);
+          }
+        }
+        if (document.getElementById('excludeXXS').checked === true) { /* and we don't want to trash XXS */
+          output.value += '&!XXS'; /* Ensure XXS are not trashed */
+          if (lang[0] !== "en") {
+            output.value = output.value.replace(/xxs/gi,     lang[17]);
           }
         }
       } else { /* If not a trash string */
@@ -1487,6 +1506,7 @@
         output.value = output.value.replace(/xs/gi,      lang[14]);
         output.value = output.value.replace(/xl/gi,      lang[15]);
         output.value = output.value.replace(/xxl/gi,     lang[16]);
+        output.value = output.value.replace(/xxs/gi,     lang[17]);
       }
       
       if (perfTiming) {outputCPsHPsBucketsT1 = performance.now();
@@ -1568,22 +1588,24 @@
     }
     </script>
     <label>Language:<select id="lang" oninput="main()">
-      <option value="en,cp,hp,mega1-,alola,eggsonly,galar,ground,steel,grass,psychic,fire,attack,defense,xs,xl,xxl">English</option>
-  		<option value="fr,pc,pv,m&#xE9;ga1–,alola,oeufseulement,galar,sol,acier,plante,psy,feu,attaque,d&#xE9;fense,xs,xl,xxl">French</option>
-  		<option value="de,wp,kp,mega1,alola,nurausEiern,galar,boden,stahl,pflanze,psycho,feuer,angriffs-wert,verteidigungs-wert,xs,xl,xxl">German</option>
-  		<option value="es,pc,puntos de salud,mega1–,alola,huevosolo,galar,tierra,acero,planta,ps&#xed;quico,fuego,ataque,defensa,xs,xl,xxl">Spanish</option>
-  		<option value="it,pl,punti salute,mega1–,dialola,solouovo,galar,terra,acciaio,erba,psico,fuoco,attacco,difesa,xs,xl,xxl">Italian</option>
-  		<option value="ja,cp,hp,&#x30E1;&#x30AC;1–,&#x3042;&#x308d;&#x30fc;&#x3089;,&#x305f;&#x307e;&#x3054;&#x306e;&#x307f;,&#x30ac;&#x30e9;&#x30eb;,&#x3058;&#x3081;&#x3093;,&#x306f;&#x304c;&#x306d;,&#x304f;&#x3055;,&#x30a8;&#x30b9;&#x30d1;&#x30fc;,&#x307b;&#x306e;&#x304a;,&#x30B3;&#x30A6;&#x30B2;&#x30AD;,&#x30DC;&#x30A6;&#x30AE;&#xFF6E;,xs,xl,xxl">Japanese</option>
-  		<option value="ko,cp,hp,&#xBA54;&#xAC00;1–,&#xc54c;&#xb85c;&#xb77c;,&#xc54c;,&#xd558;&#xb098;,&#xb545;,&#xac15;&#xcca0;,&#xd480;,&#xc5d0;&#xc2a4;&#xd37c;,&#xbd88;&#xaf43;,attack,defense,xs,xl,xxl">Korean</option>
-  		<option value="pt,pc,ps,mega1–,alola,apenasovos,galar,terrestre,A&#xe7;o,planta,Ps&#xed;quico,fogo,ataque,defesa,xs,xl,xxl">Portuguese</option>
-  		<option value="zh,cp,hp,&#36229;&#32026;1-,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;,attack,defense,xs,xl,xxl">Chinese</option>
+      <option value="en,cp,hp,mega,alola,eggsonly,galar,ground,steel,grass,psychic,fire,attack,defense,xs,xl,xxl,xxs">English</option>
+  		<option value="fr,pc,pv,m&#xE9;ga,alola,oeufseulement,galar,sol,acier,plante,psy,feu,attaque,d&#xE9;fense,xs,xl,xxl,xxs">French</option>
+  		<option value="de,wp,kp,mega,alola,nurausEiern,galar,boden,stahl,pflanze,psycho,feuer,angriffs-wert,verteidigungs-wert,xs,xl,xxl,xxs">German</option>
+  		<option value="es,pc,puntos de salud,mega,alola,huevosolo,galar,tierra,acero,planta,ps&#xed;quico,fuego,ataque,defensa,xs,xl,xxl,xxs">Spanish</option>
+  		<option value="it,pl,punti salute,mega,dialola,solouovo,galar,terra,acciaio,erba,psico,fuoco,attacco,difesa,xs,xl,xxl,xxs">Italian</option>
+  		<option value="ja,cp,hp,&#x30E1;&#x30AC;,&#x3042;&#x308d;&#x30fc;&#x3089;,&#x305f;&#x307e;&#x3054;&#x306e;&#x307f;,&#x30ac;&#x30e9;&#x30eb;,&#x3058;&#x3081;&#x3093;,&#x306f;&#x304c;&#x306d;,&#x304f;&#x3055;,&#x30a8;&#x30b9;&#x30d1;&#x30fc;,&#x307b;&#x306e;&#x304a;,&#x30B3;&#x30A6;&#x30B2;&#x30AD;,&#x30DC;&#x30A6;&#x30AE;&#xFF6E;,xs,xl,xxl,xxs">Japanese</option>
+  		<option value="ko,cp,hp,&#xBA54;&#xAC00;,&#xc54c;&#xb85c;&#xb77c;,&#xc54c;,&#xd558;&#xb098;,&#xb545;,&#xac15;&#xcca0;,&#xd480;,&#xc5d0;&#xc2a4;&#xd37c;,&#xbd88;&#xaf43;,attack,defense,xs,xl,xxl,xxs">Korean</option>
+  		<option value="pt,pc,ps,mega,alola,apenasovos,galar,terrestre,A&#xe7;o,planta,Ps&#xed;quico,fogo,ataque,defesa,xs,xl,xxl,xxs">Portuguese</option>
+  		<option value="zh,cp,hp,&#36229;&#32026;,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;,attack,defense,xs,xl,xxl,xxs">Chinese</option>
     </select>
     </label><br />
     <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
     <div id=advCollapsible hidden>
     <label>Trash String:<input id="trash" type="checkbox" oninput="main()"><br /></label>
     <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="main()"></label><br />
-    <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br /></div>
+    <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br />
+    <label>Exclude XXL from Trash String:<input id="excludeXXL" type="checkbox" oninput="main()"></label><br />
+    <label>Exclude XXS from Trash String:<input id="excludeXXS" type="checkbox" oninput="main()"></label><br /></div>
     <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="main()"><br /></label>
     <label>Custom IV Search:<input id="customIVs" type="checkbox" oninput="main()"><br /></label>
     <div id="IVentryDiv"> <label id="IVentryLbl" for="IVentry"  style="display: none;">Custom IVs:</label><input id="IVentry" oninput="main()" value="11/12/13,4-5-6 1+2+3" style="display: none;"></div>
