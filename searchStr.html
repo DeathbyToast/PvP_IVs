@@ -1586,6 +1586,57 @@
       console.log("autocopy: Execution took "+(autocopyT1-autocopyT0).toFixed(1)+"ms");}
       return true;
     }
+
+    function saveCurrentSettings() {
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
+        setUserPreference("lang,floor,maxLvl,searchLvl,trash,trashHundo,trashZero,allZero,customIVs,noBadEvos");
+        if (perfTiming) {stopTiming(T0, "saveCurrentSettings");}
+        main();
+      }
+      
+      function checkUserPreference(settings) {
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
+        /* Ensure each setting is a full word, not characters */
+        settings = settings.split(",");
+        
+        for (var i=0;  i<settings.length; i++) {
+          if (localStorage[settings[i]] === undefined) {
+            /* User has no preference for us to read yet */
+            /*console.log("Could not find localStorage."+settings[i]);*/
+            continue;
+          }
+          /* User has a stored preference for us to read */
+          if (localStorage[settings[i]] === "true") {
+            document.getElementById(settings[i]).checked = true;
+          } else if (["lang","floor","maxLvl","searchLvl"].includes(settings[i])) {
+            document.getElementById(settings[i]).value = localStorage[settings[i]];
+          }
+          console.log("Loaded user's preference for "+settings[i]+" as: "+localStorage[settings[i]]);
+        }
+        if (perfTiming) {stopTiming(T0, "checkUserPreference");}
+      }
+      
+      function setUserPreference(settings) {
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
+        /* Ensure each setting is a full word, not characters */
+        if (document.getElementById("save").checked) {
+          settings = settings.split(",");
+          for (var i=0; i<settings.length; i++) {
+            /*console.log("Attempting to save settings["+i+"]:"+settings[i]);*/
+            if (["lang","floor","maxLvl","searchLvl"].includes(settings[i])) {
+              localStorage[settings[i]] = document.getElementById(settings[i]).value;
+            } else {
+              localStorage[settings[i]] = document.getElementById(settings[i]).checked ? "true" : "false";
+            }
+            console.log("Stored user's preference for "+settings[i]+" as "+localStorage[settings[i]]);
+          }/*else{console.log("User does not want preferences saved");}*/
+        }
+        if (perfTiming) {stopTiming(T0, "setUserPreference");}
+        main();
+      }
     </script>
     <label>Language:<select id="lang" oninput="main()">
       <option value="en,cp,hp,mega,alola,eggsonly,galar,ground,steel,grass,psychic,fire,attack,defense,xs,xl,xxl,xxs">English</option>
@@ -1691,6 +1742,8 @@
         <option value="20">20 (Only Raid)</option>
         <option value="15">15 (Only Quest)</option>
       </select></div>
+      <label>Remember My Settings:<input id="save" type="checkbox" oninput="saveCurrentSettings()"></label><br />
+      <button id="resetButton" type="resetSettings" onclick="localStorage.clear();location.reload();">Reset All Saved Settings to Defaults</button>
     </div>
       <br /><div id=overflowArea></div>
     <div style="overflow-x:auto;"><br />

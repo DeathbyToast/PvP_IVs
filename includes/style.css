@@ -360,6 +360,12 @@ textarea {
 section {text-align: center;}
 h3 {line-height: 22px;}
 
+#resetButton {
+  color: var(--secondary);
+  background-color: var(--textBoxBg);
+  font-weight : bold;
+}
+
 /* Settings drop down arrows */
 .arrow {
   border: solid var(--text);
