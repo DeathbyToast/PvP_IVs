@@ -1650,17 +1650,15 @@
   		<option value="zh,cp,hp,&#36229;&#32026;,&#x963f;&#x7f85;&#x62c9;,&#x53ea;&#x9650;&#x86cb;,&#x4f3d;&#xf952;&#x723e;,&#x5730;&#x9762;,&#x92fc;,&#x8349;,&#x8d85;&#x80fd;&#x529b;,&#x706b;,attack,defense,xs,xl,xxl,xxs">Chinese</option>
     </select>
     </label><br />
-    <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
-    <div id=advCollapsible hidden>
     <label>Trash String:<input id="trash" type="checkbox" oninput="main()"><br /></label>
     <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="main()"></label><br />
     <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br />
     <label>Exclude XXL from Trash String:<input id="excludeXXL" type="checkbox" oninput="main()"></label><br />
-    <label>Exclude XXS from Trash String:<input id="excludeXXS" type="checkbox" oninput="main()"></label><br /></div>
-    <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="main()"><br /></label>
+    <label>Exclude XXS from Trash String:<input id="excludeXXS" type="checkbox" oninput="main()"></label><br /></div><br />
+    <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
+    <div id=advCollapsible hidden>
     <label>Custom IV Search:<input id="customIVs" type="checkbox" oninput="main()"><br /></label>
     <div id="IVentryDiv"> <label id="IVentryLbl" for="IVentry"  style="display: none;">Custom IVs:</label><input id="IVentry" oninput="main()" value="11/12/13,4-5-6 1+2+3" style="display: none;"></div>
-    <label>Remove Impossible Evolutions:<input id="noBadEvos" type="checkbox" oninput="main()" checked><br /></label>
     <label>IV Floor:<select id="floor" oninput="main()">
         <option value="0">0: Wild Caught</option>
         <option value="1">1: Trade, Good Friend</option>
@@ -1742,6 +1740,8 @@
         <option value="20">20 (Only Raid)</option>
         <option value="15">15 (Only Quest)</option>
       </select></div>
+      <label>Find ALL 0% mon:<input id="allZero" type="checkbox" oninput="main()"><br /></label>
+      <label>Remove Impossible Evolutions:<input id="noBadEvos" type="checkbox" oninput="main()" checked><br /></label><br />
       <label>Remember My Settings:<input id="save" type="checkbox" oninput="saveCurrentSettings()"></label><br />
       <button id="resetButton" type="resetSettings" onclick="localStorage.clear();location.reload();">Reset All Saved Settings to Defaults</button>
     </div>
