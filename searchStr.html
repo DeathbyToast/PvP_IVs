@@ -1470,12 +1470,13 @@
             output.value = output.value.replace(/hp/gi,      lang[2]);
           }
         }
-        if (document.getElementById('excludeXXL').checked === true) { /* and we don't want to trash XXL */
-          output.value += '&!XXL'; /* Ensure XXL are not trashed */
-        }
-        if (document.getElementById('excludeXXS').checked === true) { /* and we don't want to trash XXS */
-          output.value += '&!XXS'; /* Ensure XXS are not trashed */
-        }
+        /* Section to exclude XXL, XXS, XL, XS, and Tagged mon from trash strings */
+        if (document.getElementById('excludeXXL').checked === true) {output.value += '&!XXL';}
+        if (document.getElementById('excludeXXS').checked === true) {output.value += '&!XXS';}
+        if (document.getElementById('excludeXL').checked === true) {output.value += '&!XL';}
+        if (document.getElementById('excludeXS').checked === true) {output.value += '&!XS';}
+        if (document.getElementById('excludeTags').checked === true) {output.value += '&!#';}
+      
       } else { /* If not a trash string */
         if (cps[4].size > 0) { /* Check if we search for hundos */
           output.value += ',4*'; /* Ensure hundos are searched for */
@@ -1580,7 +1581,7 @@
     function saveCurrentSettings() {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        setUserPreference("lang,floor,maxLvl,searchLvl,trash,trashHundo,trashZero,allZero,customIVs,noBadEvos");
+        setUserPreference("lang,floor,maxLvl,searchLvl,trash,trashHundo,trashZero,allZero,customIVs,noBadEvos,excludeXXL,excludeXXS,excludeXL,excludeXS,excludeTags");
         if (perfTiming) {stopTiming(T0, "saveCurrentSettings");}
         main();
       }
@@ -1642,9 +1643,13 @@
     </label><br />
     <label>Trash String:<input id="trash" type="checkbox" oninput="main()"><br /></label>
     <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="main()"></label><br />
-    <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br />
-    <label>Exclude XXL from Trash String:<input id="excludeXXL" type="checkbox" oninput="main()"></label><br />
-    <label>Exclude XXS from Trash String:<input id="excludeXXS" type="checkbox" oninput="main()"></label><br /></div><br />
+      <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br />
+      <label>Exclude XXL from Trash String:<input id="excludeXXL" type="checkbox" oninput="main()"></label><br />
+      <label>Exclude XXS from Trash String:<input id="excludeXXS" type="checkbox" oninput="main()"></label><br />
+      <label>Exclude XL from Trash String:<input id="excludeXL" type="checkbox" oninput="main()"></label><br />
+      <label>Exclude XS from Trash String:<input id="excludeXS" type="checkbox" oninput="main()"></label><br />
+      <label>Exclude All Tagged Mon from Trash String:<input id="excludeTags" type="checkbox" oninput="main()"></label><br />
+    </div><br />
     <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
     <div id=advCollapsible hidden>
     <label>Custom IV Search:<input id="customIVs" type="checkbox" oninput="main()"><br /></label>
