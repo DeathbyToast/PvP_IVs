@@ -185,7 +185,7 @@
       var checkURIT0,checkURIT1;
       if (perfTiming) {checkURIT0 = performance.now();}
       var URL = window.location.href.split("?")[1],i,j;
-      /*URL = "mon=Togekiss&cp=ML&r=8&set=10100";*/
+      /*URL = "mon=Poliwrath&cp=1500&r=f_f_10_f_f&";*/
       
       if (URL)
       {
@@ -284,12 +284,8 @@
               document.getElementById('league').value = values[i].split("=")[1];
               break;
               
-            case "o":
-            case "set":
+            case "trash":
               var settings = (''+values[i].split("=")[1]);
-              /* If any settings under Advanced are modified from default by this URL, open Advanced to show user */
-              if (settings !== "00100") {advCollapsible();}
-              /* Ensure we show/hide advanced trash settings appropriately when setting trash checkbox */
               if (settings[0]==="1") {
                 document.getElementById('trash').checked = true;
                 document.getElementById('trashAdv').style.display = "block";
@@ -297,10 +293,25 @@
                 document.getElementById('trash').checked = false;
                 document.getElementById('trashAdv').style.display = "none";
               }
-              document.getElementById('trashHundo').checked = settings[1]==="1" ? true : false;
-              document.getElementById('trashZero').checked = settings[2]==="1" ? true : false;
-              document.getElementById('allZero').checked = settings[3]==="1" ? true : false;
-              document.getElementById('customIVs').checked = settings[4]==="1" ? true : false;
+              document.getElementById('excludeHundo').checked = settings[1]==="1" ? true : false;
+              document.getElementById('excludeZero').checked = settings[2]==="1" ? true : false;
+              document.getElementById('excludeXXL').checked = settings[3]==="1" ? true : false;
+              document.getElementById('excludeXXS').checked = settings[4]==="1" ? true : false;
+              document.getElementById('excludeXL').checked = settings[5]==="1" ? true : false;
+              document.getElementById('excludeXS').checked = settings[6]==="1" ? true : false;
+              document.getElementById('excludeTags').checked = settings[7]==="1" ? true : false;
+              document.getElementById('excludeFavs').checked = settings[8]==="1" ? true : false;
+              break;
+
+            case "adv":
+              var settings = (''+values[i].split("=")[1]);
+              /* If any Advanced Settings are changed, open Advanced Collapsible to show user */
+              if (settings !== "001") {
+                advCollapsible();
+              }
+              document.getElementById('customIVs').checked = settings[0]==="1" ? true : false;
+              document.getElementById('allZero').checked = settings[1]==="1" ? true : false;
+              document.getElementById('noBadEvos').checked = settings[2]==="1" ? true : false;
               break;
               
             case "l":
@@ -781,9 +792,9 @@
     
     function encodeSettings(evoLen)
     {
-      /* build binary encoding of settings */
-      var binary = "", i,j;
-      var rStr = "", tempStr = [];
+      /* build binary encodings of advanced and trash settings */
+      var advancedBinary = "", trashBinary = "", rStr = "";
+      var tempStr = [], i, j;
       var league = document.getElementById('league').value;
       
       if (league !== "Raid") {/*Skip all of this if making Raid mode URL*/
@@ -819,56 +830,55 @@
           if ((i==1) && (rStr.charAt(0)) === "_") {rStr = rStr.substring(1);} /* remove leading "_" */
         }
       }
-      /* console.log("encodeSettings: rStr finished: "+rStr+" for league:"+league);*/
+      /*console.log("encodeSettings: rStr finished: "+rStr+" for league:"+league);*/
   
-      binary = document.getElementById('trash').checked ? "1" : "0";
-      binary += document.getElementById('trashHundo').checked ? "1" : "0";
-      binary += document.getElementById('trashZero').checked ? "1" : "0";
-      binary += document.getElementById('allZero').checked ? "1" : "0";
-      binary += document.getElementById('customIVs').checked ? "1" : "0";
+      trashBinary = document.getElementById('trash').checked ? "1" : "0";
+      trashBinary += document.getElementById('excludeHundo').checked ? "1" : "0";
+      trashBinary += document.getElementById('excludeZero').checked ? "1" : "0";
+      trashBinary += document.getElementById('excludeXXL').checked ? "1" : "0";
+      trashBinary += document.getElementById('excludeXXS').checked ? "1" : "0";
+      trashBinary += document.getElementById('excludeXL').checked ? "1" : "0";
+      trashBinary += document.getElementById('excludeXS').checked ? "1" : "0";
+      trashBinary += document.getElementById('excludeTags').checked ? "1" : "0";
+      trashBinary += document.getElementById('excludeFavs').checked ? "1" : "0";
+
+      advancedBinary = document.getElementById('customIVs').checked ? "1" : "0";
+      advancedBinary += document.getElementById('allZero').checked ? "1" : "0";
+      advancedBinary += document.getElementById('noBadEvos').checked ? "1" : "0";
       
-      return [binary,rStr];
+      return [trashBinary, advancedBinary, rStr];
     }
     
     function updateURI(mon,evoLen)
     {
-      /* build binary encoding of settings for URL output */
-      const [binary, rStr] = encodeSettings(evoLen);
+      /* build binary encodings of settings for URL output */
+      const [trashBinary, advancedBinary, rStr] = encodeSettings(evoLen);
       var league = document.getElementById('league').value;
       var leagueName = document.getElementById('league').options[document.getElementById('league').selectedIndex].innerHTML;
-      var otherParams = "";
-      
-      if (document.getElementById('customIVs').checked) {
-        /* Piggyback IVentry onto otherParams field */
-        otherParams += "&IVentry="+document.getElementById('IVentry').value;
-      }
-      
-      if (document.getElementById('maxLvl').value != "51") {
-        otherParams += "&m="+document.getElementById('maxLvl').value;
-      }
-      
-      if (document.getElementById('searchLvl').value != "30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1") {
-        otherParams += "&sl="+document.getElementById('searchLvl').value;
-      }
-      
-      if (document.getElementById('lang').value.split(',')[0] != "en") {
-        otherParams += "&l="+document.getElementById('lang').value.split(',')[0];
-      }
-      
-      if (league === "Raid") {
-        otherParams += document.getElementById("ivLim").value != "" ? "&ivLim="+document.getElementById("ivLim").value/1:"";
-        otherParams += document.getElementById("aLim").value != "" ? "&a="+document.getElementById("aLim").value/1:"";
-        otherParams += document.getElementById("dLim").value != "" ? "&d="+document.getElementById("dLim").value/1:"";
-        otherParams += document.getElementById("sLim").value != "" ? "&s="+document.getElementById("sLim").value/1:"";
-        otherParams += document.getElementById("addIV").value != "" ? "&addIV="+document.getElementById("addIV").value:"";
-        otherParams += document.getElementById("excludeIV").value != "" ? "&notIV="+document.getElementById("excludeIV").value:"";
-      }
-      
-      /* update the URL with search parameters */
       var uri = window.location.href.split("?")[0];
-      uri = encodeURI(uri + "?mon="+mon+"&cp="+league+"&r="+rStr+"&set="+binary+otherParams);
+      
+      /* Add standard settings to uri */
+      uri += "?mon="+mon+"&cp="+league+"&r="+rStr;
+      
+      /* Add any non-default values to uri */
+      if (document.getElementById('trash').checked && trashBinary != "111000000") {uri +="&trash="+trashBinary;}
+      if (advancedBinary != "001") {uri +="&adv="+advancedBinary;}
+      if (document.getElementById('customIVs').checked) {uri += "&IVentry="+document.getElementById('IVentry').value;}
+      if (document.getElementById('maxLvl').value != "51") {uri += "&m="+document.getElementById('maxLvl').value;}
+      if (document.getElementById('searchLvl').value != "30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1") {uri += "&sl="+document.getElementById('searchLvl').value;}
+      if (document.getElementById('lang').value.split(',')[0] != "en") {uri += "&l="+document.getElementById('lang').value.split(',')[0];}
+      if (league === "Raid") {
+        uri += document.getElementById("ivLim").value != "" ? "&ivLim="+document.getElementById("ivLim").value/1:"";
+        uri += document.getElementById("aLim").value != "" ? "&a="+document.getElementById("aLim").value/1:"";
+        uri += document.getElementById("dLim").value != "" ? "&d="+document.getElementById("dLim").value/1:"";
+        uri += document.getElementById("sLim").value != "" ? "&s="+document.getElementById("sLim").value/1:"";
+        uri += document.getElementById("addIV").value != "" ? "&addIV="+document.getElementById("addIV").value:"";
+        uri += document.getElementById("excludeIV").value != "" ? "&notIV="+document.getElementById("excludeIV").value:"";
+      }   
+      
+      console.log("uri:"+uri);
 
-      /* conditional for All Zero mode */
+      /* Update Page Title with User's Search */
       var newTitle;
       if (!mon) {
         newTitle = "PvP IVs - All Zero 0% IV Search String";
@@ -876,6 +886,9 @@
         newTitle = "PvP IVs - "+mon+" "+leagueName+" Search String";
       }
       document.title = newTitle;
+
+      /* Update URL with search parameters */
+      uri = encodeURI(uri);
       window.history.pushState(null, newTitle, uri);
       /* Update canonical link to include mon & league for improved SEO */
       document.querySelector("link[rel='canonical']").setAttribute("href", "https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league);
@@ -895,8 +908,8 @@
       /* Ensure additional regional search terms are translated as needed*/
       if (lang[0] !== "en")
       {
-        /* lang : cpstr,  hpstr,  mega,   alola,  eggsonly, galar,  ground, steel,  grass,  psychic, fire,     attack,   defense */
-        /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11], lang[12], lang[13]*/
+        /* lang : CPstr,  HPstr,  Mega,   Alola,  eggsonly, Galar,  Ground, Steel,  Grass,  Psychic, Fire,     attack,   defense, Favorite */
+        /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11], lang[12], lang[13], lang[14]*/
         /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
         output.value = output.value.replace(/attack/gi,  lang[12]);
         output.value = output.value.replace(/defense/gi, lang[13]);
@@ -931,8 +944,14 @@
         if (i===0) {/* base mon */
           if (document.getElementById('trash').checked) {
             message += "trashes all "+evoVals[i][4]+" except ";
-            if (document.getElementById('trashHundo').checked === false) {message += "perfect IV (15/15/15) and ";}
-            if (document.getElementById('trashZero').checked === false) {message += "zero IV (0/0/0) and ";}
+            if (document.getElementById('excludeHundo').checked) {message += "perfect IV (15/15/15) and ";}
+            if (document.getElementById('excludeZero').checked) {message += "zero IV (0/0/0) and ";}
+            if (document.getElementById('excludeXXL').checked) {message += "XXL and ";}
+            if (document.getElementById('excludeXXS').checked) {message += "XXS and ";}
+            if (document.getElementById('excludeXL').checked) {message += "XL and ";}
+            if (document.getElementById('excludeXS').checked) {message += "XS and ";}
+            if (document.getElementById('excludeTags').checked) {message += "Tagged and ";}
+            if (document.getElementById('excludeFavs').checked) {message += "Favorited and ";}
           } else {message += "finds Level "+searchLvls+" "+evoVals[i][4]+" as ";}
         }
         else {/* all evos */
@@ -1455,14 +1474,17 @@
       } /* add trash stuff */
       output.value += emptyBuf;
       
-      /* Process 4* appraisals and trashHundo/trashZero/excludeXXS/excludeXXL */
+      /* Process 4* appraisals and exclusions */
       if (trash) { /* If this is a trash string */
-        if (document.getElementById('trashHundo').checked === false) { /* and we don't want to trash hundo IVs */
-          output.value += '&!4*'; /* Ensure hundos are not trashed */
-        }
-        if (document.getElementById('trashZero').checked === false) {/* and we don't want to trash zero IVs */
-          output.value += '&1-4Attack,1-4Defense,1-4Hp'; /* Ensure zeros are not trashed */
-          /* Ensure regional search terms are translated as needed*/
+        /* Exclude 4*, XXL, XXS, XL, XS, Tagged, 0/0/0, and Favorited mon from trash strings */
+        if (document.getElementById('excludeHundo').checked) {output.value += '&!4*';}
+        if (document.getElementById('excludeXXL').checked === true) {output.value += '&!XXL';}
+        if (document.getElementById('excludeXXS').checked === true) {output.value += '&!XXS';}
+        if (document.getElementById('excludeXL').checked === true) {output.value += '&!XL';}
+        if (document.getElementById('excludeXS').checked === true) {output.value += '&!XS';}
+        if (document.getElementById('excludeTags').checked === true) {output.value += '&!#';}
+        if (document.getElementById('excludeZero').checked) {output.value += '&1-4Attack,1-4Defense,1-4Hp';
+          /* Ensure regional search terms are translated if needed*/
           if (lang[0] !== "en")
           {
             output.value = output.value.replace(/attack/gi,  lang[12]);
@@ -1470,13 +1492,13 @@
             output.value = output.value.replace(/hp/gi,      lang[2]);
           }
         }
-        /* Section to exclude XXL, XXS, XL, XS, and Tagged mon from trash strings */
-        if (document.getElementById('excludeXXL').checked === true) {output.value += '&!XXL';}
-        if (document.getElementById('excludeXXS').checked === true) {output.value += '&!XXS';}
-        if (document.getElementById('excludeXL').checked === true) {output.value += '&!XL';}
-        if (document.getElementById('excludeXS').checked === true) {output.value += '&!XS';}
-        if (document.getElementById('excludeTags').checked === true) {output.value += '&!#';}
-      
+        if (document.getElementById('excludeFavs').checked) {output.value += '&!Favorite';
+          /* Ensure regional search terms are translated if needed*/
+          if (lang[0] !== "en")
+          {
+            output.value = output.value.replace(/Favorite/gi,  lang[14]);
+          }
+        }
       } else { /* If not a trash string */
         if (cps[4].size > 0) { /* Check if we search for hundos */
           output.value += ',4*'; /* Ensure hundos are searched for */
@@ -1486,8 +1508,8 @@
       /* Ensure additional regional search terms are translated as needed*/
       if (lang[0] !== "en")
       {
-        /* lang : cpstr,  hpstr,  mega,   alola,  eggsonly, galar,  ground, steel,  grass,  psychic, fire,     attack,   defense */
-        /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11], lang[12], lang[13]*/
+        /* lang : CPstr,  HPstr,  Mega,   Alola,  eggsonly, Galar,  Ground, Steel,  Grass,  Psychic, Fire,     attack,   defense, Favorite */
+        /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11], lang[12], lang[13], lang[14]*/
         /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
         output.value = output.value.replace(/mega/gi,    lang[3]);
         output.value = output.value.replace(/alola/gi,   lang[4]);
@@ -1581,11 +1603,11 @@
     function saveCurrentSettings() {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        setUserPreference("lang,floor,maxLvl,searchLvl,trash,trashHundo,trashZero,allZero,customIVs,noBadEvos,excludeXXL,excludeXXS,excludeXL,excludeXS,excludeTags");
+        setUserPreference("lang,floor,maxLvl,searchLvl,trash,excludeHundo,excludeXXL,excludeXXS,excludeXL,excludeXS,excludeTags,excludeZero,excludeFavs,allZero,customIVs,noBadEvos");
         if (perfTiming) {stopTiming(T0, "saveCurrentSettings");}
         main();
       }
-      
+
       function checkUserPreference(settings) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
@@ -1648,13 +1670,10 @@
     </select>
     </label><br />
     <label>Trash String:<input id="trash" type="checkbox" oninput="main()"><br /></label>
-    <div id="trashAdv" style="display: none;"><label>Trash Perfect IVs:<input id="trashHundo" type="checkbox" oninput="main()"></label><br />
-      <label>Trash Zero IVs:<input id="trashZero" type="checkbox" checked oninput="main()"></label><br />
-      <label>Exclude XXL from Trash String:<input id="excludeXXL" type="checkbox" oninput="main()"></label><br />
-      <label>Exclude XXS from Trash String:<input id="excludeXXS" type="checkbox" oninput="main()"></label><br />
-      <label>Exclude XL from Trash String:<input id="excludeXL" type="checkbox" oninput="main()"></label><br />
-      <label>Exclude XS from Trash String:<input id="excludeXS" type="checkbox" oninput="main()"></label><br />
-      <label>Exclude All Tagged Mon from Trash String:<input id="excludeTags" type="checkbox" oninput="main()"></label><br />
+    <div id="trashAdv" style="display: none;"><br /><b>Exclude from Trash String:</b><br />
+      <label>15-15-15:<input id="excludeHundo" type="checkbox" checked oninput="main()"></label>&nbsp;&nbsp;&nbsp;<label>0-0-0 IVs:<input id="excludeZero" type="checkbox" checked oninput="main()"></label><br />
+      <label>XXL:<input id="excludeXXL" type="checkbox" oninput="main()"></label>&nbsp;&nbsp;<label>XXS:<input id="excludeXXS" type="checkbox" oninput="main()"></label>&nbsp;&nbsp;<label>XL:<input id="excludeXL" type="checkbox" oninput="main()"></label>&nbsp;&nbsp;<label>XS:<input id="excludeXS" type="checkbox" oninput="main()"></label><br />
+      <label>Tagged:<input id="excludeTags" type="checkbox" oninput="main()"></label>&nbsp;&nbsp;&nbsp;<label>Favorites:<input id="excludeFavs" type="checkbox" oninput="main()"></label><br />
     </div><br />
     <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
     <div id=advCollapsible hidden>
