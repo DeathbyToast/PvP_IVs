@@ -8,7 +8,7 @@ jobs:
   Diff-ads-txt:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by cron schedule event."
+      - run: echo "🎉 The job was automatically triggered by scheduled cron event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 Attempting to diff
       - name: Diff
