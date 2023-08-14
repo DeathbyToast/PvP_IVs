@@ -27,9 +27,10 @@ jobs:
           echo "$DIFF_OUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
           diff <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)
-      - run: echo "💡 Diff completed, diff status is ${{ steps.diff-adstxt-files.conclusion }} and outcome is ${{ steps.diff-adstxt-files.outcome }}."
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
+      - run: echo "🍏 This job's status is ${{ job.status }} due to continue-on-error=true."
   Diff-status:
+    if: failure()
     needs: Diff-ads-txt
     runs-on: ubuntu-latest
     steps:
