@@ -47,7 +47,6 @@ jobs:
           committer: GitHub <noreply@github.com>
           ref: gh-pages
           reviewers: DeathbyToast
-          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Get Updated ads.txt file via curl
         run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
       - name: Commit ads.txt using git commit
@@ -58,4 +57,6 @@ jobs:
           git commit -m "Automated ads.txt update"
       - name: Create PR using gh pr create
         run: gh pr create --title "Automated ads.txt update" --body "Ensuring ads.txt is up to date" --head "gh-pages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
