@@ -50,6 +50,7 @@ jobs:
         run: |
           git config --global user.name 'DeathbyToast'
           git config --global user.email 'alex.gronbach@gmail.com'
+          git add ads.txt
           git commit -m "Automated ads.txt update"
       - name: Create PR using gh pr create
         run: gh pr create --title "Automated ads.txt update" --body "Ensuring ads.txt is up to date" --head "gh-pages"
