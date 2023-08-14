@@ -37,13 +37,14 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - run: echo "The diff failed with:"
+      - run: echo "The diff failed, differences are below."
       - run: echo "${{needs.Check-for-diffs-ads-txt.outputs.diffOut}}"
       - run: echo "Proceeding to replace ads.txt..."
       # https://stackoverflow.com/a/58393457
       - uses: actions/checkout@v3
         with:
           ref: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Get Updated ads.txt file via curl
         run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
       - name: Commit ads.txt using git commit
