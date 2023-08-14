@@ -20,7 +20,8 @@ jobs:
         # https://trstringer.com/github-actions-multiline-strings/
         run: |
           DIFF_OUT=$(cat << EOF
-          `diff <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)`          EOF
+          `diff <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)`
+          EOF
           )
           echo "DIFF_OUT<<EOF" >> $GITHUB_OUTPUT
           echo "$DIFF_OUT" >> $GITHUB_OUTPUT
