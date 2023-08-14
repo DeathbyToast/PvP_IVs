@@ -13,7 +13,18 @@ jobs:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 Attempting to diff url contents"
       - name: Diff
+        continue-on-error: true
+        id: diff-adstxt-files
         run: |
           diff --strip-trailing-cr <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)
       - run: echo "💡 The diff command has completed."
+
+      - name: Diff-failed
+        if: steps.diff-adstxt-files.outcome == 'failure'
+        run: echo "The diff failed"
+      
+      - name: Diff-succeess
+        if: steps.diff-adstxt-files.outcome == 'success'
+        run: echo "The diff succeeded!"
+
       - run: echo "🍏 This job's status is ${{ job.status }}."
