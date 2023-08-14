@@ -43,7 +43,7 @@ jobs:
       # https://stackoverflow.com/a/58393457
       - uses: actions/checkout@v3
         with:
-          repository: DeathbyToast/PvP_IVs/tree/gh-pages
+          ref: gh-pages
       - name: Get Updated ads.txt file via curl
         run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
       - name: Commit ads.txt using git commit
