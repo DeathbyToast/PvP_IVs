@@ -5,7 +5,7 @@ on:
     - cron: '39 9 * * *'
     - cron: '39 9 * * *'
 jobs:
-  Diff ads.txt:
+  Diff-ads-txt:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by cron schedule event."
