@@ -11,7 +11,7 @@ jobs:
     steps:
       - run: echo "🎉 The job was automatically triggered by scheduled cron event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 Attempting to diff
+      - run: echo "🔎 Attempting to diff url contents"
       - name: Diff
         run: |
           diff <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/searchStr.html)
