@@ -9,7 +9,7 @@ jobs:
   Diff-ads-txt:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.diff-adstxt-files.outputs.result }}
+      output1: ${{ steps.diff-adstxt-files.outputs }}
     steps:
       - run: echo "🎉 The job was automatically triggered by scheduled cron event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
@@ -17,14 +17,13 @@ jobs:
       - name: Diff
         continue-on-error: true
         id: diff-adstxt-files
-        run: echo "result=(diff <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt))" >> "$GITHUB_OUTPUT"
+        run: echo "diff <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)" >> "$GITHUB_OUTPUT"
       - run: echo "💡 The diff command has completed, diff status is ${{ steps.diff-adstxt-files.conclusion }} and outcome is ${{ steps.diff-adstxt-files.outcome }}."
       - run: echo "🍏 This job's status is ${{ job.status }}."
-  Diff-failed:
+  Diff-status:
     needs: Diff-ads-txt
-    # https://github.com/marketplace/actions/push-a-file-to-another-repository
-    # if: jobs.Diff-ads-txt.steps.diff-adstxt-files.outcome == 'failure'
     runs-on: ubuntu-latest
     steps:
       - run: echo "The diff failed with ${{needs.Diff-ads-txt.outputs.output1}}, proceeding to replace ads.txt"
       - run: echo "🍏 This job's status is ${{ job.status }}."
+      # https://github.com/marketplace/actions/push-a-file-to-another-repository
