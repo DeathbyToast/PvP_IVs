@@ -15,7 +15,7 @@ jobs:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 Attempting to diff url contents"
       - name: Diff
-        continue-on-error: true
+        #continue-on-error: true
         id: diff-adstxt-files
         # https://trstringer.com/github-actions-multiline-strings/
         run: |
@@ -28,7 +28,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
           diff <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)
       - run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
-      - run: echo "🍏 This job's status is ${{ job.status }} due to continue-on-error=true."
+      - run: echo "🍏 This job's status is ${{ job.status }}." #due to continue-on-error=true."
   Diff-status:
     if: failure()
     needs: Diff-ads-txt
