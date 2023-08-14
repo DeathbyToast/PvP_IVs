@@ -35,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - run: echo "The diff failed with:"
       - run: echo "${{needs.Diff-ads-txt.outputs.output1}}"
