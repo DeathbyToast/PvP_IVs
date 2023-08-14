@@ -8,11 +8,10 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-TDF58VB');</script>
     <!-- End Google Tag Manager -->
-    <link rel="canonical" href="https://pvpivs.com/404.html" />
     <!-- Include pre-loads to reduce/optimize page load time-->
   	<link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
   	<link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
-    <title>Page Not Found (404)</title>
+    <title>GREAT SUCCESS!</title>
     <meta charset="UTF-8">
   	<meta name="viewport" content="width=device-width, initial-scale=1">
   	<meta name="description" content="Welcome Trainers! PvPIVs.com hosts our PvP IVs Rank Checker, PvP IVs Search String generator, Type Charts, and Type Quiz. Questions? Comments? Say hi on Discord"/>
@@ -55,7 +54,7 @@
           </li>
       </ul>
     </header>
-    <br><h1 align="center">GREAT SUCCESS</h1>
+    <br><h1 align="center">GREAT SUCCESS!</h1>
   <!-- Footer Code Below -->
   <script src="https://pvpivs.com/includes/footer.js"></script>
   </body>
