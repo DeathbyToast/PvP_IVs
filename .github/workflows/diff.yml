@@ -9,7 +9,7 @@ jobs:
   Check-for-diffs-ads-txt:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.diff-adstxt-files.outputs.DIFF_OUT }}
+      diffOut: ${{ steps.diff-adstxt-files.outputs.DIFF_OUT }}
     steps:
       - run: echo "🎉 The job was automatically triggered by scheduled cron event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
@@ -31,14 +31,14 @@ jobs:
       - run: echo "🍏 This job's status is ${{ job.status }}." #due to continue-on-error=true."
   Update-ads-txt-after-failed-diff:
     if: failure()
-    needs: Diff-ads-txt
+    needs: Check-for-diffs-ads-txt
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
     steps:
       - run: echo "The diff failed with:"
-      - run: echo "${{needs.Diff-ads-txt.outputs.output1}}"
+      - run: echo "${{needs.Check-for-diffs-ads-txt.outputs.diffOut}}"
       - run: echo "Proceeding to replace ads.txt..."
       # https://stackoverflow.com/a/58393457
       - uses: actions/checkout@v3
