@@ -49,4 +49,5 @@ jobs:
           git config --global user.email 'alex.gronbach@gmail.com'
           git commit -am "Automated ads.txt update"
           git push
+          git request-pull
       - run: echo "🍏 This job's status is ${{ job.status }}."
