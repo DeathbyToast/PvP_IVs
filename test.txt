@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-TDF58VB');</script>
+    <!-- End Google Tag Manager -->
+    <!-- Include pre-loads to reduce/optimize page load time-->
+  	<link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
+  	<link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
+    <title>GREAT SUCCESS!</title>
+    <meta charset="UTF-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<meta name="description" content="Welcome Trainers! PvPIVs.com hosts our PvP IVs Rank Checker, PvP IVs Search String generator, Type Charts, and Type Quiz. Questions? Comments? Say hi on Discord"/>
+  	<link rel=icon href=/includes/favicon.png>
+  	<link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
+  </head>
+  <body class="light-theme">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TDF58VB"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <header>
+      <ul class="header">
+        <li class="dropdown left">
+          <a href="javascript:void(0)" class="dropbtn">PvP IVs</a>
+          <div class="dropdown-content">
+            <a href="/">Rankings (Single)</a>
+            <a href="/leagueRanks.html">Rankings (League)</a>
+            <a href="/searchStr.html">Search Strings</a>
+          </div>
+        </li>
+        <li class="dropdown left">
+          <a href="javascript:void(0)" class="dropbtn">Typing</a>
+          <div class="dropdown-content">
+            <a href="/typeLookup.html">Chart</a>
+            <a href="/typeQuiz.html">Quiz</a>
+          </div>
+        </li>
+        <li class="flat right">
+          <a href="/about.html">About</a>
+        </li>
+        <li class="flat right">
+            <label class="theme-toggle-switch">
+              <img id="theme-toggle-icon" src="https://pvpivs.com/includes/dark_mode_icon_white-fill.png" alt="Dark Mode" width="22" height="22">
+              <div>
+                <input id="theme-toggle" type="checkbox" />
+                <span class="slider round"></span>
+              </div>
+            </label>
+          </li>
+      </ul>
+    </header>
+    <br><h1 align="center">GREAT SUCCESS!</h1>
+  <!-- Footer Code Below -->
+  <script src="https://pvpivs.com/includes/footer.js"></script>
+  </body>
+</html>
