@@ -50,4 +50,6 @@ jobs:
           git config --global user.email 'alex.gronbach@gmail.com'
           git commit -am "Automated ads.txt update"
           gh pr create --title "Automated ads.txt update" --base "gh-pages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
