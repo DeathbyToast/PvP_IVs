@@ -6,7 +6,7 @@ on:
     - cron: '39 9 * * *'
     - cron: '39 9 * * *'
 jobs:
-  Diff-ads-txt:
+  Check-for-diffs-ads-txt:
     runs-on: ubuntu-latest
     outputs:
       output1: ${{ steps.diff-adstxt-files.outputs.DIFF_OUT }}
@@ -29,7 +29,7 @@ jobs:
           diff --suppress-common-lines <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))
       - run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
       - run: echo "🍏 This job's status is ${{ job.status }}." #due to continue-on-error=true."
-  Diff-status:
+  Update-ads-txt-after-failed-diff:
     if: failure()
     needs: Diff-ads-txt
     runs-on: ubuntu-latest
@@ -53,7 +53,7 @@ jobs:
           git add ads.txt
           git commit -m "Automated ads.txt update"
       - name: Create PR using gh pr create
-        run: gh pr create --title "Automated ads.txt update" --body "Ensuring ads.txt is up to date" --base "gh-pages"
+        run: gh pr create --title "Automated ads.txt update" --body "Ensuring ads.txt is up to date" --base "gh-pages" --head "gh-pages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
