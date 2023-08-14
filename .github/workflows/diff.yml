@@ -20,13 +20,13 @@ jobs:
         # https://trstringer.com/github-actions-multiline-strings/
         run: |
           DIFF_OUT=$(cat << EOF
-          `diff -c --suppress-common-lines <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)`
+          `comm -3 <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)`
           EOF
           )
           echo "DIFF_OUT<<EOF" >> $GITHUB_OUTPUT
           echo "$DIFF_OUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          diff -c --suppress-common-lines <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)
+          comm -3 <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)
       - run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
       - run: echo "🍏 This job's status is ${{ job.status }}." #due to continue-on-error=true."
   Diff-status:
@@ -34,6 +34,8 @@ jobs:
     needs: Diff-ads-txt
     runs-on: ubuntu-latest
     steps:
-      - run: echo "The diff failed with ${{needs.Diff-ads-txt.outputs.output1}}, proceeding to replace ads.txt"
+      - run: echo "The diff failed with:"
+      - run: echo "${{needs.Diff-ads-txt.outputs.output1}}"
+      - run: echo "Proceeding to replace ads.txt..."
       - run: echo "🍏 This job's status is ${{ job.status }}."
       # https://github.com/marketplace/actions/push-a-file-to-another-repository
