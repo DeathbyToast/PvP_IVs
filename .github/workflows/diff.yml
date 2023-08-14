@@ -1,6 +1,7 @@
 name: GitHub Actions Diff
 run-name: Regularly Scheduled GitHub Actions 🚀 Diff Workflow
 on:
+  push:
   schedule:
     - cron: '39 9 * * *'
     - cron: '39 9 * * *'
