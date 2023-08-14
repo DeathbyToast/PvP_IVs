@@ -44,7 +44,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GitPushToken }}
       - name: Get Updated ads.txt file via curl
         run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
       - name: Commit ads.txt using git commit
@@ -57,5 +57,5 @@ jobs:
       - name: Create PR using gh pr create
         run: gh pr create --title "Automated ads.txt update" --body "Ensuring ads.txt is up to date" --base "gh-pages" --head "gh-pages"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GitPushToken }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
