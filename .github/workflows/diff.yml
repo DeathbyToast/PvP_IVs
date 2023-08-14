@@ -49,7 +49,8 @@ jobs:
           echo "Creating PR for ads.txt in gh-pages"
           git config --global user.name 'DeathbyToast'
           git config --global user.email 'alex.gronbach@gmail.com'
-          git commit -am "Automated ads.txt update"
+          git checkout -b gh-pages
+          git commit --branch -am "Automated ads.txt update"
           gh pr create --title "Automated ads.txt update" --body "Ensuring ads.txt is up to date" --head "gh-pages" --base "gh-pages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
