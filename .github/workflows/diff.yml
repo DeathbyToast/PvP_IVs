@@ -20,13 +20,13 @@ jobs:
         # https://trstringer.com/github-actions-multiline-strings/
         run: |
           DIFF_OUT=$(cat << EOF
-          `comm -3 <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)`
+          `comm -3 <(sort curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(sort curl https://pvpivs.com/ads.txt)`
           EOF
           )
           echo "DIFF_OUT<<EOF" >> $GITHUB_OUTPUT
           echo "$DIFF_OUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          comm -3 <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt)
+          comm -3 <(sort curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(sort curl https://pvpivs.com/ads.txt)
       - run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
       - run: echo "🍏 This job's status is ${{ job.status }}." #due to continue-on-error=true."
   Diff-status:
