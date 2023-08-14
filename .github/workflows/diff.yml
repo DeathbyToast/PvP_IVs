@@ -49,6 +49,5 @@ jobs:
           git config --global user.name 'DeathbyToast'
           git config --global user.email 'alex.gronbach@gmail.com'
           git commit -am "Automated ads.txt update"
-          git push origin gh-pages
           gh pr create --title "Automated ads.txt update" --base "gh-pages"
       - run: echo "🍏 This job's status is ${{ job.status }}."
