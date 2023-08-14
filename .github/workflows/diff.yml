@@ -33,9 +33,20 @@ jobs:
     if: failure()
     needs: Diff-ads-txt
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - run: echo "The diff failed with:"
       - run: echo "${{needs.Diff-ads-txt.outputs.output1}}"
       - run: echo "Proceeding to replace ads.txt..."
+      # https://stackoverflow.com/a/58393457
+      - uses: actions/checkout@v3
+      - name: Get Updated ads.txt file
+        run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
+      - name: Commit ads.txt
+        run: |
+          git config --global user.name 'DeathbyToast'
+          git config --global user.email 'alex.gronbach@gmail.com'
+          git commit -am "Automated ads.txt update"
+          git push
       - run: echo "🍏 This job's status is ${{ job.status }}."
-      # https://github.com/marketplace/actions/push-a-file-to-another-repository
