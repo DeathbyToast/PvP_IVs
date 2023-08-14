@@ -1,0 +1,18 @@
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+  schedule:
+    - cron: '39 9 * * *'
+    - cron: '39 9 * * *'
+jobs:
+  Diff ads.txt:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by cron schedule event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 Attempting to diff
+      - name: Diff
+        run: |
+          diff https://config.playwire.com/dyn_ads/1025030/74482/ads.txt https://pvpivs.com/searchStr.html
+      - run: echo "💡 The diff command has completed."
+      - run: echo "🍏 This job's status is ${{ job.status }}."
