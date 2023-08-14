@@ -20,28 +20,11 @@ jobs:
         run: echo "result=(diff <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) <(curl https://pvpivs.com/ads.txt))" >> "$GITHUB_OUTPUT"
       - run: echo "💡 The diff command has completed, diff status is ${{ steps.diff-adstxt-files.conclusion }} and outcome is ${{ steps.diff-adstxt-files.outcome }}."
       - run: echo "🍏 This job's status is ${{ job.status }}."
-
   Diff-failed:
     needs: Diff-ads-txt
     # https://github.com/marketplace/actions/push-a-file-to-another-repository
+    # if: jobs.Diff-ads-txt.steps.diff-adstxt-files.outcome == 'failure'
     runs-on: ubuntu-latest
-    if: jobs.Diff-ads-txt.steps.diff-adstxt-files.outcome == 'failure'
     steps:
-      - env:
-        OUTPUT1: ${{needs.Diff-ads-txt.outputs.output1}}
-      - run: echo "The diff failed with $OUTPUT1, proceeding to replace ads.txt"
-      #- name: Checkout
-      #  uses: actions/checkout@v2
-    
-      #- name: Pushes new ads.txt
-      #  uses: DeathbyToast/PvP_IVs/tree/gh-pages
-      #env:
-      #  API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-      #with:
-      #  source_file: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt
-      #  destination_repo: DeathbyToast/PvP_IVs/tree/gh-pages
-      #  destination_folder: ./
-      #  user_email: 'alex.gronbach@gmail.com'
-      #  user_name: 'DeathbyToast'
-      #  commit_message: 'Overwrtiting ads.txt due to diff mismatch'
-    - run: echo "🍏 This job's status is ${{ job.status }}."
+      - run: echo "The diff failed with ${{needs.Diff-ads-txt.outputs.output1}}, proceeding to replace ads.txt"
+      - run: echo "🍏 This job's status is ${{ job.status }}."
