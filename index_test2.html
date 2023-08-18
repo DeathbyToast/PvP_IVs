@@ -117,6 +117,28 @@
             }
           );
       </script>
+  <script>
+    window.ramp = window.ramp || {};
+    window.ramp.que = window.ramp.que || [];
+  </script>
+  <script async src="//cdn.intergient.com/1025030/74482/ramp_config.js"></script>
+  <script>
+      window._pwGA4PageviewId = ''.concat(Date.now());
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function () { 
+        dataLayer.push(arguments);
+      };
+      gtag('js', new Date());
+      gtag('config', 'G-JD7R9RWFZL', { 'send_page_view': false });
+      gtag(
+        'event',
+        'ramp_js',
+        {
+          'send_to': 'G-JD7R9RWFZL',
+          'pageview_id': window._pwGA4PageviewId
+        }
+      );
+  </script>
   </head>
   <body class="light-theme" onload="checkURI()">
     <!-- Google Tag Manager (noscript) -->
@@ -2187,6 +2209,8 @@
     <!--  [Mobile]leaderboard_atf --><div data-pw-mobi="leaderboard_atf" id="pwMobiLbAtf"></div>
     <script type="text/javascript">window.ramp.que.push(function () {window.ramp.addTag("pwMobiLbAtf");})</script>
     <a href="https://discord.gg/UD4Temq">Feedback: Join Our Discord!</a><br />PvP IVs ©2023<br />
-    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="DeathbyToast" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script></footer>
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="DeathbyToast" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+    <script async src="//cdn.intergient.com/ramp_core.js"></script>  
+  </footer>
   </body>
 </html>
