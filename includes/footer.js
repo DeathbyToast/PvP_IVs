@@ -1,5 +1,4 @@
-document.write('<footer><a href="https://discord.gg/UD4Temq">Feedback: Join Our Discord!</a><br />\ PvP IVs ©2023<br />\
-<script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="DeathbyToast" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script></footer>\ ');
+document.write('<footer><script async src="//cdn.intergient.com/ramp_core.js"></script><script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="DeathbyToast" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Left"></script></footer>\ ');
 
 /* Dark/Light Mode Theme Toggle Code*/
 document.getElementById('theme-toggle').addEventListener('change', () => {toggleTheme();});
