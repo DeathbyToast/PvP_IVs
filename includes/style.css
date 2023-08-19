@@ -163,6 +163,21 @@ input:checked + .slider {
   color: var(--navActiveText);
 }
 
+      html,
+body {
+  margin:0;
+  padding:0;
+  height:100%;
+  font-family: Verdana, Geneva, sans-serif;
+  background: var(--Background); /* light mode */
+  color: var(--text); /* light mode */
+}
+
+#container {
+   min-height:100%;
+   position:relative;
+}
+
 p {
   display: block;
   text-align: center;
