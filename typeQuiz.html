@@ -28,6 +28,9 @@
     <!--Rest of Head-->
     <!-- Import JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!-- Begin Playwire Head -->
+    <script>window.ramp=window.ramp ||{}; window.ramp.que=window.ramp.que || []; </script> <script async src="//cdn.intergient.com/1025030/74482/ramp_config.js"></script> <script>window._pwGA4PageviewId=''.concat(Date.now()); window.dataLayer=window.dataLayer || []; window.gtag=window.gtag || function (){dataLayer.push(arguments);}; gtag('js', new Date()); gtag('config', 'G-JD7R9RWFZL',{'send_page_view': false}); gtag( 'event', 'ramp_js',{'send_to': 'G-JD7R9RWFZL', 'pageview_id': window._pwGA4PageviewId}); </script>
+    <!-- End Playwire Head -->
   </head>
   <body class="light-theme">
     <!-- Google Tag Manager (noscript) -->
@@ -52,17 +55,23 @@
           </div>
         </li>
         <li class="flat right">
-          <a href="/about.html">About</a>
+          <label class="theme-toggle-switch">
+            <img id="theme-toggle-icon" src="https://pvpivs.com/includes/dark_mode_icon_white-fill.png" alt="Dark Mode" width="22" height="22">
+            <div>
+              <input id="theme-toggle" type="checkbox" />
+              <span class="slider round"></span>
+            </div>
+          </label>
         </li>
-        <li class="flat right">
-            <label class="theme-toggle-switch">
-              <img id="theme-toggle-icon" src="https://pvpivs.com/includes/dark_mode_icon_white-fill.png" alt="Dark Mode" width="22" height="22">
-              <div>
-                <input id="theme-toggle" type="checkbox" />
-                <span class="slider round"></span>
-              </div>
-            </label>
-          </li>
+        <li class="dropdown active right">
+          <a href="javascript:void(0)" class="dropbtn">About</a>
+          <div class="dropdown-content">
+            <a href="/about.html">About PvP IVs</a>
+            <a href="/contact.html">Contact Us</a>
+            <a href="/privacy.html">Privacy Policy</a>
+            <a href="/cookies.html">Cookie Policy</a>
+          </div>
+        </li>
       </ul>
     </header>
   <section>
@@ -115,9 +124,11 @@
         <button id="button1">Check Answers</button><br /><br />
       </div>
     </div>
-    <p style="color:silver;font-size:0.6em">This site uses Google Analytics and the Google
-    <a style="color:#AED6F1" href="https://policies.google.com/privacy">Privacy Policy</a> and
-    <a style="color:#AED6F1" href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
+    <br /><br />
+    <div style="overflow-x:auto;">
+      <p style="color: var(--tableHeaderText);font-size:0.8em">© 2023 PvP IVs | <a href="https://pvpivs.com/privacy">Privacy Policy</a> | <a href="https://pvpivs.com/contact">Contact Us</a></p>
+      <p style="color: var(--tableDividers);font-size:0.6em">Pokémon and Pokémon GO are copyright of The Pokémon Company, Niantic, Inc., and Nintendo.<br/>All trademarked images and names are property of their respective owners, and any such material is used on this site for educational purposes only.<br/>PvP IVs has no affiliation with The Pokémon Company, Niantic, Inc., or Nintendo.</p>
+    </div><br /><br /><br /><br />
 	</div>
 	</section>
 	<!-- Footer Code Below -->
