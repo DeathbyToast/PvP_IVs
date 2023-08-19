@@ -162,36 +162,6 @@ input:checked + .slider {
   background: var(--navActive);
   color: var(--navActiveText);
 }
-/* floating footer fix https://stackoverflow.com/a/13883285 */
-      html,
-body {
-  margin:0;
-  padding:0;
-  height:100%;
-  font-family: Verdana, Geneva, sans-serif;
-  background: var(--Background); /* light mode */
-  color: var(--text); /* light mode */
-}
-
-#container {
-   min-height:100%;
-   position:relative;
-}
-
-section {
-   padding-bottom:45px;   /* Height of the footer */
-}
-footer {
-  position:fixed;
-  bottom:0;
-  left:0;
-  text-align: center;
-  vertical-align: middle;
-  width:100%;
-  height:44px;   /* Height of the footer */
-  background: var(--navBackground);
-}
-/* End floating footer fix */
 
 p {
   display: block;
