@@ -694,11 +694,18 @@
         var nonZeroXL = false;
         var outIVs = "";
 
+        /* See if we need to check IV Efficiency */
+        var effIV = true;
+        if (document.getElementById("effIV").checked){
+          ranks = checkEfficientIVs(ranks, keys, dec);
+        }
+
         for (i=0; ((actualRank/1<=ranks.numRanks/1) && (actualRank/1 <= limit/1)); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             
-            if ((mA/1 <= numOut(ranks[keys[i]][j].battle.A,dec)) && (mD/1 <= numOut(ranks[keys[i]][j].battle.D,dec)) && (mHP/1 <= ranks[keys[i]][j].battle.S)) {
-              /* All three stats are above filter cutoffs, proceed with printing this row */
+            if ((mA/1 <= numOut(ranks[keys[i]][j].battle.A,dec)) && (mD/1 <= numOut(ranks[keys[i]][j].battle.D,dec)) && (mHP/1 <= ranks[keys[i]][j].battle.S) 
+            && (document.getElementById("effIV").checked===false || ranks[keys[i]][j].eff === true)) {
+              /* All three stats are above filter cutoffs, and (if enabled by user) IV is efficient, proceed with printing this row */
               if (actualRank/1 <= limit/1) {
                 html+="<tr><td>"+actualRank+"</td>"; /*Rank*/
                 html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
@@ -912,7 +919,7 @@
         if (filterMod && mA !== numOut(ranks.minAtk.value, dec)) {uri += "&mA="+mA;console.log("mA:"+mA+" while numOut("+ranks.minAtk.value+", "+dec+"):"+numOut(ranks.minAtk.value, dec));}
         if (filterMod && mD !== numOut(ranks.minDef.value, dec)) {uri += "&mD="+mD;}
         if (filterMod && mHP !== ranks.minHP.value) {uri += "&mHP="+mHP;}
-        if (document.getElementById('r1atk').checked || document.getElementById('r1def').checked || document.getElementById('r1hp').checked) {uri += "&p=" + (document.getElementById("r1atk").checked ? "1":"0") + (document.getElementById("r1def").checked ? "1":"0") + (document.getElementById("r1hp").checked ? "1":"0");}
+        if (document.getElementById('effIV').checked) {uri += "&p=" + (document.getElementById("effIV").checked ? "1":"0");}
         if (document.getElementById('dec').value > 1) {uri += "&dec="+document.getElementById('dec').value;}
         if (aIV[0] && dIV[0] && sIV[0]) {
           var IVs = "";
@@ -1289,10 +1296,7 @@
                 filterMod = true;
                 break;
               case "p":
-                var pareto = (''+values[i].split("=")[1]);
-                document.getElementById('r1atk').checked = pareto[0] === "1" ? true : false;
-                document.getElementById('r1def').checked = pareto[1] === "1" ? true : false;
-                document.getElementById('r1hp').checked = pareto[2] === "1" ? true : false;
+                document.getElementById('effIV').checked = values[i].split("=")[1] === "1" ? true : false;
                 break;
               case "t": /* Enable performance timing output in console for debugging */
                 perfTiming = values[i].split("=")[1];
@@ -1341,9 +1345,7 @@
             || document.getElementById('cmpLim').value !== "100"
             || document.getElementById('familyEvoLeague').value !== "mirror"
             || document.getElementById('dec').value > 1
-            || document.getElementById('r1atk').checked
-            || document.getElementById('r1def').checked
-            || document.getElementById('r1hp').checked
+            || document.getElementById('effIV').checked
             ) { advCollapsible(); }
           main();
         }
@@ -2026,6 +2028,57 @@
         if (perfTiming) {stopTiming(T0, "doTheRemoval");}
         main();
       }
+
+      function checkEfficientIVs(ranks, keys, dec) {
+        
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
+
+        /* Get to last actual rank (skipping min/max values at end of object) */
+        for (var i = keys.length - 11; i>-1; i--) {
+            for (var j=ranks[keys[i]].length-1; j>-1; j--) {
+              /* Outer loops are for first set of IVs, inner for other set of IVs */
+              for (var k = keys.length - 11; k>-1; k--) {
+                for (var l=ranks[keys[k]].length-1; l>-1 && ranks[keys[i]][j].eff !== false; l--) {
+
+                  /* Ensure that this is an unevaluated IV set */
+                  if ((ranks[keys[k]][l].eff === undefined)){// || (ranks[keys[k]][l].eff === true)) {
+                    
+                    /* Booleans to simplify comparison of IVs */
+                    var sameAtk = false, sameDef = false, sameHP = false;
+                    var lessAtk = false, lessDef = false, lessHP = false;
+
+                    /* Set booleans with this set of IVs comparison */
+                    if (ranks[keys[i]][j].battle.A/1 === ranks[keys[k]][l].battle.A/1) {sameAtk = true;}
+                    if (ranks[keys[i]][j].battle.D/1 === ranks[keys[k]][l].battle.D/1) {sameDef = true;}
+                    if (ranks[keys[i]][j].battle.S/1 === ranks[keys[k]][l].battle.S/1) {sameHP = true;}
+                    if (ranks[keys[i]][j].battle.A/1  <  ranks[keys[k]][l].battle.A/1) {lessAtk = true;}
+                    if (ranks[keys[i]][j].battle.D/1  <  ranks[keys[k]][l].battle.D/1) {lessDef = true;}
+                    if (ranks[keys[i]][j].battle.S/1  <  ranks[keys[k]][l].battle.S/1) {lessHP = true;}
+                    
+                    /* See if i,j IV set is inefficient compared to k,l IV set */
+                    if ((lessAtk && sameDef && sameHP) || (sameAtk && lessDef && sameHP) || (sameAtk && sameDef && lessHP)
+                     || (lessAtk && lessDef && sameHP) || (lessAtk && lessDef && sameHP) || (lessAtk && sameDef && lessHP)
+                     || (lessAtk && sameDef && lessHP) || (sameAtk && lessDef && lessHP) || (sameAtk && lessDef && lessHP)
+                     || (lessAtk && lessDef && lessHP)) {
+                      //console.log(ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S+" ("+numOut(ranks[keys[i]][j].battle.A,dec)+"/"+numOut(ranks[keys[i]][j].battle.D,dec)+"/"+ranks[keys[i]][j].battle.S+") is inefficient compared to: "+ranks[keys[k]][l].IVs.A+"/"+ranks[keys[k]][l].IVs.D+"/"+ranks[keys[k]][l].IVs.S+" ("+numOut(ranks[keys[k]][l].battle.A,dec)+"/"+numOut(ranks[keys[k]][l].battle.D,dec)+"/"+ranks[keys[k]][l].battle.S+"), marking inefficient");
+                      ranks[keys[i]][j].eff = false;
+                      k = l = 0; /* Break double nested inner loop */
+                    } 
+                  }
+                }
+              }
+
+              /* Made it through entire IV set without being proven inefficient, must be efficient! */
+              if (ranks[keys[i]][j].eff === undefined) {
+                ranks[keys[i]][j].eff = true;
+                //console.log(ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S+" ("+numOut(ranks[keys[i]][j].battle.A,dec)+"/"+numOut(ranks[keys[i]][j].battle.D,dec)+"/"+ranks[keys[i]][j].battle.S+") is efficient");
+              }
+            }
+          }
+        if (perfTiming) {stopTiming(T0, "checkEfficientIVs");} 
+        return ranks; 
+      }
       </script>
       <div style="overflow-x:auto;" id="timing_outputs"></div><br />
       <label>IV Floor:<select id="floor" oninput="setUserPreference('floor')">
@@ -2141,7 +2194,7 @@
         <option value="55">55 (SPECULATIVE)</option>
       </select></label><br />
       <label>PvP Stat Decimal Places:<input title="How many decimal places to Output?" type="number" value="1" id="dec" min="1" oninput="setUserPreference('dec')"></label><br />
-      Pareto Eff: Rank 1 <label>Atk:<input id="r1atk" type="checkbox" oninput="setUserPreference('r1atk')"></label> <label>Def:<input id="r1def" type="checkbox" oninput="setUserPreference('r1def')"></label> <label>HP:<input id="r1hp" type="checkbox" oninput="setUserPreference('r1hp')"></label><br />
+      <label>Only Show Efficient IVs:<input id="effIV" type="checkbox" oninput="setUserPreference('effIV')"></label><br />
       <label>Include Top <input type="number" value="100" id="cmpLim" min="1" max="4096" oninput="setUserPreference('cmpLim')"> CMP Wins:<input id="cmp" type="checkbox" oninput="setUserPreference('cmp')"></label><br />
       <label>Export PvPoke Custom Group:<input id="cge" type="checkbox" oninput="setUserPreference('cge')"></label><br />
       <label>Show Family Evolutions:<input id="family" type="checkbox" oninput="toggleFamilyEvos()"></label><br />
