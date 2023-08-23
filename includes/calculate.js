@@ -120,7 +120,8 @@ function calculate(baseatk, basedef, basesta, floor, minLvl, maxLvl, invalid, le
   
   /* console.log("calculate output:"+JSON.stringify(sorted, null, 2)); */
   if (perfTiming) {T1 = performance.now();
-	console.log(mon+" calculate: "+(T1-T0).toFixed(1)+"ms (Build "+(Tb-T0).toFixed(1)+"ms + Sort "+(Ts-Tb).toFixed(1)+"ms) for "+numRanks+" ranks.");}
+	console.log(mon+" calculate: "+(T1-T0).toFixed(1)+"ms (Build "+(Tb-T0).toFixed(1)+"ms + Sort "+(Ts-Tb).toFixed(1)+"ms) for "+numRanks+" ranks.");
 	document.getElementById('timing_outputs').innerHTML += "calculate: "+(T1-T0).toFixed(1)+"ms (Build "+(Tb-T0).toFixed(1)+"ms + Sort "+(Ts-Tb).toFixed(1)+"ms) for "+numRanks+" ranks.<br>";
-	return sorted;
+  }
+  return sorted;
 }
