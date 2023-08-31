@@ -1,6 +1,6 @@
 var boxRewrd = ["Articuno","Zapdos","Moltres","Lugia","Ho_Oh","Regirock","Regice","Registeel","Latias","Latios","Kyogre","Groudon","Rayquaza","Regigigas","Cresselia","Nihilego","Buzzwole","Pheromosa","Xurkitree","Guzzlord"];
 /*Raikou, Entei, and Suicune wild spawned at Johto Fest 2022, Uxie,Mesprit,Azelf are wild-spawning legendaries and Meltan,Melmetal are wild-spawning mythicals*/
-var raidOnly = ["Dialga","Palkia","Heatran","Giratina_Altered","Cobalion","Terrakion","Virizion","Tornadus_Incarnate","Tornadus_Therian","Thundurus_Incarnate","Thundurus_Therian","Reshiram","Zekrom","Landorus_Incarnate","Landorus_Therian","Kyurem","Kyurem_Black","Kyurem_White","Xerneas","Yveltal","Zygarde_SPECULATIVE","Type_Null","Silvally","Tapu_Koko","Tapu_Lele","Tapu_Bulu","Tapu_Fini","Cosmog","Cosmoem","Solgaleo","Lunala","Necrozma","Necrozma_Dusk_Mane","Necrozma_Dawn_Wings","Ultra_Necrozma","Zacian_Hero_of_Many_Battles","Zacian_Crowned_Sword","Zamazenta_Hero_of_Many_Battles","Zamazenta_Crowned_Sword","Eternatus","Kubfu","Urshifu","Regieleki","Regidrago","Glastrier","Spectrier","Calyrex","Ice_Rider_Calyrex","Shadow_Rider_Calyrex","Enamorus","Enamorus_Therian","Ting_Lu","Chien_Pao","Wo_Chien","Chi_Yu","Koraidon","Miraidon"];
+var raidOnly = ["Dialga","Palkia","Heatran","Giratina_Altered","Cobalion","Terrakion","Virizion","Tornadus_Incarnate","Tornadus_Therian","Thundurus_Incarnate","Thundurus_Therian","Reshiram","Zekrom","Landorus_Incarnate","Landorus_Therian","Kyurem","Kyurem_Black","Kyurem_White","Xerneas","Yveltal","Zygarde_Ten_Percent","Zygarde_Fifty_Percent","Zygarde_Complete","Type_Null","Silvally","Tapu_Koko","Tapu_Lele","Tapu_Bulu","Tapu_Fini","Cosmog","Cosmoem","Solgaleo","Lunala","Necrozma","Necrozma_Dusk_Mane","Necrozma_Dawn_Wings","Ultra_Necrozma","Zacian_Hero_of_Many_Battles","Zacian_Crowned_Sword","Zamazenta_Hero_of_Many_Battles","Zamazenta_Crowned_Sword","Eternatus","Kubfu","Urshifu","Regieleki","Regidrago","Glastrier","Spectrier","Calyrex","Ice_Rider_Calyrex","Shadow_Rider_Calyrex","Enamorus","Enamorus_Therian","Ting_Lu","Chien_Pao","Wo_Chien","Chi_Yu","Koraidon","Miraidon"];
 var boxMyth = ["Mew","Celebi","Jirachi","Phione","Manaphy","Shaymin_Land","Shaymin_Sky","Arceus","Victini","Keldeo","Meloetta_Aria","Meloetta_Pirouette","Diancie","Mega_Diancie","Hoopa_Confined","Hoopa_Unbound","Volcanion","Magearna","Marshadow","Zeraora","Zarude"];
 var raidMyth = ["Deoxys","Deoxys_Attack","Deoxys_Defense","Deoxys_Speed","Darkrai","Genesect"];
 var shadowLegend = ["Articuno","Zapdos","Moltres","Mewtwo","Raikou","Entei","Suicune","Lugia","Ho_Oh"];
@@ -858,10 +858,9 @@ var pokeListObj = {
     "Noivern": "715,205,175,198,Noibat",
     "Xerneas": "716b,250,185,246",
     "Yveltal": "717b,250,185,246",
-    "Zygarde": "718b,203,232,239,Zygarde_Ten_Percent,Zygarde_Fifty_Percent,Zygarde_Complete",
-    "Zygarde_Ten_Percent": "718,205,173,144,Zygarde,Zygarde_Fifty_Percent,Zygarde_Complete",
-    "Zygarde_Fifty_Percent": "718,203,232,239,Zygarde,Zygarde_Ten_Percent,Zygarde_Complete",
-    "Zygarde_Complete": "718,184,207,389,Zygarde,Zygarde_Ten_Percent,Zygarde_Fifty_Percent",
+    "Zygarde_Ten_Percent": "718,205,173,144,Zygarde_Fifty_Percent,Zygarde_Complete",
+    "Zygarde_Fifty_Percent": "718,203,232,239,Zygarde_Ten_Percent,Zygarde_Complete",
+    "Zygarde_Complete": "718,184,207,389,Zygarde_Ten_Percent,Zygarde_Fifty_Percent",
     "Diancie": "719b&!mega,190,285,137,Mega_Diancie",
     "Mega_Diancie": "719&mega,342,235,137,Diancie",
     "Hoopa_Confined": "720b,261,187,173",
