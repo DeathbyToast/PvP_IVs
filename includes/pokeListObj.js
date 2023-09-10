@@ -1157,9 +1157,9 @@ var pokeListObj = {
     "Iron_Jugulis":"993b,249,179,214",
     "Iron_Moth":"994b,281,196,190",
     "Iron_Thorns":"995b,250,200,225",
-    "Frigibax":"996b,134,86,163,Arctibax,Baxcalibur_SPECULATIVE",
-    "Arctibax":"997,173,128,207,Frigibax,Baxcalibur_SPECULATIVE",
-    "Baxcalibur_SPECULATIVE":"998,254,168,229,Frigibax,Arctibax",
+    "Frigibax":"996b,134,86,163,Arctibax,Baxcalibur",
+    "Arctibax":"997,173,128,207,Frigibax,Baxcalibur",
+    "Baxcalibur":"998,254,168,229,Frigibax,Arctibax",
     "Gimmighoul_Chest":"999b,121,122,128,Gholdengo,Gimmighoul_Roaming",
     "Gimmighoul_Roaming":"999b,140,76,128,Gholdengo,Gimmighoul_Chest",
     "Gholdengo":"1000,252,190,202,Gimmighoul_Roaming,Gimmighoul_Chest",
@@ -1169,8 +1169,8 @@ var pokeListObj = {
     "Chi_Yu":"1004b,269,221,146",
     "Roaring_Moon_SPECULATIVE":"1005b,254,178,213",
     "Iron_Valiant":"1006b,279,171,179",
-    "Koraidon_SPECULATIVE":"1007b,263,223,205",
-    "Miraidon_SPECULATIVE":"1008b,263,223,205",
+    "Koraidon":"1007b,263,223,205",
+    "Miraidon":"1008b,263,223,205",
     "Walking_Wake":"1009b,256,188,223",
-    "Ion_Leaves":"1010b,259,213,207"
+    "Iron_Leaves":"1010b,259,213,207"
 };
