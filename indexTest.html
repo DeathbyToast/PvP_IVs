@@ -487,7 +487,7 @@
       }
 
       function outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, dec, URL) {
-        var T0,Tc,Ti,Tr,T1;
+        var T0,Tc,Ti,Tr,Tt,T1;
         if (perfTiming) {T0 = performance.now();}
         /*console.log("oUR: Received aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw+", league:"+league+", leagueName:"+leagueName+", ranks"+ranks+", dec:"+dec+", URL:"+URL);*/
         
@@ -589,7 +589,6 @@
           if (filterMod) {console.log("After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
         }
         if (perfTiming) {Tc = performance.now();}
-        +(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.<br>";
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
@@ -819,11 +818,12 @@
           }
           searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+searchMon+"&cp="+league+"&o=000011&IVentry="+outIVs+"'>Generate "+searchMon+" Search String for only these filtered IVs</a></p>";
         }
-        
+
         document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback;
         document.getElementById('outputBox').innerHTML += ranges + searchLink + "<br>" + trades;
         document.getElementById('outputBox').appendChild(myTable);
-        //console.log("data object finished as: "+JSON.stringify(data));
+        if (perfTiming) {Tt = performance.now();}
+        console.log("data object finished as: "+JSON.stringify(data));
         window.dt = new window.simpleDatatables.DataTable(myTable, {
           data,
           searchable: true
@@ -834,7 +834,7 @@
         
         if (perfTiming) {T1 = performance.now();
         console.log(mon+" outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.");
-        document.getElementById('timing_outputs').innerHTML += "outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.<br>";
+        document.getElementById('timing_outputs').innerHTML += "outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms + Build SimpleDataTable "+(T1-Tt).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.<br>";
         }
         return [printLimit];
       }
