@@ -17,12 +17,15 @@
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/simple-datatables@7.3.0/dist/style.css" as="style">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/simple-datatables@7.3.0" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
     <title>PvP IVs - Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
     <link rel=icon href=https://pvpivs.com/includes/favicon.png>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@7.3.0/dist/style.css">
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
       /* control highlight of trading improvement rows based on % chace to improve post-trade
@@ -230,6 +233,7 @@
       <script src="https://pvpivs.com/includes/footer.js"></script>
       <script src="https://pvpivs.com/includes/calculate.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.3.0"></script>
       <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
         
       <script>
@@ -481,13 +485,6 @@
         if (perfTiming) {stopTiming(T0, "toggleFamilyEvos");}
         setUserPreference('family');
       }
-      
-      function createCell(myCurrentRow, cellType, cellContents) {
-        const myCurrentCell = document.createElement(cellType);
-        const currentText = document.createTextNode(cellContents);
-        myCurrentCell.appendChild(currentText);
-        myCurrentRow.appendChild(myCurrentCell);
-      }
 
       function outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, dec, URL) {
         var T0,Tc,Ti,Tr,T1;
@@ -519,36 +516,57 @@
         var evoFeedback = "";
         var html = "";
         //var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th>";
-        const outTable = document.createElement("table");
-        outTable.setAttribute("id", "outTable");
-        const tblBody = document.createElement("tbody");
-        const headerRow = document.createElement("tr");
-        createCell(headerRow, "th", "#");
-        createCell(headerRow, "th", "Lvl");
-        createCell(headerRow, "th", "CP");
+        const myTable = document.createElement("table");
+        //myTable.setAttribute("id", "testTable");
+        let headings = ["#","Lvl","CP"];
         
         if (document.getElementById('mlCP').checked) {
           //html += "<th>L"+minLvl+" CP</th>";
-          createCell(headerRow, "th", "L"+minLvl+" CP");
+          headings.push("L"+minLvl+" CP");
         }
-          
+
         //html += "<th>Atk IV</th><th>Def</th><th>Stam</th><th>Perfect</th>";
-        createCell(headerRow, "th", "Atk IV");
-        createCell(headerRow, "th", "Def");
-        createCell(headerRow, "th", "Stam");
-        createCell(headerRow, "th", "Perfect");
-        
+        headings.push("Atk IV","Def","Stam","Perfect");
+
         /*include XL candy costs if Max Level > 41*/
         if (maxLvl > 41 && ranks.maxLvl>41) {
           //html+="<th>XL</th>";
-          createCell(headerRow, "th", "XL");
+          headings.push("XL");
         }
         
         /*include stardust costs if enabled*/
         if (document.getElementById("dust").checked) {
           //html+="<th>Dust</th>";
-          createCell(headerRow, "th", "Dust");
+          headings.push("Dust");
         }
+
+        /*include cmp columns if checked*/
+        if (document.getElementById("cmp").checked) {
+          var cmpLim = document.getElementById('cmpLim').value;
+          if (ranks.numRanks/1 < cmpLim/1) {
+            /* If cmpLim is set too high, adjust down to numRanks */
+            cmpLim = ranks.numRanks/1;
+          }
+          //html+="<th>R1 CMP</th><th>T"+cmpLim+" CMP</th>";
+          headings.push("R1 CMP", "T"+cmpLim+" CMP");
+          ranks = cmpCalcs(ranks, keys, dec, cmpLim, filterMod);
+        }
+        
+        //html+="<th>PvP Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th>";
+        headings.push("PvP Atk", "Def", "HP", "Stat Prod");
+        
+        /*include bulk product if enabled*/
+        if (document.getElementById("bulk").checked) {
+          //html+="<th>Bulk Prod</th>";
+          headings.push("Bulk Prod");
+        }
+
+        let data = {
+          "headings": headings,
+          "data": []
+        };
+
+        console.log("data object created as: "+JSON.stringify(data));
         
         /*print main table output and count actual outputted rows/ranks*/
         var actualRank = 1; var rowsOutput = 0;
@@ -570,35 +588,10 @@
           mHP = (filterMod === true) ? mHP : ranks.minHP.value;
           if (filterMod) {console.log("After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
         }
-        
-        /*include cmp columns if checked*/
-        if (document.getElementById("cmp").checked) {
-          var cmpLim = document.getElementById('cmpLim').value;
-          if (ranks.numRanks/1 < cmpLim/1) {
-            /* If cmpLim is set too high, adjust down to numRanks */
-            cmpLim = ranks.numRanks/1;
-          }
-          //html+="<th>R1 CMP</th><th>T"+cmpLim+" CMP</th>";
-          createCell(headerRow, "th", "R1 CMP");
-          createCell(headerRow, "th", "T"+cmpLim+" CMP");
-          ranks = cmpCalcs(ranks, keys, dec, cmpLim, filterMod);
-        }
-        if (perfTiming) {Tc = performance.now();}
-        
-        //html+="<th>PvP Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th>";
-        createCell(headerRow, "th", "PvP Atk");
-        createCell(headerRow, "th", "Def");
-        createCell(headerRow, "th", "HP");
-        createCell(headerRow, "th", "Stat Prod");
-        
-        /*include bulk product if enabled*/
-        if (document.getElementById("bulk").checked) {
-          //html+="<th>Bulk Prod</th>";
-          createCell(headerRow, "th", "Bulk Prod");
-        }
 
         //html+="</tr>";
-        tblBody.appendChild(headerRow);
+        //tblBody.appendChild(headerRow);
+        if (perfTiming) {Tc = performance.now();}
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
@@ -724,6 +717,7 @@
         /* used to track if we should hide XL candy column */
         var nonZeroXL = false;
         var outIVs = "";
+        let currentRow = [];
 
         /* See if we need to check IV Efficiency */
         var effIV = true;
@@ -738,51 +732,27 @@
             && (document.getElementById("effIV").checked===false || ranks[keys[i]][j].eff === true)) {
               /* All three stats are above filter cutoffs, and (if enabled by user) IV is efficient, proceed with printing this row */
               if (actualRank/1 <= limit/1) {
-                const myCurrentRow = document.createElement("tr");
-                //html+="<tr><td>"+actualRank+"</td>";
-                createCell(myCurrentRow, "td", actualRank); /*Rank*/
-                //html+="<td>"+ranks[keys[i]][j].L+"</td>";
-                createCell(myCurrentRow, "td", ranks[keys[i]][j].L); /*Level*/
-                //html+="<td>"+ranks[keys[i]][j].CP+"</td>";
-                createCell(myCurrentRow, "td", ranks[keys[i]][j].CP); /*Final CP*/
-                if (document.getElementById('mlCP').checked) {createCell(myCurrentRow, "td", Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))); /*Raid/Hatch CP*/}
-                //html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>";
-                createCell(myCurrentRow, "td", ranks[keys[i]][j].IVs.A); /*Atk IV*/
-                //html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>";
-                createCell(myCurrentRow, "td", ranks[keys[i]][j].IVs.D); /*Def IV*/
-                //html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>";
-                createCell(myCurrentRow, "td", ranks[keys[i]][j].IVs.S); /*Sta IV*/
+                currentRow = [actualRank,ranks[keys[i]][j].L,ranks[keys[i]][j].CP]; /*Rank, Level, Final CP*/
+                if (document.getElementById('mlCP').checked) {currentRow.push(Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))); /*Raid/Hatch CP*/}
+                currentRow.push(ranks[keys[i]][j].IVs.A,ranks[keys[i]][j].IVs.D,ranks[keys[i]][j].IVs.S,parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*Atk, Def, Sta IVs, Stat Prod Perfection %*/
                 outIVs+=ranks[keys[i]][j].IVs.A+"-"+ranks[keys[i]][j].IVs.D+"-"+ranks[keys[i]][j].IVs.S+",";
-                //html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"+"</td>";
-                createCell(myCurrentRow, "td", parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*Perfection*/
                 if (maxLvl > 41 && ranks.maxLvl>41) {
                   var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
-                  //html+="<td>"+candy+"</td>";
-                  createCell(myCurrentRow, "td", candy);
+                  currentRow.push(candy);
                   if (!nonZeroXL && candy > 0) {nonZeroXL = true;} /*XL*/
                 }
-                if (document.getElementById("dust").checked) {createCell(myCurrentRow, "td", stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)); /*Stardust*/}
-                if (document.getElementById("cmp").checked) {
-                  //html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>";
-                  createCell(myCurrentRow, "td", ranks[keys[i]][j].IVs.R1); /*R1 CMP*/
-                  //html+="<td>"+ranks[keys[i]][j].IVs.cmp+"%"+"</td>";
-                  createCell(myCurrentRow, "td", ranks[keys[i]][j].IVs.cmp+"%"); /*CMP Wins*/
+                if (document.getElementById("dust").checked) {
+                  currentRow.push(stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)); /*Stardust*/
                 }
-                //html+="<td>"+numOut(ranks[keys[i]][j].battle.A,dec)+"</td>";
-                createCell(myCurrentRow, "td", numOut(ranks[keys[i]][j].battle.A,dec)); /*GL Atk Total*/
-                //html+="<td>"+numOut(ranks[keys[i]][j].battle.D,dec)+"</td>";
-                createCell(myCurrentRow, "td", numOut(ranks[keys[i]][j].battle.D,dec)); /*GL Def Total*/
-                //html+="<td>"+ranks[keys[i]][j].battle.S+"</td>";
-                createCell(myCurrentRow, "td", ranks[keys[i]][j].battle.S); /*GL HP*/
-                //html+="<td>"+keys[i].split(".")[0]+"</td>";
-                createCell(myCurrentRow, "td", keys[i].split(".")[0]); /*Stat Product*/
+                if (document.getElementById("cmp").checked) {
+                  currentRow.push(ranks[keys[i]][j].IVs.R1,ranks[keys[i]][j].IVs.cmp+"%"); /*R1 CMP, CMP Wins*/
+                }
+                currentRow.push(numOut(ranks[keys[i]][j].battle.A,dec),numOut(ranks[keys[i]][j].battle.D,dec),ranks[keys[i]][j].battle.S,keys[i].split(".")[0]); /*League Atk, Def, HP Stats, Stat Product*/
                 if (document.getElementById("bulk").checked) {
                   var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0);
-                  //html+="<td>"+bulkprod+"</td>";
-                  createCell(myCurrentRow, "td", bulkprod); /*Bulk Product*/
+                  currentRow.push(bulkprod); /*Bulk Product*/
                 }
-                //html+="</tr>";
-                tblBody.appendChild(myCurrentRow);
+                data.data.push(currentRow);
                 rowsOutput = rowsOutput/1 + 1;
               }
             } else {
@@ -792,10 +762,6 @@
             actualRank = actualRank + 1;
           }
         }
-        /*console.log("outputUserRanks: Finished loop with i:"+i+", actualRank:"+actualRank+" >= limit:"+limit);*/
-        //html+="</table>";
-        outTable.appendChild(tblBody); /*finish building the whole table*/
-
         var printLimit = Math.min(rowsOutput, limit, ranks.numRanks);
         if (perfTiming) {Tr = performance.now();}
         
@@ -857,8 +823,13 @@
         }
         
         document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback;
-        document.getElementById('outputBox').appendChild(outTable);
         document.getElementById('outputBox').innerHTML += ranges + searchLink + "<br>" + trades;
+        document.getElementById('outputBox').appendChild(myTable);
+        //console.log("data object finished as: "+JSON.stringify(data));
+        window.dt = new window.simpleDatatables.DataTable(myTable, {
+          data,
+          searchable: true
+        }); /*Build table with generated data*/
         
         /* Append how many total ranks were generated at the end of "Top <Ranks> <League> <Mon>" top line on page" */
         document.getElementById("instructionsBox").innerHTML += "<p id='totalRanks'> of "+ranks.numRanks+":</p><br />";
@@ -997,7 +968,7 @@
         document.querySelector("link[rel='canonical']").setAttribute("href", "https://pvpivs.com/?mon="+mon+"&cp="+league);
 
         /* Add event listener to capture user clicking on any table row */
-        document.getElementById('outTable').addEventListener('click', (function(){addToCompare(event);}), false);
+        //document.getElementById('outTable').addEventListener('click', (function(){addToCompare(event);}), false);
         
         /*make table sortable by clicking on any header https://stackoverflow.com/a/49041392 */
         const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
@@ -1005,13 +976,13 @@
             v1 !== '' && v2 !== '' && !isNaN(v1.replace("%", "")) && !isNaN(v2.replace("%", "")) ? v1.replace("%", "") - v2.replace("%", "") : v1.toString().localeCompare(v2)
             )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
         
-        /*sort the table by the column the user clicked on*/
+        /*sort the table by the column the user clicked on
         document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
             const table = th.closest('table');
             Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
                 .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
                 .forEach(tr => table.appendChild(tr) );
-        })));
+        })));*/
         
         if (perfTiming) {stopTiming(T0, "main");}
       }
