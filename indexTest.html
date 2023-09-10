@@ -98,8 +98,8 @@
       }
     </style>
     <!-- Begin Playwire Head -->
-    <script>window.ramp=window.ramp ||{}; window.ramp.que=window.ramp.que || []; </script> <script async src="//cdn.intergient.com/1025030/74482/ramp_config.js"></script> <script>window._pwGA4PageviewId=''.concat(Date.now()); window.dataLayer=window.dataLayer || []; window.gtag=window.gtag || function (){dataLayer.push(arguments);}; gtag('js', new Date()); gtag('config', 'G-JD7R9RWFZL',{'send_page_view': false}); gtag( 'event', 'ramp_js',{'send_to': 'G-JD7R9RWFZL', 'pageview_id': window._pwGA4PageviewId}); </script>
-    <!-- End Playwire Head -->
+    <!--script>window.ramp=window.ramp ||{}; window.ramp.que=window.ramp.que || []; </script> <script async src="//cdn.intergient.com/1025030/74482/ramp_config.js"></script> <script>window._pwGA4PageviewId=''.concat(Date.now()); window.dataLayer=window.dataLayer || []; window.gtag=window.gtag || function (){dataLayer.push(arguments);}; gtag('js', new Date()); gtag('config', 'G-JD7R9RWFZL',{'send_page_view': false}); gtag( 'event', 'ramp_js',{'send_to': 'G-JD7R9RWFZL', 'pageview_id': window._pwGA4PageviewId}); </script>
+    < End Playwire Head -->
   </head>
   <body class="light-theme" onload="checkURI()">
     <!-- Google Tag Manager (noscript) -->
@@ -588,10 +588,8 @@
           mHP = (filterMod === true) ? mHP : ranks.minHP.value;
           if (filterMod) {console.log("After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
         }
-
-        //html+="</tr>";
-        //tblBody.appendChild(headerRow);
         if (perfTiming) {Tc = performance.now();}
+        +(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.<br>";
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
