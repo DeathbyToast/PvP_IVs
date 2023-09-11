@@ -821,7 +821,7 @@
         
         if (perfTiming) {T1 = performance.now();
         console.log(mon+" outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.");
-        document.getElementById('timing_outputs').innerHTML += "outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms + Build SimpleDataTable "+(T1-Tt).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.<br>";
+        document.getElementById('timing_outputs').innerHTML += "outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms + Build DataTable "+(T1-Tt).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.<br>";
         }
         return [printLimit];
       }
