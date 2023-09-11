@@ -17,15 +17,19 @@
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/simple-datatables@7.3.0/dist/style.css" as="style">
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/simple-datatables@7.3.0" as="script">
+    <link rel="preload" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" as="style">
+    <link rel="preload" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css" as="style">
+    <link rel="preload" href="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" as="script">
+    <link rel="preload" href="https://code.jquery.com/jquery-3.7.1.slim.min.js" as="script">
+    <link rel="preload" href="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
     <title>PvP IVs - Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
     <link rel=icon href=https://pvpivs.com/includes/favicon.png>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@7.3.0/dist/style.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css">
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
       /* control highlight of trading improvement rows based on % chace to improve post-trade
@@ -145,8 +149,7 @@
     </header>
     <br />
     <section>
-      <label>Top <input type="number" value="10" id="limit" min="1" max="4096" oninput="setUserPreference('limit')"></label>
-      <label><select id="league" oninput="setUserPreference('league')">
+      <label>Top <select id="league" oninput="setUserPreference('league')">
         <option value="500" label="Little Leagues">Little Leagues</option>
         <option value="1500" selected label="Great League">Great League</option>
     		<option value="2500" label="Ultra League">Ultra League</option>
@@ -233,7 +236,9 @@
       <!--script src="https://pvpivs.com/includes/footer.js"></script-->
       <script src="https://pvpivs.com/includes/calculate.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.3.0"></script>
+      <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+      <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+      <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
       <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
         
       <script>
@@ -496,7 +501,6 @@
         var minLvl = document.getElementById('minLvl').value;
         var maxLvl = document.getElementById('maxLvl').value;
         var floor = document.getElementById('floor').value;
-        var limit = document.getElementById('limit').value;
         var keys = Object.keys(ranks);
         var maxStatProd = keys[0].split(".")[0];
         var evos = pokeListObj[mon].split(',').slice(4, pokeListObj[mon].split(',').length);
@@ -515,30 +519,16 @@
         var evoHtml = "";
         var evoFeedback = "";
         var html = "";
-        //var html = "<table id='outTable'><tr><th>#</th><th>Lvl</th><th>CP</th>";
         const myTable = document.createElement("table");
-        //myTable.setAttribute("id", "testTable");
+        myTable.setAttribute("id", "monTable");
+        let tableData = [];
+        
+        /* Set headings based on user settings */
         let headings = ["#","Lvl","CP"];
-        
-        if (document.getElementById('mlCP').checked) {
-          //html += "<th>L"+minLvl+" CP</th>";
-          headings.push("L"+minLvl+" CP");
-        }
-
-        //html += "<th>Atk IV</th><th>Def</th><th>Stam</th><th>Perfect</th>";
+        if (document.getElementById('mlCP').checked) {headings.push("L"+minLvl+" CP");}
         headings.push("Atk IV","Def","Stam","Perfect");
-
-        /*include XL candy costs if Max Level > 41*/
-        if (maxLvl > 41 && ranks.maxLvl>41) {
-          //html+="<th>XL</th>";
-          headings.push("XL");
-        }
-        
-        /*include stardust costs if enabled*/
-        if (document.getElementById("dust").checked) {
-          //html+="<th>Dust</th>";
-          headings.push("Dust");
-        }
+        if (maxLvl > 41 && ranks.maxLvl>41) {headings.push("XL");} /*include XL candy costs if Max Level > 41*/
+        if (document.getElementById("dust").checked) {headings.push("Dust");} /*include stardust costs if enabled*/
 
         /*include cmp columns if checked*/
         if (document.getElementById("cmp").checked) {
@@ -547,27 +537,26 @@
             /* If cmpLim is set too high, adjust down to numRanks */
             cmpLim = ranks.numRanks/1;
           }
-          //html+="<th>R1 CMP</th><th>T"+cmpLim+" CMP</th>";
           headings.push("R1 CMP", "T"+cmpLim+" CMP");
           ranks = cmpCalcs(ranks, keys, dec, cmpLim, filterMod);
         }
         
-        //html+="<th>PvP Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th>";
+        /* Finish building headings based on user settings */
         headings.push("PvP Atk", "Def", "HP", "Stat Prod");
-        
-        /*include bulk product if enabled*/
-        if (document.getElementById("bulk").checked) {
-          //html+="<th>Bulk Prod</th>";
-          headings.push("Bulk Prod");
+        if (document.getElementById("bulk").checked) {headings.push("Bulk Prod");} /*include bulk product if enabled*/
+
+        var thead = document.createElement('thead');
+        var headerRow = document.createElement('tr');
+        /* Actually push headings to myTable DOM */
+        for (var i=0; i<headings.length; i++) {
+          var th = document.createElement('th'); //column
+          var text = document.createTextNode(headings[i]); //cell
+          th.appendChild(text);
+          headerRow.appendChild(th);
         }
+        thead.appendChild(headerRow);
+        myTable.appendChild(thead);
 
-        let data = {
-          "headings": headings,
-          "data": []
-        };
-
-        console.log("data object created as: "+JSON.stringify(data));
-        
         /*print main table output and count actual outputted rows/ranks*/
         var actualRank = 1; var rowsOutput = 0;
         var minAtk = ranks.minAtk.value, maxAtk = ranks.maxAtk.value;
@@ -634,7 +623,6 @@
                   var evoMaxStatProd = evoKeys[0].split(".")[0];
                   /*create link for evo table entry*/
                   uri = URL + "?mon="+evos[e];
-                  if (limit/1 !== "10") uri += "&r="+limit;
                   uri += "&cp="+league; /* Must include league */
                   if (floor/1 > 0) uri += "&f="+floor;
                   if (minLvl/1 > 1) uri += "&min="+minLvl;
@@ -722,53 +710,48 @@
           ranks = checkEfficientIVs(ranks, keys, dec);
         }
 
-        for (i=0; ((actualRank/1<=ranks.numRanks/1) && (actualRank/1 <= limit/1)); i++) {
+        for (i=0; (actualRank/1<=ranks.numRanks/1); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             
             if ((mA/1 <= numOut(ranks[keys[i]][j].battle.A,dec)) && (mD/1 <= numOut(ranks[keys[i]][j].battle.D,dec)) && (mHP/1 <= ranks[keys[i]][j].battle.S) 
             && (document.getElementById("effIV").checked===false || ranks[keys[i]][j].eff === true)) {
               /* All three stats are above filter cutoffs, and (if enabled by user) IV is efficient, proceed with printing this row */
-              if (actualRank/1 <= limit/1) {
-                currentRow = [actualRank,ranks[keys[i]][j].L,ranks[keys[i]][j].CP]; /*Rank, Level, Final CP*/
-                if (document.getElementById('mlCP').checked) {currentRow.push(Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))); /*Raid/Hatch CP*/}
-                currentRow.push(ranks[keys[i]][j].IVs.A,ranks[keys[i]][j].IVs.D,ranks[keys[i]][j].IVs.S,parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*Atk, Def, Sta IVs, Stat Prod Perfection %*/
-                outIVs+=ranks[keys[i]][j].IVs.A+"-"+ranks[keys[i]][j].IVs.D+"-"+ranks[keys[i]][j].IVs.S+",";
-                if (maxLvl > 41 && ranks.maxLvl>41) {
-                  var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
-                  currentRow.push(candy);
-                  if (!nonZeroXL && candy > 0) {nonZeroXL = true;} /*XL*/
-                }
-                if (document.getElementById("dust").checked) {
-                  currentRow.push(stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)); /*Stardust*/
-                }
-                if (document.getElementById("cmp").checked) {
-                  currentRow.push(ranks[keys[i]][j].IVs.R1,ranks[keys[i]][j].IVs.cmp+"%"); /*R1 CMP, CMP Wins*/
-                }
-                currentRow.push(numOut(ranks[keys[i]][j].battle.A,dec),numOut(ranks[keys[i]][j].battle.D,dec),ranks[keys[i]][j].battle.S,keys[i].split(".")[0]); /*League Atk, Def, HP Stats, Stat Product*/
-                if (document.getElementById("bulk").checked) {
-                  var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0);
-                  currentRow.push(bulkprod); /*Bulk Product*/
-                }
-                data.data.push(currentRow);
-                rowsOutput = rowsOutput/1 + 1;
+              currentRow = [actualRank,ranks[keys[i]][j].L,ranks[keys[i]][j].CP]; /*Rank, Level, Final CP*/
+              if (document.getElementById('mlCP').checked) {currentRow.push(Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))); /*Raid/Hatch CP*/}
+              currentRow.push(ranks[keys[i]][j].IVs.A,ranks[keys[i]][j].IVs.D,ranks[keys[i]][j].IVs.S,parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*Atk, Def, Sta IVs, Stat Prod Perfection %*/
+              outIVs+=ranks[keys[i]][j].IVs.A+"-"+ranks[keys[i]][j].IVs.D+"-"+ranks[keys[i]][j].IVs.S+",";
+              if (maxLvl > 41 && ranks.maxLvl>41) {
+                var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
+                currentRow.push(candy);
+                if (!nonZeroXL && candy > 0) {nonZeroXL = true;} /*XL*/
               }
-            } else {
-              /* Skip printing row, but ensure we still print a total of <limit> rows */
-              limit = (limit/1 + 1)/1;
+              if (document.getElementById("dust").checked) {
+                currentRow.push(stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)); /*Stardust*/
+              }
+              if (document.getElementById("cmp").checked) {
+                currentRow.push(ranks[keys[i]][j].IVs.R1,ranks[keys[i]][j].IVs.cmp+"%"); /*R1 CMP, CMP Wins*/
+              }
+              currentRow.push(numOut(ranks[keys[i]][j].battle.A,dec),numOut(ranks[keys[i]][j].battle.D,dec),ranks[keys[i]][j].battle.S,keys[i].split(".")[0]); /*League Atk, Def, HP Stats, Stat Product*/
+              if (document.getElementById("bulk").checked) {
+                var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0);
+                currentRow.push(bulkprod); /*Bulk Product*/
+              }
+              tableData.push(currentRow);
+              rowsOutput = rowsOutput/1 + 1;
             }
             actualRank = actualRank + 1;
           }
         }
-        var printLimit = Math.min(rowsOutput, limit, ranks.numRanks);
+        var printLimit = Math.min(rowsOutput, ranks.numRanks);
         if (perfTiming) {Tr = performance.now();}
         
         /*prepare max stat html output*/
-        var maxAtkurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
-        var maxDefurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
-        var maxHPurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
-        var minAtkurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
-        var minDefurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
-        var minHPurl = encodeURI(URL + "?mon="+mon+"&r="+limit+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
+        var maxAtkurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
+        var maxDefurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
+        var maxHPurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
+        var minAtkurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
+        var minDefurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
+        var minHPurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
         
         var step = 1/Math.pow(10,dec);
 
@@ -823,11 +806,15 @@
         document.getElementById('outputBox').innerHTML += ranges + searchLink + "<br>" + trades;
         document.getElementById('outputBox').appendChild(myTable);
         if (perfTiming) {Tt = performance.now();}
-        console.log("data object finished as: "+JSON.stringify(data));
-        window.dt = new window.simpleDatatables.DataTable(myTable, {
-          data,
-          searchable: true
-        }); /*Build table with generated data*/
+        //console.log("tableData: "+JSON.stringify(tableData));
+
+        new DataTable('#monTable', {
+            data: tableData,
+            deferRender: true,
+            scrollCollapse: true,
+            scroller: true,
+            scrollY: 200
+        }); /*Build table with generated tableData*/
         
         /* Append how many total ranks were generated at the end of "Top <Ranks> <League> <Mon>" top line on page" */
         document.getElementById("instructionsBox").innerHTML += "<p id='totalRanks'> of "+ranks.numRanks+":</p><br />";
@@ -957,7 +944,7 @@
         /*console.log("uri generated as:"+uri);*/
         
         /* Update title and description to improve SEO for chosen mon */
-        var newTitle = mon+" PvP IVs - "+leagueName+" Rankings (Top "+document.getElementById('limit').value+")";
+        var newTitle = mon+" PvP IVs - "+leagueName+" Rankings";
         document.title = newTitle.replace(/_/g, ' '); /* replace all underscores ('_') with spaces */
         window.history.pushState(null, newTitle, uri);
         var newDescrp = mon+" PvP IVs lookup tool for Pokémon Go™ to help compare your "+mon+"'s PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified "+mon+"! Did you catch the very best?";
@@ -1101,7 +1088,7 @@
       function saveCurrentSettings() {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        setUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP");
+        setUserPreference("league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP");
         if (perfTiming) {stopTiming(T0, "saveCurrentSettings");}
         main();
       }
@@ -1124,7 +1111,7 @@
           } else if (["familyEvoLeague","league"].includes(settings[i])) { /* https://stackoverflow.com/a/47340778 */
             document.getElementById(settings[i]).selectedIndex = [...document.getElementById(settings[i]).options].findIndex (option => option.text === localStorage[settings[i]]);
             document.getElementById("familyEvoLeagueLbl").style.display = "inline-block"; /* Ensure we unhide family evo block as user prefers */
-          } else if (["limit","floor","minLvl","maxLvl"].includes(settings[i])) {
+          } else if (["floor","minLvl","maxLvl"].includes(settings[i])) {
             document.getElementById(settings[i]).value = localStorage[settings[i]];
           }
           console.log("Loaded user's preference for "+settings[i]+" as: "+localStorage[settings[i]]);
@@ -1142,7 +1129,7 @@
             /*console.log("Attempting to save settings["+i+"]:"+settings[i]);*/
             if (["familyEvoLeague","league"].includes(settings[i])) {
               localStorage[settings[i]] = document.getElementById(settings[i]).options[document.getElementById(settings[i]).selectedIndex].innerHTML;
-            } else if (["limit","floor","minLvl","maxLvl"].includes(settings[i])) {
+            } else if (["floor","minLvl","maxLvl"].includes(settings[i])) {
               localStorage[settings[i]] = document.getElementById(settings[i]).value;
             } else {
               localStorage[settings[i]] = document.getElementById(settings[i]).checked ? "true" : "false";
@@ -1231,7 +1218,7 @@
         if (perfTiming) {T0 = performance.now();}
         
         /* Read returning user's settings */
-        checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP");
+        checkUserPreference(league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP);
         
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
@@ -1259,9 +1246,6 @@
                 /* Ensure input shows in awesomplete box */
                 Awesomplete.input = input.value;
                 /*console.log("checkURI: Read mon("+values[i].split("=")[1]+") and set Awesomplete.input to:"+Awesomplete.input);*/
-                break;
-              case "r":
-                document.getElementById('limit').value = values[i].split("=")[1];
                 break;
               case "cp":
                 document.getElementById('league').value = values[i].split("=")[1];
@@ -1379,7 +1363,7 @@
       
       function computeSingleIV_CMP(ranks, chkIVs, cmpLim, keys, dec) {
         
-        /* Compare chkIVs all remaining IVs up to requested CMP limit */
+        /* Compare chkIVs all remaining IVs up to requested cmpLim */
         for (var i=0,iters=1; (iters<cmpLim/1 && iters<ranks.numRanks && keys[i].indexOf(".")>-1); i++) {
           for (var j=0; ((j<ranks[keys[i]].length) && (iters<cmpLim/1)); j++, iters++) {
             
@@ -1418,7 +1402,7 @@
         var T0;
         if (perfTiming) {T0 = performance.now();}
         var i=0,j=0,k=0,monProcessed=0;
-        var checkLimit = document.getElementById('limit').value;
+        var checkLimit = document.getElementById('cmpLim').value;
         /*console.log("cmpCalcs: received ranks:"+ranks+", first key:"+keys.slice(0, 1)+", dec:"+dec+", cmpLim:"+cmpLim+", filterMod:"+filterMod);*/
         
         /* Clone user IVs so that we can destructively search for them */
