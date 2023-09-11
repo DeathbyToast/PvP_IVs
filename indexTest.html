@@ -230,6 +230,7 @@
       
       <div style="overflow-x:auto;" id="megaNote"></div>
       <div id="feedbackBox"><br /></div>
+      <table id="monTable"></table>
       <div style="overflow-x:auto;" id="outputBox"></div>
     
       <!-- Footer Code Below -->
@@ -519,8 +520,7 @@
         var evoHtml = "";
         var evoFeedback = "";
         var html = "";
-        const myTable = document.createElement("table");
-        myTable.setAttribute("id", "monTable");
+        const myTable = document.getElementById("monTable");
         let tableData = [];
         
         /* Set headings based on user settings */
@@ -804,13 +804,21 @@
 
         document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback;
         document.getElementById('outputBox').innerHTML += ranges + searchLink + "<br>" + trades;
-        document.getElementById('outputBox').appendChild(myTable);
+
         if (perfTiming) {Tt = performance.now();}
         //console.log("tableData: "+JSON.stringify(tableData));
+
+        /* Check if we've already created a DataTable */
+        /* Need to destroy old DataTable before creating a new instance */
+        if ($.fn.DataTable.isDataTable( '#monTable' )) {
+          $('#monTable').DataTable().destroy();
+          $('#monTable').DataTable().draw();
+        }
 
         new DataTable('#monTable', {
             data: tableData,
             deferRender: true,
+            destroy: true,
             scrollCollapse: true,
             scroller: true,
             scrollY: 200
@@ -1218,7 +1226,7 @@
         if (perfTiming) {T0 = performance.now();}
         
         /* Read returning user's settings */
-        checkUserPreference(league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP);
+        checkUserPreference("league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP");
         
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
@@ -1802,9 +1810,6 @@
       
       function stardust(startlvl, endlvl, totaldust, shdw) {
         /* Returns calculated stardust power-up costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier*/
-        var T0;
-        if (perfTiming) {T0 = performance.now();}
-
         while (startlvl < endlvl) {
           switch (startlvl) {
             case 1:
@@ -1893,7 +1898,6 @@
         if (totaldust > 1000) {
           totaldust = Math.round(totaldust/1000) + "K";
         }
-        if (perfTiming) {stopTiming(T0, "stardust");}
         return totaldust;
       }
       
