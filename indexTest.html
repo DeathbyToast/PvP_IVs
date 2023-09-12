@@ -17,11 +17,15 @@
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
-    <link rel="preload" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" as="style">
-    <link rel="preload" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css" as="style">
-    <link rel="preload" href="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" as="script">
     <link rel="preload" href="https://code.jquery.com/jquery-3.7.1.slim.min.js" as="script">
+    <link rel="preload" href="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" as="script">
+    <link rel="preload" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" as="style">
+    <link rel="preload" href="https://cdn.datatables.net/searchbuilder/1.5.0/js/dataTables.searchBuilder.min.js" as="script">
+    <link rel="preload" href="https://cdn.datatables.net/searchbuilder/1.5.0/css/searchBuilder.dataTables.min.css" as="style">
     <link rel="preload" href="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js" as="script">
+    <link rel="preload" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css" as="style">
+    <link rel="preload" href="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js" as="script">
+    <link rel="preload" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
     <title>PvP IVs - Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,6 +34,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
       /* control highlight of trading improvement rows based on % chace to improve post-trade
@@ -99,6 +104,9 @@
       p[id=IVinputShow], small[id=IVinputHide] {
         text-decoration: underline;
         text-decoration-color: blue;
+      }
+      .dt-head-center {
+        text-align: center;
       }
     </style>
     <!-- Begin Playwire Head -->
@@ -230,17 +238,21 @@
       
       <div style="overflow-x:auto;" id="megaNote"></div>
       <div id="feedbackBox"><br /></div>
-      <table id="monTable"></table>
+      <table id="monTable" class="display nowrap" style="width:100%"></table>
       <div style="overflow-x:auto;" id="outputBox"></div>
     
-      <!-- Footer Code Below -->
+      <!-- Load various scripts for PvPIVs, Awesomplete, and DataTables -->
       <script src="https://pvpivs.com/includes/footer.js"></script>
       <script src="https://pvpivs.com/includes/calculate.js"></script>
+      <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
       <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
       <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
       <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
-      <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
+      <script src="https://cdn.datatables.net/searchbuilder/1.5.0/js/dataTables.searchBuilder.min.js"></script>
+      <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+      
+      
         
       <script>
       var lastLeague;
@@ -525,10 +537,15 @@
         
         /* Set headings based on user settings */
         let headings = ["#","Lvl","CP"];
-        if (document.getElementById('mlCP').checked) {headings.push("L"+minLvl+" CP");}
-        headings.push("Atk IV","Def","Stam","Perfect");
-        if (maxLvl > 41 && ranks.maxLvl>41) {headings.push("XL");} /*include XL candy costs if Max Level > 41*/
-        if (document.getElementById("dust").checked) {headings.push("Dust");} /*include stardust costs if enabled*/
+        let sbTitle = ["Rank","Level","CP"];
+        /* Set headings data priority for responsive table collapsing ordering */
+        let hdPrio = ["100","1500","2000"];
+        if (document.getElementById('mlCP').checked) {headings.push("L"+minLvl+" CP");hdPrio.push("999");sbTitle.push("Min Lvl CP");}
+        headings.push("A","D","S");
+        hdPrio.push(  "1",       "1","1");
+        sbTitle.push("Attack IV", "Defense IV", "Stamina IV");
+        if (maxLvl > 41 && ranks.maxLvl>41) {headings.push("XL");hdPrio.push("998");sbTitle.push("XL Candy Cost");} /*include XL candy costs if Max Level > 41*/
+        if (document.getElementById("dust").checked) {headings.push("Dust");hdPrio.push("997");sbTitle.push("Stardust Cost");} /*include stardust costs if enabled*/
 
         /*include cmp columns if checked*/
         if (document.getElementById("cmp").checked) {
@@ -538,22 +555,43 @@
             cmpLim = ranks.numRanks/1;
           }
           headings.push("R1 CMP", "T"+cmpLim+" CMP");
+          hdPrio.push("996","995");
+          sbTitle.push("Rank 1 CMP Win/Loss/Tie", "Top "+cmpLim+" CMP Win Percentage");
           ranks = cmpCalcs(ranks, keys, dec, cmpLim, filterMod);
         }
         
         /* Finish building headings based on user settings */
-        headings.push("PvP Atk", "Def", "HP", "Stat Prod");
-        if (document.getElementById("bulk").checked) {headings.push("Bulk Prod");} /*include bulk product if enabled*/
+        headings.push("Atk", "Def", "HP", "Raw SP","SP Pcnt");
+        hdPrio.push(     "1100","1200","1300",     "4000","3000");
+        sbTitle.push("Attack Stat", "Defense Stat", "HP Stat", "Raw Stat Product", "Stat Product Perfection %");
+        
+        if (document.getElementById("bulk").checked) {headings.push("Bulk Prod");hdPrio.push("994");sbTitle.push("Bulk Product");} /*include bulk product if enabled*/
 
+        /* Actually push headings to myTable DOM */
         var thead = document.createElement('thead');
         var headerRow = document.createElement('tr');
-        /* Actually push headings to myTable DOM */
         for (var i=0; i<headings.length; i++) {
           var th = document.createElement('th'); //column
+          th.setAttribute("data-priority",hdPrio[i]);
+          th.setAttribute("searchBuilderTitle",sbTitle[i]);
           var text = document.createTextNode(headings[i]); //cell
           th.appendChild(text);
           headerRow.appendChild(th);
         }
+
+        /* Create ColSpan Description Header Groups in myTable DOM */
+        var colSpanHeaderRow = document.createElement('tr');
+        let headerGroups = ["Rank", "", "", "IVs (Atk/Def/Sta)", "Battle Stats", "Stat Product"];
+        let ColumnSpans =  ["1",   "1","1",   "3",            "3",            "2"];
+        for (var i=0; i<headerGroups.length; i++) {
+          var th = document.createElement('th'); //column
+          th.setAttribute("colspan",ColumnSpans[i]);
+          th.setAttribute("class","dt-head-center");
+          var text = document.createTextNode(headerGroups[i]); //cell
+          th.appendChild(text);
+          colSpanHeaderRow.appendChild(th);
+        }
+        thead.appendChild(colSpanHeaderRow);
         thead.appendChild(headerRow);
         myTable.appendChild(thead);
 
@@ -718,7 +756,7 @@
               /* All three stats are above filter cutoffs, and (if enabled by user) IV is efficient, proceed with printing this row */
               currentRow = [actualRank,ranks[keys[i]][j].L,ranks[keys[i]][j].CP]; /*Rank, Level, Final CP*/
               if (document.getElementById('mlCP').checked) {currentRow.push(Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))); /*Raid/Hatch CP*/}
-              currentRow.push(ranks[keys[i]][j].IVs.A,ranks[keys[i]][j].IVs.D,ranks[keys[i]][j].IVs.S,parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*Atk, Def, Sta IVs, Stat Prod Perfection %*/
+              currentRow.push(ranks[keys[i]][j].IVs.A,ranks[keys[i]][j].IVs.D,ranks[keys[i]][j].IVs.S); /*Atk, Def, Sta IVs*/
               outIVs+=ranks[keys[i]][j].IVs.A+"-"+ranks[keys[i]][j].IVs.D+"-"+ranks[keys[i]][j].IVs.S+",";
               if (maxLvl > 41 && ranks.maxLvl>41) {
                 var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
@@ -731,7 +769,7 @@
               if (document.getElementById("cmp").checked) {
                 currentRow.push(ranks[keys[i]][j].IVs.R1,ranks[keys[i]][j].IVs.cmp+"%"); /*R1 CMP, CMP Wins*/
               }
-              currentRow.push(numOut(ranks[keys[i]][j].battle.A,dec),numOut(ranks[keys[i]][j].battle.D,dec),ranks[keys[i]][j].battle.S,keys[i].split(".")[0]); /*League Atk, Def, HP Stats, Stat Product*/
+              currentRow.push(numOut(ranks[keys[i]][j].battle.A,dec),numOut(ranks[keys[i]][j].battle.D,dec),ranks[keys[i]][j].battle.S,keys[i].split(".")[0],parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*League Atk, Def, HP Stats, Stat Product, Stat Prod Perfection %*/
               if (document.getElementById("bulk").checked) {
                 var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0);
                 currentRow.push(bulkprod); /*Bulk Product*/
@@ -811,14 +849,16 @@
         /* Check if we've already created a DataTable */
         /* Need to destroy old DataTable before creating a new instance */
         if ($.fn.DataTable.isDataTable( '#monTable' )) {
-          $('#monTable').DataTable().destroy();
-          $('#monTable').DataTable().draw();
+          var oldTable = $('#monTable').DataTable();
+          oldTable.destroy();
         }
 
         new DataTable('#monTable', {
             data: tableData,
             deferRender: true,
             destroy: true,
+            dom: 'Qlfrtip',
+            responsive: true,
             scrollCollapse: true,
             scroller: true,
             scrollY: 200
