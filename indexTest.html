@@ -35,6 +35,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.5.0/css/searchBuilder.dataTables.min.css">
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
       /* control highlight of trading improvement rows based on % chace to improve post-trade
@@ -257,7 +258,7 @@
       <script>
       var lastLeague;
       var inputMon = "";
-      var perfTiming = true; /* used for timing execution */
+      var perfTiming = false; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
       var ivMod = false; /*track if IV floor was adjusted*/
       let aIV=[document.getElementById('aIV[0]').value];
@@ -562,7 +563,7 @@
         
         /* Finish building headings based on user settings */
         headings.push("Atk", "Def", "HP", "Raw SP","SP Pcnt");
-        hdPrio.push(     "1100","1200","1300",     "4000","3000");
+        hdPrio.push( "1100","1200","1300",  "1400","3000");
         sbTitle.push("Attack Stat", "Defense Stat", "HP Stat", "Raw Stat Product", "Stat Product Perfection %");
         
         if (document.getElementById("bulk").checked) {headings.push("Bulk Prod");hdPrio.push("994");sbTitle.push("Bulk Product");} /*include bulk product if enabled*/
@@ -581,16 +582,29 @@
 
         /* Create ColSpan Description Header Groups in myTable DOM */
         var colSpanHeaderRow = document.createElement('tr');
-        let headerGroups = ["Rank", "", "", "IVs (Atk/Def/Sta)", "Battle Stats", "Stat Product"];
-        let ColumnSpans =  ["1",   "1","1",   "3",            "3",            "2"];
+        let headerGroups = ["Rank",     "", "", "IVs (Atk/Def/Sta)", "Battle Stats", "Stat Product"];
+        let columnSpans =  [   "1",    "1","1",                 "3",            "3",            "2"];
+        let groupPrio =    [    "", "2000", "",                  "",             "",        "2000",]
         for (var i=0; i<headerGroups.length; i++) {
           var th = document.createElement('th'); //column
-          th.setAttribute("colspan",ColumnSpans[i]);
+          th.setAttribute("colspan",columnSpans[i]);
           th.setAttribute("class","dt-head-center");
+          th.setAttribute("data-priority",groupPrio[i]);
           var text = document.createTextNode(headerGroups[i]); //cell
           th.appendChild(text);
           colSpanHeaderRow.appendChild(th);
         }
+
+        /* Create Zero Height Dummy Row for Responsive Collapsing */
+        var dummyRow = document.createElement('tr');
+        for (var i=0; i<headings.length; i++) {
+          var th = document.createElement('th'); //column
+          var text = document.createTextNode(""); //cell
+          th.appendChild(text);
+          dummyRow.appendChild(th);
+        }
+
+        thead.appendChild(colSpanHeaderRow);
         thead.appendChild(colSpanHeaderRow);
         thead.appendChild(headerRow);
         myTable.appendChild(thead);
@@ -751,8 +765,7 @@
         for (i=0; (actualRank/1<=ranks.numRanks/1); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             
-            if ((mA/1 <= numOut(ranks[keys[i]][j].battle.A,dec)) && (mD/1 <= numOut(ranks[keys[i]][j].battle.D,dec)) && (mHP/1 <= ranks[keys[i]][j].battle.S) 
-            && (document.getElementById("effIV").checked===false || ranks[keys[i]][j].eff === true)) {
+            if (document.getElementById("effIV").checked===false || ranks[keys[i]][j].eff === true) {
               /* All three stats are above filter cutoffs, and (if enabled by user) IV is efficient, proceed with printing this row */
               currentRow = [actualRank,ranks[keys[i]][j].L,ranks[keys[i]][j].CP]; /*Rank, Level, Final CP*/
               if (document.getElementById('mlCP').checked) {currentRow.push(Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))); /*Raid/Hatch CP*/}
@@ -782,20 +795,6 @@
         }
         var printLimit = Math.min(rowsOutput, ranks.numRanks);
         if (perfTiming) {Tr = performance.now();}
-        
-        /*prepare max stat html output*/
-        var maxAtkurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxAtk.aIV + "_" + ranks.maxAtk.dIV + "_" + ranks.maxAtk.sIV);
-        var maxDefurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxDef.aIV + "_" + ranks.maxDef.dIV + "_" + ranks.maxDef.sIV);
-        var maxHPurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.maxHP.aIV + "_" + ranks.maxHP.dIV + "_" + ranks.maxHP.sIV);
-        var minAtkurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minAtk.aIV + "_" + ranks.minAtk.dIV + "_" + ranks.minAtk.sIV);
-        var minDefurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minDef.aIV + "_" + ranks.minDef.dIV + "_" + ranks.minDef.sIV);
-        var minHPurl = encodeURI(URL + "?mon="+mon+"&cp="+league+"&f="+floor+"&min="+minLvl+"&max="+maxLvl+"&set="+settings+"&fel="+evoLeague+"&IVs="+ranks.minHP.aIV + "_" + ranks.minHP.dIV + "_" + ranks.minHP.sIV);
-        
-        var step = 1/Math.pow(10,dec);
-
-        var ranges = "<br />Atk &ge; <input type='number' step="+step+" id='atkVal' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkRange.value=this.value;mA=this.value;filterAdjusted();'> <a href="+minAtkurl+">"+numOut(minAtk,dec)+"</a><input type='range' id='atkRange' min="+numOut(minAtk,dec)+" max="+numOut(maxAtk,dec)+" value="+mA+" onchange='atkVal.value=this.value;mA=this.value;filterAdjusted();'><a href="+maxAtkurl+">"+numOut(maxAtk,dec)+"</a><br>";
-        ranges += "Def &ge; <input type='number' step="+step+" id='defVal' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defRange.value=this.value;mD=this.value;filterAdjusted();'> <a href="+minDefurl+">"+numOut(minDef,dec)+"</a><input type='range' id='defRange' min="+numOut(minDef,dec)+" max="+numOut(maxDef,dec)+" value="+mD+" onchange='defVal.value=this.value;mD=this.value;filterAdjusted();'><a href="+maxDefurl+">"+numOut(maxDef,dec)+"</a><br>";
-        ranges += "HP &ge; <input type='number' step='1' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" id='hpVal' value="+mHP+" onchange='hpRange.value=this.value;mHP=this.value;filterAdjusted();'> <a href="+minHPurl+">"+ranks.minHP.value+"</a><input type='range' id='hpRange' min="+ranks.minHP.value+" max="+ranks.maxHP.value+" value="+mHP+" onchange='hpVal.value=this.value;mHP=this.value;filterAdjusted();'><a href="+maxHPurl+">"+ranks.maxHP.value+"</a><br />";
         
         /*compute trade percentages*/
         var trades = "";
@@ -841,7 +840,7 @@
         }
 
         document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback;
-        document.getElementById('outputBox').innerHTML += ranges + searchLink + "<br>" + trades;
+        document.getElementById('outputBox').innerHTML += searchLink + "<br>" + trades;
 
         if (perfTiming) {Tt = performance.now();}
         //console.log("tableData: "+JSON.stringify(tableData));
@@ -863,9 +862,6 @@
             scroller: true,
             scrollY: 200
         }); /*Build table with generated tableData*/
-        
-        /* Append how many total ranks were generated at the end of "Top <Ranks> <League> <Mon>" top line on page" */
-        document.getElementById("instructionsBox").innerHTML += "<p id='totalRanks'> of "+ranks.numRanks+":</p><br />";
         
         if (perfTiming) {T1 = performance.now();
         console.log(mon+" outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.");
