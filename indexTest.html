@@ -123,6 +123,32 @@
         max-width: 1111px;
         margin: 0 auto;
       }
+      #outTable, #familyTable, #inputTable, #tradeTable {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        margin-left:auto;
+        margin-right:auto;
+      }
+      #outTable td, #outTable th {
+        border: 1px solid var(--tableDividers);
+        padding: 8px;
+        text-align: center;
+        line-height: 5px;
+      }
+      #monTable tr:nth-child(even) {background-color: var(--tableRowEven);}
+      #monTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
+
+      /*#outTable tr:hover {background-color: var(--navHover);}*/
+
+      #outTable th {
+        line-height: 15px;
+        padding: 3px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        text-align: center;
+        background-color: var(--tableHeaderBg);
+        color: var(--tableHeaderText);
+      }
     </style>
     <!-- Begin Playwire Head -->
     <!--script>window.ramp=window.ramp ||{}; window.ramp.que=window.ramp.que || []; </script> <script async src="//cdn.intergient.com/1025030/74482/ramp_config.js"></script> <script>window._pwGA4PageviewId=''.concat(Date.now()); window.dataLayer=window.dataLayer || []; window.gtag=window.gtag || function (){dataLayer.push(arguments);}; gtag('js', new Date()); gtag('config', 'G-JD7R9RWFZL',{'send_page_view': false}); gtag( 'event', 'ramp_js',{'send_to': 'G-JD7R9RWFZL', 'pageview_id': window._pwGA4PageviewId}); </script>
@@ -253,7 +279,7 @@
       
       <div style="overflow-x:auto;" id="megaNote"></div>
       <div id="feedbackBox"><br /></div>
-      <table id="monTable" class="display nowrap" style="width:100%; display:none;">
+      <table id="monTable" class="display compact nowrap" style="width:100%; display:none;">
         <thead>
           <tr>
             <th></th>
@@ -795,6 +821,7 @@
         const dt = new DataTable('#monTable', {
           "columnDefs": [
               /* This is just for reference and doesn't control header names */
+              {"className": "dt-center", "targets": "_all"},
               { "name": "#", "responsivePriority": "100", "searchBuilderTitle": "Ranks", "targets": 0},
               { "name": "Lvl", "responsivePriority": "1500", "searchBuilderTitle": "Level", "targets": 1},
               { "name": "CP", "responsivePriority": "2000", "targets": 2},
