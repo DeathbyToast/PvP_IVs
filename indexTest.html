@@ -119,6 +119,10 @@
         margin-left: auto;
         margin-right: auto;
       }
+      div.dataTables_wrapper {
+        width: 1111px;
+        margin: 0 auto;
+      }
     </style>
     <!-- Begin Playwire Head -->
     <!--script>window.ramp=window.ramp ||{}; window.ramp.que=window.ramp.que || []; </script> <script async src="//cdn.intergient.com/1025030/74482/ramp_config.js"></script> <script>window._pwGA4PageviewId=''.concat(Date.now()); window.dataLayer=window.dataLayer || []; window.gtag=window.gtag || function (){dataLayer.push(arguments);}; gtag('js', new Date()); gtag('config', 'G-JD7R9RWFZL',{'send_page_view': false}); gtag( 'event', 'ramp_js',{'send_to': 'G-JD7R9RWFZL', 'pageview_id': window._pwGA4PageviewId}); </script>
@@ -249,53 +253,51 @@
       
       <div style="overflow-x:auto;" id="megaNote"></div>
       <div id="feedbackBox"><br /></div>
-      <div id="oT" style="display:none; max-width: 1111px;">
-        <table id="outTable" class="display nowrap" style="width:100%">
-          <thead>
-            <tr>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-            </tr>
-            <tr>
-              <th>#</th>
-              <th>Lvl</th>
-              <th>CP</th>
-              <th id="mlCPheader">L1 CP</th>
-              <th>Atk IV</th>
-              <th>Def</th>
-              <th>Stam</th>
-              <th>XL</th>
-              <th>Dust</th>
-              <th>R1 CMP</th>
-              <th>All CMP</th>
-              <th>PvP Atk</th>
-              <th>Def</th>
-              <th>HP</th>
-              <th>Stat Prod</th>
-              <th>Perfect</th>
-              <th>Bulk Prod</th>
-            </tr>
-          </thead>
-        </table>
-        <div><h4>Toggle column(s):</h4>
-          <a class="toggle-vis" data-column="0">Rank</a> | <a class="toggle-vis" data-column="1">Level</a> | <a class="toggle-vis" data-column="2">CP</a> | <a class="toggle-vis" id="minlvlCP" data-column="3">Level 1 CP</a>  | <b>IVs:</b> <a class="toggle-vis" data-column="4">Attack</a> - <a class="toggle-vis" data-column="5">Defense</a> - <a class="toggle-vis" data-column="6">Stamina</a> | <a class="toggle-vis" data-column="7">XL Candy Cost</a> | <a class="toggle-vis" data-column="8">Stardust Cost</a>
-          <br /><a class="toggle-vis" data-column="9">R1 CMP</a> | <a class="toggle-vis" data-column="10">All CMP</a> | <b>Stats:</b> <a class="toggle-vis" data-column="11">Attack</a> - <a class="toggle-vis" data-column="12">Defense</a> - <a class="toggle-vis" data-column="13">HP</a> | <a class="toggle-vis" data-column="14">Stat Product</a> - <a class="toggle-vis" data-column="15">Perfection (%)</a> | <a class="toggle-vis" data-column="16">Bulk Product</a></div><br />
-      </div>
+      <table id="outTable" class="display nowrap" style="width:100%; display:none;">
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+          <tr>
+            <th>#</th>
+            <th>Lvl</th>
+            <th>CP</th>
+            <th id="mlCPheader">L1 CP</th>
+            <th>Atk IV</th>
+            <th>Def</th>
+            <th>Stam</th>
+            <th>XL</th>
+            <th>Dust</th>
+            <th>R1 CMP</th>
+            <th>All CMP</th>
+            <th>PvP Atk</th>
+            <th>Def</th>
+            <th>HP</th>
+            <th>Stat Prod</th>
+            <th>Perfect</th>
+            <th>Bulk Prod</th>
+          </tr>
+        </thead>
+      </table>
+      <div id="toggleCols" style="display:none;"><h4>Toggle column(s):</h4>
+        <a class="toggle-vis" data-column="0">Rank</a> | <a class="toggle-vis" data-column="1">Level</a> | <a class="toggle-vis" data-column="2">CP</a> | <a class="toggle-vis" id="minlvlCP" data-column="3">Level 1 CP</a>  | <b>IVs:</b> <a class="toggle-vis" data-column="4">Attack</a> - <a class="toggle-vis" data-column="5">Defense</a> - <a class="toggle-vis" data-column="6">Stamina</a> | <a class="toggle-vis" data-column="7">XL Candy Cost</a> | <a class="toggle-vis" data-column="8">Stardust Cost</a>
+        <br /><a class="toggle-vis" data-column="9">R1 CMP</a> | <a class="toggle-vis" data-column="10">All CMP</a> | <b>Stats:</b> <a class="toggle-vis" data-column="11">Attack</a> - <a class="toggle-vis" data-column="12">Defense</a> - <a class="toggle-vis" data-column="13">HP</a> | <a class="toggle-vis" data-column="14">Stat Product</a> - <a class="toggle-vis" data-column="15">Perfection (%)</a> | <a class="toggle-vis" data-column="16">Bulk Product</a></div><br />
       <div style="overflow-x:auto;" id="outputBox"></div>
     
       <!-- Load various scripts for PvPIVs, Awesomplete, and DataTables -->
@@ -786,6 +788,10 @@
         if (perfTiming) {T4 = performance.now();}
         candyTime = candyTime.toFixed(1);
 
+        /* Make sure we show the table and column toggles before writing data to table */
+        $('#toggleCols').show();
+        $('#outTable').show();
+
         /*Build table with generated tableData*/
         const dt = new DataTable('#outTable', {
           "columnDefs": [
@@ -820,7 +826,7 @@
             scroller: true,
             scrollY: 200,
             searching: true
-        });$('#oT').show();
+        });
 
         /* If XL candy is used, need to unhide this column */
         if (nonZeroXL===true) {
