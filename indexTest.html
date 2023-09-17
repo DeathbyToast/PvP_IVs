@@ -785,7 +785,7 @@
         for (i=0; (actualRank/1<=ranks.numRanks/1); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
             
-            if (document.getElementById("effIV").checked===false || ranks[keys[i]][j].eff === true) {
+            if (document.getElementById("effIV").checked === false || ranks[keys[i]][j].eff === true) {
               /* All three stats are above filter cutoffs, and (if enabled by user) IV is efficient, proceed with printing this row */
               currentRow = [actualRank,ranks[keys[i]][j].L,ranks[keys[i]][j].CP]; /*Rank, Level, Final CP*/
               currentRow.push(Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))); /*Raid/Hatch CP*/
@@ -859,7 +859,7 @@
         //document.querySelector('#monTable_info').innerHTML = "WEEEE "+info.start+"-"+info.end;
 
         /* If XL candy is used, need to unhide this column */
-        if (nonZeroXL===true) {
+        if (nonZeroXL === true) {
           dt.columns(7).visible(true);
           dt.columns.adjust().draw();
         }
@@ -877,7 +877,7 @@
             column.visible(!column.visible());
 
             /* Update min lvl CP column (col3) header's level */
-            if (columnIdx === 3) {updateMinLvlCP_Elements();}
+            if (columnIdx/1 === 3) {updateMinLvlCP_Elements();}
           });
         });
 
@@ -1006,6 +1006,16 @@
           document.getElementById('instructionsBox').innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Advanced and try again</i></p><br />";
           document.getElementById('feedbackBox').innerHTML = "";
           console.log("No ranks generated!");
+
+          /* If old table exists, clear data and hide it */
+          if ($.fn.DataTable.isDataTable('#monTable') ) {
+            $('#monTable').DataTable().clear().draw();
+            $('#monTable').hide();
+            $('#toggleCols').hide();
+            $('.dtsb-searchBuilder').hide();
+            $('.dataTables_scroll').hide();
+            $('.dataTables_info').hide();
+          }
           if (perfTiming) {stopTiming(T0, "main");}
           return false;
         }
@@ -1156,7 +1166,7 @@
           
           /* Ensure we aren't duplicating IVs */
           for (var i=0; i<aIV.length; i++) {
-            if ((atk/1 === aIV[i]) && (def/1 === dIV[i]) && (sta === sIV[i])) {
+            if ((atk/1 === aIV[i]/1) && (def/1 === dIV[i]/1) && (sta/1 === sIV[i]/1)) {
               /* Ensure that attack is not null, to allow 0/15/15 to overwrite default row */
               if (document.getElementById("aIV[0]").value !== '') {
                 uniqueIVs = false;
@@ -1447,8 +1457,6 @@
                 }
                 document.getElementById('family').checked = settings[3] === "1" ? true : false;
                 document.getElementById('dti').checked = settings[4] === "1" ? true : false;
-                //document.getElementById('dust').checked = settings[5] === "1" ? true : false;
-                //document.getElementById('bulk').checked = settings[6] === "1" ? true : false;
                 break;
             }
           }
@@ -2164,18 +2172,26 @@
       /* Update minLvl on all minLvlCP Elements whenever minLvl is changed */
       function updateMinLvlCP_Elements(newVal) {
 
+        /* Only update if minLvl needs updating */
         const minLvl = document.getElementById("minLvl");
-        document.getElementById("minlvlCP").innerHTML = "Level "+minLvl.value+" CP";
+        const new_mlCP = "Level "+minLvl.value+" CP";
+        if (new_mlCP !== document.getElementById("minlvlCP").innerHTML) {
+          document.getElementById("minlvlCP").innerHTML = "Level "+minLvl.value+" CP";
+        }
 
+        /* Only update if mlCPheader exists and needs updating */
         const mlCPheader = document.getElementById("mlCPheader");
         if (mlCPheader !== null) {
-          mlCPheader.innerHTML = "L"+minLvl.value+" CP";
-          console.log("!!!!!!!!!!!Updated mlCPheader ");
+          const new_mlCPheader = "L"+minLvl.value+" CP";
+          if (new_mlCPheader !== mlCPheader.innerHTML) {
+            mlCPheader.innerHTML = "L"+minLvl.value+" CP";
+          }
         }
 
         /* Only run if the input box was changed to a new value */
-        if (newVal === true) {setUserPreference('minLvl');} else {
-          console.log("Skipping setUserPreference call as newVal:"+newVal);
+        if (newVal === true) 
+        {
+          setUserPreference('minLvl');
         }
       }
       </script>
