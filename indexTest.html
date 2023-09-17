@@ -442,7 +442,7 @@
           console.log("Detected Shadow Legendary:" +pokeName);
           /*set min IVs to 10 and min Level to 20*/
           if (minLvl.value/1 > 8) {
-            minLvl.value = 8;
+            minLvl.value = 8; updateMinLvlCP_Elements();
             mnlMod = true;
           }
           floor.value = 6;
@@ -455,7 +455,7 @@
           console.log("Detected box reward mon:" +pokeName);
           /*set min IVs to 1 and min Level to 15*/
           if (minLvl.value/1 < 15) {
-            minLvl.value = 15;
+            minLvl.value = 15; updateMinLvlCP_Elements();
             mnlMod = true;
           }
           floor.value = 1;
@@ -468,7 +468,7 @@
           console.log("Detected Raid+Trade mon:" +pokeName);
           /*set min IVs to 1 and min Level to 20*/
           if (minLvl.value/1 < 20) {
-            minLvl.value = 20;
+            minLvl.value = 20; updateMinLvlCP_Elements();
             mnlMod = true;
           }
           floor.value = 1;
@@ -481,7 +481,7 @@
           console.log("Detected Mythical mon:" +pokeName);
           /*set min IVs to 10 and min Level to 15*/
           if (minLvl.value/1 < 15) {
-            minLvl.value = 15;
+            minLvl.value = 15; updateMinLvlCP_Elements();
             mnlMod = true;
           }
           floor.value = 10;
@@ -494,7 +494,7 @@
           console.log("Detected Raid no Trade mon:" +pokeName);
           /*set min IVs to 10 and min Level to 20*/
           if (minLvl.value/1 < 20) {
-            minLvl.value = 20;
+            minLvl.value = 20; updateMinLvlCP_Elements();
             mnlMod = true;
           }
           floor.value = 10;
@@ -545,29 +545,31 @@
         mA = 0; mD = 0; mHP = 0; filterMod = false; lastLeague = undefined;
         
         /*reset Min Level if we adjusted it previously*/
-        if (mnlMod) {
-          if ((minLvl.value === 8) || (minLvl.value === 15) || (minLvl.value === 20)) {
+        if (mnlMod === true) {
+          if ((minLvl.value/1 === 8) || (minLvl.value/1 === 15) || (minLvl.value/1 === 20)) {
             /* Check if User has Saved Setting for minLvl before we reset */
             if (localStorage.minLvl === undefined) {
               /* User has no preference for us to load, reset to default */
               minLvl.value = 1;
             } else {
               document.getElementById("minLvl").value = localStorage.minLvl;
-              console.log("Successfully reset Min Level to User's Preference of "+localStorage.minLvl);
+              console.log("resetMonState: Successfully reset Min Level to User's Preference of "+localStorage.minLvl);
             }
           }
           mnlMod = false;
+          updateMinLvlCP_Elements();
         }
+
         /*reset IV Floor if we adjusted it previously*/
         if (ivMod) {
-          if ((floor.value === 1) || (floor.value === 6) || (floor.value === 10)) {
+          if ((floor.value/1 === 1) || (floor.value/1 === 6) || (floor.value/1 === 10)) {
             /* Check if User has Saved Setting for floor before we reset */
             if (localStorage.floor === undefined) {
               /* User has no preference for us to load, reset to default */
               floor.value = 0;
             } else {
               document.getElementById("floor").value = localStorage.floor;
-              console.log("Successfully reset Min Level to User's Preference of "+localStorage.floor);
+              console.log("resetMonState: Successfully reset Min Level to User's Preference of "+localStorage.floor);
             }
           }
           ivMod = false;
@@ -825,7 +827,7 @@
               { "name": "#", "responsivePriority": "100", "searchBuilderTitle": "Rank", "targets": 0},
               { "name": "Lvl", "responsivePriority": "1500", "searchBuilderTitle": "Level", "targets": 1},
               { "name": "CP", "responsivePriority": "2000", "targets": 2},
-              { "name": "L1 CP", "responsivePriority": "1900", "searchBuilderTitle": "Minimum Level CP", "targets": 3, "visible": false},
+              { "name": "minLvl CP", "responsivePriority": "1900", "searchBuilderTitle": "Minimum Level CP", "targets": 3, "visible": false},
               { "name": "Atk IV", "responsivePriority": "1", "searchBuilderTitle": "Attack IV", "targets": 4},
               { "name": "Def", "responsivePriority": "1", "searchBuilderTitle": "Defense IV", "targets": 5},
               { "name": "Stam", "responsivePriority": "1", "searchBuilderTitle": "Stamina IV", "targets": 6},
@@ -843,7 +845,7 @@
             data: tableData,
             deferRender: true,
             destroy: true,
-            dom: 'Qti',
+            dom: 'Qit',
             "language": {
               "info": "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)",
             },
@@ -853,6 +855,8 @@
             scrollY: 280,
             searching: true
         });
+        const info = dt.page.info();
+        //document.querySelector('#monTable_info').innerHTML = "WEEEE "+info.start+"-"+info.end;
 
         /* If XL candy is used, need to unhide this column */
         if (nonZeroXL===true) {
@@ -871,6 +875,9 @@
             
             /* Toggle the visibility */
             column.visible(!column.visible());
+
+            /* Update min lvl CP column (col3) header's level */
+            if (columnIdx === 3) {updateMinLvlCP_Elements();}
           });
         });
 
@@ -1359,9 +1366,12 @@
                 break;
               case "f":
                 document.getElementById('floor').value = values[i].split("=")[1];
+                ivMod = true;
                 break;
               case "min":
                 document.getElementById('minLvl').value = values[i].split("=")[1];
+                mnlMod = true;
+                updateMinLvlCP_Elements();
                 break;
               case "max":
                 document.getElementById('maxLvl').value = values[i].split("=")[1];
@@ -2151,6 +2161,23 @@
         if (perfTiming) {stopTiming(T0, "checkEfficientIVs");} 
         return ranks; 
       }
+      /* Update minLvl on all minLvlCP Elements whenever minLvl is changed */
+      function updateMinLvlCP_Elements(newVal) {
+
+        const minLvl = document.getElementById("minLvl");
+        document.getElementById("minlvlCP").innerHTML = "Level "+minLvl.value+" CP";
+
+        const mlCPheader = document.getElementById("mlCPheader");
+        if (mlCPheader !== null) {
+          mlCPheader.innerHTML = "L"+minLvl.value+" CP";
+          console.log("!!!!!!!!!!!Updated mlCPheader ");
+        }
+
+        /* Only run if the input box was changed to a new value */
+        if (newVal === true) {setUserPreference('minLvl');} else {
+          console.log("Skipping setUserPreference call as newVal:"+newVal);
+        }
+      }
       </script>
       <div style="overflow-x:auto;" id="timing_outputs"></div><br />
       <label>IV Floor:<select id="floor" oninput="setUserPreference('floor')">
@@ -2166,7 +2193,7 @@
       </select></label><br />
       <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
       <div id=advCollapsible hidden>
-      <label>Min Level:<select title="What Level Floor to Search?" id="minLvl" oninput="setUserPreference('minLvl')">
+      <label>Min Level:<select title="What Level Floor to Search?" id="minLvl" oninput="updateMinLvlCP_Elements(true)">
         <option value="1">1: Wild Caught</option>
         <option value="2">2</option>
         <option value="3">3</option>
