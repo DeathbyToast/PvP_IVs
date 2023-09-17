@@ -17,7 +17,7 @@
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
-    <link rel="preload" href="https://code.jquery.com/jquery-3.7.1.slim.min.js" as="script">
+    <link rel="preload" href="https://code.jquery.com/jquery-3.7.1.slim.min.js" as="script" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous">
     <link rel="preload" href="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" as="script">
     <link rel="preload" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" as="style">
     <link rel="preload" href="https://cdn.datatables.net/searchbuilder/1.5.0/js/dataTables.searchBuilder.min.js" as="script">
@@ -249,49 +249,53 @@
       
       <div style="overflow-x:auto;" id="megaNote"></div>
       <div id="feedbackBox"><br /></div>
-      <div><br /><h4>Toggle column(s):</h4>
-        <a class="toggle-vis" data-column="0">Rank</a> | <a class="toggle-vis" data-column="1">Level</a> | <a class="toggle-vis" data-column="2">CP</a> | <a class="toggle-vis" id="minlvlCP" data-column="3">Level 1 CP</a>  | <b>IVs:</b> <a class="toggle-vis" data-column="4">Attack</a> - <a class="toggle-vis" data-column="5">Defense</a> - <a class="toggle-vis" data-column="6">Stamina</a> | <a class="toggle-vis" data-column="7">Stardust Cost</a>
-        <br /><a class="toggle-vis" data-column="8">R1 CMP</a> | <a class="toggle-vis" data-column="9">All CMP</a> | <b>Stats:</b> <a class="toggle-vis" data-column="10">Attack</a> - <a class="toggle-vis" data-column="11">Defense</a> - <a class="toggle-vis" data-column="12">HP</a> | <a class="toggle-vis" data-column="13">Stat Product</a> - <a class="toggle-vis" data-column="14">Perfection (%)</a> | <a class="toggle-vis" data-column="15">Bulk Product</a></div><br />
-      <table id="outTable" class="display nowrap" style="width:100%">
-        <thead>
-          <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-          </tr>
-          <tr>
-            <th>#</th>
-            <th>Lvl</th>
-            <th>CP</th>
-            <th id="mlCPheader">L1 CP</th>
-            <th>Atk IV</th>
-            <th>Def</th>
-            <th>Stam</th>
-            <th>Dust</th>
-            <th>R1 CMP</th>
-            <th>All CMP</th>
-            <th>PvP Atk</th>
-            <th>Def</th>
-            <th>HP</th>
-            <th>Stat Prod</th>
-            <th>Perfect</th>
-            <th>Bulk Prod</th>
-          </tr>
-        </thead>
-      </table>
+      <div id="DT" style="display:none">
+        <table id="outTable" class="display nowrap" style="width:100%">
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+            <tr>
+              <th>#</th>
+              <th>Lvl</th>
+              <th>CP</th>
+              <th id="mlCPheader">L1 CP</th>
+              <th>Atk IV</th>
+              <th>Def</th>
+              <th>Stam</th>
+              <th>XL</th>
+              <th>Dust</th>
+              <th>R1 CMP</th>
+              <th>All CMP</th>
+              <th>PvP Atk</th>
+              <th>Def</th>
+              <th>HP</th>
+              <th>Stat Prod</th>
+              <th>Perfect</th>
+              <th>Bulk Prod</th>
+            </tr>
+          </thead>
+        </table>
+        <div><h4>Toggle column(s):</h4>
+          <a class="toggle-vis" data-column="0">Rank</a> | <a class="toggle-vis" data-column="1">Level</a> | <a class="toggle-vis" data-column="2">CP</a> | <a class="toggle-vis" id="minlvlCP" data-column="3">Level 1 CP</a>  | <b>IVs:</b> <a class="toggle-vis" data-column="4">Attack</a> - <a class="toggle-vis" data-column="5">Defense</a> - <a class="toggle-vis" data-column="6">Stamina</a> | <a class="toggle-vis" data-column="7">XL Candy Cost</a> | <a class="toggle-vis" data-column="8">Stardust Cost</a>
+          <br /><a class="toggle-vis" data-column="9">R1 CMP</a> | <a class="toggle-vis" data-column="10">All CMP</a> | <b>Stats:</b> <a class="toggle-vis" data-column="11">Attack</a> - <a class="toggle-vis" data-column="12">Defense</a> - <a class="toggle-vis" data-column="13">HP</a> | <a class="toggle-vis" data-column="14">Stat Product</a> - <a class="toggle-vis" data-column="15">Perfection (%)</a> | <a class="toggle-vis" data-column="16">Bulk Product</a></div><br />
+      </div>
       <div style="overflow-x:auto;" id="outputBox"></div>
     
       <!-- Load various scripts for PvPIVs, Awesomplete, and DataTables -->
@@ -559,10 +563,10 @@
       }
 
       function outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, dec, URL) {
-        var T0,Tc,Ti,Tr,Tt,T1;
+        var T0,T1,T2,T3,T4,T5,T6;
         if (perfTiming) {T0 = performance.now();}
         /*console.log("oUR: Received aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw+", league:"+league+", leagueName:"+leagueName+", ranks"+ranks+", dec:"+dec+", URL:"+URL);*/
-        
+
         var evoLeague = document.getElementById('familyEvoLeague').value;
         var evoLeagueName = document.getElementById('familyEvoLeague').options[document.getElementById('familyEvoLeague').selectedIndex].innerHTML;
         var minLvl = document.getElementById('minLvl').value;
@@ -587,78 +591,14 @@
         var evoFeedback = "";
         var html = "";
         const myTable = document.getElementById("outTable");
+        //myTable.style.display = "visible"; /* Make table visible before adding data */
         let tableData = [];
-        
-        /* Set headings based on user settings */
-        let headings = ["#","Lvl","CP"];
-        let sbTitle = ["Rank","Level","CP"];
-        /* Set headings data priority for responsive table collapsing ordering */
-        let hdPrio = ["100","1500","2000"];
-        headings.push("L"+minLvl+" CP");hdPrio.push("999");sbTitle.push("Min Lvl CP");
-        headings.push("A","D","S");
-        hdPrio.push(  "1",       "1","1");
-        sbTitle.push("Attack IV", "Defense IV", "Stamina IV");
-        if (maxLvl > 41 && ranks.maxLvl>41) {headings.push("XL");hdPrio.push("998");sbTitle.push("XL Candy Cost");} /*include XL candy costs if Max Level > 41*/
-        headings.push("Dust");hdPrio.push("997");sbTitle.push("Stardust Cost");
-
-        /*include cmp columns if checked*/
-        headings.push("R1 CMP", "All CMP");
-        hdPrio.push("996","995");
-        sbTitle.push("Rank 1 CMP Win/Loss/Tie", "CMP Win Percentage");
         ranks = cmpCalcs(ranks, keys, dec);
+         /* First timing gate for init + CMP */
+         if (perfTiming) {T1 = performance.now();}
         
-        /* Finish building headings based on user settings */
-        headings.push("Atk", "Def", "HP", "Raw SP","SP Pcnt");
-        hdPrio.push( "1100","1200","1300",  "1400","3000");
-        sbTitle.push("Attack Stat", "Defense Stat", "HP Stat", "Raw Stat Product", "Stat Product Perfection %");
-        
-        headings.push("Bulk Prod");
-        hdPrio.push("994");sbTitle.push("Bulk Product");
-
-        /* Actually push headings to myTable DOM 
-        var thead = document.createElement('thead');
-        var headerRow = document.createElement('tr');
-        for (var i=0; i<headings.length; i++) {
-          var th = document.createElement('th'); //column
-          th.setAttribute("class","dt-head-center");
-          th.setAttribute("data-priority",hdPrio[i]);
-          th.setAttribute("searchBuilderTitle",sbTitle[i]);
-          var text = document.createTextNode(headings[i]); //cell
-          th.appendChild(text);
-          headerRow.appendChild(th);
-        } */
-
-        /* Create ColSpan Description Header Groups in myTable DOM
-        var colSpanHeaderRow = document.createElement('tr');
-        let headerGroups = ["Rank",     "", "", "IVs (Atk/Def/Sta)", "Battle Stats", "Stat Product"];
-        let columnSpans =  [   "1",    "1","1",                 "3",            "3",            "2"];
-        let groupPrio =    [    "", "2000", "",                  "",             "",        "2000",];
-        for (var i=0; i<headerGroups.length; i++) {
-          var th = document.createElement('th'); //column
-          th.setAttribute("colspan",columnSpans[i]);
-          th.setAttribute("class","dt-head-center");
-          th.setAttribute("data-priority",groupPrio[i]);
-          var text = document.createTextNode(headerGroups[i]); //cell
-          th.appendChild(text);
-          colSpanHeaderRow.appendChild(th);
-        }
-
-        /* Create Zero Height Dummy Row for Responsive Collapsing
-        var dummyRow = document.createElement('tr');
-        for (var i=0; i<headings.length; i++) {
-          var th = document.createElement('th'); //column
-          var text = document.createTextNode(""); //cell
-          th.appendChild(text);
-          dummyRow.appendChild(th);
-        }
-
-        thead.appendChild(dummyRow);
-        thead.appendChild(colSpanHeaderRow);
-        thead.appendChild(headerRow);
-        myTable.appendChild(thead);*/
-
         /*print main table output and count actual outputted rows/ranks*/
-        var actualRank = 1; var rowsOutput = 0;
+        var actualRank = 1;
         var minAtk = ranks.minAtk.value, maxAtk = ranks.maxAtk.value;
         var minDef = ranks.minDef.value, maxDef = ranks.maxDef.value;
         
@@ -677,7 +617,6 @@
           mHP = (filterMod === true) ? mHP : ranks.minHP.value;
           if (filterMod) {console.log("oUR: After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
         }
-        if (perfTiming) {Tc = performance.now();}
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
@@ -796,8 +735,9 @@
         }
         evoHtml += "</table>";
         evoFeedback += "<br />";
-        /*console.log("outputUserRanks: Finished creating output for IVs, now printing main table...");*/
-        if (perfTiming) {Ti = performance.now();}
+        /*console.log("oUR: Finished creating output for IVs, now printing main table...");*/
+        /* Next timing gate after outputting IVs */
+        if (perfTiming) {T2 = performance.now();}
         
         /* used to track if we should hide XL candy column */
         var nonZeroXL = false;
@@ -809,6 +749,9 @@
         if (document.getElementById("effIV").checked){
           ranks = checkEfficientIVs(ranks, keys, dec);
         }
+        /* Next timing gate after checking efficiency of IVs */
+        if (perfTiming) {T3 = performance.now();}
+        var candyTime = 0;
 
         for (i=0; (actualRank/1<=ranks.numRanks/1); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
@@ -819,24 +762,90 @@
               currentRow.push(Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))); /*Raid/Hatch CP*/
               currentRow.push(ranks[keys[i]][j].IVs.A,ranks[keys[i]][j].IVs.D,ranks[keys[i]][j].IVs.S); /*Atk, Def, Sta IVs*/
               outIVs+=ranks[keys[i]][j].IVs.A+"-"+ranks[keys[i]][j].IVs.D+"-"+ranks[keys[i]][j].IVs.S+",";
+              var candyStart = performance.now();
               if (maxLvl > 41 && ranks.maxLvl>41) {
                 var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
+                if (!nonZeroXL && candy > 0) {nonZeroXL = true;} /* Used to un-hide XL column after drawing table */
                 currentRow.push(candy);
-                if (!nonZeroXL && candy > 0) {nonZeroXL = true;} /*XL*/
+                
+              } else { /* Pad column data so table can render properly */
+                currentRow.push(0);
               }
+              var candyEnd = performance.now();
+              candyTime += candyEnd/1-candyStart/1;
               currentRow.push(stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)); /*Stardust*/
               currentRow.push(ranks[keys[i]][j].IVs.R1,ranks[keys[i]][j].IVs.cmp+"%"); /*R1 CMP, CMP Wins*/
               currentRow.push(numOut(ranks[keys[i]][j].battle.A,dec),numOut(ranks[keys[i]][j].battle.D,dec),ranks[keys[i]][j].battle.S,keys[i].split(".")[0],parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*League Atk, Def, HP Stats, Stat Product, Stat Prod Perfection %*/
               var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0); currentRow.push(bulkprod); /*Bulk Product*/
               tableData.push(currentRow);
-              rowsOutput = rowsOutput/1 + 1;
             }
             actualRank = actualRank + 1;
           }
         }
-        var printLimit = Math.min(rowsOutput, ranks.numRanks);
-        if (perfTiming) {Tr = performance.now();}
-        
+        /* Timing gate after generating table data */
+        if (perfTiming) {T4 = performance.now();}
+        candyTime = candyTime.toFixed(1)
+
+        /*Build table with generated tableData*/
+        const dt = new DataTable('#outTable', {
+          "columnDefs": [
+              /* This is just for reference and doesn't control header names */
+              { "name": "#", "responsivePriority": "100", "searchBuilderTitle": "Ranks", "targets": 0},
+              { "name": "Lvl", "responsivePriority": "1500", "searchBuilderTitle": "Level", "targets": 1},
+              { "name": "CP", "responsivePriority": "2000", "targets": 2},
+              { "name": "L1 CP", "responsivePriority": "1900", "searchBuilderTitle": "Min Level CP", "targets": 3, "visible": false},
+              { "name": "Atk IV", "responsivePriority": "1", "searchBuilderTitle": "Attack IV", "targets": 4},
+              { "name": "Def", "responsivePriority": "1", "searchBuilderTitle": "Defense IV", "targets": 5},
+              { "name": "Stam", "responsivePriority": "1", "searchBuilderTitle": "Stamina IV", "targets": 6},
+              { "name": "XL", "responsivePriority": "1800", "searchBuilderTitle": "XL Candy Cost", "targets": 7, "visible": false},
+              { "name": "Dust", "responsivePriority": "1700", "searchBuilderTitle": "Stardust Cost", "targets": 8, "visible": false},
+              { "name": "R1 CMP", "responsivePriority": "1600", "searchBuilderTitle": "CMP vs. Rank1 (W/L/T)", "targets": 9, "visible": false},
+              { "name": "All CMP", "responsivePriority": "1500", "searchBuilderTitle": "CMP vs. All (Win %)", "targets": 10, "visible": false},
+              { "name": "PvP Atk", "responsivePriority": "1100", "searchBuilderTitle": "Attack Stat", "targets": 11},
+              { "name": "Def", "responsivePriority": "1200", "searchBuilderTitle": "Defense Stat", "targets": 12},
+              { "name": "HP", "responsivePriority": "1300",  "searchBuilderTitle": "HP Stat","targets": 13},
+              { "name": "Stat Prod", "responsivePriority": "1400", "searchBuilderTitle": "Stat Product", "targets": 14},
+              { "name": "Perfect", "responsivePriority": "3000", "searchBuilderTitle": "SP Perfection (%)", "targets": 15},
+              { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": 16, "visible": false}
+            ],
+            data: tableData,
+            deferRender: true,
+            destroy: true,
+            dom: 'Qlfrtip',
+            "language": {
+              "info": "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)",
+            },
+            paging: true,
+            responsive: true,
+            scrollCollapse: true,
+            scroller: true,
+            scrollY: 200,
+            searching: false
+        });$('#DT').show();
+
+        /* If XL candy is used, need to unhide this column */
+        if (nonZeroXL===true) {
+          dt.columns(7).visible(true);
+          dt.columns.adjust().draw();
+        }
+
+        /* Function to enable DataTables Column Toggling */
+        /* https://datatables.net/examples/api/show_hide.html */
+        document.querySelectorAll('a.toggle-vis').forEach((el) => {
+          el.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            let columnIdx = e.target.getAttribute('data-column');
+            let column = dt.column(columnIdx);
+            
+            /* Toggle the visibility */
+            column.visible(!column.visible());
+          });
+        });
+
+        /* Timing gate after generating table */
+        if (perfTiming) {T5 = performance.now();}
+
         /*compute trade percentages*/
         var trades = "";
         var searchLink = "";
@@ -883,70 +892,12 @@
         document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback;
         document.getElementById('outputBox').innerHTML += searchLink + "<br>" + trades;
 
-        if (perfTiming) {Tt = performance.now();}
-        //console.log("tableData: "+JSON.stringify(tableData));
-
-        /* Check if we've already created a DataTable */
-        /* Need to destroy old DataTable before creating a new instance */
-        if ($.fn.DataTable.isDataTable( '#outTable' )) {
-          var oldTable = $('#outTable').DataTable();
-          oldTable.destroy();
+        /* Final timing gate */
+        if (perfTiming) {T6 = performance.now();
+          console.log(mon+" outputUserRanks: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IVs "+(T2-T1).toFixed(1)+"ms + IV Efficiency "+(T3-T2).toFixed(1)+"ms) + Generate Data "+(T4-T3).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Build DataTable "+(T5-T4).toFixed(1)+"ms) + Trade Pcnt & Links "+(T6-T5).toFixed(1)+"ms)");
+          document.getElementById('timing_outputs').innerHTML += "outputUserRanks: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IVs "+(T2-T1).toFixed(1)+"ms + IV Efficiency "+(T3-T2).toFixed(1)+"ms + Generate Data "+(T4-T3).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Build DataTable "+(T5-T4).toFixed(1)+"ms) + Trade Pcnt & Links "+(T6-T5).toFixed(1)+"ms)<br>";
         }
-
-        /*Build table with generated tableData*/
-        const dt = new DataTable('#outTable', {
-          "columnDefs": [
-              /* This is just for reference and doesn't control header names 
-              if (maxLvl > 41 && ranks.maxLvl>41) {headings.push("XL");hdPrio.push("998");sbTitle.push("XL Candy Cost");} 
-              include XL candy costs if Max Level > 41*/
-              { "name": "#", "responsivePriority": "100", "searchBuilderTitle": "Ranks", "targets": 0},
-              { "name": "Lvl", "responsivePriority": "1500", "searchBuilderTitle": "Level", "targets": 1},
-              { "name": "CP", "responsivePriority": "2000", "targets": 2},
-              { "name": "L1 CP", "responsivePriority": "999", "searchBuilderTitle": "Min Level CP", "targets": 3, "visible": false},
-              { "name": "Atk IV", "responsivePriority": "1", "searchBuilderTitle": "Attack IV", "targets": 4},
-              { "name": "Def", "responsivePriority": "1", "searchBuilderTitle": "Defense IV", "targets": 5},
-              { "name": "Stam", "responsivePriority": "1", "searchBuilderTitle": "Stamina IV", "targets": 6},
-              { "name": "Dust", "responsivePriority": "997", "searchBuilderTitle": "Stardust Cost", "targets": 7, "visible": false},
-              { "name": "R1 CMP", "responsivePriority": "996", "searchBuilderTitle": "CMP vs. Rank1 (W/L/T)", "targets": 8, "visible": false},
-              { "name": "All CMP", "responsivePriority": "995", "searchBuilderTitle": "CMP vs. All (Win %)", "targets": 9, "visible": false},
-              { "name": "PvP Atk", "responsivePriority": "1100", "searchBuilderTitle": "Attack Stat", "targets": 10},
-              { "name": "Def", "responsivePriority": "1200", "searchBuilderTitle": "Defense Stat", "targets": 11},
-              { "name": "HP", "responsivePriority": "1300",  "searchBuilderTitle": "HP Stat","targets": 12},
-              { "name": "Stat Prod", "responsivePriority": "1400", "searchBuilderTitle": "Stat Product", "targets": 13},
-              { "name": "Perfect", "responsivePriority": "3000", "searchBuilderTitle": "SP Perfection (%)", "targets": 14},
-              { "name": "Bulk Prod", "responsivePriority": "994", "searchBuilderTitle": "Bulk Product", "targets": 15, "visible": false}
-            ],
-            data: tableData,
-            deferRender: true,
-            destroy: true,
-            dom: 'Qlfrtip',
-            paging: true,
-            responsive: true,
-            scrollCollapse: true,
-            scroller: true,
-            scrollY: 200,
-            searching: false
-        });
-
-        /* Function to enable DataTables Column Toggling */
-        /* https://datatables.net/examples/api/show_hide.html */
-        document.querySelectorAll('a.toggle-vis').forEach((el) => {
-          el.addEventListener('click', function (e) {
-            e.preventDefault();
-            
-            let columnIdx = e.target.getAttribute('data-column');
-            let column = dt.column(columnIdx);
-            
-            /* Toggle the visibility */
-            column.visible(!column.visible());
-          });
-        });
-        
-        if (perfTiming) {T1 = performance.now();
-        console.log(mon+" outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.");
-        document.getElementById('timing_outputs').innerHTML += "outputUserRanks: "+(T1-T0).toFixed(1)+"ms (CMP "+(Tc-T0).toFixed(1)+"ms +IVs "+(Ti-Tc).toFixed(1)+"ms + Rows "+(Tr-Ti).toFixed(1)+"ms + Build DataTable "+(T1-Tt).toFixed(1)+"ms) for "+ranks.numRanks+" ranks.<br>";
-        }
-        return [printLimit];
+        return [];
       }
       
       function filterAdjusted() {
@@ -1028,7 +979,7 @@
           dIV[i] = document.getElementById("dIV["+i+"]").value;
           sIV[i] = document.getElementById("sIV["+i+"]").value;
         }
-        const [printLimit] = outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, dec, URL);
+        outputUserRanks(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks, dec, URL);
         
         displayPvPokeEvoGroup(mon);
         
@@ -1036,7 +987,6 @@
         /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000000&fel=1500&mA=119.7&mD=112.6&mHP=113";*/
         var uri = URL + "?mon="+mon;
         /* Only print remaining params if they aren't default values */
-        if (printLimit !== "10") uri += "&r="+printLimit;
         uri += "&cp="+league; /* Must include league */
         if (document.getElementById('floor').value > 0) {uri += "&f="+document.getElementById('floor').value;}
         if (document.getElementById('minLvl').value > 1) {uri += "&min="+document.getElementById('minLvl').value;}
@@ -1144,8 +1094,10 @@
           }
         } else if (document.getElementById("CustomGroupExport").style.display === "inline-block") { /*hide textbox if user has unchecked the option*/
           document.getElementById("CustomGroupExport").style.display = "none";
+          return;
         }
         if (perfTiming) {stopTiming(T0, "displayPvPokeEvoGroup");}
+        return;
       }
       
       function addToCompare(e) {
