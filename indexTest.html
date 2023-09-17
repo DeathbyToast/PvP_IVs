@@ -249,7 +249,7 @@
       
       <div style="overflow-x:auto;" id="megaNote"></div>
       <div id="feedbackBox"><br /></div>
-      <div id="DT" style="display:none">
+      <div id="oT" style="display:none; max-width: 1111px;">
         <table id="outTable" class="display nowrap" style="width:100%">
           <thead>
             <tr>
@@ -784,7 +784,7 @@
         }
         /* Timing gate after generating table data */
         if (perfTiming) {T4 = performance.now();}
-        candyTime = candyTime.toFixed(1)
+        candyTime = candyTime.toFixed(1);
 
         /*Build table with generated tableData*/
         const dt = new DataTable('#outTable', {
@@ -811,17 +811,16 @@
             data: tableData,
             deferRender: true,
             destroy: true,
-            dom: 'Qlfrtip',
+            dom: 'Qti',
             "language": {
               "info": "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)",
             },
-            paging: true,
             responsive: true,
             scrollCollapse: true,
             scroller: true,
             scrollY: 200,
-            searching: false
-        });$('#DT').show();
+            searching: true
+        });$('#oT').show();
 
         /* If XL candy is used, need to unhide this column */
         if (nonZeroXL===true) {
