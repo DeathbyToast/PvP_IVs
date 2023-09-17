@@ -253,7 +253,7 @@
       
       <div style="overflow-x:auto;" id="megaNote"></div>
       <div id="feedbackBox"><br /></div>
-      <table id="outTable" class="display nowrap" style="width:100%; display:none;">
+      <table id="monTable" class="display nowrap" style="width:100%; display:none;">
         <thead>
           <tr>
             <th></th>
@@ -592,8 +592,7 @@
         var evoHtml = "";
         var evoFeedback = "";
         var html = "";
-        const myTable = document.getElementById("outTable");
-        //myTable.style.display = "visible"; /* Make table visible before adding data */
+
         let tableData = [];
         ranks = cmpCalcs(ranks, keys, dec);
          /* First timing gate for init + CMP */
@@ -790,10 +789,10 @@
 
         /* Make sure we show the table and column toggles before writing data to table */
         $('#toggleCols').show();
-        $('#outTable').show();
+        $('#monTable').show();
 
         /*Build table with generated tableData*/
-        const dt = new DataTable('#outTable', {
+        const dt = new DataTable('#monTable', {
           "columnDefs": [
               /* This is just for reference and doesn't control header names */
               { "name": "#", "responsivePriority": "100", "searchBuilderTitle": "Ranks", "targets": 0},
