@@ -335,10 +335,7 @@
       <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
       <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
       
-      
-        
       <script>
-      //var lastLeague;
       var inputMon = "";
       var perfTiming = true; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
@@ -351,11 +348,11 @@
       let lvl=[];
       let mA = 0, mD = 0, mHP = 0; /*min stat filter vars*/
       let filterMod = false; /*track if stat filters were adjusted*/
-      
       var input = document.getElementById("pokeList");
       var monNames = Object.keys(pokeListObj);
+
       /* Ensure we've successfully loaded pokeListObj, and converted to list for awesomplete */
-      if (monNames.length<1000) /* At time of writing, monNames.length was 1025 */
+      if (monNames.length<1111) /* At time of writing, monNames.length was 1166 */
       {
         console.error("monNames.length ("+monNames.length+") shorter than expected (1000), check pokeListObj load");
         document.getElementById('feedbackBox').innerHTML = "<p><i>ERROR: Failed to load, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
@@ -643,7 +640,7 @@
           sIV[i] = document.getElementById("sIV["+i+"]").value;
         }
 
-        generateDataTable(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks);
+        generateDataTable(mon, league, leagueName, ranks);
         displayPvPokeEvoGroup(mon);
         updateURL(mon, league, leagueName);
         
@@ -959,10 +956,161 @@
         main();
       }
       
-      function generateDataTable(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks) {
+      function generateDataTable(mon, league, leagueName, ranks) {
+
+        var T0,T1,T2,T3,T4,T5,T6,candyTime=0;
+        if (perfTiming) {T0 = performance.now();}
+
+        /*console.log("gDT: Received aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw+", league:"+league+", ranks"+ranks+");*/
+        var dec = document.getElementById('dec').value;
+        var minLvl = document.getElementById('minLvl').value;
+        var maxLvl = document.getElementById('maxLvl').value;
+        var floor = document.getElementById('floor').value;
+        var keys = Object.keys(ranks);
+        var tableData = [];
+        var currentRow = [];
+        var nonZeroXL = false; /* track visibility of XL candy column */
+
+        ranks = cmpCalcs(ranks, keys, dec);
+        if (perfTiming) {T1 = performance.now();}
+
+        var effIV = document.getElementById("effIV").checked;
+        if (effIV === true){ranks = checkEfficientIVs(ranks, keys, dec);}
+        if (perfTiming) {T2 = performance.now();}
+
+        var maxStatProd = keys[0].split(".")[0];
+        var actualRank = 1;
+
+        for (i=0; (actualRank/1<=ranks.numRanks/1); i++) {
+          for (var j=0; j<ranks[keys[i]].length; j++) {
+            
+            if (document.getElementById("effIV").checked === false || ranks[keys[i]][j].eff === true) {
+              /* (If enabled by user) IV is efficient, proceed with printing this row */
+              currentRow = [
+                actualRank,              /*Rank*/
+                ranks[keys[i]][j].L,     /*Level*/
+                ranks[keys[i]][j].CP,    /*Final  CP*/
+                Math.max(10, Math.floor(
+                  (pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A)
+                  * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) 
+                  * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) 
+                  * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10)), /*MinLvl CP*/
+                ranks[keys[i]][j].IVs.A, /*Attack  IV*/
+                ranks[keys[i]][j].IVs.D, /*Defense IV*/
+                ranks[keys[i]][j].IVs.S  /*Stamina IV*/
+              ];
+              
+              /* XL Candy Calculation and Timing */
+              var candyStart = performance.now();
+              var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
+              /* Used to un-hide XL column after drawing table */
+              if (!nonZeroXL && candy > 0) {nonZeroXL = true;}
+              currentRow.push(candy);
+              var candyEnd = performance.now();
+              candyTime += candyEnd/1-candyStart/1;
+
+              /* Finish printing current row */
+              currentRow.push(
+                stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false), /*Stardust*/
+                ranks[keys[i]][j].IVs.R1, /*R1 CMP*/
+                ranks[keys[i]][j].IVs.cmp+"%", /*CMP Wins*/
+                numOut(ranks[keys[i]][j].battle.A,dec),/*Attack Stat*/
+                numOut(ranks[keys[i]][j].battle.D,dec),/*Defense Stat*/
+                ranks[keys[i]][j].battle.S,keys[i].split(".")[0],/*HP*/
+                keys[i].split(".")[0],/*Stat Product*/
+                parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*Stat Prod Perfection %*/
+              var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0); currentRow.push(bulkprod); /*Bulk Product*/
+              tableData.push(currentRow);
+            }
+            actualRank = actualRank + 1;
+          }
+        }
+
+        /* Timing gate after generating table data */
+        if (perfTiming) {T3 = performance.now();}
+        candyTime = candyTime.toFixed(1);
+
+        /* Make sure we show the table and column toggles before writing data to table */
+        $('#toggleCols').show();
+        $('#monTable').show();
+
+        /* Timing gate after generating table data */
+        if (perfTiming) {T4 = performance.now();}
+
+        /*Build table with generated tableData*/
+        const dt = new DataTable('#monTable', {
+          "columnDefs": [
+              /* This is just for reference and doesn't control header names */
+              {"className": "dt-center", "targets": "_all"},
+              { "name": "#", "responsivePriority": "100", "searchBuilderTitle": "Rank", "targets": 0},
+              { "name": "Lvl", "responsivePriority": "1500", "searchBuilderTitle": "Level", "targets": 1},
+              { "name": "CP", "responsivePriority": "2000", "targets": 2},
+              { "name": "minLvl CP", "responsivePriority": "1900", "searchBuilderTitle": "Minimum Level CP", "targets": 3, "visible": false},
+              { "name": "Atk IV", "responsivePriority": "1", "searchBuilderTitle": "Attack IV", "targets": 4},
+              { "name": "Def", "responsivePriority": "1", "searchBuilderTitle": "Defense IV", "targets": 5},
+              { "name": "Stam", "responsivePriority": "1", "searchBuilderTitle": "Stamina IV", "targets": 6},
+              { "name": "XL", "responsivePriority": "1800", "searchBuilderTitle": "XL Candy Cost", "targets": 7, "visible": false},
+              { "name": "Dust", "responsivePriority": "1700", "searchBuilderTitle": "Stardust Cost", "targets": 8, "visible": false},
+              { "name": "R1 CMP", "responsivePriority": "1600", "searchBuilderTitle": "CMP vs. Rank1 (W/L/T)", "targets": 9, "visible": false},
+              { "name": "All CMP", "responsivePriority": "1500", "searchBuilderTitle": "CMP vs. All (Win %)", "targets": 10, "visible": false},
+              { "name": "PvP Atk", "responsivePriority": "1100", "searchBuilderTitle": "Attack Stat", "targets": 11},
+              { "name": "Def", "responsivePriority": "1200", "searchBuilderTitle": "Defense Stat", "targets": 12},
+              { "name": "HP", "responsivePriority": "1300",  "searchBuilderTitle": "HP Stat","targets": 13},
+              { "name": "Stat Prod", "responsivePriority": "1400", "searchBuilderTitle": "Stat Product", "targets": 14},
+              { "name": "Perfect", "responsivePriority": "3000", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": 15},
+              { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": 16, "visible": false}
+            ],
+            data: tableData,
+            deferRender: true,
+            destroy: true,
+            dom: 'Qit',
+            "language": {
+              "info": "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)",
+            },
+            responsive: true,
+            scrollCollapse: true,
+            scroller: true,
+            scrollY: 280,
+            searching: true
+        });
+        /* Timing gate after generating table */
+        if (perfTiming) {T5 = performance.now();}
+
+        /* If XL candy is used, need to unhide this column */
+        if (nonZeroXL === true) {
+          dt.columns(7).visible(true);
+          dt.columns.adjust().draw();
+        }
+
+        /* Function to enable DataTables Column Toggling */
+        /* https://datatables.net/examples/api/show_hide.html */
+        document.querySelectorAll('a.toggle-vis').forEach((el) => {
+          el.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            let columnIdx = e.target.getAttribute('data-column');
+            let column = dt.column(columnIdx);
+            
+            /* Toggle the visibility */
+            column.visible(!column.visible());
+
+            /* Update minLvl CP column (col3) header's level */
+            if (columnIdx/1 === 3) {updateMinLvlCP_Elements();}
+          });
+        });
+
+        /* Final timing gate */
+        if (perfTiming) {T6 = performance.now();
+          console.log("generateDataTable: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Efficiency "+(T2-T1).toFixed(1)+"ms + Generate Data "+(T3-T2).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + Build DataTable "+(T5-T4).toFixed(1)+"ms) + XL Candy & Col Toggless "+(T6-T5).toFixed(1)+"ms)");
+          document.getElementById('timing_outputs').innerHTML += "generateDataTable: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Efficiency "+(T2-T1).toFixed(1)+"ms + Generate Data "+(T3-T2).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + Build DataTable "+(T5-T4).toFixed(1)+"ms) + XL Candy & Col Toggless "+(T6-T5).toFixed(1)+"ms)<br>";
+        }
+        return;
+      }
+      
+      function evoStuff(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks) {
         var T0,T1,T2,T3,T4,T5,T6;
         if (perfTiming) {T0 = performance.now();}
-        /*console.log("oUR: Received aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw+", league:"+league+", ranks"+ranks+");*/
+        /*console.log("gDT: Received aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw+", league:"+league+", ranks"+ranks+");*/
 
         var leagueName= $('#league').find(":selected").text();
         var dec = document.getElementById('dec').value;
@@ -974,7 +1122,7 @@
         var keys = Object.keys(ranks);
         var maxStatProd = keys[0].split(".")[0];
         var evos = pokeListObj[mon].split(',').slice(4, pokeListObj[mon].split(',').length);
-        console.log("oUR: evos:"+JSON.stringify(evos));
+        console.log("gDT: evos:"+JSON.stringify(evos));
         var evoLen = evos.length;
         var settings = (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0");
         
@@ -982,7 +1130,7 @@
         if (document.getElementById("family").checked && evoLeague === "mirror") {
           evoLeague = league;
           evoLeagueName = leagueName;
-          console.log("oUR: Detected mirror, mirroed to evoLeague:"+evoLeague+", evoLeagueName:"+evoLeagueName);
+          console.log("gDT: Detected mirror, mirroed to evoLeague:"+evoLeague+", evoLeagueName:"+evoLeagueName);
         }
         
         /*we have at least one rank to output, let's print! */
@@ -1001,7 +1149,7 @@
         var minDef = ranks.minDef.value, maxDef = ranks.maxDef.value;
         
         /* Initialize min stat filters if blank (first run only)*/
-        if ((mA+mD+mHP)/1 === 0 && filterMod === false) { console.log("oUR: Noticed mA,mD,or mHP are 0, initializing...");
+        if ((mA+mD+mHP)/1 === 0 && filterMod === false) { console.log("gDT: Noticed mA,mD,or mHP are 0, initializing...");
           mA = numOut(minAtk,dec);mD = numOut(minDef,dec);mHP = ranks.minHP.value;
         } else {
           /* Ensure that we don't have atk/def/HP filters above maximums */
@@ -1009,11 +1157,11 @@
           mD = (mD/1 > maxDef/1) ? numOut(maxDef,dec)-1 : mD;
           mHP = (mHP/1 > ranks.maxHP.value/1) ? ranks.maxHP.value/1-1 : mHP;
           /* Ensure that we don't have atk/def/HP filters above minimums unless filterMod is true */
-          if (filterMod) {console.log("oUR: Before mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
+          if (filterMod) {console.log("gDT: Before mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
           mA = (filterMod === true) ? mA : numOut(minAtk,dec);
           mD = (filterMod === true) ? mD : numOut(minDef,dec);
           mHP = (filterMod === true) ? mHP : ranks.minHP.value;
-          if (filterMod) {console.log("oUR: After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
+          if (filterMod) {console.log("gDT: After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
         }
 
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
@@ -1043,7 +1191,7 @@
               }
               
               if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml === "")) {
-                console.log("oUR: i:"+i+" Detected too high CP after getMonRank");
+                console.log("gDT: i:"+i+" Detected too high CP after getMonRank");
                 document.getElementById('feedbackBox').innerHTML += "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") & min level ("+minLvl+") is too big for "+leagueName+"<br>Please check Advanced: Min Level and try again</i></p><br>";
               } else {html += gmRhtml;}
               
@@ -1105,11 +1253,11 @@
                 }
               }
             } else {
-              console.log("oUR: i:"+i+" Detected IV below Floor:"+floor+" aIV[i]:"+aIV[i]+" dIV[i]:"+dIV[i]+" sIV[i]:"+sIV[i]);
+              console.log("gDT: i:"+i+" Detected IV below Floor:"+floor+" aIV[i]:"+aIV[i]+" dIV[i]:"+dIV[i]+" sIV[i]:"+sIV[i]);
               document.getElementById('feedbackBox').innerHTML += "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") is below the IV Floor ("+floor+")<br>Please check Advanced: IV Floor and try again</i></p><br>";
             }
           } else {
-            console.log("oUR: i:"+i+" Missing an IV, detected: aIV["+i+"]:"+aIV[i]+" dIV["+i+"]:"+dIV[i]+" sIV["+i+"]:"+sIV[i]);
+            console.log("gDT: i:"+i+" Missing an IV, detected: aIV["+i+"]:"+aIV[i]+" dIV["+i+"]:"+dIV[i]+" sIV["+i+"]:"+sIV[i]);
             document.getElementById('feedbackBox').innerHTML += "<p><i>Please enter an Attack IV for Row "+(i+1)+" with IVs (_"+aIV[i]+"_/"+dIV[i]+"/"+sIV[i]+") to check your "+mon+"'s "+leagueName+" PvP Rank</i></p>";
             lvl.push(false); /* keep this balanced */
           }
@@ -1134,7 +1282,7 @@
         }
         evoHtml += "</table>";
         evoFeedback += "<br />";
-        /*console.log("oUR: Finished creating output for IVs, now printing main table...");*/
+        /*console.log("gDT: Finished creating output for IVs, now printing main table...");*/
         /* Next timing gate after outputting IVs */
         if (perfTiming) {T2 = performance.now();}
         
