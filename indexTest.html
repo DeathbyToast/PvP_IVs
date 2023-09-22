@@ -22,8 +22,6 @@
     <link rel="preload" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" as="style">
     <link rel="preload" href="https://cdn.datatables.net/searchbuilder/1.5.0/js/dataTables.searchBuilder.min.js" as="script">
     <link rel="preload" href="https://cdn.datatables.net/searchbuilder/1.5.0/css/searchBuilder.dataTables.min.css" as="style">
-    <link rel="preload" href="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js" as="script">
-    <link rel="preload" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css" as="style">
     <link rel="preload" href="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js" as="script">
     <link rel="preload" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" as="style">
     <link rel="preload" href="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js" as="script">
@@ -35,7 +33,6 @@
     <link rel=icon href=https://pvpivs.com/includes/favicon.png>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.5.0/css/searchBuilder.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
@@ -106,16 +103,12 @@
         text-decoration: underline;
         text-decoration-color: blue;
       }
-      /*.dt-head-center {
-        text-align: center;
+      #monTable th {
         background-color: var(--tableHeaderBg);
         color: var(--tableHeaderText);
-      }*/
-      /*.dtsb-title {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-      }*/
+      }
+      /* On desktop ensure table isn't too wide */
+      /* And always ensure table is centered */
       div.dataTables_wrapper {
         max-width: 1111px;
         margin: 0 auto;
@@ -274,42 +267,23 @@
       
       <div style="overflow-x:auto;" id="megaNote"></div>
       <div id="feedbackBox"><br /></div>
-      <table id="monTable" class="display compact nowrap" style="width:100%; display:none;">
+      <table id="monTable" class="display compact" style="width:100%; display:none;">
         <thead>
-          <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-          </tr>
           <tr>
             <th>#</th>
             <th>Lvl</th>
             <th>CP</th>
             <th id="mlCPheader">L1 CP</th>
             <th>Atk IV</th>
-            <th>Def</th>
-            <th>Stam</th>
+            <th>D</th>
+            <th>S</th>
             <th>XL</th>
             <th>Dust</th>
             <th>R1 CMP</th>
             <th>All CMP</th>
             <th>PvP Atk</th>
-            <th>Def</th>
-            <th>HP</th>
+            <th>PvP Def</th>
+            <th>PvP HP</th>
             <th>Stat Prod</th>
             <th>Perfect</th>
             <th>Bulk Prod</th>
@@ -328,7 +302,6 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
       <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
       <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-      <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
       <script src="https://cdn.datatables.net/searchbuilder/1.5.0/js/dataTables.searchBuilder.min.js"></script>
       <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
       <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
@@ -381,7 +354,9 @@
       function stopTiming(startTime, functionName) {
         var endTime = performance.now();
         console.log(functionName+": Execution took "+(endTime-startTime).toFixed(1)+"ms");
-        document.getElementById('timing_outputs').innerHTML += functionName+": Execution took "+(endTime-startTime).toFixed(1)+"ms<br>";
+        var docOut = functionName+": Execution took "+(endTime-startTime).toFixed(1)+"ms<br>";
+        if (functionName === "main") {docOut = "<b>"+docOut+"</b>";}
+        document.getElementById('timing_outputs').innerHTML += docOut;
       }
       
       function  checkURI(URL, tests) {
@@ -516,10 +491,9 @@
           console.log("checkURI: Calling main");
           /* Ensure we open Advanced if user URL has any Advanced settings enabled */
           if (
-            settings !== "0000000"
+            settings !== "000"
             || document.getElementById('minLvl').value > 1
             || document.getElementById('maxLvl').value !== "51"
-            || document.getElementById('cmpLim').value !== "100"
             || document.getElementById('familyEvoLeague').value !== "mirror"
             || document.getElementById('dec').value > 1
             || document.getElementById('effIV').checked
@@ -1014,10 +988,11 @@
                 ranks[keys[i]][j].IVs.cmp+"%", /*CMP Wins*/
                 numOut(ranks[keys[i]][j].battle.A,dec),/*Attack Stat*/
                 numOut(ranks[keys[i]][j].battle.D,dec),/*Defense Stat*/
-                ranks[keys[i]][j].battle.S,keys[i].split(".")[0],/*HP*/
+                ranks[keys[i]][j].battle.S,/*HP*/
                 keys[i].split(".")[0],/*Stat Product*/
                 parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*Stat Prod Perfection %*/
               var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0); currentRow.push(bulkprod); /*Bulk Product*/
+              
               tableData.push(currentRow);
             }
             actualRank = actualRank + 1;
@@ -1037,12 +1012,12 @@
 
         /*Build table with generated tableData*/
         const dt = new DataTable('#monTable', {
-          "columnDefs": [
+          columnDefs: [
               /* This is just for reference and doesn't control header names */
               {"className": "dt-center", "targets": "_all"},
-              { "name": "#", "responsivePriority": "100", "searchBuilderTitle": "Rank", "targets": 0},
+              { "name": "#", "responsivePriority": "2", "searchBuilderTitle": "Rank", "targets": 0},
               { "name": "Lvl", "responsivePriority": "1500", "searchBuilderTitle": "Level", "targets": 1},
-              { "name": "CP", "responsivePriority": "2000", "targets": 2},
+              { "name": "CP", "responsivePriority": "4", "targets": 2},
               { "name": "minLvl CP", "responsivePriority": "1900", "searchBuilderTitle": "Minimum Level CP", "targets": 3, "visible": false},
               { "name": "Atk IV", "responsivePriority": "1", "searchBuilderTitle": "Attack IV", "targets": 4},
               { "name": "Def", "responsivePriority": "1", "searchBuilderTitle": "Defense IV", "targets": 5},
@@ -1054,21 +1029,23 @@
               { "name": "PvP Atk", "responsivePriority": "1100", "searchBuilderTitle": "Attack Stat", "targets": 11},
               { "name": "Def", "responsivePriority": "1200", "searchBuilderTitle": "Defense Stat", "targets": 12},
               { "name": "HP", "responsivePriority": "1300",  "searchBuilderTitle": "HP Stat","targets": 13},
-              { "name": "Stat Prod", "responsivePriority": "1400", "searchBuilderTitle": "Stat Product", "targets": 14},
-              { "name": "Perfect", "responsivePriority": "3000", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": 15},
+              { "name": "Stat Prod", "responsivePriority": "1000", "searchBuilderTitle": "Stat Product", "targets": 14},
+              { "name": "Perfect", "responsivePriority": "3", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": 15},
               { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": 16, "visible": false}
             ],
             data: tableData,
             deferRender: true,
             destroy: true,
-            dom: 'Qit',
-            "language": {
+            dom: 'Qitlp',
+            language: {
               "info": "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)",
+              "lengthMenu" : "Show _MENU_ "+leagueName+" "+mon+" per page"
             },
+            lengthChange: true,
+            lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+            paging: true,
             responsive: true,
             scrollCollapse: true,
-            scroller: true,
-            scrollY: 280,
             searching: true
         });
         /* Timing gate after generating table */
