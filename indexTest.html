@@ -106,20 +106,23 @@
         text-decoration: underline;
         text-decoration-color: blue;
       }
-      .dt-head-center {
+      /*.dt-head-center {
         text-align: center;
         background-color: var(--tableHeaderBg);
         color: var(--tableHeaderText);
-      }
-      .dtsb-title {
+      }*/
+      /*.dtsb-title {
         display: block;
         margin-left: auto;
         margin-right: auto;
-      }
+      }*/
       div.dataTables_wrapper {
         max-width: 1111px;
         margin: 0 auto;
       }
+      #monTable tr:nth-child(even) {background-color: var(--tableRowEven);}
+      #monTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
+      /*#outTable tr:hover {background-color: var(--navHover);}*/
       #outTable, #familyTable, #inputTable, #tradeTable {
         font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
         border-collapse: collapse;
@@ -132,11 +135,6 @@
         text-align: center;
         line-height: 5px;
       }
-      #monTable tr:nth-child(even) {background-color: var(--tableRowEven);}
-      #monTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
-
-      /*#outTable tr:hover {background-color: var(--navHover);}*/
-
       #outTable th {
         line-height: 15px;
         padding: 3px;
@@ -1332,72 +1330,6 @@
         /* Timing gate after generating table data */
         if (perfTiming) {T4 = performance.now();}
         candyTime = candyTime.toFixed(1);
-
-        /* Make sure we show the table and column toggles before writing data to table */
-        $('#toggleCols').show();
-        $('#monTable').show();
-
-        /*Build table with generated tableData*/
-        const dt = new DataTable('#monTable', {
-          "columnDefs": [
-              /* This is just for reference and doesn't control header names */
-              {"className": "dt-center", "targets": "_all"},
-              { "name": "#", "responsivePriority": "100", "searchBuilderTitle": "Rank", "targets": 0},
-              { "name": "Lvl", "responsivePriority": "1500", "searchBuilderTitle": "Level", "targets": 1},
-              { "name": "CP", "responsivePriority": "2000", "targets": 2},
-              { "name": "minLvl CP", "responsivePriority": "1900", "searchBuilderTitle": "Minimum Level CP", "targets": 3, "visible": false},
-              { "name": "Atk IV", "responsivePriority": "1", "searchBuilderTitle": "Attack IV", "targets": 4},
-              { "name": "Def", "responsivePriority": "1", "searchBuilderTitle": "Defense IV", "targets": 5},
-              { "name": "Stam", "responsivePriority": "1", "searchBuilderTitle": "Stamina IV", "targets": 6},
-              { "name": "XL", "responsivePriority": "1800", "searchBuilderTitle": "XL Candy Cost", "targets": 7, "visible": false},
-              { "name": "Dust", "responsivePriority": "1700", "searchBuilderTitle": "Stardust Cost", "targets": 8, "visible": false},
-              { "name": "R1 CMP", "responsivePriority": "1600", "searchBuilderTitle": "CMP vs. Rank1 (W/L/T)", "targets": 9, "visible": false},
-              { "name": "All CMP", "responsivePriority": "1500", "searchBuilderTitle": "CMP vs. All (Win %)", "targets": 10, "visible": false},
-              { "name": "PvP Atk", "responsivePriority": "1100", "searchBuilderTitle": "Attack Stat", "targets": 11},
-              { "name": "Def", "responsivePriority": "1200", "searchBuilderTitle": "Defense Stat", "targets": 12},
-              { "name": "HP", "responsivePriority": "1300",  "searchBuilderTitle": "HP Stat","targets": 13},
-              { "name": "Stat Prod", "responsivePriority": "1400", "searchBuilderTitle": "Stat Product", "targets": 14},
-              { "name": "Perfect", "responsivePriority": "3000", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": 15},
-              { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": 16, "visible": false}
-            ],
-            data: tableData,
-            deferRender: true,
-            destroy: true,
-            dom: 'Qit',
-            "language": {
-              "info": "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)",
-            },
-            responsive: true,
-            scrollCollapse: true,
-            scroller: true,
-            scrollY: 280,
-            searching: true
-        });
-        const info = dt.page.info();
-        //document.querySelector('#monTable_info').innerHTML = "WEEEE "+info.start+"-"+info.end;
-
-        /* If XL candy is used, need to unhide this column */
-        if (nonZeroXL === true) {
-          dt.columns(7).visible(true);
-          dt.columns.adjust().draw();
-        }
-
-        /* Function to enable DataTables Column Toggling */
-        /* https://datatables.net/examples/api/show_hide.html */
-        document.querySelectorAll('a.toggle-vis').forEach((el) => {
-          el.addEventListener('click', function (e) {
-            e.preventDefault();
-            
-            let columnIdx = e.target.getAttribute('data-column');
-            let column = dt.column(columnIdx);
-            
-            /* Toggle the visibility */
-            column.visible(!column.visible());
-
-            /* Update min lvl CP column (col3) header's level */
-            if (columnIdx/1 === 3) {updateMinLvlCP_Elements();}
-          });
-        });
 
         /* Timing gate after generating table */
         if (perfTiming) {T5 = performance.now();}
