@@ -43,9 +43,9 @@
        * 1000/4096 ~= 0.2442 and 100/4096 ~= 0.02442
        * use 0.02442 to approximate "Top 100" (green) when there are less than 4096 results
        * use 0.2442 to approximate "Top 1000" (orange) when there are less than 4096 results */
-      #outTable tr.good > *, #familyTable tr.good > *, #tradeTable tr.highMaxRow > * {background-color: var(--goodResult); color: var(--navActiveText);}
-      #outTable tr.ok > *, #familyTable tr.ok > *, #tradeTable tr.okMaxRow > * {background-color: var(--okResult); color: var(--navActiveText);}
-      #outTable tr.rubbish > *, #familyTable tr.rubbish > *, #tradeTable tr.lowMaxRow > * {background-color: var(--badResult); color: var(--navActiveText);}
+      #monTable tr.good > *, #familyTable tr.good > *, #tradeTable tr.highMaxRow > * {background-color: var(--goodResult); color: var(--navActiveText);}
+      #monTable tr.ok > *, #familyTable tr.ok > *, #tradeTable tr.okMaxRow > * {background-color: var(--okResult); color: var(--navActiveText);}
+      #monTable tr.rubbish > *, #familyTable tr.rubbish > *, #tradeTable tr.lowMaxRow > * {background-color: var(--badResult); color: var(--navActiveText);}
       /* the > * operator applies the css to all children (cells) */
       #outTable, #familyTable a {
         color: var(--navActiveText);
@@ -99,7 +99,7 @@
         height: 2px;
       }
       
-      p[id=IVinputShow], small[id=IVinputHide] {
+      p[id=IVinputShow], small[id=IVinputHide], a.toggle-vis {
         text-decoration: underline;
         text-decoration-color: blue;
       }
@@ -115,7 +115,8 @@
       }
       #monTable tr:nth-child(even) {background-color: var(--tableRowEven);}
       #monTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
-      /*#outTable tr:hover {background-color: var(--navHover);}*/
+      #monTable tr:hover {background-color: var(--navHover);}
+      
       #outTable, #familyTable, #inputTable, #tradeTable {
         font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
         border-collapse: collapse;
@@ -267,7 +268,7 @@
       
       <div style="overflow-x:auto;" id="megaNote"></div>
       <div id="feedbackBox"><br /></div>
-      <table id="monTable" class="display compact" style="width:100%; display:none;">
+      <table id="monTable" class="compact" style="width:100%; display:none;">
         <thead>
           <tr>
             <th>#</th>
@@ -287,6 +288,7 @@
             <th>Stat Prod</th>
             <th>Perfect</th>
             <th>Bulk Prod</th>
+            <th>Hidden</th>
           </tr>
         </thead>
       </table>
@@ -942,6 +944,10 @@
         var tableData = [];
         var currentRow = [];
         var nonZeroXL = false; /* track visibility of XL candy column */
+        /* Copy user IV arrays so we can destructively search for them */
+        var aIVclone = [...aIV];
+        var dIVclone = [...dIV];
+        var sIVclone = [...sIV];
 
         ranks = cmpCalcs(ranks, keys, dec);
         if (perfTiming) {T1 = performance.now();}
@@ -955,6 +961,22 @@
 
         for (i=0; (actualRank/1<=ranks.numRanks/1); i++) {
           for (var j=0; j<ranks[keys[i]].length; j++) {
+
+            /* non-user IV rows get 0 for sorting */
+            var hiddenSortRank = "";
+
+            for (var k=0; k<aIVclone.length; k++) {
+              if (aIVclone[k] && dIVclone[k] && sIVclone[k]) {
+                if (aIVclone[k]/1 === ranks[keys[i]][j].IVs.A/1
+                && dIVclone[k]/1 === ranks[keys[i]][j].IVs.D/1
+                && sIVclone[k]/1 === ranks[keys[i]][j].IVs.S/1) {
+                  hiddenSortRank = aIVclone.length;
+                  aIVclone.splice(k,1);
+                  dIVclone.splice(k,1);
+                  sIVclone.splice(k,1);
+                }
+              }
+            }
             
             if (document.getElementById("effIV").checked === false || ranks[keys[i]][j].eff === true) {
               /* (If enabled by user) IV is efficient, proceed with printing this row */
@@ -990,8 +1012,12 @@
                 numOut(ranks[keys[i]][j].battle.D,dec),/*Defense Stat*/
                 ranks[keys[i]][j].battle.S,/*HP*/
                 keys[i].split(".")[0],/*Stat Product*/
-                parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*Stat Prod Perfection %*/
+                numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec))+"%"); /*Stat Prod Perfection %*/
               var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0); currentRow.push(bulkprod); /*Bulk Product*/
+              currentRow.push(hiddenSortRank); /* hidden IV sort column */
+              if (hiddenSortRank) {
+                console.log("hiddenSortRank:"+hiddenSortRank);
+              }
               
               tableData.push(currentRow);
             }
@@ -1031,8 +1057,20 @@
               { "name": "HP", "responsivePriority": "1300",  "searchBuilderTitle": "HP Stat","targets": 13},
               { "name": "Stat Prod", "responsivePriority": "1000", "searchBuilderTitle": "Stat Product", "targets": 14},
               { "name": "Perfect", "responsivePriority": "3", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": 15},
-              { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": 16, "visible": false}
+              { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": 16, "visible": false},
+              {"targets": 17, "type": "hidden", "searchable": false, "visible": false},
             ],
+            createdRow: (row, data, index) => {
+              if (data[17]) {
+                if (data[0]/1 < (0.02442*ranks.numRanks/1)) {
+                  $(row).addClass('good'); /*green for "good"*/
+                } else if (actualRank/1 < (0.2442*ranks.numRanks/1)) {
+                  $(row).addClass('ok'); /*orange for "ok"*/
+                } else {
+                  $(row).addClass('rubbish'); /*red for "rubbish"*/
+                }
+              }
+            },
             data: tableData,
             deferRender: true,
             destroy: true,
@@ -1043,6 +1081,9 @@
             },
             lengthChange: true,
             lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+            orderFixed: {
+              "pre": [17, "desc"]
+            },
             paging: true,
             responsive: true,
             scrollCollapse: true,
@@ -1076,8 +1117,8 @@
 
         /* Final timing gate */
         if (perfTiming) {T6 = performance.now();
-          console.log("generateDataTable: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Efficiency "+(T2-T1).toFixed(1)+"ms + Generate Data "+(T3-T2).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + Build DataTable "+(T5-T4).toFixed(1)+"ms) + XL Candy & Col Toggless "+(T6-T5).toFixed(1)+"ms)");
-          document.getElementById('timing_outputs').innerHTML += "generateDataTable: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Efficiency "+(T2-T1).toFixed(1)+"ms + Generate Data "+(T3-T2).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + Build DataTable "+(T5-T4).toFixed(1)+"ms) + XL Candy & Col Toggless "+(T6-T5).toFixed(1)+"ms)<br>";
+          console.log("genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Efficiency "+(T2-T1).toFixed(1)+"ms + Generate Data "+(T3-T2).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + Build DataTable "+(T5-T4).toFixed(1)+"ms) + XL Candy & Col Toggless "+(T6-T5).toFixed(1)+"ms)");
+          document.getElementById('timing_outputs').innerHTML += "genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Eff "+(T2-T1).toFixed(1)+"ms + Data "+(T3-T2).toFixed(1)+"ms (XL:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + DataTable "+(T5-T4).toFixed(1)+"ms) + Col Toggles "+(T6-T5).toFixed(1)+"ms)<br>";
         }
         return;
       }
@@ -1123,22 +1164,6 @@
         var minAtk = ranks.minAtk.value, maxAtk = ranks.maxAtk.value;
         var minDef = ranks.minDef.value, maxDef = ranks.maxDef.value;
         
-        /* Initialize min stat filters if blank (first run only)*/
-        if ((mA+mD+mHP)/1 === 0 && filterMod === false) { console.log("gDT: Noticed mA,mD,or mHP are 0, initializing...");
-          mA = numOut(minAtk,dec);mD = numOut(minDef,dec);mHP = ranks.minHP.value;
-        } else {
-          /* Ensure that we don't have atk/def/HP filters above maximums */
-          mA = (mA/1 > maxAtk/1) ? numOut(maxAtk,dec)-1 : mA;
-          mD = (mD/1 > maxDef/1) ? numOut(maxDef,dec)-1 : mD;
-          mHP = (mHP/1 > ranks.maxHP.value/1) ? ranks.maxHP.value/1-1 : mHP;
-          /* Ensure that we don't have atk/def/HP filters above minimums unless filterMod is true */
-          if (filterMod) {console.log("gDT: Before mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
-          mA = (filterMod === true) ? mA : numOut(minAtk,dec);
-          mD = (filterMod === true) ? mD : numOut(minDef,dec);
-          mHP = (filterMod === true) ? mHP : ranks.minHP.value;
-          if (filterMod) {console.log("gDT: After mA:"+mA+", mD:"+mD+", mHP:"+mHP+", filterMod:"+filterMod);}
-        }
-
         /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
         var gmRhtml = null;
         document.getElementById('feedbackBox').innerHTML = "";
@@ -1359,8 +1384,8 @@
 
         /* Final timing gate */
         if (perfTiming) {T6 = performance.now();
-          console.log(mon+" generateDataTable: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IVs "+(T2-T1).toFixed(1)+"ms + IV Efficiency "+(T3-T2).toFixed(1)+"ms) + Generate Data "+(T4-T3).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Build DataTable "+(T5-T4).toFixed(1)+"ms) + Trade Pcnt & Links "+(T6-T5).toFixed(1)+"ms)");
-          document.getElementById('timing_outputs').innerHTML += "generateDataTable: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IVs "+(T2-T1).toFixed(1)+"ms + IV Efficiency "+(T3-T2).toFixed(1)+"ms + Generate Data "+(T4-T3).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Build DataTable "+(T5-T4).toFixed(1)+"ms) + Trade Pcnt & Links "+(T6-T5).toFixed(1)+"ms)<br>";
+          console.log(mon+" genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IVs "+(T2-T1).toFixed(1)+"ms + IV Efficiency "+(T3-T2).toFixed(1)+"ms) + Generate Data "+(T4-T3).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Build DataTable "+(T5-T4).toFixed(1)+"ms) + Trade Pcnt & Links "+(T6-T5).toFixed(1)+"ms)");
+          document.getElementById('timing_outputs').innerHTML += "genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IVs "+(T2-T1).toFixed(1)+"ms + IV Efficiency "+(T3-T2).toFixed(1)+"ms + Generate Data "+(T4-T3).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Build DataTable "+(T5-T4).toFixed(1)+"ms) + Trade Pcnt & Links "+(T6-T5).toFixed(1)+"ms)<br>";
         }
         return [];
       }
@@ -2256,7 +2281,6 @@
       }
 
       </script>
-      <div style="overflow-x:auto;" id="timing_outputs"></div><br />
       <label>IV Floor:<select id="floor" oninput="setUserPreference('floor')">
         <option value="0">0: Wild Caught</option>
         <option value="1">1: Trade, Good Friend</option>
@@ -2389,7 +2413,8 @@
       <div style="overflow-x:auto;">
         <p style="color: var(--tableHeaderText);font-size:0.8em">© 2023 PvP IVs | <a href="https://pvpivs.com/privacy">Privacy Policy</a> | <a href="https://pvpivs.com/contact">Contact Us</a></p>
         <p style="color: var(--tableDividers);font-size:0.6em">Pokémon and Pokémon GO are copyright of The Pokémon Company, Niantic, Inc., and Nintendo.<br/>All trademarked images and names are property of their respective owners, and any such material is used on this site for educational purposes only.<br/>PvP IVs has no affiliation with The Pokémon Company, Niantic, Inc., or Nintendo.</p>
-      </div><br /><br /><br /><br />
+      </div><p style="overflow-x:auto;" id="timing_outputs"></p>
+      <br /><br /><br /><br />
     </section>
   </body>
 </html>
