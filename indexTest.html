@@ -295,7 +295,7 @@
       <div id="toggleCols" style="display:none;"><h4>Toggle column(s):</h4>
         <a class="toggle-vis" data-column="0">Rank</a> | <a class="toggle-vis" data-column="1">Level</a> | <a class="toggle-vis" data-column="2">CP</a> | <a class="toggle-vis" id="minlvlCP" data-column="3">Level 1 CP</a>  | <div style="display:inline-block"><b>IVs:</b> <a class="toggle-vis" data-column="4">Attack</a> - <a class="toggle-vis" data-column="5">Defense</a> - <a class="toggle-vis" data-column="6">Stamina</a></div> | <a class="toggle-vis" style="display:inline-block" data-column="7">XL Candy Cost</a> | <a class="toggle-vis" style="display:inline-block" data-column="8">Stardust Cost</a> | 
         <!--div style="display:inline-block"--><a class="toggle-vis" style="display:inline-block" data-column="9">R1 CMP</a> | <a class="toggle-vis" style="display:inline-block" data-column="10">All CMP</a><!--/div--> | <div style="display:inline-block"><b>Stats:</b> <a class="toggle-vis" data-column="11">Attack</a> - <a class="toggle-vis" data-column="12">Defense</a> - <a class="toggle-vis" data-column="13">HP</a></div> | <div style="display:inline-block"><a class="toggle-vis" style="display:inline-block" data-column="14">Stat Product</a> - <a class="toggle-vis" style="display:inline-block" data-column="15">Perfection (%)</a></div> | <a class="toggle-vis" style="display:inline-block" data-column="16">Bulk Product</a></div><br />
-      <div style="overflow-x:auto;" id="outputBox"></div>
+      <div style="overflow-x:auto;" id="tradeOutput"></div>
     
       <!-- Load various scripts for PvPIVs, Awesomplete, and DataTables -->
       <script src="https://pvpivs.com/includes/footer.js"></script>
@@ -318,6 +318,7 @@
       let sIV=[document.getElementById('sIV[0]').value];
       let shdw=[document.getElementById('shdw[0]').checked];
       let rIV=[];
+      let spIV=[];
       let lvl=[];
       let mA = 0, mD = 0, mHP = 0; /*min stat filter vars*/
       let filterMod = false; /*track if stat filters were adjusted*/
@@ -366,7 +367,7 @@
         if (perfTiming) {T0 = performance.now();}
         
         /* Read returning user's settings */
-        checkUserPreference("league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP");
+        checkUserPreference("league,floor,minLvl,maxLvl,dec,effIV,cge,family,familyEvoLeague,dti");
         
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
@@ -536,7 +537,7 @@
       }
 
       function main(mon) {
-        var T0;
+        var T0,i;
         if (perfTiming) {T0 = performance.now();}
         else {document.getElementById('timing_outputs').innerHTML = "";}
         
@@ -570,7 +571,8 @@
         }
         
         /*ensure we clear the prior output between runs*/
-        document.getElementById('outputBox').innerHTML = "";
+        document.getElementById("tradeOutput").innerHTML = "";
+        document.getElementById("CustomGroupExport").style.display = "none";
         clearHideOldDataTable();
         
         var monInfo = pokeListObj[mon].split(',');
@@ -585,16 +587,18 @@
         
         var league = document.getElementById('league').value;
         var leagueName= $('#league').find(":selected").text();
+        var floor = document.getElementById('floor').value;
         var ranks = calculate(
           parseInt(monInfo[1]), 
           parseInt(monInfo[2]), 
           parseInt(monInfo[3]), 
-          document.getElementById('floor').value, 
+          floor, 
           document.getElementById('minLvl').value, 
           document.getElementById('maxLvl').value, 
           document.getElementById("dti").checked, 
           league,
           mon);
+        var keys = Object.keys(ranks);
         
         /*ensure we actually generated something to output*/
         if (ranks.numRanks/1 < 1) {
@@ -607,15 +611,22 @@
         }
         
         /* Ensure we have current IVs for all input rows */
-        for (var i=0; i<aIV.length; i++)
+        /* TODO: Remove this? */
+        for (i=0; i<aIV.length; i++)
         {
           aIV[i] = document.getElementById("aIV["+i+"]").value;
           dIV[i] = document.getElementById("dIV["+i+"]").value;
           sIV[i] = document.getElementById("sIV["+i+"]").value;
         }
 
-        generateDataTable(mon, league, leagueName, ranks);
-        displayPvPokeEvoGroup(mon);
+        generateDataTable(mon, league, leagueName, ranks, keys);
+        if (document.getElementById("cge").checked) {displayPvPokeEvoGroup(mon);}
+        if (document.getElementById("dti").checked) {
+          for (i=0; i<aIV.length; i++) {
+            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks, keys, spIV[i], floor, aIV.length, aIV[i], dIV[i], sIV[i], league);
+          }
+          document.getElementById("tradeOutput").innerHTML += "<br />"
+        }
         updateURL(mon, league, leagueName);
         
         if (perfTiming) {stopTiming(T0, "main");}
@@ -636,10 +647,13 @@
           tr.parentNode.parentNode.removeChild(tr.parentNode);
         }
         /* clear the value arrays */
+        /* TODO: Combine into one array */
         aIV.splice(0, aIV.length);
         dIV.splice(0, dIV.length);
         sIV.splice(0, sIV.length);
         rIV.splice(0, rIV.length);
+        spIV.splice(0, spIV.length);
+        lvl.splice(0, lvl.length);
         shdw.splice(0, shdw.length);
         
         /* Re-Add default IV Input Row */
@@ -772,62 +786,56 @@
       }
 
       function displayPvPokeEvoGroup(inputName) {
+      /*show textbox with PvPoke Custom Group Export data*/
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
-        /*show textbox with PvPoke Custom Group Export data*/
-        if (document.getElementById("cge").checked === true)
-        {
-          var name = inputName;
-          /* Game Master uses Alola, but PvPoke uses Alolan, need to fix for valid data export */
-          console.log("displayPvPokeEvoGroup starting...");
-          if (name.includes("_Alola")) {
-            name = name + "n";
-          }
-          var cgeData = "";
-          var maxWidth = 0;
-          var validIVs;
-          for (var i=0; i<aIV.length; i++) {
-            validIVs = false;
-            var mon = name;
-            if (shdw[i]) {
-              mon = name + "_shadow";
-            }
-            if (aIV[i] === "") {
-              console.log("skipping incomplete row, i:"+i+", aIV:"+aIV[i]+", dIV:"+dIV[i]+", sIV:"+sIV[i]);
-              continue;
-            } else {
-              if (validIVs === false) {
-                validIVs = true;
-              }
-            }
-            var row = mon+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
-            if (row.length > maxWidth) {
-              maxWidth = row.length;
-            }
-            if (cgeData !== "") {
-              var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
-              cgeData += newline+mon+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
-            }
-            else {
-              cgeData = row;
-            }
-          }
-          document.getElementById("CustomGroupExport").style.display = "inline-block";
-          document.getElementById("CustomGroupExport").cols = maxWidth;
-          if (validIVs === false) {/* User doesn't have any valid IVs entered, replace box with error message */
-            document.getElementById("CustomGroupExport").rows = 3;
-            document.getElementById("CustomGroupExport").value = "No valid IVs input, failed to output PvPoke Custom Group";
-          } else { /* We have at least one set of valid IVs, output the PvPoke Custom Group */
-            document.getElementById("CustomGroupExport").rows = sIV.length;
-            document.getElementById("CustomGroupExport").value = cgeData;
-          }
-        } else if (document.getElementById("CustomGroupExport").style.display === "inline-block") { /*hide textbox if user has unchecked the option*/
-          document.getElementById("CustomGroupExport").style.display = "none";
-          return;
+        var name = inputName;
+        /* Game Master uses Alola, but PvPoke uses Alolan, need to fix for valid data export */
+        console.log("displayPvPokeEvoGroup starting...");
+        if (name.includes("_Alola")) {
+          name = name + "n";
         }
-        if (perfTiming) {stopTiming(T0, "displayPvPokeEvoGroup");}
-        return;
+        var cgeData = "";
+        var maxWidth = 0;
+        var validIVs;
+        for (var i=0; i<aIV.length; i++) {
+          validIVs = false;
+          var mon = name;
+          if (shdw[i]) {
+            mon = name + "_shadow";
+          }
+          if (aIV[i] === "") {
+            console.log("skipping incomplete row, i:"+i+", aIV:"+aIV[i]+", dIV:"+dIV[i]+", sIV:"+sIV[i]);
+            continue;
+          } else {
+            if (validIVs === false) {
+              validIVs = true;
+            }
+          }
+          var row = mon+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
+          if (row.length > maxWidth) {
+            maxWidth = row.length;
+          }
+          if (cgeData !== "") {
+            var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
+            cgeData += newline+mon+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
+          }
+          else {
+            cgeData = row;
+          }
+        }
+        document.getElementById("CustomGroupExport").style.display = "inline-block";
+        document.getElementById("CustomGroupExport").cols = maxWidth;
+        if (validIVs === false) {/* User doesn't have any valid IVs entered, replace box with error message */
+          document.getElementById("CustomGroupExport").rows = 3;
+          document.getElementById("CustomGroupExport").value = "No valid IVs input, failed to output PvPoke Custom Group";
+        } else { /* We have at least one set of valid IVs, output the PvPoke Custom Group */
+          document.getElementById("CustomGroupExport").rows = sIV.length;
+          document.getElementById("CustomGroupExport").value = cgeData;
+        }
+      if (perfTiming) {stopTiming(T0, "displayPvPokeEvoGroup");}
+      return;
       }
       
       function updateURL(mon, league, leagueName){
@@ -933,7 +941,7 @@
         main();
       }
       
-      function generateDataTable(mon, league, leagueName, ranks) {
+      function generateDataTable(mon, league, leagueName, ranks, keys) {
 
         var T0,T1,T2,T3,T4,T5,T6,candyTime=0;
         if (perfTiming) {T0 = performance.now();}
@@ -943,7 +951,6 @@
         var minLvl = document.getElementById('minLvl').value;
         var maxLvl = document.getElementById('maxLvl').value;
         var floor = document.getElementById('floor').value;
-        var keys = Object.keys(ranks);
         var tableData = [];
         var currentRow = [];
         var nonZeroXL = false; /* track visibility of XL candy column */
@@ -953,7 +960,7 @@
         var sIVclone = [...sIV];
         /* Ensure we clear data and feedback between table generation runs */
         document.getElementById('feedbackBox').innerHTML = "";
-        rIV = [];
+        rIV = [], spIV = [], lvl = [];
 
         ranks = cmpCalcs(ranks, keys, dec);
         if (perfTiming) {T1 = performance.now();}
@@ -991,6 +998,8 @@
                       && sIVclone[k] === sIV[l]) {
                         /* Save this user IV's rank for later */
                         rIV[l] = actualRank;
+                        spIV[l] = keys[i].split(".")[0];
+                        lvl[l] = ranks[keys[i]][j].L;
                       }
                     }
                   }
@@ -1186,6 +1195,8 @@
         var sIVclone = [...sIV];
         var shdwclone = [...shdw];
         var rIVclone = [...rIV];
+        var spIVclone = [...spIV];
+        var lvlclone = [...lvl];
 
         /* Sort all of the arrays by rIV order */
         for (i = 0; i < aIV.length; i++) {
@@ -1194,6 +1205,8 @@
           sIV[i] = sIVclone[idx[i]];
           shdw[i] = shdwclone[idx[i]];
           rIV[i] = rIVclone[idx[i]];
+          spIV[i] = spIVclone[idx[i]];
+          lvl[i] = lvlclone[idx[i]];
         }
 
         /* Re-order DOM elements to match */
@@ -1528,7 +1541,7 @@
       function saveCurrentSettings() {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        setUserPreference("league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP");
+        setUserPreference("league,floor,minLvl,maxLvl,dec,effIV,cge,family,familyEvoLeague,dti");
         if (perfTiming) {stopTiming(T0, "saveCurrentSettings");}
         main();
       }
@@ -1687,12 +1700,12 @@
         return ranks;
     }
       
-      function tradePcnts(ranks, keys, rank, floor, numIVs, aIV, dIV, sIV, league) {
+      function tradePcnts(ranks, keys, rank, floor, numIVs, atk, def, sta, league) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         /*Keep track of eligible/total higher ranked mons*/
         var lGo=0,hGo=0,lGr=0,hGr=0,lUf=0,hUf=0,lBf=0,hBf=0,lLf=0,hLf=0,hNo=0;
-        console.log("tradePcnts: received numRanks:"+ranks.numRanks+", keys[0]:"+keys[0]+", rank:"+rank+", floor:"+floor+", numIVs:"+numIVs+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", league:"+league);
+        console.log("tradePcnts: received numRanks:"+ranks.numRanks+", keys[0]:"+keys[0]+", rank:"+rank+", floor:"+floor+", numIVs:"+numIVs+", atk:"+atk+", def:"+def+", sta:"+sta+", league:"+league);
 
         var totalMons = 0;
         let i=0;
@@ -1790,12 +1803,10 @@
           case "Best":bfCls=" class='"+clsVal+"'";break;
           case "Lucky":lfCls=" class='"+clsVal+"'";break;
         }
-        
-        console.log("numIVs:"+numIVs);
-        
+                
         var outHTML = "";
-        if (numIVs/1 > 0) {
-          outHTML += "<p><i>Trade Improvement % Table for IVs:"+ aIV+"/"+dIV+"/"+sIV+"</i></p><table id='tradeTable'><th>Friendship</th><th>Chance to Improve</th><th>Higher Rank</th><th>Same/ Lower</th>";
+        if (atk && def && sta) {
+          outHTML += "<p><i>Trade Improvement % Table for IVs:"+ atk+"/"+def+"/"+sta+"</i></p><table id='tradeTable'><th>Friendship</th><th>Chance to Improve</th><th>Higher Rank</th><th>Same/ Lower</th>";
         } else {
           outHTML += "<p><i>Chance to Stay Under "+league+"CP:</i></p><table id='tradeTable'><th>Friendship</th>";
         }
@@ -1819,7 +1830,7 @@
           outHTML += "<td>"+tNo+"</td></tr>";
         }
         
-        console.log("before outHTML:"+outHTML);
+        //console.log("before outHTML:"+outHTML);
         
         if ((floor/1 < 2) && vGo) { /*don't print if the IV floor is above 1, or if there are no eligible Gof mons*/
           outHTML += "<tr"+gdfCls+"><td>Good (IV&ge;1)</td>";
@@ -1830,7 +1841,7 @@
           outHTML += "<td>"+tGo+"</td></tr>";
         }
         
-        console.log("before outHTML:"+outHTML);
+        //console.log("before outHTML:"+outHTML);
         
         if ((floor/1 < 3) && vGr) { /*don't print if IV floor is above 2, or if there are no eligible Grf mons*/
           outHTML += "<tr"+grfCls+"><td>Great (IV&ge;2)</td>";
@@ -2187,7 +2198,7 @@
         if (perfTiming) {T0 = performance.now();}
         
         /* First check if we should insert a new row or not */
-        if (!(atk && def && sta)) {
+        if (!(atk && def && sta) && aIV.length > 0) {
           console.log("doTheInsert: Missing one or more IVs");
           if (document.getElementById("aIV["+(aIV.length-1)+"]").value === ''
           &&  document.getElementById("dIV["+(dIV.length-1)+"]").value === '15'
@@ -2198,7 +2209,12 @@
             return;
           }
         } else {
-          console.log("Last row IVs: "+document.getElementById("aIV["+(aIV.length-1)+"]").value,document.getElementById("dIV["+(dIV.length-1)+"]").value, document.getElementById("sIV["+(sIV.length-1)+"]").value)
+          if (aIV.length == 0) {
+            document.getElementById('feedbackBox').innerHTML += "Cannot delete default row awaiting input (-/15/15)<br />";
+            console.log("We only have the default row, skipping delete");
+          } else {
+            console.log("Last row IVs: "+document.getElementById("aIV["+(aIV.length-1)+"]").value,document.getElementById("dIV["+(dIV.length-1)+"]").value, document.getElementById("sIV["+(sIV.length-1)+"]").value)
+          }
         }
 
         /* We need to insert a new row, create DOM placeholders */
