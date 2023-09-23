@@ -948,6 +948,8 @@
         var aIVclone = [...aIV];
         var dIVclone = [...dIV];
         var sIVclone = [...sIV];
+        /* Ensure we clear between table generation runs */
+        document.getElementById('feedbackBox').innerHTML = "";
 
         ranks = cmpCalcs(ranks, keys, dec);
         if (perfTiming) {T1 = performance.now();}
@@ -1015,9 +1017,6 @@
                 numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec))+"%"); /*Stat Prod Perfection %*/
               var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0); currentRow.push(bulkprod); /*Bulk Product*/
               currentRow.push(hiddenSortRank); /* hidden IV sort column */
-              if (hiddenSortRank) {
-                console.log("hiddenSortRank:"+hiddenSortRank);
-              }
               
               tableData.push(currentRow);
             }
@@ -1097,6 +1096,9 @@
           dt.columns(7).visible(true);
           dt.columns.adjust().draw();
         }
+
+        /* Add event listener to capture user clicking on any table row */
+        document.getElementById('monTable').addEventListener('click', (function(){addToCompare(event);}), false);
 
         /* Function to enable DataTables Column Toggling */
         /* https://datatables.net/examples/api/show_hide.html */
@@ -1393,44 +1395,40 @@
       function addToCompare(e) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        var row = window.event.target.parentNode;
-        /* Ensure we didn't click on the header row to sort and ensure we aren't adding duplicate IVs */
         
-        var offset = 3; /* Account for mlCP column */
-        if (document.getElementById('mlCP').checked) {offset+=1;}
-        if (row.rowIndex/1 >= aIV.length/1) {
-          
-          /* Get the IVs we're trying to add */
-          var atk = row.cells[offset].innerHTML;
-          var def = row.cells[offset+1].innerHTML;
-          var sta = row.cells[offset+2].innerHTML;
-          var uniqueIVs = true;
-          
-          /* Ensure we aren't duplicating IVs */
-          for (var i=0; i<aIV.length; i++) {
-            if ((atk/1 === aIV[i]/1) && (def/1 === dIV[i]/1) && (sta/1 === sIV[i]/1)) {
-              /* Ensure that attack is not null, to allow 0/15/15 to overwrite default row */
-              if (document.getElementById("aIV[0]").value !== '') {
-                uniqueIVs = false;
-                break;
-              }
+        /* Account for mlCP column being hidden or not */
+        var offset = 3;
+        if (document.getElementById('mlCPheader')) {offset+=1;} 
+
+        /* Get the IVs we're trying to add */
+        var row = window.event.target.parentNode;
+        var atk = row.cells[offset].innerHTML;
+        var def = row.cells[offset+1].innerHTML;
+        var sta = row.cells[offset+2].innerHTML;
+        
+        /* Ensure we aren't duplicating IVs */
+        var uniqueIVs = true;
+        for (var i=0; i<aIV.length; i++) {
+          if ((atk/1 === aIV[i]/1) && (def/1 === dIV[i]/1) && (sta/1 === sIV[i]/1)) {
+            /* Ensure that attack is not null, to allow 0/15/15 to overwrite default row */
+            if (document.getElementById("aIV[0]").value !== '') {
+              uniqueIVs = false;
+              break;
             }
           }
-          
-          if (uniqueIVs) {
-            doTheInsert(atk, def, sta);
-            main();
-          } else {
-            console.log(atk+"/"+def+"/"+sta+" already exists in comparison IVs, not adding to compare");
-            if (document.getElementById('feedbackBox').innerHTML.includes(atk+"/"+def+"/"+sta+" already exists in comparison IVs")) {
-              /*console.log("This exact error message is already on screen, skipping duplicating error message");*/
-            } else {
-              /*console.log("Could not find error message, need to print to screen")*/
-              document.getElementById('feedbackBox').innerHTML += "<br /><i>"+atk+"/"+def+"/"+sta+" already exists in comparison IVs</i>";
-            }
-          }
+        }
+        
+        if (uniqueIVs) {
+          doTheInsert(atk, def, sta);
+          main();
         } else {
-          console.error("Skipping adding row as (row.rowIndex"+row.rowIndex+" < "+aIV.length+"aIV.length)");
+          console.log(atk+"/"+def+"/"+sta+" already exists in comparison IVs, not adding to compare");
+          if (document.getElementById('feedbackBox').innerHTML.includes(atk+"/"+def+"/"+sta+" already exists in comparison IVs")) {
+            /*console.log("This exact error message is already on screen, skipping duplicating error message");*/
+          } else {
+            /*console.log("Could not find error message, need to print to screen")*/
+            document.getElementById('feedbackBox').innerHTML += "<br /><i>"+atk+"/"+def+"/"+sta+" already exists in comparison IVs</i>";
+          }
         }
         if (perfTiming) {stopTiming(T0, "addToCompare");}
       }
