@@ -759,13 +759,12 @@
         if (perfTiming) {T0 = performance.now();}
         
         /* If old table exists, clear data and hide it */
+        /* Remove old onclick events to prevent dupes */
         if ($.fn.DataTable.isDataTable('#monTable') ) {
-          $('#monTable').DataTable().clear().draw();
+          $('#monTable tbody').off('click');
           $('#monTable').hide();
           $('#toggleCols').hide();
-          $('.dtsb-searchBuilder').hide();
-          $('.dataTables_scroll').hide();
-          $('.dataTables_info').hide();
+          $('.dataTables_wrapper').hide();
         }
         if (perfTiming) {stopTiming(T0, "clearHideOldDataTable");}
         return;
@@ -950,6 +949,7 @@
         var sIVclone = [...sIV];
         /* Ensure we clear between table generation runs */
         document.getElementById('feedbackBox').innerHTML = "";
+        //document.getElementById('monTable').innerHTML = "<table id='monTable' class='compact' style='width:100%; display:none;'> <thead> <tr> <th>#</th> <th>Lvl</th> <th>CP</th> <th id='mlCPheader'>L1 CP</th> <th>Atk IV</th> <th>D</th> <th>S</th> <th>XL</th> <th>Dust</th> <th>R1 CMP</th> <th>All CMP</th> <th>PvP Atk</th> <th>PvP Def</th> <th>PvP HP</th> <th>Stat Prod</th> <th>Perfect</th> <th>Bulk Prod</th> <th>Hidden</th> </tr></thead> </table>";
 
         ranks = cmpCalcs(ranks, keys, dec);
         if (perfTiming) {T1 = performance.now();}
@@ -1061,9 +1061,9 @@
             ],
             createdRow: (row, data, index) => {
               if (data[17]) {
-                if (data[0]/1 < (0.02442*ranks.numRanks/1)) {
+                if (data[0]/1 < (0.02442/1*ranks.numRanks/1)) {
                   $(row).addClass('good'); /*green for "good"*/
-                } else if (actualRank/1 < (0.2442*ranks.numRanks/1)) {
+                } else if (data[0]/1 < (0.2442/1*ranks.numRanks/1)) {
                   $(row).addClass('ok'); /*orange for "ok"*/
                 } else {
                   $(row).addClass('rubbish'); /*red for "rubbish"*/
@@ -1097,8 +1097,11 @@
           dt.columns.adjust().draw();
         }
 
-        /* Add event listener to capture user clicking on any table row */
-        document.getElementById('monTable').addEventListener('click', (function(){addToCompare(event);}), false);
+        /* Enable user click to add IVs to compare */
+        $('#monTable tbody').on('click', function (e) {
+          addToCompare(e);
+          console.log("added IVs!");
+        });
 
         /* Function to enable DataTables Column Toggling */
         /* https://datatables.net/examples/api/show_hide.html */
@@ -2156,6 +2159,7 @@
       function doTheRemoval() {
         var T0;
         if (perfTiming) {T0 = performance.now();}
+
         /*event.target will be the input element*/
         /*console.log("doTheRemoval: event.target.parentNode.parentNode:"+JSON.stringify(event.target.parentNode.parentNode.innerHTML));*/
         var td = event.target.parentNode;
