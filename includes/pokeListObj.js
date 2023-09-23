@@ -263,7 +263,7 @@ var pokeListObj = {
     "Misdreavus": "200b,167,154,155,Mismagius",
     "Unown": "201b,136,91,134",
     "Wobbuffet": "202b,60,106,382,Wynaut",
-    "Girafarig": "203b,182,133,172",
+    "Girafarig": "203b,182,133,172,Farigiraf",
     "Pineco": "204b,108,122,137,Forretress",
     "Forretress": "205,161,205,181,Pineco",
     "Dunsparce": "206b,131,128,225,Dudunsparce",
