@@ -623,7 +623,7 @@
         if (document.getElementById("cge").checked) {displayPvPokeEvoGroup(mon);}
         if (document.getElementById("dti").checked) {
           for (i=0; i<aIV.length; i++) {
-            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks, keys, spIV[i], floor, aIV.length, aIV[i], dIV[i], sIV[i], league);
+            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks, keys, spIV[i], floor, aIV[i], dIV[i], sIV[i], league);
           }
           document.getElementById("tradeOutput").innerHTML += "<br />"
         }
@@ -1700,12 +1700,12 @@
         return ranks;
     }
       
-      function tradePcnts(ranks, keys, rank, floor, numIVs, atk, def, sta, league) {
+      function tradePcnts(ranks, keys, rank, floor, atk, def, sta, league) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         /*Keep track of eligible/total higher ranked mons*/
         var lGo=0,hGo=0,lGr=0,hGr=0,lUf=0,hUf=0,lBf=0,hBf=0,lLf=0,hLf=0,hNo=0;
-        console.log("tradePcnts: received numRanks:"+ranks.numRanks+", keys[0]:"+keys[0]+", rank:"+rank+", floor:"+floor+", numIVs:"+numIVs+", atk:"+atk+", def:"+def+", sta:"+sta+", league:"+league);
+        console.log("tradePcnts: received numRanks:"+ranks.numRanks+", keys[0]:"+keys[0]+", rank:"+rank+", floor:"+floor+", atk:"+atk+", def:"+def+", sta:"+sta+", league:"+league);
 
         var totalMons = 0;
         let i=0;
@@ -1819,33 +1819,27 @@
         }
         outHTML += "<th>Total</th>";
         
-        console.log("Floor:"+floor+", ranks.numRanks:"+ranks.numRanks);
-        
         if ((floor/1 < 1) && (ranks.numRanks)) { /*don't print unless the IV floor is 0, or if there are no eligible mons*/
           outHTML += "<tr"+nfCls+"><td>None (IV&ge;0)</td>";
-          if (numIVs/1 > 0) {
+          if (atk && def && sta) {
             outHTML += "<td>"+(cNo/10000).toFixed(3)+"%</td><td>"+hNo+"</td><td>"+(ranks.numRanks-hNo)/1+"</td>";
           }
           if (printIVU) { outHTML += "<td>"+iNo+"</td><td>"+vNo+"</td><td>"+(1*uNo).toFixed(2)+"%</td>"; }
           outHTML += "<td>"+tNo+"</td></tr>";
         }
         
-        //console.log("before outHTML:"+outHTML);
-        
         if ((floor/1 < 2) && vGo) { /*don't print if the IV floor is above 1, or if there are no eligible Gof mons*/
           outHTML += "<tr"+gdfCls+"><td>Good (IV&ge;1)</td>";
-          if (numIVs/1 > 0) {
+          if (atk && def && sta) {
             outHTML += "<td>"+(cGo/10000).toFixed(3)+"%</td><td>"+hGo+"</td><td>"+lGo+"</td>";
           }
           if (printIVU) { outHTML += "<td>"+iGo+"</td><td>"+vGo+"</td><td>"+(1*uGo).toFixed(2)+"%</td>"; }
           outHTML += "<td>"+tGo+"</td></tr>";
         }
         
-        //console.log("before outHTML:"+outHTML);
-        
         if ((floor/1 < 3) && vGr) { /*don't print if IV floor is above 2, or if there are no eligible Grf mons*/
           outHTML += "<tr"+grfCls+"><td>Great (IV&ge;2)</td>";
-          if (numIVs/1 > 0) {
+          if (atk && def && sta) {
             outHTML += "<td>"+(cGr/10000).toFixed(3)+"%</td><td>"+hGr+"</td><td>"+lGr+"</td>";
           }
           if (printIVU) { outHTML += "<td>"+iGr+"</td><td>"+vGr+"</td><td>"+(1*uGr).toFixed(2)+"%</td>"; }
@@ -1854,7 +1848,7 @@
         
         if ((floor/1 < 4) && vUf) { /*don't print if IV floor is above 3, or if there are no eligible Uf mons*/
           outHTML += "<tr"+ufCls+"><td>Ultra (IV&ge;3)</td>";
-          if (numIVs/1 > 0) {
+          if (atk && def && sta) {
             outHTML += "<td>"+(cUf/10000).toFixed(3)+"%</td><td>"+hUf+"</td><td>"+lUf+"</td>";
           }
           if (printIVU) { outHTML += "<td>"+iUf+"</td><td>"+vUf+"</td><td>"+(1*uUf).toFixed(2)+"%</td>"; }
@@ -1863,7 +1857,7 @@
         
         if ((floor/1 < 6) && vBf){ /*don't print if IV floor is above 5, or if there are no eligible Bf mons*/
           outHTML += "<tr"+bfCls+"><td>Best (IV&ge;5)</td>";
-          if (numIVs/1 > 0) {
+          if (atk && def && sta) {
             outHTML += "<td>"+(cBf/10000).toFixed(3)+"%</td><td>"+hBf+"</td><td>"+lBf+"</td>";
           }
           if (printIVU) { outHTML += "<td>"+iBf+"</td><td>"+vBf+"</td><td>"+(1*uBf).toFixed(2)+"%</td>"; }
@@ -1872,7 +1866,7 @@
         
         if ((floor/1 < 13) && vLf) { /*don't print if IV floor is above 12, or if there are no eligible Lf mons*/
           outHTML += "<tr"+lfCls+"><td>Lucky (IV&ge;12)</td>";
-          if (numIVs/1 > 0) {
+          if (atk && def && sta) {
             outHTML += "<td>"+(cLf/10000).toFixed(3)+"%</td><td>"+hLf+"</td><td>"+lLf+"</td>";
           }
           if (printIVU) { outHTML += "<td>"+iLf+"</td><td>"+vLf+"</td><td>"+(1*uLf).toFixed(2)+"%</td>"; }
