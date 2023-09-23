@@ -639,6 +639,7 @@
         aIV.splice(0, aIV.length);
         dIV.splice(0, dIV.length);
         sIV.splice(0, sIV.length);
+        rIV.splice(0, rIV.length);
         shdw.splice(0, shdw.length);
         
         /* Re-Add default IV Input Row */
@@ -852,10 +853,13 @@
         if (aIV[0] && dIV[0] && sIV[0]) {
           var IVs = "";
           for (i=0; i<aIV.length; i++) {
-            if (i > 0) {IVs += "-";} else {IVs = "";}
-            IVs += aIV[i] + "_" + dIV[i] + "_" + sIV[i];
-            if (shdw[i]) {
-              IVs += "_" + shdw[i];
+            /* Don't add incomplete IVs to URL */
+            if (aIV[i] && dIV[i] && sIV[0]) {
+              if (i > 0) {IVs += "-";} else {IVs = "";}
+              IVs += aIV[i] + "_" + dIV[i] + "_" + sIV[i];
+              if (shdw[i]) {
+                IVs += "_" + shdw[i];
+              }
             }
           }
           uri += "&IVs="+IVs;
@@ -947,9 +951,9 @@
         var aIVclone = [...aIV];
         var dIVclone = [...dIV];
         var sIVclone = [...sIV];
-        /* Ensure we clear between table generation runs */
+        /* Ensure we clear data and feedback between table generation runs */
         document.getElementById('feedbackBox').innerHTML = "";
-        //document.getElementById('monTable').innerHTML = "<table id='monTable' class='compact' style='width:100%; display:none;'> <thead> <tr> <th>#</th> <th>Lvl</th> <th>CP</th> <th id='mlCPheader'>L1 CP</th> <th>Atk IV</th> <th>D</th> <th>S</th> <th>XL</th> <th>Dust</th> <th>R1 CMP</th> <th>All CMP</th> <th>PvP Atk</th> <th>PvP Def</th> <th>PvP HP</th> <th>Stat Prod</th> <th>Perfect</th> <th>Bulk Prod</th> <th>Hidden</th> </tr></thead> </table>";
+        rIV = [];
 
         ranks = cmpCalcs(ranks, keys, dec);
         if (perfTiming) {T1 = performance.now();}
@@ -967,21 +971,45 @@
             /* non-user IV rows get 0 for sorting */
             var hiddenSortRank = "";
 
+            /* Process user IVs before we output this row's data */
             for (var k=0; k<aIVclone.length; k++) {
+              /* Ensure this IV set is complete */
               if (aIVclone[k] && dIVclone[k] && sIVclone[k]) {
+                /* Check if these are IVs we are looking for */
                 if (aIVclone[k]/1 === ranks[keys[i]][j].IVs.A/1
                 && dIVclone[k]/1 === ranks[keys[i]][j].IVs.D/1
                 && sIVclone[k]/1 === ranks[keys[i]][j].IVs.S/1) {
+                  /* Set hiddenSortRank to ensure rows pin to top */
                   hiddenSortRank = aIVclone.length;
+
+                  /* Find this user IV set in real arrays */
+                  for (var l=0; l<aIV.length; l++) {
+                    if (aIV && dIV && sIV) {
+                      /* Do not divide by 1 to avoid converting blank to 0 */
+                      if (aIVclone[k] === aIV[l]
+                      && dIVclone[k] === dIV[l]
+                      && sIVclone[k] === sIV[l]) {
+                        /* Save this user IV's rank for later */
+                        rIV[l] = actualRank;
+                      }
+                    }
+                  }
+
+                  /* Destroy this clone row to prevent re-processing it */
                   aIVclone.splice(k,1);
                   dIVclone.splice(k,1);
                   sIVclone.splice(k,1);
                 }
+              } else {
+                /* Removed incomplete IVs to speed up processing */ 
+                aIVclone.splice(k,1);
+                dIVclone.splice(k,1);
+                sIVclone.splice(k,1);
               }
             }
             
+            /* Print row iff user doesn't care about IV efficiency OR if this row's IVs are efficient */
             if (document.getElementById("effIV").checked === false || ranks[keys[i]][j].eff === true) {
-              /* (If enabled by user) IV is efficient, proceed with printing this row */
               currentRow = [
                 actualRank,              /*Rank*/
                 ranks[keys[i]][j].L,     /*Level*/
@@ -1023,7 +1051,7 @@
             actualRank = actualRank + 1;
           }
         }
-
+        
         /* Timing gate after generating table data */
         if (perfTiming) {T3 = performance.now();}
         candyTime = candyTime.toFixed(1);
@@ -1031,6 +1059,9 @@
         /* Make sure we show the table and column toggles before writing data to table */
         $('#toggleCols').show();
         $('#monTable').show();
+
+        /* Ensure user IV rows are sorted by rank before creating DataTable */
+        sortUserIVs();
 
         /* Timing gate after generating table data */
         if (perfTiming) {T4 = performance.now();}
@@ -1128,6 +1159,54 @@
         return;
       }
       
+      /* Adapted from https://stackoverflow.com/a/13960306 */
+      function sortUserIVs() {
+        var T0, i;
+        if (perfTiming) {T0 = performance.now();}
+
+        /* An empty array of indexes */
+        var idx = [];
+        for (i = 0; i < aIV.length; i++) {
+            idx.push(i);
+        }
+
+        /* A shorthand function */
+        var comparator = function(arr) {
+            return function(a, b) { /* Check for undefined values first, sort to end of array */
+                return ((typeof(arr[a]) < typeof(arr[b])) ? -1 :((arr[a] < arr[b]) ? -1 : ((arr[a] > arr[b]) ? 1 : 0)));
+            };
+        };
+
+        /* Sort by rIV */
+        idx = idx.sort(comparator(rIV));
+
+        /* Clone arrays so we don't lose values */
+        var aIVclone = [...aIV];
+        var dIVclone = [...dIV];
+        var sIVclone = [...sIV];
+        var shdwclone = [...shdw];
+        var rIVclone = [...rIV];
+
+        /* Sort all of the arrays by rIV order */
+        for (i = 0; i < aIV.length; i++) {
+          aIV[i] = aIVclone[idx[i]];
+          dIV[i] = dIVclone[idx[i]];
+          sIV[i] = sIVclone[idx[i]];
+          shdw[i] = shdwclone[idx[i]];
+          rIV[i] = rIVclone[idx[i]];
+        }
+
+        /* Re-order DOM elements to match */
+        for (i = 0; i < aIV.length; i++) {
+          document.getElementById("aIV["+i+"]").selectedIndex = [...document.getElementById("aIV["+i+"]").options].findIndex (option => option.text === aIV[i]);
+          document.getElementById("dIV["+i+"]").selectedIndex = [...document.getElementById("dIV["+i+"]").options].findIndex (option => option.text === dIV[i]);
+          document.getElementById("sIV["+i+"]").selectedIndex = [...document.getElementById("sIV["+i+"]").options].findIndex (option => option.text === sIV[i]);
+          document.getElementById("shdw["+(i)+"]").checked = (shdw[i] === "true") ? true: false;
+        }
+
+        if (perfTiming) {stopTiming(T0, "sortUserIVs");}
+      }
+
       function evoStuff(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks) {
         var T0,T1,T2,T3,T4,T5,T6;
         if (perfTiming) {T0 = performance.now();}
@@ -1173,8 +1252,7 @@
         var gmRhtml = null;
         document.getElementById('feedbackBox').innerHTML = "";
         var uri;
-        lvl = []
-        ;rIV = [];
+        lvl = [];rIV = [];
         var validIVs = "", invAtkIVs = "", invDefIVs = "", invHPIVs = "";
         
         /* Generate user inputted IV rows for main output table */
@@ -2108,14 +2186,30 @@
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
+        /* First check if we should insert a new row or not */
+        if (!(atk && def && sta)) {
+          console.log("doTheInsert: Missing one or more IVs");
+          if (document.getElementById("aIV["+(aIV.length-1)+"]").value === ''
+          &&  document.getElementById("dIV["+(dIV.length-1)+"]").value === '15'
+          &&  document.getElementById("sIV["+(sIV.length-1)+"]").value === '15') {
+            console.log("We already have a default row at the end, skipping duplicate insert");
+            document.getElementById('feedbackBox').innerHTML += "New Row is already awaiting input (-/15/15)<br />";
+            if (perfTiming) {stopTiming(T0, "doTheInsert");}
+            return;
+          }
+        } else {
+          console.log("Last row IVs: "+document.getElementById("aIV["+(aIV.length-1)+"]").value,document.getElementById("dIV["+(dIV.length-1)+"]").value, document.getElementById("sIV["+(sIV.length-1)+"]").value)
+        }
+
+        /* We need to insert a new row, create DOM placeholders */
         var newRow=document.getElementById('inputTable').insertRow();
         var shadowCB = document.getElementsByClassName('shadowCB');
         
         newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='shdwUpdater()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus["+shadowCB.length+"]' onclick='doTheRemoval()'></button></td></tr>";
         
-        /* Check if this row should have default IVs or specific IVs */
+        /* Determine IVs for new row, default (-/15/15) or specific IVs */
         if (!(atk && def && sta)) {
-          console.log("doTheInsert: Missing one or more IVs, inserting default values");
+          console.log("doTheInsert: Inserting default values (-/15/15) instead of "+atk,def,sta);
           atk = '';
           def = '15';
           sta = '15';
@@ -2125,6 +2219,7 @@
           document.getElementById("sIV["+sIV.length+"]").selectedIndex = [...document.getElementById("sIV["+sIV.length+"]").options].findIndex (option => option.text === sta);
           document.getElementById("shdw["+(shadowCB.length-1)+"]").checked = (sha === "true") ? true: false;
         }
+        console.log("Inserting row");
         aIV.push(atk);
         dIV.push(def);
         sIV.push(sta);
