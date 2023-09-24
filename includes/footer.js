@@ -7,6 +7,7 @@ document.getElementById('theme-toggle').addEventListener('change', () => {toggle
 function toggleTheme() {
   document.body.classList.toggle("dark-theme");
   document.body.classList.toggle("light-theme");
+  document.querySelector('html').classList.toggle("dark");
   document.getElementById("theme-toggle-icon").classList.toggle("flipped-icon");
   
   localStorage.setItem(
