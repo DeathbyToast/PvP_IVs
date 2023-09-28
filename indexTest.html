@@ -110,7 +110,7 @@
       /* On desktop ensure table isn't too wide */
       /* And always ensure table is centered */
       div.dataTables_wrapper {
-        max-width: 1111px;
+        max-width: 1551px;
         margin: 0 auto;
       }
       #toggleCols {
@@ -147,7 +147,7 @@
     <!--script>window.ramp=window.ramp ||{}; window.ramp.que=window.ramp.que || []; </script> <script async src="//cdn.intergient.com/1025030/74482/ramp_config.js"></script> <script>window._pwGA4PageviewId=''.concat(Date.now()); window.dataLayer=window.dataLayer || []; window.gtag=window.gtag || function (){dataLayer.push(arguments);}; gtag('js', new Date()); gtag('config', 'G-JD7R9RWFZL',{'send_page_view': false}); gtag( 'event', 'ramp_js',{'send_to': 'G-JD7R9RWFZL', 'pageview_id': window._pwGA4PageviewId}); </script>
     < End Playwire Head -->
   </head>
-  <body class="dark-theme" onload="checkURI()">
+  <body class="dark-theme">
     <!-- TODO: Change 'dark-theme to just dark'-->
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TDF58VB"
@@ -203,10 +203,15 @@
       	
       <br />
       <table id="inputTable">
-        <tr><td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td><td title="Your Attack IV">Atk</td><td title="Your Defense IV">Def</td><td title="Your Stamina IV">Sta</td><td id="plusCell"><button class="circle plus" onclick="doTheInsert()"></button></td></tr>
+        <tr><td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td>
+            <td title="Your Attack IV">Atk</td>
+            <td title="Your Defense IV">Def</td>
+            <td title="Your Stamina IV">Sta</td>
+            <td id="plusCell"><button class="circle plus" id="circlePlus"></button></td>
+        </tr>
         <tr>
-          <td><input class='shadowCB' id="shdw[0]" type="checkbox" oninput="shdwUpdater()"></td>
-          <td><select title="Your Attack IV" class="aIV" id="aIV[0]" onchange="main()">
+          <td><input id="shdw[0]" type="checkbox"></td>
+          <td><select title="Your Attack IV" id="aIV[0]">
             <option value="">&nbsp;</option>
             <option value="15">15</option>
             <option value="14">14</option>
@@ -225,7 +230,7 @@
             <option value="1">1</option>
             <option value="0">0</option>
           </select></td>
-          <td><select title="Your Defense IV" class="dIV" id="dIV[0]" onchange="main()">
+          <td><select title="Your Defense IV" id="dIV[0]">
             <option value="15">15</option>
             <option value="14">14</option>
             <option value="13">13</option>
@@ -243,7 +248,7 @@
             <option value="1">1</option>
             <option value="0">0</option>
           </select></td>
-          <td><select title="Your Stamina IV" class="sIV" id="sIV[0]" onchange="main()">
+          <td><select title="Your Stamina IV" id="sIV[0]">
             <option value="15">15</option>
             <option value="14">14</option>
             <option value="13">13</option>
@@ -261,7 +266,7 @@
             <option value="1">1</option>
             <option value="0">0</option>
           </select></td>
-          <td id="minusCell"><button class="circle minus" id="minus[0]" onclick="doTheRemoval()"></button></td>
+          <td id="minusCell"><button class="circle minus" id="minus[0]"></button></td>
         </tr>
       </table>
       <p id="IVinputShow" onclick="showIVinput()"><i><small>Show IV input textbox</small></i></p>
@@ -293,13 +298,17 @@
             <th>Stat Prod</th>
             <th>Perfect</th>
             <th>Bulk Prod</th>
+            <th>AtkHP Prod</th>
+            <th>CMP Stat Avg</th>
+            <th>AADSS SP</th>
+            <th>Custom SP</th>
             <th>Hidden</th>
           </tr>
         </thead>
       </table>
       <div id="toggleCols" style="display:none;"><h4>Toggle column(s):</h4>
-        <a class="toggle-vis" data-column="0">Rank</a> | <a class="toggle-vis" data-column="1">Level</a> | <a class="toggle-vis" data-column="2">CP</a> | <a class="toggle-vis" id="minlvlCP" data-column="3">Level 1 CP</a>  | <div style="display:inline-block"><b>IVs:</b> <a class="toggle-vis" data-column="4">Attack</a> - <a class="toggle-vis" data-column="5">Defense</a> - <a class="toggle-vis" data-column="6">Stamina</a></div> | <a class="toggle-vis" style="display:inline-block" data-column="7">XL Candy Cost</a> | <a class="toggle-vis" style="display:inline-block" data-column="8">Stardust Cost</a> | 
-        <!--div style="display:inline-block"--><a class="toggle-vis" style="display:inline-block" data-column="9">R1 CMP</a> | <a class="toggle-vis" style="display:inline-block" data-column="10">All CMP</a><!--/div--> | <div style="display:inline-block"><b>Stats:</b> <a class="toggle-vis" data-column="11">Attack</a> - <a class="toggle-vis" data-column="12">Defense</a> - <a class="toggle-vis" data-column="13">HP</a></div> | <div style="display:inline-block"><a class="toggle-vis" style="display:inline-block" data-column="14">Stat Product</a> - <a class="toggle-vis" style="display:inline-block" data-column="15">Perfection (%)</a></div> | <a class="toggle-vis" style="display:inline-block" data-column="16">Bulk Product</a></div><br />
+        <!--a class="toggle-vis" data-column="0">Rank</a> | <a class="toggle-vis" data-column="1">Level</a> | <a class="toggle-vis" data-column="2">CP</a> | --><a class="toggle-vis" id="minlvlCP" data-column="3">Level 1 CP</a>  | <!--div style="display:inline-block"><b>IVs:</b> <a class="toggle-vis" data-column="4">Attack</a> - <a class="toggle-vis" data-column="5">Defense</a> - <a class="toggle-vis" data-column="6">Stamina</a></div> | --><a class="toggle-vis" style="display:inline-block" data-column="7">XL Candy Cost</a> | <a class="toggle-vis" style="display:inline-block" data-column="8">Stardust Cost</a> | 
+        <!--div style="display:inline-block"--><a class="toggle-vis" style="display:inline-block" data-column="9">R1 CMP</a> | <a class="toggle-vis" style="display:inline-block" data-column="10">All CMP</a><!--/div--> | <!--div style="display:inline-block"><b>Stats:</b> <a class="toggle-vis" data-column="11">Attack</a> - <a class="toggle-vis" data-column="12">Defense</a> - <a class="toggle-vis" data-column="13">HP</a></div> | <div style="display:inline-block"><a class="toggle-vis" style="display:inline-block" data-column="14">Stat Product</a> - <a class="toggle-vis" style="display:inline-block" data-column="15">Perfection (%)</a></div> | --><a class="toggle-vis" style="display:inline-block" data-column="16">Bulk Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="17">Attack*HP Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="18">CMP*Stat Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="19">aadss Stat Product</a></div><br />
       <div style="overflow-x:auto;" id="tradeOutput"></div>
     
       <!-- Load various scripts for PvPIVs, Awesomplete, and DataTables -->
@@ -319,14 +328,18 @@
       var perfTiming = true; /* used for timing execution */
       var mnlMod = false; /*track if min Lvl was adjusted*/
       var ivMod = false; /*track if IV floor was adjusted*/
-      let aIV=[document.getElementById('aIV[0]').value];
-      let dIV=[document.getElementById('dIV[0]').value];
-      let sIV=[document.getElementById('sIV[0]').value];
-      let shdw=[document.getElementById('shdw[0]').checked];
-      let rIV=[];
-      let spIV=[];
-      let lvl=[];
-      let mA = 0, mD = 0, mHP = 0; /*min stat filter vars*/
+      const userIVs = new Array(1).fill(0).map(() => new Array(8).fill(0));
+      userIVs[0] = [
+        document.getElementById('aIV[0]').value,   /* 0:attack IV  */
+        document.getElementById('dIV[0]').value,   /* 1:defense IV */
+        document.getElementById('sIV[0]').value,   /* 2:stamina IV */
+        document.getElementById('shdw[0]').checked,/* 3:shadow     */
+        0,                                         /* 4:rank       */
+        0,                                         /* 5:stat prod  */
+        0,                                         /* 6:level      */
+        0                                          /* 7:hidSortRank*/
+      ];
+      //let mA = 0, mD = 0, mHP = 0; /*min stat filter vars*/
       let filterMod = false; /*track if stat filters were adjusted*/
       var input = document.getElementById("pokeList");
       var monNames = Object.keys(pokeListObj);
@@ -403,7 +416,7 @@
                 /*console.log("checkURI: Read mon("+values[i].split("=")[1]+") and set Awesomplete.input to:"+Awesomplete.input);*/
                 break;
               case "r":
-                pageLen = values[i].split("=")[1];
+                pageLen = values[i].split("=")[1]/1;
                 break;
               case "cp":
                 document.getElementById('league').value = values[i].split("=")[1];
@@ -443,11 +456,10 @@
                 var ivStr = (values[i].split("=")[1]).split("-");
                 for (var j=0; j<ivStr.length; j++)
                 {
-                  var userIVs = ivStr[j].split("_");
-                  if (userIVs.length<2) {continue;} /* skip blank/incomplete entries */
-                  doTheInsert(userIVs[0],userIVs[1],userIVs[2],userIVs[3]);
+                  var inputIVs = ivStr[j].split("_");
+                  if (inputIVs.length<2) {continue;} /* skip blank/incomplete entries */
+                  doTheInsert(inputIVs[0],inputIVs[1],inputIVs[2],inputIVs[3]);
                 }
-                /*console.log("checkURI: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);*/
                 break;
               case "mA":
                 mA = values[i].split("=")[1];
@@ -545,15 +557,151 @@
         if (perfTiming) {stopTiming(T0, "checkUserPreference");}
       }
 
+      /* Load event handlers and check URL once loaded and ready */
+      $( document ).ready(function() {
+        /* Initialize event handler callbacks */
+        $(".circle.plus").on("click", function(event) {
+          /* Ensure we don't have duplicate bubbled up events */
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          doTheInsert();
+        });
+        $("#inputTable").on("click", ".circle.minus", function(event){
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          doTheRemoval();
+        });
+        $("#inputTable").on("change", "tr", function(event){
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          /* Ensure we clear old feedback */
+          document.getElementById('feedbackBox').innerHTML = "";
+          const dt = $('#monTable').DataTable();
+          var rows = dt.rows().data();
+          var numRows = dt.rows().count();
+          /*event.target is the input element*/
+          var td = event.target.parentNode;
+          var tr = td.parentNode; /*the row to be removed*/
+          var rowNum = tr.innerHTML.split("aIV[")[1];
+          rowNum = rowNum.split("]")[0];
+          var atk = document.getElementById('aIV['+rowNum+']').value;
+          var def = document.getElementById('dIV['+rowNum+']').value;
+          var sta = document.getElementById('sIV['+rowNum+']').value;
+          var sha = document.getElementById('shdw['+rowNum+']').checked;
+          /* Find this IV set in DataTable */
+          for (var i=0; i<numRows; i++) {
+            if (rows[i][4] == atk && rows[i][5] == def && rows[i][6] == sta) {
+              console.log("inputTable onChange:Found the row at i: "+i);
+              break;
+            }
+          }
+          var d = dt.row(i).data();
+          var hiddenSortVal = userIVs.length-numRows/1;
+          var hiddenRowIndex = d.length-1;
+          /* Check for missinglank atk, remove old row if IV incomplete */
+          if (!(atk && def && sta) && rowNum < userIVs.length-1) {
+            console.log("inputTable onChange: Missing one or more IVs, removing this row's prior value from table");
+            hiddenSortVal = 0;
+            /* Remove CSS class highlighting for old row */
+            dt.row(i).nodes().to$().removeClass('good','ok','rubbish');
+          } else {
+            /* Add class to properly highlight this row with CSS */
+            if (d[0]/1 < (0.02442/1*ranks.numRanks/1)) {
+              tr.classList.add('good'); /*green for "good"*/
+            } else if (d[0]/1 < (0.2442/1*ranks.numRanks/1)) {
+              tr.classList.add('ok'); /*orange for "ok"*/
+            } else {
+              tr.classList.add('rubbish'); /*red for "rubbish"*/
+            }
+          }
+          d[hiddenRowIndex] = hiddenSortVal;
+          dt.row(i).data(d).draw();
+          userIVs[rowNum] = [atk, def, sta, sha, d[0], d[14], d[1], d[hiddenRowIndex]];
+          console.log("inputTable onChange: tr.classlist is now: "+tr.classList);
+          console.log("inputTable onChange: userIVs is now: "+JSON.stringify(userIVs));
+
+        });
+        checkURI();
+      });
+      
       function main(mon) {
         var T0,i;
         if (perfTiming) {T0 = performance.now();}
         else {document.getElementById('timing_outputs').innerHTML = "";}
         
-        if (mon) { /* This is a new input */
-          /*console.log("New mon detected, resetting monState, mon:"+mon);*/
+        /* Check if there is a DataTable on the page for an old mon */
+        if (mon && $.fn.DataTable.isDataTable( '#monTable' )) {
           resetMonState();
           adjustFloors(mon);
+          clearHideOldDataTable();
+          /*ensure we clear the prior output between runs*/
+          document.getElementById("tradeOutput").innerHTML = "";
+          document.getElementById("CustomGroupExport").style.display = "none";
+        }
+         else {
+          /* Initialize event callbacks on first run */
+          $(".circle.plus").on("click", function(event) {
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            doTheInsert();
+          });
+          $("#inputTable").on("click", ".circle.minus", function(){
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            doTheRemoval();
+          });
+          $("#inputTable").on("change", "tr", function(event){
+
+            /* Ensure we don't have duplicate bubbled up events */
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            /* Ensure we clear old feedback */
+            document.getElementById('feedbackBox').innerHTML = "";
+            const dt = $('#monTable').DataTable();
+            var rows = dt.rows().data();
+            var numRows = dt.rows().count();
+            /*event.target is the input element*/
+            var td = event.target.parentNode;
+            var tr = td.parentNode; /*the row to be removed*/
+            var rowNum = tr.innerHTML.split("aIV[")[1];
+            rowNum = rowNum.split("]")[0];
+            var atk = document.getElementById('aIV['+rowNum+']').value;
+            var def = document.getElementById('dIV['+rowNum+']').value;
+            var sta = document.getElementById('sIV['+rowNum+']').value;
+            var sha = document.getElementById('shdw['+rowNum+']').checked;
+            /* Find this IV set in DataTable */
+            for (var i=0; i<numRows; i++) {
+              if (rows[i][4] == atk && rows[i][5] == def && rows[i][6] == sta) {
+                console.log("inputTable onChange:Found the row at i: "+i);
+                break;
+              }
+            }
+            var d = dt.row(i).data();
+            var hiddenSortVal = userIVs.length-numRows/1;
+            var hiddenRowIndex = d.length-1;
+            /* Check for missinglank atk, remove old row if IV incomplete */
+            if (!(atk && def && sta) && rowNum < userIVs.length-1) {
+              console.log("inputTable onChange: Missing one or more IVs, removing this row's prior value from table");
+              hiddenSortVal = 0;
+              /* Remove CSS class highlighting for old row */
+              dt.row(i).nodes().to$().removeClass('good','ok','rubbish');
+            } else {
+              /* Add class to properly highlight this row with CSS */
+              if (d[0]/1 < (0.02442/1*ranks.numRanks/1)) {
+                tr.classList.add('good'); /*green for "good"*/
+              } else if (d[0]/1 < (0.2442/1*ranks.numRanks/1)) {
+                tr.classList.add('ok'); /*orange for "ok"*/
+              } else {
+                tr.classList.add('rubbish'); /*red for "rubbish"*/
+              }
+            }
+            d[hiddenRowIndex] = hiddenSortVal;
+            dt.row(i).data(d).draw();
+            userIVs[rowNum] = [atk, def, sta, sha, d[0], d[14], d[1], d[hiddenRowIndex]];
+            console.log("inputTable onChange: tr.classlist is now: "+tr.classList);
+            console.log("inputTable onChange: userIVs is now: "+JSON.stringify(userIVs));
+
+          });
         }
         
         /* Awesomeplete sends "undefined" when it did not find a valid input */
@@ -579,13 +727,8 @@
           document.getElementById("IVinputShow").style.display = "none";
         }
         
-        /*ensure we clear the prior output between runs*/
-        document.getElementById("tradeOutput").innerHTML = "";
-        document.getElementById("CustomGroupExport").style.display = "none";
-        clearHideOldDataTable();
-        
+        /* Ensure that pokeListObj loaded successfully */
         var monInfo = pokeListObj[mon].split(',');
-        /*Ensure we get the info we need to continue*/
         if (monInfo === "")
         {
           console.error("Fatal: Cannot find monInfo");
@@ -594,6 +737,7 @@
           return false;
         }
         
+        /* Calculate this mon's ranks object */
         var league = document.getElementById('league').value;
         var leagueName= $('#league').find(":selected").text();
         var floor = document.getElementById('floor').value;
@@ -609,7 +753,7 @@
           mon);
         var keys = Object.keys(ranks);
         
-        /*ensure we actually generated something to output*/
+        /* Ensure we generated ranks to output*/
         if (ranks.numRanks/1 < 1) {
           /*nothing to output, print Error and exit*/
           document.getElementById('instructionsBox').innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Advanced and try again</i></p><br />";
@@ -620,22 +764,32 @@
         }
         
         /* Ensure we have current IVs for all input rows */
-        /* TODO: Remove this? */
-        for (i=0; i<aIV.length; i++)
+        /* TODO: Remove this? 
+        console.log("main: before current IV check: "+JSON.stringify(userIVs));
+        for (i=0; i<userIVs.length; i++)
         {
-          aIV[i] = document.getElementById("aIV["+i+"]").value;
-          dIV[i] = document.getElementById("dIV["+i+"]").value;
-          sIV[i] = document.getElementById("sIV["+i+"]").value;
+          userIVs[i] = [
+            document.getElementById("aIV["+i+"]").value,
+            document.getElementById("dIV["+i+"]").value,
+            document.getElementById("sIV["+i+"]").value,
+            document.getElementById("shdw["+i+"]").checked,
+            0,
+            0
+          ];
         }
+        console.log("main: after current IV check: "+JSON.stringify(userIVs));*/
 
+        /* Create a DataTable from the mon ranks object */
         generateDataTable(mon, league, leagueName, ranks, keys);
+        /* Also show other tables if the user has enabled them */
         if (document.getElementById("cge").checked) {displayPvPokeEvoGroup(mon);}
         if (document.getElementById("dti").checked) {
-          for (i=0; i<aIV.length; i++) {
-            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks, keys, spIV[i], floor, aIV[i], dIV[i], sIV[i], league);
+          for (i=0; i<userIVs.length; i++) {
+            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks, keys, userIVs[i][5], floor, userIVs[i][0], userIVs[i][1], userIVs[i][2], league);
           }
           document.getElementById("tradeOutput").innerHTML += "<br />"
         }
+        /* Finally save the state of this output to the URL for sharing */
         updateURL(mon, league, leagueName);
         
         if (perfTiming) {stopTiming(T0, "main");}
@@ -650,26 +804,21 @@
         var floor = document.getElementById('floor');
         
         /* Clear all existing IV Input Rows */
-        for (var i=0; i<aIV.length; i++) {
+        for (var i=0; i<userIVs.length; i++) {
           /* magic to actually remove all the rows one by one */
+          console.log("Attempting to read aIV["+i+"]");
           var tr = document.getElementById('aIV['+i+']').parentNode;
           tr.parentNode.parentNode.removeChild(tr.parentNode);
         }
-        /* clear the value arrays */
-        /* TODO: Combine into one array */
-        aIV.splice(0, aIV.length);
-        dIV.splice(0, dIV.length);
-        sIV.splice(0, sIV.length);
-        rIV.splice(0, rIV.length);
-        spIV.splice(0, spIV.length);
-        lvl.splice(0, lvl.length);
-        shdw.splice(0, shdw.length);
+        /* clear the userIVs array */
+        userIVs.splice(0, userIVs.length);
         
         /* Re-Add default IV Input Row */
         doTheInsert();
         
         /* clear min stat filters, filterMod, and lastLeague */
-        //mA = 0; mD = 0; mHP = 0; filterMod = false; lastLeague = undefined;
+        //mA = 0; mD = 0; mHP = 0; lastLeague = undefined;
+        filterMod = false;
         
         /*reset Min Level if we adjusted it previously*/
         if (mnlMod === true) {
@@ -808,27 +957,27 @@
         var cgeData = "";
         var maxWidth = 0;
         var validIVs;
-        for (var i=0; i<aIV.length; i++) {
+        for (var i=0; i<userIVs.length; i++) {
           validIVs = false;
           var mon = name;
-          if (shdw[i]) {
+          if (userIVs[i][3]) {
             mon = name + "_shadow";
           }
-          if (aIV[i] === "") {
-            console.log("skipping incomplete row, i:"+i+", aIV:"+aIV[i]+", dIV:"+dIV[i]+", sIV:"+sIV[i]);
+          if (userIVs[i][0] === "") {
+            console.log("skipping incomplete row, i:"+i+", aIV:"+userIVs[i][0]+", dIV:"+userIVs[i][1]+", sIV:"+userIVs[i][2]);
             continue;
           } else {
             if (validIVs === false) {
               validIVs = true;
             }
           }
-          var row = mon+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
+          var row = mon+",,,,"+userIVs[i][6]+","+userIVs[i][0]+","+userIVs[i][1]+","+userIVs[i][2];
           if (row.length > maxWidth) {
             maxWidth = row.length;
           }
           if (cgeData !== "") {
             var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
-            cgeData += newline+mon+",,,,"+lvl[i]+","+aIV[i]+","+dIV[i]+","+sIV[i];
+            cgeData += newline+mon+",,,,"+userIVs[i][6]+","+userIVs[i][0]+","+userIVs[i][1]+","+userIVs[i][2];
           }
           else {
             cgeData = row;
@@ -840,7 +989,7 @@
           document.getElementById("CustomGroupExport").rows = 3;
           document.getElementById("CustomGroupExport").value = "No valid IVs input, failed to output PvPoke Custom Group";
         } else { /* We have at least one set of valid IVs, output the PvPoke Custom Group */
-          document.getElementById("CustomGroupExport").rows = sIV.length;
+          document.getElementById("CustomGroupExport").rows = userIVs.length;
           document.getElementById("CustomGroupExport").value = cgeData;
         }
       if (perfTiming) {stopTiming(T0, "displayPvPokeEvoGroup");}
@@ -861,21 +1010,21 @@
         if (document.getElementById('minLvl').value > 1) {uri += "&min="+document.getElementById('minLvl').value;}
         if (document.getElementById('maxLvl').value!== "51") {uri += "&max="+document.getElementById('maxLvl').value;}
         var settings = (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0");
-        if (settings !== "0000000") {
-          console.log("982: About to make '&set'="+settings);
+        if (settings !== "000") {
+          console.log("941: About to make '&set'="+settings);
           uri += "&set="+settings;}
         if (document.getElementById('familyEvoLeague').value !== "mirror") {uri += "&fel="+document.getElementById('familyEvoLeague').value;}
         if (document.getElementById('effIV').checked) {uri += "&p=" + (document.getElementById("effIV").checked ? "1":"0");}
         if (document.getElementById('dec').value > 1) {uri += "&dec="+document.getElementById('dec').value;}
-        if (aIV[0] && dIV[0] && sIV[0]) {
+        if (userIVs[0][0] && userIVs[0][1] && userIVs[0][2]) {
           var IVs = "";
-          for (i=0; i<aIV.length; i++) {
+          for (i=0; i<userIVs.length; i++) {
             /* Don't add incomplete IVs to URL */
-            if (aIV[i] && dIV[i] && sIV[0]) {
+            if (userIVs[i][0] && userIVs[i][1] && userIVs[i][2]) {
               if (i > 0) {IVs += "-";} else {IVs = "";}
-              IVs += aIV[i] + "_" + dIV[i] + "_" + sIV[i];
-              if (shdw[i]) {
-                IVs += "_" + shdw[i];
+              IVs += userIVs[i][0] + "_" + userIVs[i][1] + "_" + userIVs[i][2];
+              if (userIVs[i][3]) {
+                IVs += "_" + userIVs[i][3];
               }
             }
           }
@@ -914,16 +1063,13 @@
         console.log("readIVs::IVs:ivStr:"+ivStr+", ivStr.length: "+ivStr.length);
         
         /* Start by clearing all existing IV Input Rows */
-        for (var i=0; i<aIV.length; i++) {
+        for (var i=0; i<userIVs.length; i++) {
           /* magic to actually remove all the rows one by one */
           var tr = document.getElementById('aIV['+i+']').parentNode;
           tr.parentNode.parentNode.removeChild(tr.parentNode);
         }
         /* clear the value arrays */
-        aIV.splice(0, aIV.length);
-        dIV.splice(0, dIV.length);
-        sIV.splice(0, sIV.length);
-        shdw.splice(0, shdw.length);
+        userIVs.splice(0, userIVs.length);
         
         for (var j=0; j<ivStr.length; j++)
         {
@@ -938,15 +1084,6 @@
           doTheInsert(userIVs[0],userIVs[1],userIVs[2],userIVs[3]);
         }
         console.log("readIVs: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);
-        main();
-      }
-    
-      function shdwUpdater() {
-        /* Ensure we have current shdw state all input rows */
-        for (var i=0; i<shdw.length; i++)
-        {
-          shdw[i] = document.getElementById("shdw["+i+"]").checked;
-        }
         main();
       }
       
@@ -964,12 +1101,9 @@
         var currentRow = [];
         var nonZeroXL = false; /* track visibility of XL candy column */
         /* Copy user IV arrays so we can destructively search for them */
-        var aIVclone = [...aIV];
-        var dIVclone = [...dIV];
-        var sIVclone = [...sIV];
+        var userIVsclone = [...userIVs];
         /* Ensure we clear data and feedback between table generation runs */
         document.getElementById('feedbackBox').innerHTML = "";
-        rIV = [], spIV = [], lvl = [];
 
         ranks = cmpCalcs(ranks, keys, dec);
         if (perfTiming) {T1 = performance.now();}
@@ -985,64 +1119,60 @@
           for (var j=0; j<ranks[keys[i]].length; j++) {
 
             /* non-user IV rows get 0 for sorting */
-            var hiddenSortRank = "";
+            var hiddenSortRank = 0;
 
             /* Process user IVs before we output this row's data */
-            for (var k=0; k<aIVclone.length; k++) {
+            for (var k=0; k<userIVsclone.length; k++) {
               /* Ensure this IV set is complete */
-              if (aIVclone[k] && dIVclone[k] && sIVclone[k]) {
+              if (userIVsclone[k][0] && userIVsclone[k][1] && userIVsclone[k][2]) {
                 /* Check if these are IVs we are looking for */
-                if (aIVclone[k]/1 === ranks[keys[i]][j].IVs.A/1
-                && dIVclone[k]/1 === ranks[keys[i]][j].IVs.D/1
-                && sIVclone[k]/1 === ranks[keys[i]][j].IVs.S/1) {
-                  /* Set hiddenSortRank to ensure rows pin to top */
-                  hiddenSortRank = aIVclone.length;
-
+                if (userIVsclone[k][0]/1 === ranks[keys[i]][j].IVs.A/1
+                && userIVsclone[k][1]/1 === ranks[keys[i]][j].IVs.D/1
+                && userIVsclone[k][2]/1 === ranks[keys[i]][j].IVs.S/1) {
                   /* Find this user IV set in real arrays */
-                  for (var l=0; l<aIV.length; l++) {
-                    if (aIV && dIV && sIV) {
+                  for (var l=0; l<userIVs.length; l++) {
+                    if (userIVs[l][0] && userIVs[l][1] && userIVs[l][2]) {
                       /* Do not divide by 1 to avoid converting blank to 0 */
-                      if (aIVclone[k] === aIV[l]
-                      && dIVclone[k] === dIV[l]
-                      && sIVclone[k] === sIV[l]) {
+                      if (userIVsclone[k][0] === userIVs[l][0]
+                      && userIVsclone[k][1] === userIVs[l][1]
+                      && userIVsclone[k][2] === userIVs[l][2]) {
                         /* Save this user IV's rank for later */
-                        rIV[l] = actualRank;
-                        spIV[l] = keys[i].split(".")[0];
-                        lvl[l] = ranks[keys[i]][j].L;
+                        userIVs[l][4] = actualRank;
+                        userIVs[l][5] = keys[i].split(".")[0];
+                        userIVs[l][6] = ranks[keys[i]][j].L;
+                        /* Set hiddenSortRank to ensure rows pin to top */
+                        hiddenSortRank = l-ranks.numRanks;
+                        userIVs[l][7] = hiddenSortRank;
+                        console.log("hiddenSortRank set to: "+hiddenSortRank+" for "+userIVsclone[k][0]+"/"+userIVsclone[k][1]+"/"+userIVsclone[k][2]);
                       }
                     }
                   }
-
                   /* Destroy this clone row to prevent re-processing it */
-                  aIVclone.splice(k,1);
-                  dIVclone.splice(k,1);
-                  sIVclone.splice(k,1);
+                  userIVsclone.splice(k,1);
                 }
               } else {
                 /* Removed incomplete IVs to speed up processing */ 
-                aIVclone.splice(k,1);
-                dIVclone.splice(k,1);
-                sIVclone.splice(k,1);
+                userIVsclone.splice(k,1);
               }
             }
             
             /* Print row iff user doesn't care about IV efficiency OR if this row's IVs are efficient */
             if (document.getElementById("effIV").checked === false || ranks[keys[i]][j].eff === true) {
               currentRow = [
-                actualRank,              /*Rank*/
-                ranks[keys[i]][j].L,     /*Level*/
-                ranks[keys[i]][j].CP,    /*Final  CP*/
+                actualRank,              /*0: Rank*/
+                ranks[keys[i]][j].L,     /*1: Level*/
+                ranks[keys[i]][j].CP,    /*2: Final  CP*/
                 Math.max(10, Math.floor(
                   (pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A)
                   * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) 
                   * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) 
-                  * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10)), /*MinLvl CP*/
-                ranks[keys[i]][j].IVs.A, /*Attack  IV*/
-                ranks[keys[i]][j].IVs.D, /*Defense IV*/
-                ranks[keys[i]][j].IVs.S  /*Stamina IV*/
+                  * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10)), /*3: MinLvl CP*/
+                ranks[keys[i]][j].IVs.A, /*4: Attack  IV*/
+                ranks[keys[i]][j].IVs.D, /*5: Defense IV*/
+                ranks[keys[i]][j].IVs.S  /*6: Stamina IV*/
               ];
               
-              /* XL Candy Calculation and Timing */
+              /*7: XL Candy Calculation and Timing */
               var candyStart = performance.now();
               var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
               /* Used to un-hide XL column after drawing table */
@@ -1053,15 +1183,26 @@
 
               /* Finish printing current row */
               currentRow.push(
-                stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false), /*Stardust*/
-                ranks[keys[i]][j].IVs.R1, /*R1 CMP*/
-                ranks[keys[i]][j].IVs.cmp+"%", /*CMP Wins*/
-                numOut(ranks[keys[i]][j].battle.A,dec),/*Attack Stat*/
-                numOut(ranks[keys[i]][j].battle.D,dec),/*Defense Stat*/
-                ranks[keys[i]][j].battle.S,/*HP*/
-                keys[i].split(".")[0],/*Stat Product*/
-                numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec))+"%"); /*Stat Prod Perfection %*/
-              var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0); currentRow.push(bulkprod); /*Bulk Product*/
+                stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false), /*8: Stardust*/
+                ranks[keys[i]][j].IVs.R1, /*9: R1 CMP*/
+                ranks[keys[i]][j].IVs.cmp+"%", /*10: CMP Wins*/
+                numOut(ranks[keys[i]][j].battle.A,dec),/*11: Attack Stat*/
+                numOut(ranks[keys[i]][j].battle.D,dec),/*12: Defense Stat*/
+                ranks[keys[i]][j].battle.S,/*13: HP*/
+                keys[i].split(".")[0],/*14: Stat Product*/
+                numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec))+"%"); /*15: Stat Prod Perfection %*/
+              var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, dec); currentRow.push(bulkprod); /*16: Bulk Product*/
+              var atkHPprod = numOut(numOut(ranks[keys[i]][j].battle.A,dec) * ranks[keys[i]][j].battle.S, dec); currentRow.push(atkHPprod); /*17: Attack-HP Product*/
+              var adjStatProdPerf = numOut((numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec)) - 90)*10,dec); /* Make this 0-100% instead of 90-100% */
+              var cmpStatavg = numOut((ranks[keys[i]][j].IVs.cmp/1 + adjStatProdPerf/1 + adjStatProdPerf/1)/3,dec); currentRow.push(cmpStatavg); /*18: CMP-Stat Product*/
+              //console.log("Computed cmpStatavg: "+currentRow[18]+" from adjStatProdPerf: "+adjStatProdPerf+" (orig SP:"+numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec))+") and cmp:"+ranks[keys[i]][j].IVs.cmp)
+              //console.log("ranks[keys[i]][j].battle.A/ranks.maxAtk.value"+ranks[keys[i]][j].battle.A/ranks.maxAtk.value);
+              var adjCMP = ((ranks[keys[i]][j].IVs.cmp/100)+9)/10;
+              //console.log("ranks[keys[i]][j].IVs.cmp"+ranks[keys[i]][j].IVs.cmp+", adjCMP: "+adjCMP); 
+              var doubleAtkHPstatProd = numOut((ranks[keys[i]][j].battle.A * ranks[keys[i]][j].battle.A * ranks[keys[i]][j].battle.D * ranks[keys[i]][j].battle.S * ranks[keys[i]][j].battle.S)/5000,0); currentRow.push(doubleAtkHPstatProd); /*19: CMP-Stat Product*/
+              var customPcntProdProd = numOut(10000*
+                (adjCMP * Math.pow((ranks[keys[i]][j].battle.A/ranks.maxAtk.value),3) * (Math.pow((ranks[keys[i]][j].battle.D/ranks.maxDef.value),2) * Math.pow(ranks[keys[i]][j].battle.S/ranks.maxHP.value,3))/2)
+                ,dec); currentRow.push(customPcntProdProd); /*20: CMP-Stat Product*/
               currentRow.push(hiddenSortRank); /* hidden IV sort column */
               
               tableData.push(currentRow);
@@ -1069,6 +1210,8 @@
             actualRank = actualRank + 1;
           }
         }
+        /* Track the index of the hiddenRow used for sorting user IVs to top */
+        var hiddenRowIndex = currentRow.length-1;
         
         /* Timing gate after generating table data */
         if (perfTiming) {T3 = performance.now();}
@@ -1105,11 +1248,15 @@
               { "name": "HP", "responsivePriority": "1300",  "searchBuilderTitle": "HP Stat","targets": 13},
               { "name": "Stat Prod", "responsivePriority": "1000", "searchBuilderTitle": "Stat Product", "targets": 14},
               { "name": "Perfect", "responsivePriority": "3", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": 15},
-              { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": 16, "visible": false},
-              {"targets": 17, "type": "hidden", "searchable": false, "visible": false},
+              { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": 16, "visible": true},
+              { "name": "AtkHP Prod", "responsivePriority": "1450", "searchBuilderTitle": "Attack * HP Product", "targets": 17, "visible": true},
+              { "name": "cmpStat Prod", "responsivePriority": "1450", "searchBuilderTitle": "Attack * HP Product", "targets": 18, "visible": true},
+              { "name": "aadss Stat Prod", "responsivePriority": "1450", "searchBuilderTitle": "2xA*D*2xHP", "targets": 19, "visible": true},
+              { "name": "custom Stat Prod", "responsivePriority": "1450", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 19, "visible": true},
+              {"targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false}
             ],
             createdRow: (row, data, index) => {
-              if (data[17]) {
+              if (data[hiddenRowIndex] !== 0) {
                 if (data[0]/1 < (0.02442/1*ranks.numRanks/1)) {
                   $(row).addClass('good'); /*green for "good"*/
                 } else if (data[0]/1 < (0.2442/1*ranks.numRanks/1)) {
@@ -1130,7 +1277,7 @@
             lengthChange: true,
             lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
             orderFixed: {
-              "pre": [17, "desc"]
+              "pre": [hiddenRowIndex, "asc"]
             },
             paging: true,
             pageLength: pageLen,
@@ -1148,14 +1295,35 @@
         }
 
         /* Enable user click to add IVs to compare */
-        $('#monTable tbody').on('click', function (e) {
-          addToCompare(e);
-          console.log("added IVs!");
+        $('#monTable tbody').on('click', 'tr', function (e) {
+          /* Update hiddenSortRank to "pin" this row to top of table */
+          var d = dt.row(this).data();
+          var hiddenSortVal = userIVs.length-dt.rows().count()/1;
+          /* Fix userIVs initialized to "default" -/15/15 row, really has 0 userIVs */
+          if (userIVs[0][0] === "") {
+            hiddenSortVal = 0-dt.rows().count()/1;
+          }
+          console.log("Setting d["+hiddenRowIndex+"]: "+hiddenSortVal+" because userIVs.length="+userIVs.length+" and dt.rows().count()="+dt.rows().count());
+          d[hiddenRowIndex] = hiddenSortVal;
+          dt.row(this).data(d).draw();
+
+          /* Add class to properly highlight this row with CSS */
+          var row = window.event.target.parentNode;
+          if (d[0]/1 < (0.02442/1*ranks.numRanks/1)) {
+            row.classList.add('good'); /*green for "good"*/
+          } else if (d[0]/1 < (0.2442/1*ranks.numRanks/1)) {
+            row.classList.add('ok'); /*orange for "ok"*/
+          } else {
+            row.classList.add('rubbish'); /*red for "rubbish"*/
+          }
+          
+          /* Ensure new row is added to DOM, and aIV updated */
+          addToCompare(e, d[0], d[1], d[14], d[hiddenRowIndex]);
         });
 
         /* */
         $('#monTable_length').on( 'change', function () {
-          pageLen = dt.page.info().length;
+          pageLen = dt.page.info().length/1;
           updateURL(mon, league, leagueName);
         } );
 
@@ -1183,326 +1351,8 @@
         }
         return;
       }
-      
-      /* Adapted from https://stackoverflow.com/a/13960306 */
-      function sortUserIVs() {
-        var T0, i;
-        if (perfTiming) {T0 = performance.now();}
 
-        /* An empty array of indexes */
-        var idx = [];
-        for (i = 0; i < aIV.length; i++) {
-            idx.push(i);
-        }
-
-        /* A shorthand function */
-        var comparator = function(arr) {
-            return function(a, b) { /* Check for undefined values first, sort to end of array */
-                return ((typeof(arr[a]) < typeof(arr[b])) ? -1 :((arr[a] < arr[b]) ? -1 : ((arr[a] > arr[b]) ? 1 : 0)));
-            };
-        };
-
-        /* Sort by rIV */
-        idx = idx.sort(comparator(rIV));
-
-        /* Clone arrays so we don't lose values */
-        var aIVclone = [...aIV];
-        var dIVclone = [...dIV];
-        var sIVclone = [...sIV];
-        var shdwclone = [...shdw];
-        var rIVclone = [...rIV];
-        var spIVclone = [...spIV];
-        var lvlclone = [...lvl];
-
-        /* Sort all of the arrays by rIV order */
-        for (i = 0; i < aIV.length; i++) {
-          aIV[i] = aIVclone[idx[i]];
-          dIV[i] = dIVclone[idx[i]];
-          sIV[i] = sIVclone[idx[i]];
-          shdw[i] = shdwclone[idx[i]];
-          rIV[i] = rIVclone[idx[i]];
-          spIV[i] = spIVclone[idx[i]];
-          lvl[i] = lvlclone[idx[i]];
-        }
-
-        /* Re-order DOM elements to match */
-        for (i = 0; i < aIV.length; i++) {
-          document.getElementById("aIV["+i+"]").selectedIndex = [...document.getElementById("aIV["+i+"]").options].findIndex (option => option.text === aIV[i]);
-          document.getElementById("dIV["+i+"]").selectedIndex = [...document.getElementById("dIV["+i+"]").options].findIndex (option => option.text === dIV[i]);
-          document.getElementById("sIV["+i+"]").selectedIndex = [...document.getElementById("sIV["+i+"]").options].findIndex (option => option.text === sIV[i]);
-          document.getElementById("shdw["+(i)+"]").checked = (shdw[i] === "true") ? true: false;
-        }
-
-        if (perfTiming) {stopTiming(T0, "sortUserIVs");}
-      }
-
-      function evoStuff(aIV, dIV, sIV, shdw, mon, league, leagueName, ranks) {
-        var T0,T1,T2,T3,T4,T5,T6;
-        if (perfTiming) {T0 = performance.now();}
-        /*console.log("gDT: Received aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw+", league:"+league+", ranks"+ranks+");*/
-
-        var leagueName= $('#league').find(":selected").text();
-        var dec = document.getElementById('dec').value;
-        var evoLeague = document.getElementById('familyEvoLeague').value;
-        var evoLeagueName = document.getElementById('familyEvoLeague').options[document.getElementById('familyEvoLeague').selectedIndex].innerHTML;
-        var minLvl = document.getElementById('minLvl').value;
-        var maxLvl = document.getElementById('maxLvl').value;
-        var floor = document.getElementById('floor').value;
-        var keys = Object.keys(ranks);
-        var maxStatProd = keys[0].split(".")[0];
-        var evos = pokeListObj[mon].split(',').slice(4, pokeListObj[mon].split(',').length);
-        console.log("gDT: evos:"+JSON.stringify(evos));
-        var evoLen = evos.length;
-        var settings = (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0");
-        
-        /* If family evos are checked and mirror selected, mirror selected league for family evos */
-        if (document.getElementById("family").checked && evoLeague === "mirror") {
-          evoLeague = league;
-          evoLeagueName = leagueName;
-          console.log("gDT: Detected mirror, mirroed to evoLeague:"+evoLeague+", evoLeagueName:"+evoLeagueName);
-        }
-        
-        /*we have at least one rank to output, let's print! */
-        var evoHtml = "";
-        var evoFeedback = "";
-        var html = "";
-
-        let tableData = [];
-        ranks = cmpCalcs(ranks, keys, dec);
-         /* First timing gate for init + CMP */
-         if (perfTiming) {T1 = performance.now();}
-        
-        /*print main table output and count actual outputted rows/ranks*/
-        var actualRank = 1;
-        var minAtk = ranks.minAtk.value, maxAtk = ranks.maxAtk.value;
-        var minDef = ranks.minDef.value, maxDef = ranks.maxDef.value;
-        
-        /*used to ensure we don't Display Trade Improvement % for ineligible IVs*/
-        var gmRhtml = null;
-        document.getElementById('feedbackBox').innerHTML = "";
-        var uri;
-        lvl = [];rIV = [];
-        var validIVs = "", invAtkIVs = "", invDefIVs = "", invHPIVs = "";
-        
-        /* Generate user inputted IV rows for main output table */
-        for (i=0; i<aIV.length; i++) {
-          if (aIV[i] && dIV[i] && sIV[i]) {
-            if ((aIV[i]/1 >= floor/1) && (dIV[i]/1 >= floor/1) && (sIV[i]/1 >= floor/1)) {
-              /*console.log("i:"+i+" All 3 IVs > floor("+floor+"): "+aIV[i]+", "+dIV[i]+", "+sIV[i]+", aIV.length:"+aIV.length);*/
-              [gmRhtml, vAtk, vDef, vHP] = getMonRank(ranks, keys, shdw[i], maxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, mon, false, false, maxLvl, dec);
-              
-              /* Keep track of which user IVs are valid and invalid per stat filters */
-              if (filterMod) {
-                if (vAtk && vDef && vHP) {
-                  validIVs += aIV[i]+"-"+dIV[i]+"-"+sIV[i]+" ";
-                } else {
-                  if (!vAtk) {invAtkIVs += aIV[i]+"-"+dIV[i]+"-"+sIV[i]+" ";}
-                  if (!vDef) {invDefIVs += aIV[i]+"-"+dIV[i]+"-"+sIV[i]+" ";}
-                  if (!vHP) {invHPIVs += aIV[i]+"-"+dIV[i]+"-"+sIV[i]+" ";}
-                }
-              }
-              
-              if (aIV[i] && dIV[i] && sIV[i] && (gmRhtml === "")) {
-                console.log("gDT: i:"+i+" Detected too high CP after getMonRank");
-                document.getElementById('feedbackBox').innerHTML += "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") & min level ("+minLvl+") is too big for "+leagueName+"<br>Please check Advanced: Min Level and try again</i></p><br>";
-              } else {html += gmRhtml;}
-              
-              /* See if we need to output evo familyTable*/
-              if (evoLen && document.getElementById("family").checked) {
-                /* valid set of IVs, need to find base stats for evos */
-                for (var e=0; e<evoLen; e++) {
-                  /* Ensure we don't show impossible Tyrogue evos (highest stat determines evo) */
-                  if (mon === "Tyrogue" && validTyroEvo(aIV[i], dIV[i], sIV[i], evos[e])) {continue;}
-                  
-                  var evoVals = pokeListObj[evos[e]].split(",");
-                  var evoRanks = calculate(parseInt(evoVals[1]), parseInt(evoVals[2]), parseInt(evoVals[3]), floor, minLvl, maxLvl, false, evoLeague, evos[e]);
-                  var evoKeys = Object.keys(evoRanks);
-                  var evoMaxStatProd = evoKeys[0].split(".")[0];
-                  /*create link for evo table entry*/
-                  var URL = window.location.href.split("?")[0];
-                  uri = URL + "?mon="+evos[e];
-                  uri += "&cp="+league; /* Must include league */
-                  if (floor/1 > 0) uri += "&f="+floor;
-                  if (minLvl/1 > 1) uri += "&min="+minLvl;
-                  if (maxLvl/1 !== "51") uri += "&max="+maxLvl;
-                  uri += "&set="+settings+"&fel="+evoLeague+"&IVs="+aIV[i] + "_" + dIV[i] + "_" + sIV[i];
-                  if (shdw[i]) {
-                    uri += "_" + shdw[i];
-                  }
-                  uri += "&mA=0&mD=0&mHP=0";
-                  let [evoGMRhtml] = getMonRank(evoRanks, evoKeys, shdw[i], evoMaxStatProd, aIV[i], dIV[i], sIV[i], aIV.length, mon, evos[e], uri, false, dec);
-                  
-                  if (evoGMRhtml) {
-                    if (evoHtml) {
-                      /*if this is a second evo, just add it*/
-                      evoHtml += evoGMRhtml;
-                    } else {
-                      /*include stardust costs if enabled*/
-                      var dustHeader = "";
-                      if (document.getElementById("dust").checked) {
-                        dustHeader="<th>Dust</th>";
-                      }
-                      /*include Bulk Product if enabled*/
-                      var bulkProdHeader = "";
-                      if (document.getElementById("bulk").checked) {
-                        bulkProdHeader="<th>Bulk Prod</th>";
-                      }
-                      /*if this is the first evo, add header too*/
-                      if ((evoLen > 1) || (aIV.length > 1)) {
-                        evoHtml = "<p><i>"+evoLen+" "+mon+" "+evoLeagueName+" family evos:<br>(click table headers to sort)</i></p><table id='familyTable'><tr><th>Pokémon</th>";
-                        if (aIV.length > 1) {
-                          evoHtml += "<th>IVs</th>";
-                        }
-                        evoHtml += "<th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th>"+dustHeader+"<th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th>"+bulkProdHeader+"</tr>";
-                      } else {
-                        evoHtml = "<p><i>"+evoLen+" "+mon+" "+evoLeagueName+" family evo:</i></p><table id='familyTable'><tr><th>Pokémon</th><th>#</th><th>Lvl</th><th>CP</th><th>Perfect</th>"+dustHeader+"<th>Atk</th><th>Def</th><th>HP</th><th>Stat Prod</th>"+bulkProdHeader+"</tr>";
-                      }
-                      evoHtml += evoGMRhtml;
-                    }
-                  } else {
-                    evoFeedback += "<p><i>"+evos[e]+" with your IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") & min level ("+minLvl+") is too big for "+leagueName+"</i></p>";
-                  }
-                }
-              }
-            } else {
-              console.log("gDT: i:"+i+" Detected IV below Floor:"+floor+" aIV[i]:"+aIV[i]+" dIV[i]:"+dIV[i]+" sIV[i]:"+sIV[i]);
-              document.getElementById('feedbackBox').innerHTML += "<p><i>Row "+(i+1)+" with IVs ("+aIV[i]+"/"+dIV[i]+"/"+sIV[i]+") is below the IV Floor ("+floor+")<br>Please check Advanced: IV Floor and try again</i></p><br>";
-            }
-          } else {
-            console.log("gDT: i:"+i+" Missing an IV, detected: aIV["+i+"]:"+aIV[i]+" dIV["+i+"]:"+dIV[i]+" sIV["+i+"]:"+sIV[i]);
-            document.getElementById('feedbackBox').innerHTML += "<p><i>Please enter an Attack IV for Row "+(i+1)+" with IVs (_"+aIV[i]+"_/"+dIV[i]+"/"+sIV[i]+") to check your "+mon+"'s "+leagueName+" PvP Rank</i></p>";
-            lvl.push(false); /* keep this balanced */
-          }
-        }
-        if (filterMod && aIV[0]) {
-          if (validIVs && (invAtkIVs || invDefIVs || invHPIVs)) {
-            document.getElementById('feedbackBox').innerHTML += "<p><i>IVs that meet your stat filter cutoffs: "+validIVs+"</p>";
-            if (invAtkIVs) {
-              document.getElementById('feedbackBox').innerHTML += "<p>IVs below minimum attack: "+invAtkIVs+"</i></p>";
-            }
-            if (invDefIVs) {
-              document.getElementById('feedbackBox').innerHTML += "<p>IVs below minimum defense: "+invDefIVs+"</i></p>";
-            }
-            if (invHPIVs) {
-              document.getElementById('feedbackBox').innerHTML += "<p>IVs below minimum HP: "+invHPIVs+"</i></p>";
-            }
-          } else if (validIVs) {
-            document.getElementById('feedbackBox').innerHTML += "<p><i>All IVs are above stat filters cutoffs</i></p>";
-          } else {
-            document.getElementById('feedbackBox').innerHTML += "<p><i>No IVs meet your stat filter cutoffs!</i></p>";
-          }
-        }
-        evoHtml += "</table>";
-        evoFeedback += "<br />";
-        /*console.log("gDT: Finished creating output for IVs, now printing main table...");*/
-        /* Next timing gate after outputting IVs */
-        if (perfTiming) {T2 = performance.now();}
-        
-        /* used to track if we should hide XL candy column */
-        var nonZeroXL = false;
-        var outIVs = "";
-        let currentRow = [];
-
-        /* See if we need to check IV Efficiency */
-        var effIV = true;
-        if (document.getElementById("effIV").checked){
-          ranks = checkEfficientIVs(ranks, keys, dec);
-        }
-        /* Next timing gate after checking efficiency of IVs */
-        if (perfTiming) {T3 = performance.now();}
-        var candyTime = 0;
-
-        for (i=0; (actualRank/1<=ranks.numRanks/1); i++) {
-          for (var j=0; j<ranks[keys[i]].length; j++) {
-            
-            if (document.getElementById("effIV").checked === false || ranks[keys[i]][j].eff === true) {
-              /* All three stats are above filter cutoffs, and (if enabled by user) IV is efficient, proceed with printing this row */
-              currentRow = [actualRank,ranks[keys[i]][j].L,ranks[keys[i]][j].CP]; /*Rank, Level, Final CP*/
-              currentRow.push(Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10))); /*Raid/Hatch CP*/
-              currentRow.push(ranks[keys[i]][j].IVs.A,ranks[keys[i]][j].IVs.D,ranks[keys[i]][j].IVs.S); /*Atk, Def, Sta IVs*/
-              outIVs+=ranks[keys[i]][j].IVs.A+"-"+ranks[keys[i]][j].IVs.D+"-"+ranks[keys[i]][j].IVs.S+",";
-              var candyStart = performance.now();
-              if (maxLvl > 41 && ranks.maxLvl>41) {
-                var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
-                if (!nonZeroXL && candy > 0) {nonZeroXL = true;} /* Used to un-hide XL column after drawing table */
-                currentRow.push(candy);
-                
-              } else { /* Pad column data so table can render properly */
-                currentRow.push(0);
-              }
-              var candyEnd = performance.now();
-              candyTime += candyEnd/1-candyStart/1;
-              currentRow.push(stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)); /*Stardust*/
-              currentRow.push(ranks[keys[i]][j].IVs.R1,ranks[keys[i]][j].IVs.cmp+"%"); /*R1 CMP, CMP Wins*/
-              currentRow.push(numOut(ranks[keys[i]][j].battle.A,dec),numOut(ranks[keys[i]][j].battle.D,dec),ranks[keys[i]][j].battle.S,keys[i].split(".")[0],parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(3)+"%"); /*League Atk, Def, HP Stats, Stat Product, Stat Prod Perfection %*/
-              var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0); currentRow.push(bulkprod); /*Bulk Product*/
-              tableData.push(currentRow);
-            }
-            actualRank = actualRank + 1;
-          }
-        }
-        /* Timing gate after generating table data */
-        if (perfTiming) {T4 = performance.now();}
-        candyTime = candyTime.toFixed(1);
-
-        /* Timing gate after generating table */
-        if (perfTiming) {T5 = performance.now();}
-
-        /*compute trade percentages*/
-        var trades = "";
-        var searchLink = "";
-        var statProd = html.split('</td></tr><tr><td>')[0];
-        if ((gmRhtml !== "") && (statProd !== null) && (aIV[aIV.length-1] && dIV[aIV.length-1] && sIV[aIV.length-1])) {
-          statProd = statProd.split('</td><td>');
-          statProd = statProd[statProd.length-1];
-          
-          if (document.getElementById("dti").checked)  {
-            trades = tradePcnts(ranks, keys, statProd, floor, aIV.length, aIV[aIV.length-1], dIV[aIV.length-1], sIV[aIV.length-1], false);
-          }
-          /* Generate Search String links for each IV set, formatted like: https://pvpivs.com/searchStr.html?mon=Togedemaru&cp=1500&r=15_f_f&set=10100*/
-          if (!filterMod) {
-            for (i=0; i<rIV.length; i++) {
-              searchLink += "<p><a href='https://pvpivs.com/searchStr.html?mon="+mon+"&cp="+league+"&r="+rIV[i]+"&set=10100'>Generate "+mon+" Search String to Trash below Rank "+rIV[i]+"</a></p>";
-            }
-          }
-        } else {
-          if (document.getElementById("dti").checked)  {
-            trades = tradePcnts(ranks, keys, statProd, floor, false, false, false, false, league);
-          }
-        }
-        
-        /* Print out link to custom IV Search String if any ranks were filtered out*/
-        if (filterMod) {
-          var searchMon = mon;
-          var value = pokeListObj[mon].split(',');
-          /* Trim trailing comma off string */
-          outIVs = outIVs.replace(/,\s*$/, "");
-          /* Ensure that mon is a base form, if not find the base form! */
-          if (!(value[0].includes("b"))) {
-            /* Not a base form, check evolutions */
-            var monFamilyNames = value.slice(4,value.length);
-            for (i=0; i<monFamilyNames.length; i++) {
-              if ((pokeListObj[monFamilyNames[i]].split(",")[0]).includes("b")) {
-                /*console.log("Found the base mon! "+pokeListObj[monFamilyNames[i]].split(",")[0]+", setting searchMon="+monFamilyNames[i]);*/
-                searchMon = monFamilyNames[i];
-              }
-            }
-          }
-          searchLink += "<p><a href='https://www.pvpivs.com/searchStr.html?mon="+searchMon+"&cp="+league+"&o=000011&IVentry="+outIVs+"'>Generate "+searchMon+" Search String for only these filtered IVs</a></p>";
-        }
-
-        document.getElementById('outputBox').innerHTML = evoHtml + evoFeedback;
-        document.getElementById('outputBox').innerHTML += searchLink + "<br>" + trades;
-
-        /* Final timing gate */
-        if (perfTiming) {T6 = performance.now();
-          console.log(mon+" genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IVs "+(T2-T1).toFixed(1)+"ms + IV Efficiency "+(T3-T2).toFixed(1)+"ms) + Generate Data "+(T4-T3).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Build DataTable "+(T5-T4).toFixed(1)+"ms) + Trade Pcnt & Links "+(T6-T5).toFixed(1)+"ms)");
-          document.getElementById('timing_outputs').innerHTML += "genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IVs "+(T2-T1).toFixed(1)+"ms + IV Efficiency "+(T3-T2).toFixed(1)+"ms + Generate Data "+(T4-T3).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Build DataTable "+(T5-T4).toFixed(1)+"ms) + Trade Pcnt & Links "+(T6-T5).toFixed(1)+"ms)<br>";
-        }
-        return [];
-      }
-      
-      function addToCompare(e) {
+      function addToCompare(e, rank, level, statProd, hiddenSortRank) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
@@ -1518,19 +1368,24 @@
         
         /* Ensure we aren't duplicating IVs */
         var uniqueIVs = true;
-        for (var i=0; i<aIV.length; i++) {
-          if ((atk/1 === aIV[i]/1) && (def/1 === dIV[i]/1) && (sta/1 === sIV[i]/1)) {
+        for (var i=0; i<userIVs.length; i++) {
+          if (atk && (atk == userIVs[i][0]) && (def == userIVs[i][1]) && (sta == userIVs[i][2])) {
             /* Ensure that attack is not null, to allow 0/15/15 to overwrite default row */
-            if (document.getElementById("aIV[0]").value !== '') {
-              uniqueIVs = false;
-              break;
+            uniqueIVs = false;
+            break;
+          } else {
+            /* While we're here, see if there are any incomplete rows to remove (-/15/15) */
+            /* But don't remove the last row if it is incomplete, that is done later on   */
+            //console.log("userIVs[i][0]:"+userIVs[i][0]+", and i("+i+")<("+(userIVs.length-1)+")userIVs.length-1");
+            if (userIVs[i][0] === "") {
+              console.log("row "+i+" is incomplete ("+userIVs[i][0]+"/"+userIVs[i][1]+"/"+userIVs[i][2]+"), removing...");
+              /* TODO: Call doTheRemoval() to somehow remove this incomplete row */
             }
           }
         }
         
         if (uniqueIVs) {
-          doTheInsert(atk, def, sta);
-          main();
+          doTheInsert(atk, def, sta, false, rank, level, statProd, hiddenSortRank);
         } else {
           console.log(atk+"/"+def+"/"+sta+" already exists in comparison IVs, not adding to compare");
           if (document.getElementById('feedbackBox').innerHTML.includes(atk+"/"+def+"/"+sta+" already exists in comparison IVs")) {
@@ -1706,7 +1561,7 @@
             for (var j=0; j<ranks[keys[i]].length; j++) {
                 for (var k=0; k<counts.length; k++) {
                     if (counts[k].name/1 === ranks[keys[i]][j].battle.A/1) {
-                        ranks[keys[i]][j].IVs.cmp = numOut(counts[k].count/ranks.numRanks * 100,1);
+                        ranks[keys[i]][j].IVs.cmp = numOut(counts[k].count/ranks.numRanks * 100,dec);
                     }
                 }
             }
@@ -1890,98 +1745,6 @@
           }
         if (perfTiming) {stopTiming(T0, "tradePcnts");}
         return outHTML+"</table>";
-      }
-      
-      function getMonRank(ranks, keys, shdw, maxStatProd, aIV, dIV, sIV, numIVs, mon, evo, uri, maxLvl, dec) {
-        var T0;
-        if (perfTiming) {T0 = performance.now();}
-        /*console.log("gMR: received: ranks:"+ranks+", keys[0]:"+keys[0]+", shdw:"+shdw+", maxStatProd:"+maxStatProd+", aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", numIVs:"+numIVs+", mon:"+mon+", uri:"+uri+", maxLvl:"+maxLvl+", dec:"+dec);*/
-        var html = "";
-        var actualRank = 1;
-        var vAtk = false, vDef = false, vHP = false;
-
-        for (var i=0; (i<ranks.numRanks && ranks[keys[i]].length); i++) {
-          for (var j=0; j<ranks[keys[i]].length; j++) {
-            if ((aIV/1 === ranks[keys[i]][j].IVs.A/1) && (dIV/1 === ranks[keys[i]][j].IVs.D/1) && (sIV/1 === ranks[keys[i]][j].IVs.S/1)) {
-              /*control highlight of User Data row based on rank*/
-              /*this has been moved to CSS Stylings as of re-write*/
-              if (actualRank/1 < (0.02442*ranks.numRanks/1)) {
-                html+="<tr class='good'>"; /*green for "good"*/
-              } else if (actualRank/1 < (0.2442*ranks.numRanks/1)) {
-                html+="<tr class='ok'>"; /*orange for "ok"*/
-              } else {
-                html+="<tr class='rubbish'>"; /*red for "rubbish"*/
-              }
-              
-              /*Pokemon	Rank	Lvl	CP	%	PvP Atk	PvP Def	PvP HP	Stat Prod*/
-              /*output the row for this individual mon*/
-              /*if there is an evo mon passed in, print/exclude certain rows*/
-              /*allows for more code re-use / less versioning to maintain*/
-              if (evo) {
-                html+="<td><a href='"+encodeURI(uri)+"'>"+evo+"</a></td>"; /*evos[e] aka evoName*/
-                if (numIVs/1 > 1) {
-                  html+="<td>"+ranks[keys[i]][j].IVs.A+"/"+ranks[keys[i]][j].IVs.D+"/"+ranks[keys[i]][j].IVs.S+"</td>"; /*evoIVs*/
-                }
-              }
-              html+="<td>"+actualRank+"</td>"; /*Rank*/
-              html+="<td>"+ranks[keys[i]][j].L+"</td>"; /*Level*/
-              html+="<td>"+ranks[keys[i]][j].CP+"</td>"; /*Final CP*/
-              if (!evo) { /*skip if this is an evoTable print*/
-              
-              /* Show min lvl CP (raid/hatch) if checked by user */
-              if (document.getElementById('mlCP').checked) {
-                console.log("Attempting to read pokeListObj["+mon+"]:");
-                console.log(pokeListObj[mon]);
-                html+="<td>"+Math.max(10, Math.floor((pokeListObj[mon].split(',')[1]/1 + ranks[keys[i]][j].IVs.A) * Math.sqrt(pokeListObj[mon].split(',')[2]/1 + ranks[keys[i]][j].IVs.D) * Math.sqrt(pokeListObj[mon].split(',')[3]/1 + ranks[keys[i]][j].IVs.S) * cpm[(document.getElementById('minLvl').value-1)*2] * cpm[(document.getElementById('minLvl').value-1)*2] / 10))+"</td>"; /*Raid/Hatch CP*/}
-                html+="<td>"+ranks[keys[i]][j].IVs.A+"</td>"; /*Atk IV*/
-                html+="<td>"+ranks[keys[i]][j].IVs.D+"</td>"; /*Def IV*/
-                html+="<td>"+ranks[keys[i]][j].IVs.S+"</td>"; /*Sta IV*/
-                rIV.push(actualRank); /*Save rank for trash string links*/
-                lvl.push(ranks[keys[i]][j].L); /*Save levels for PvPoke Custom Group Export*/
-              }
-              html+="<td>"+parseFloat((100*keys[i].split(".")[0])/maxStatProd).toFixed(2)+"%"+"</td>"; /*Perfection*/
-              if (!evo && maxLvl > 41 && ranks.maxLvl>41) {
-                html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40, shdw)+"</td>";
-              }
-              if (document.getElementById("dust").checked) {
-                html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0,shdw)+"</td>";
-              }
-              if (!evo && document.getElementById("cmp").checked) {
-                html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
-                html+="<td>"+ranks[keys[i]][j].IVs.cmp+"%"+"</td>"; /*CMP Wins*/
-              }
-              html+="<td>"+numOut(ranks[keys[i]][j].battle.A,dec);html+= shdw ? "<p style='color:purple'>("+numOut(ranks[keys[i]][j].battle.A*1.2,dec)+")</p></td>": "</td>"; /*GL Atk Total*/
-              html+="<td>"+numOut(ranks[keys[i]][j].battle.D,dec);html+= shdw ? "<p style='color:purple'>("+numOut(ranks[keys[i]][j].battle.D*0.8,dec)+")</p></td>": "</td>"; /*GL Def Total*/
-              html+="<td>"+ranks[keys[i]][j].battle.S+"</td>"; /*GL Sta IV*/
-              html+="<td>"+keys[i].split(".")[0]+"</td>"; /*Stat Product*/
-              if (document.getElementById("bulk").checked) {
-                var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, 0);
-                html+="<td>"+bulkprod+"</td>"; /*Bulk Product*/
-              }
-              html+="</tr>";
-              /*console.log("Found rank="+actualRank);*/
-              
-              /* Check if these IVs are valid or invalid for user filter feeedback */
-              if (filterMod) {
-                if (mA/1 <= numOut(ranks[keys[i]][j].battle.A,dec)) {
-                  vAtk = true;
-                }
-                if (mD/1 <= numOut(ranks[keys[i]][j].battle.D,dec)) {
-                  vDef = true;
-                }
-                if (mHP/1 <= ranks[keys[i]][j].battle.S) {
-                  vHP = true;
-                }
-              }
-              
-              break; /* we found it, stop searching / leave the loop!*/
-            }
-            actualRank = actualRank + 1;
-          }
-        }
-        
-        if (perfTiming) {stopTiming(T0, "getMonRank");}
-        return [html, vAtk, vDef, vHP];
       }
       
       function XLcandy(xlev, shdw) {
@@ -2203,91 +1966,92 @@
         return false;
       }
       
-      function doTheInsert(atk, def, sta, sha) {
+      function doTheInsert(atk, def, sta, sha, rank, level, statProd, hiddenSortRank) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
-        /* First check if we should insert a new row or not */
-        if (!(atk && def && sta) && aIV.length > 0) {
-          console.log("doTheInsert: Missing one or more IVs");
-          if (document.getElementById("aIV["+(aIV.length-1)+"]").value === ''
-          &&  document.getElementById("dIV["+(dIV.length-1)+"]").value === '15'
-          &&  document.getElementById("sIV["+(sIV.length-1)+"]").value === '15') {
-            console.log("We already have a default row at the end, skipping duplicate insert");
-            document.getElementById('feedbackBox').innerHTML += "New Row is already awaiting input (-/15/15)<br />";
-            if (perfTiming) {stopTiming(T0, "doTheInsert");}
-            return;
-          }
-        } else {
-          if (aIV.length == 0) {
-            document.getElementById('feedbackBox').innerHTML += "Cannot delete default row awaiting input (-/15/15)<br />";
-            console.log("We only have the default row, skipping delete");
-          } else {
-            console.log("Last row IVs: "+document.getElementById("aIV["+(aIV.length-1)+"]").value,document.getElementById("dIV["+(dIV.length-1)+"]").value, document.getElementById("sIV["+(sIV.length-1)+"]").value)
-          }
+        /* See if this is a request to add another default row, if so, ignore */
+        if (!(atk && def && sta) && 
+        (document.getElementById("aIV["+(userIVs.length-1)+"]").value === '' 
+        &&  document.getElementById("dIV["+(userIVs.length-1)+"]").value/1 === 15/1
+        &&  document.getElementById("sIV["+(userIVs.length-1)+"]").value/1 === 15/1)
+        ) {
+          console.log("We already have a default row at the end, skipping duplicate insert");
+          document.getElementById('feedbackBox').innerHTML += "New Row is already awaiting input (-/15/15)<br />";
+          if (perfTiming) {stopTiming(T0, "doTheInsert");}
+          return;
         }
 
-        /* We need to insert a new row, create DOM placeholders */
-        var newRow=document.getElementById('inputTable').insertRow();
-        var shadowCB = document.getElementsByClassName('shadowCB');
-        
-        newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw["+shadowCB.length+"]' type='checkbox' oninput='shdwUpdater()'></td><td><select title='Your Attack IV' class='aIV' id='aIV["+aIV.length+"]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV["+dIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV["+sIV.length+"]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus["+shadowCB.length+"]' onclick='doTheRemoval()'></button></td></tr>";
-        
-        /* Determine IVs for new row, default (-/15/15) or specific IVs */
-        if (!(atk && def && sta)) {
-          console.log("doTheInsert: Inserting default values (-/15/15) instead of "+atk,def,sta);
-          atk = '';
-          def = '15';
-          sta = '15';
+        /* Determine if we need to add a new row, */
+        /* Or overwrite existing default last row */
+        var newRowDOMoffset = userIVs.length-1;
+        if (document.getElementById("aIV["+(newRowDOMoffset)+"]").value === ''
+        &&  document.getElementById("dIV["+(newRowDOMoffset)+"]").value/1 === 15/1
+        &&  document.getElementById("sIV["+(newRowDOMoffset)+"]").value/1 === 15/1) {
+          userIVs[newRowDOMoffset] = [atk,def,sta,sha,rank,statProd,level,hiddenSortRank];
         } else {
-          document.getElementById("aIV["+aIV.length+"]").selectedIndex = [...document.getElementById("aIV["+aIV.length+"]").options].findIndex (option => option.text === atk);
-          document.getElementById("dIV["+dIV.length+"]").selectedIndex = [...document.getElementById("dIV["+dIV.length+"]").options].findIndex (option => option.text === def);
-          document.getElementById("sIV["+sIV.length+"]").selectedIndex = [...document.getElementById("sIV["+sIV.length+"]").options].findIndex (option => option.text === sta);
-          document.getElementById("shdw["+(shadowCB.length-1)+"]").checked = (sha === "true") ? true: false;
-        }
-        console.log("Inserting row");
-        aIV.push(atk);
-        dIV.push(def);
-        sIV.push(sta);
-        shdw.push(sha);
-        
-        if (aIV.length/1 === 2) {
-          /*Need to check if we still have -/15/15 row and remove it*/
-          if ((document.getElementById('aIV[0]').value === '') && (document.getElementById('dIV[0]').value === '15') && (document.getElementById('sIV[0]').value === '15')) {
-            /* Confirmed that first row is default row (-/15/15) and needs to be removed*/
-            
-            var td = document.getElementById('aIV[0]').parentNode;
-            var tr = td.parentNode; /*the row for -/15/15 to be removed*/
-            
-            /* Update remaining row element */
-            document.getElementById("shdw[1]").id = "shdw[0]";
-            document.getElementById("aIV[1]").id = "aIV[0]";
-            document.getElementById("dIV[1]").id = "dIV[0]";
-            document.getElementById("sIV[1]").id = "sIV[0]";
-            
-            aIV.splice(0, 1);
-            dIV.splice(0, 1);
-            sIV.splice(0, 1);
-            shdw.splice(0, 1);
-            tr.parentNode.removeChild(tr);
+          /* We need to insert a new row, create DOM placeholders */
+          if (!(atk && def && sta)) {
+            /* Incomplete IVs received, set to defaults */
+            atk = '';def = 15;sta = 15;sha = false;
           }
+          var newRow=document.getElementById('inputTable').insertRow();
+          newRowDOMoffset = userIVs.length;
+          newRow.innerHTML = "<tr><td><input id='shdw["+newRowDOMoffset+"]' type='checkbox'></td><td><select title='Your Attack IV' id='aIV["+newRowDOMoffset+"]'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' id='dIV["+newRowDOMoffset+"]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' id='sIV["+newRowDOMoffset+"]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus["+newRowDOMoffset+"]'></button></td></tr>";  
+          userIVs.push([atk,def,sta,sha,rank,statProd,level,hiddenSortRank]);
         }
-        
+        console.log("Setting xIV["+newRowDOMoffset+"] to : "+atk+"/"+def+"/"+sta+", "+sha);
+        document.getElementById("aIV["+newRowDOMoffset+"]").selectedIndex = [...document.getElementById("aIV["+newRowDOMoffset+"]").options].findIndex (option => option.text == atk);
+        document.getElementById("dIV["+newRowDOMoffset+"]").selectedIndex = [...document.getElementById("dIV["+newRowDOMoffset+"]").options].findIndex (option => option.text == def);
+        document.getElementById("sIV["+newRowDOMoffset+"]").selectedIndex = [...document.getElementById("sIV["+newRowDOMoffset+"]").options].findIndex (option => option.text == sta);
+        document.getElementById("shdw["+newRowDOMoffset+"]").checked = (sha === "true") ? true: false;
+        console.log("doTheInsert: userIVs after pushes: "+JSON.stringify(userIVs));
+        document.getElementById('feedbackBox').innerHTML = "";
         if (perfTiming) {stopTiming(T0, "doTheInsert");}
       }
       
       /* https://stackoverflow.com/q/11553768 */
       function doTheRemoval() {
-        var T0;
+        var T0,T1,T2,T3,T4,T5,T6,T7,T8,T9;
         if (perfTiming) {T0 = performance.now();}
 
-        /*event.target will be the input element*/
-        /*console.log("doTheRemoval: event.target.parentNode.parentNode:"+JSON.stringify(event.target.parentNode.parentNode.innerHTML));*/
+        /* TODO: Prevent user from removing default row when it is the only row */
+        
+        /*event.target is the input element*/
         var td = event.target.parentNode;
         var tr = td.parentNode; /*the row to be removed*/
         var rowNum = tr.innerHTML.split("aIV[")[1];
         rowNum = rowNum.split("]")[0];
-        for (var i=0; i<aIV.length; i++)
+        var dt = $('#monTable').DataTable();
+        if (perfTiming) {T2 = performance.now();}
+
+        /* Remove CSS highlighting for this row */
+        dt.row(userIVs[rowNum][4]-1).nodes().to$().removeClass('good','ok','rubbish');
+        if (perfTiming) {T3 = performance.now();}
+        /* Reset hiddenSortIndex to 0 to un-pin this row  */
+        /* And update remaining userIVs hiddenSortIndexes */
+        /* So next userIVs hiddenSortIndex will be right  */
+        var numRows = dt.rows().count();
+        for (var i=0,hSIoffset=0; i<userIVs.length; i++,hSIoffset++) {
+          if (i/1 === rowNum/1) {
+            /* Unpin this row */
+            userIVs[i][7] = 0;
+            /* Don't count this row when incrementing hSIoffset */
+            hSIoffset--;
+          } else {
+            userIVs[i][7] = hSIoffset-numRows;
+          }
+          /* Update dt sort order using userIVs */
+          var d = dt.row(userIVs[i][4]-1).data();
+          d[d.length-1] = userIVs[i][7];
+          dt.row(userIVs[i][4]-1).data(d);
+        }
+        if (perfTiming) {T4 = performance.now();}
+        /* Redraw DataTable dt with updated rows */
+        dt.draw();
+        if (perfTiming) {T5 = performance.now();}
+
+        for (var i=0; i<userIVs.length; i++)
         {
           if (i>=rowNum) {
             /*console.log("Fixing offset for i:"+i);*/
@@ -2297,18 +2061,30 @@
             document.getElementById("sIV["+i+"]").id = "sIV["+(i-1)+"]";
           }
         }
-        aIV.splice(rowNum, 1);
-        dIV.splice(rowNum, 1);
-        sIV.splice(rowNum, 1);
-        shdw.splice(rowNum, 1);
+        if (perfTiming) {T6 = performance.now();}
+
+        console.log("doTheRemoval: userIVs before splices: "+JSON.stringify(userIVs));
+        userIVs.splice(rowNum, 1);
+        console.log("doTheRemoval: userIVs after splices: "+JSON.stringify(userIVs));
         tr.parentNode.removeChild(tr);
+        if (perfTiming) {T7 = performance.now();}
         
         /* If we removed all rows, add one back */
-        if (aIV.length/1 < 1) {
+        if (userIVs.length/1 < 1) {
           doTheInsert();
         }
+        if (perfTiming) {T8 = performance.now();}
+
+        console.log("T8-T7:"+(T8-T7).toFixed(1));
+        console.log("T7-T6:"+(T7-T6).toFixed(1));
+        console.log("T6-T5:"+(T6-T5).toFixed(1));
+        console.log("T5-T4:"+(T5-T4).toFixed(1));
+        console.log("T4-T3:"+(T4-T3).toFixed(1));
+        console.log("T3-T2:"+(T3-T2).toFixed(1));
+        console.log("T2-T1:"+(T2-T1).toFixed(1));
+        console.log("T1-T0:"+(T1-T0).toFixed(1));
+
         if (perfTiming) {stopTiming(T0, "doTheRemoval");}
-        main();
       }
 
       function checkEfficientIVs(ranks, keys, dec) {
@@ -2402,7 +2178,6 @@
         if (perfTiming) {stopTiming(T0, "toggleFamilyEvos");}
         setUserPreference('family');
       }
-
       </script>
       <label>IV Floor:<select id="floor" oninput="setUserPreference('floor')">
         <option value="0">0: Wild Caught</option>
