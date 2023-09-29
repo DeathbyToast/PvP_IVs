@@ -329,6 +329,7 @@
       var mnlMod = false; /*track if min Lvl was adjusted*/
       var ivMod = false; /*track if IV floor was adjusted*/
       const userIVs = new Array(1).fill(0).map(() => new Array(8).fill(0));
+      var hiddenRowIndex;
       userIVs[0] = [
         document.getElementById('aIV[0]').value,   /* 0:attack IV  */
         document.getElementById('dIV[0]').value,   /* 1:defense IV */
@@ -458,7 +459,7 @@
                 {
                   var inputIVs = ivStr[j].split("_");
                   if (inputIVs.length<2) {continue;} /* skip blank/incomplete entries */
-                  doTheInsert(inputIVs[0],inputIVs[1],inputIVs[2],inputIVs[3]);
+                  newInputTableRow(inputIVs[0],inputIVs[1],inputIVs[2],inputIVs[3]);
                 }
                 break;
               case "mA":
@@ -559,68 +560,78 @@
 
       /* Load event handlers and check URL once loaded and ready */
       $( document ).ready(function() {
-        /* Initialize event handler callbacks */
-        $(".circle.plus").on("click", function(event) {
+        /* Initialize #inputTable event handlers */
+        $("#inputTable").on("click", ".circle.plus", function(event) {
           /* Ensure we don't have duplicate bubbled up events */
           event.stopPropagation();
           event.stopImmediatePropagation();
-          doTheInsert();
+          newInputTableRow();
         });
         $("#inputTable").on("click", ".circle.minus", function(event){
           event.stopPropagation();
           event.stopImmediatePropagation();
-          doTheRemoval();
+          removeInputTableRow();
         });
         $("#inputTable").on("change", "tr", function(event){
+          var T0;
+          if (perfTiming) {T0 = performance.now();}
+          console.log(" ");
+          console.log("#inputTable onChange: Processing new event >>>>>>>>>");
+          console.log(" ");
           event.stopPropagation();
           event.stopImmediatePropagation();
-          /* Ensure we clear old feedback */
           document.getElementById('feedbackBox').innerHTML = "";
           const dt = $('#monTable').DataTable();
           var rows = dt.rows().data();
           var numRows = dt.rows().count();
-          /*event.target is the input element*/
           var td = event.target.parentNode;
-          var tr = td.parentNode; /*the row to be removed*/
+          var tr = td.parentNode;
           var rowNum = tr.innerHTML.split("aIV[")[1];
           rowNum = rowNum.split("]")[0];
+          /* If oldUserIVs were valid (large negative num), keep old hiddenSortVal, otherwise initialize */
+          var hiddenSortVal = (userIVs[rowNum][7]/1 < 0) ? userIVs[rowNum][7] : (userIVs.length-1)-numRows/1;
+          console.log("#inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][0]+"/"+userIVs[rowNum][1]+"/"+userIVs[rowNum][2]);
+
+          /* If oldUserIVs were valid, need to be removed from dt */
+          var oldUserIVs = userIVs[rowNum];
+          if (oldUserIVs[0] && oldUserIVs[1] && oldUserIVs[2]) {
+            /* Reset hiddenSortIndex to 0 to un-pin row */
+            managePinsCSS_DT(dt, userIVs[rowNum][4]-1, 0, false, true);
+          }
+          
+          /* Get IV and shadow values for new row */
           var atk = document.getElementById('aIV['+rowNum+']').value;
           var def = document.getElementById('dIV['+rowNum+']').value;
           var sta = document.getElementById('sIV['+rowNum+']').value;
           var sha = document.getElementById('shdw['+rowNum+']').checked;
-          /* Find this IV set in DataTable */
-          for (var i=0; i<numRows; i++) {
-            if (rows[i][4] == atk && rows[i][5] == def && rows[i][6] == sta) {
-              console.log("inputTable onChange:Found the row at i: "+i);
-              break;
-            }
-          }
-          var d = dt.row(i).data();
-          var hiddenSortVal = userIVs.length-numRows/1;
-          var hiddenRowIndex = d.length-1;
-          /* Check for missinglank atk, remove old row if IV incomplete */
-          if (!(atk && def && sta) && rowNum < userIVs.length-1) {
-            console.log("inputTable onChange: Missing one or more IVs, removing this row's prior value from table");
-            hiddenSortVal = 0;
-            /* Remove CSS class highlighting for old row */
-            dt.row(i).nodes().to$().removeClass('good','ok','rubbish');
-          } else {
-            /* Add class to properly highlight this row with CSS */
-            if (d[0]/1 < (0.02442/1*ranks.numRanks/1)) {
-              tr.classList.add('good'); /*green for "good"*/
-            } else if (d[0]/1 < (0.2442/1*ranks.numRanks/1)) {
-              tr.classList.add('ok'); /*orange for "ok"*/
-            } else {
-              tr.classList.add('rubbish'); /*red for "rubbish"*/
-            }
-          }
-          d[hiddenRowIndex] = hiddenSortVal;
-          dt.row(i).data(d).draw();
-          userIVs[rowNum] = [atk, def, sta, sha, d[0], d[14], d[1], d[hiddenRowIndex]];
-          console.log("inputTable onChange: tr.classlist is now: "+tr.classList);
-          console.log("inputTable onChange: userIVs is now: "+JSON.stringify(userIVs));
 
+          console.log("Inserting new row :"+atk+"/"+def+"/"+sta+", "+sha);
+
+          /* Ensure this is a complete IV set */
+          if ((atk !== "") && (atk && def && sta)) {
+            /* Find this new IV set in DataTable and update userIVs with correct data */
+            for (var i=0; i<numRows; i++) {
+              if (rows[i][4] == atk && rows[i][5] == def && rows[i][6] == sta) {
+                console.log("#inputTable onChange: Found row at i: "+i+", rows[i]: "+JSON.stringify(rows[i])+", == "+atk+"/"+def+"/"+sta);
+                managePinsCSS_DT(dt, rows[i][0]-1, hiddenSortVal, tr);
+                /* It is correct to have rows[i][0]-1 above for rowNum and rows[i][0] below for rankNum */
+                userIVs[rowNum] = [atk, def, sta, sha, rows[i][0], rows[i][14], rows[i][1], rows[i][hiddenRowIndex]];
+                console.log("#inputTable onChange: Updated row to: "+JSON.stringify(rows[i]));
+                break;
+              }
+            }
+          } else {
+            /* Malformed IV set, do not insert to dt */
+            console.log("userIVs after removeInputTableRow:"+JSON.stringify(userIVs));
+            console.log("#inputTable onChange: calling removeInputTableRow() to remove IV set");
+            removeInputTableRow();
+            console.log("userIVs after removeInputTableRow:"+JSON.stringify(userIVs));
+          }
+          console.log("#inputTable onChange: userIVs is now: "+JSON.stringify(userIVs));
+          dt.draw();
+          if (perfTiming) {stopTiming(T0, "#inputTable onChange");}
         });
+        /* All event handlers initialized, proceed to checkURI() */
         checkURI();
       });
       
@@ -637,71 +648,6 @@
           /*ensure we clear the prior output between runs*/
           document.getElementById("tradeOutput").innerHTML = "";
           document.getElementById("CustomGroupExport").style.display = "none";
-        }
-         else {
-          /* Initialize event callbacks on first run */
-          $(".circle.plus").on("click", function(event) {
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            doTheInsert();
-          });
-          $("#inputTable").on("click", ".circle.minus", function(){
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            doTheRemoval();
-          });
-          $("#inputTable").on("change", "tr", function(event){
-
-            /* Ensure we don't have duplicate bubbled up events */
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            /* Ensure we clear old feedback */
-            document.getElementById('feedbackBox').innerHTML = "";
-            const dt = $('#monTable').DataTable();
-            var rows = dt.rows().data();
-            var numRows = dt.rows().count();
-            /*event.target is the input element*/
-            var td = event.target.parentNode;
-            var tr = td.parentNode; /*the row to be removed*/
-            var rowNum = tr.innerHTML.split("aIV[")[1];
-            rowNum = rowNum.split("]")[0];
-            var atk = document.getElementById('aIV['+rowNum+']').value;
-            var def = document.getElementById('dIV['+rowNum+']').value;
-            var sta = document.getElementById('sIV['+rowNum+']').value;
-            var sha = document.getElementById('shdw['+rowNum+']').checked;
-            /* Find this IV set in DataTable */
-            for (var i=0; i<numRows; i++) {
-              if (rows[i][4] == atk && rows[i][5] == def && rows[i][6] == sta) {
-                console.log("inputTable onChange:Found the row at i: "+i);
-                break;
-              }
-            }
-            var d = dt.row(i).data();
-            var hiddenSortVal = userIVs.length-numRows/1;
-            var hiddenRowIndex = d.length-1;
-            /* Check for missinglank atk, remove old row if IV incomplete */
-            if (!(atk && def && sta) && rowNum < userIVs.length-1) {
-              console.log("inputTable onChange: Missing one or more IVs, removing this row's prior value from table");
-              hiddenSortVal = 0;
-              /* Remove CSS class highlighting for old row */
-              dt.row(i).nodes().to$().removeClass('good','ok','rubbish');
-            } else {
-              /* Add class to properly highlight this row with CSS */
-              if (d[0]/1 < (0.02442/1*ranks.numRanks/1)) {
-                tr.classList.add('good'); /*green for "good"*/
-              } else if (d[0]/1 < (0.2442/1*ranks.numRanks/1)) {
-                tr.classList.add('ok'); /*orange for "ok"*/
-              } else {
-                tr.classList.add('rubbish'); /*red for "rubbish"*/
-              }
-            }
-            d[hiddenRowIndex] = hiddenSortVal;
-            dt.row(i).data(d).draw();
-            userIVs[rowNum] = [atk, def, sta, sha, d[0], d[14], d[1], d[hiddenRowIndex]];
-            console.log("inputTable onChange: tr.classlist is now: "+tr.classList);
-            console.log("inputTable onChange: userIVs is now: "+JSON.stringify(userIVs));
-
-          });
         }
         
         /* Awesomeplete sends "undefined" when it did not find a valid input */
@@ -762,22 +708,6 @@
           if (perfTiming) {stopTiming(T0, "main");}
           return false;
         }
-        
-        /* Ensure we have current IVs for all input rows */
-        /* TODO: Remove this? 
-        console.log("main: before current IV check: "+JSON.stringify(userIVs));
-        for (i=0; i<userIVs.length; i++)
-        {
-          userIVs[i] = [
-            document.getElementById("aIV["+i+"]").value,
-            document.getElementById("dIV["+i+"]").value,
-            document.getElementById("sIV["+i+"]").value,
-            document.getElementById("shdw["+i+"]").checked,
-            0,
-            0
-          ];
-        }
-        console.log("main: after current IV check: "+JSON.stringify(userIVs));*/
 
         /* Create a DataTable from the mon ranks object */
         generateDataTable(mon, league, leagueName, ranks, keys);
@@ -814,7 +744,7 @@
         userIVs.splice(0, userIVs.length);
         
         /* Re-Add default IV Input Row */
-        doTheInsert();
+        newInputTableRow();
         
         /* clear min stat filters, filterMod, and lastLeague */
         //mA = 0; mD = 0; mHP = 0; lastLeague = undefined;
@@ -1081,7 +1011,7 @@
           var userIVs = ivStr[j].match(/\d+/g);
           if (userIVs.length<2) {continue;} /* skip blank/incomplete entries */
           console.log("readIVs::IVs:insering userIVs: "+userIVs+" (length:"+userIVs.length+")");
-          doTheInsert(userIVs[0],userIVs[1],userIVs[2],userIVs[3]);
+          newInputTableRow(userIVs[0],userIVs[1],userIVs[2],userIVs[3]);
         }
         console.log("readIVs: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);
         main();
@@ -1211,7 +1141,7 @@
           }
         }
         /* Track the index of the hiddenRow used for sorting user IVs to top */
-        var hiddenRowIndex = currentRow.length-1;
+        hiddenRowIndex = currentRow.length-1;
         
         /* Timing gate after generating table data */
         if (perfTiming) {T3 = performance.now();}
@@ -1252,8 +1182,8 @@
               { "name": "AtkHP Prod", "responsivePriority": "1450", "searchBuilderTitle": "Attack * HP Product", "targets": 17, "visible": true},
               { "name": "cmpStat Prod", "responsivePriority": "1450", "searchBuilderTitle": "Attack * HP Product", "targets": 18, "visible": true},
               { "name": "aadss Stat Prod", "responsivePriority": "1450", "searchBuilderTitle": "2xA*D*2xHP", "targets": 19, "visible": true},
-              { "name": "custom Stat Prod", "responsivePriority": "1450", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 19, "visible": true},
-              {"targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false}
+              { "name": "custom Stat Prod", "responsivePriority": "1450", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 20, "visible": true},
+              { "targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false}
             ],
             createdRow: (row, data, index) => {
               if (data[hiddenRowIndex] !== 0) {
@@ -1297,26 +1227,18 @@
         /* Enable user click to add IVs to compare */
         $('#monTable tbody').on('click', 'tr', function (e) {
           /* Update hiddenSortRank to "pin" this row to top of table */
-          var d = dt.row(this).data();
+          
           var hiddenSortVal = userIVs.length-dt.rows().count()/1;
           /* Fix userIVs initialized to "default" -/15/15 row, really has 0 userIVs */
           if (userIVs[0][0] === "") {
             hiddenSortVal = 0-dt.rows().count()/1;
-          }
-          console.log("Setting d["+hiddenRowIndex+"]: "+hiddenSortVal+" because userIVs.length="+userIVs.length+" and dt.rows().count()="+dt.rows().count());
-          d[hiddenRowIndex] = hiddenSortVal;
-          dt.row(this).data(d).draw();
-
-          /* Add class to properly highlight this row with CSS */
-          var row = window.event.target.parentNode;
-          if (d[0]/1 < (0.02442/1*ranks.numRanks/1)) {
-            row.classList.add('good'); /*green for "good"*/
-          } else if (d[0]/1 < (0.2442/1*ranks.numRanks/1)) {
-            row.classList.add('ok'); /*orange for "ok"*/
+            console.log("#monTable onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs[0][0]==="+userIVs[0][0]+" and dt.rows().count()="+dt.rows().count());
           } else {
-            row.classList.add('rubbish'); /*red for "rubbish"*/
+            console.log("#monTable onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs.length="+userIVs.length+" and dt.rows().count()="+dt.rows().count());
           }
-          
+          /* Pin row to top of DT and add CSS highlighting */
+          var d = dt.row(this).data();
+          managePinsCSS_DT(dt, d[0]-1, hiddenSortVal, window.event.target.parentNode)
           /* Ensure new row is added to DOM, and aIV updated */
           addToCompare(e, d[0], d[1], d[14], d[hiddenRowIndex]);
         });
@@ -1373,19 +1295,11 @@
             /* Ensure that attack is not null, to allow 0/15/15 to overwrite default row */
             uniqueIVs = false;
             break;
-          } else {
-            /* While we're here, see if there are any incomplete rows to remove (-/15/15) */
-            /* But don't remove the last row if it is incomplete, that is done later on   */
-            //console.log("userIVs[i][0]:"+userIVs[i][0]+", and i("+i+")<("+(userIVs.length-1)+")userIVs.length-1");
-            if (userIVs[i][0] === "") {
-              console.log("row "+i+" is incomplete ("+userIVs[i][0]+"/"+userIVs[i][1]+"/"+userIVs[i][2]+"), removing...");
-              /* TODO: Call doTheRemoval() to somehow remove this incomplete row */
-            }
           }
         }
         
         if (uniqueIVs) {
-          doTheInsert(atk, def, sta, false, rank, level, statProd, hiddenSortRank);
+          newInputTableRow(atk, def, sta, false, rank, level, statProd, hiddenSortRank);
         } else {
           console.log(atk+"/"+def+"/"+sta+" already exists in comparison IVs, not adding to compare");
           if (document.getElementById('feedbackBox').innerHTML.includes(atk+"/"+def+"/"+sta+" already exists in comparison IVs")) {
@@ -1966,7 +1880,7 @@
         return false;
       }
       
-      function doTheInsert(atk, def, sta, sha, rank, level, statProd, hiddenSortRank) {
+      function newInputTableRow(atk, def, sta, sha, rank, level, statProd, hiddenSortRank) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
@@ -1978,7 +1892,7 @@
         ) {
           console.log("We already have a default row at the end, skipping duplicate insert");
           document.getElementById('feedbackBox').innerHTML += "New Row is already awaiting input (-/15/15)<br />";
-          if (perfTiming) {stopTiming(T0, "doTheInsert");}
+          if (perfTiming) {stopTiming(T0, "newInputTableRow");}
           return;
         }
 
@@ -2001,33 +1915,117 @@
           userIVs.push([atk,def,sta,sha,rank,statProd,level,hiddenSortRank]);
         }
         console.log("Setting xIV["+newRowDOMoffset+"] to : "+atk+"/"+def+"/"+sta+", "+sha);
-        document.getElementById("aIV["+newRowDOMoffset+"]").selectedIndex = [...document.getElementById("aIV["+newRowDOMoffset+"]").options].findIndex (option => option.text == atk);
-        document.getElementById("dIV["+newRowDOMoffset+"]").selectedIndex = [...document.getElementById("dIV["+newRowDOMoffset+"]").options].findIndex (option => option.text == def);
-        document.getElementById("sIV["+newRowDOMoffset+"]").selectedIndex = [...document.getElementById("sIV["+newRowDOMoffset+"]").options].findIndex (option => option.text == sta);
-        document.getElementById("shdw["+newRowDOMoffset+"]").checked = (sha === "true") ? true: false;
-        console.log("doTheInsert: userIVs after pushes: "+JSON.stringify(userIVs));
+        setInputTableRow(newRowDOMoffset, atk, def, sta, sha);
+        console.log("newInputTableRow: userIVs after pushes: "+JSON.stringify(userIVs));
         document.getElementById('feedbackBox').innerHTML = "";
-        if (perfTiming) {stopTiming(T0, "doTheInsert");}
+        if (perfTiming) {stopTiming(T0, "newInputTableRow");}
       }
-      
+
+      function remove_ReDrawDT(table, rowNum) {
+        /* Helper funciton for code readability & reliability */
+        /* Resets hiddenRowIndex to 0 to un-pin this row and  */
+        /* Removes highlighting CSS from this DataTable row   */
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
+        /* Remove CSS highlighting for this row */
+        table.row(rowNum).nodes().to$().removeClass('good','ok','rubbish');
+        /* Reset hiddenRowIndex to 0 to un-pin this row and re-draw dt */
+        var d = table.row(rowNum).data();
+        d[hiddenRowIndex] = 0;
+        table.row(rowNum).data(d).draw();
+
+        if (perfTiming) {stopTiming(T0, "remove_ReDrawDT");}
+        return;
+      }
+
+      function managePinsCSS_DT(table, rowNum, hiddenSortVal, addHighlight, removeHighlight) {
+        /* Helper funciton for code readability & reliability */
+        /* Sets or Resets hiddenRowIndex thus pinning or un-  */
+        /* Pinning rows to the top of DataTable and manages   */
+        /* Highlighting of these rows by adding/ removing CSS */
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
+
+        //console.log("managePinsCSS_DT: beginning with: table("+table+"), rowNum("+JSON.stringify(rowNum)+"), hiddenSortVal("+JSON.stringify(hiddenSortVal)+"), addHighlight("+JSON.stringify(addHighlight)+"), removeHighlight("+JSON.stringify(removeHighlight)+")");
+        
+        /* Update hiddenRowIndex to pin/unpin this row */
+        var d = table.row(rowNum).data();
+        var rowCount = table.rows().count();
+        var rankNum = d[0]/1;
+        d[hiddenRowIndex] = hiddenSortVal;
+
+        /* Add class to properly highlight this row with CSS */
+        if (addHighlight) {
+          if (rankNum < (0.02442*rowCount)) {
+            addHighlight.classList.add('good'); /*green for "good"*/
+          } else if (rankNum < (0.2442*rowCount)) {
+            addHighlight.classList.add('ok'); /*orange for "ok"*/
+          } else {
+            addHighlight.classList.add('rubbish'); /*red for "rubbish"*/
+          }
+        } else {
+          if (removeHighlight) {
+            /* Remove CSS highlighting for this row */
+            table.row(rowNum).nodes().to$().removeClass('good','ok','rubbish');
+          }
+        }
+        /* Redraw DataTable to show new pins and highlights */
+        table.row(rowNum).data(d).draw();
+        if (perfTiming) {stopTiming(T0, "managePinsCSS_DT");}
+        return;
+      }
+
+      function setInputTableRow(index, atk, def, sta, shadow){
+        /* Helper funciton for code readability & reliability */
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
+
+        document.getElementById("aIV["+index+"]").selectedIndex = [...document.getElementById("aIV["+index+"]").options].findIndex (option => option.text == atk);
+        document.getElementById("dIV["+index+"]").selectedIndex = [...document.getElementById("dIV["+index+"]").options].findIndex (option => option.text == def);
+        document.getElementById("sIV["+index+"]").selectedIndex = [...document.getElementById("sIV["+index+"]").options].findIndex (option => option.text == sta);
+        document.getElementById("shdw["+index+"]").checked = shadow;
+
+        if (perfTiming) {stopTiming(T0, "setInputTableRow");}
+        return;
+      }
+
       /* https://stackoverflow.com/q/11553768 */
-      function doTheRemoval() {
+      function removeInputTableRow() {
         var T0,T1,T2,T3,T4,T5,T6,T7,T8,T9;
         if (perfTiming) {T0 = performance.now();}
 
-        /* TODO: Prevent user from removing default row when it is the only row */
-        
-        /*event.target is the input element*/
-        var td = event.target.parentNode;
-        var tr = td.parentNode; /*the row to be removed*/
-        var rowNum = tr.innerHTML.split("aIV[")[1];
-        rowNum = rowNum.split("]")[0];
         var dt = $('#monTable').DataTable();
-        if (perfTiming) {T2 = performance.now();}
+        var rowNum;
 
+        /* Prevent user from deleting the first and only row */
+        if (userIVs.length === 1) {
+          if (document.getElementById("aIV[0]").value == "") {
+            /* This is the default row which can't be removed, ignore this request */
+            console.log("Cannot remove default row, ignoring deletion request");
+            document.getElementById('feedbackBox').innerHTML += "No IV inputs to delete.<br />Please enter your "+input.value+"'s IVs to see "+$('#league').find(':selected').text()+" PvP Rank<br />";
+            if (perfTiming) {stopTiming(T0, "removeInputTableRow");}
+            return;
+          } else {
+            /* Reset this row's state back to defaults (-/15/15) */
+            rowNum = 0;
+            managePinsCSS_DT(dt, userIVs[0][4]-1, 0, false, true);
+            //remove_ReDrawDT(dt, userIVs[rowNum][4]-1);
+            /* Finally reset this userIVs row */
+            userIVs[0] = ["", 15, 15, false, 0, 0, 0, 0];
+            return;
+          }
+        } else {
+          /* Need to find which row this click came from */
+          var td = event.target.parentNode;
+          var tr = td.parentNode; /*the row to be removed*/
+          var rowNum = tr.innerHTML.split("aIV[")[1];
+          rowNum = rowNum.split("]")[0];
+        }
+        if (perfTiming) {T1 = performance.now();}
         /* Remove CSS highlighting for this row */
         dt.row(userIVs[rowNum][4]-1).nodes().to$().removeClass('good','ok','rubbish');
-        if (perfTiming) {T3 = performance.now();}
+        if (perfTiming) {T2 = performance.now();}
+
         /* Reset hiddenSortIndex to 0 to un-pin this row  */
         /* And update remaining userIVs hiddenSortIndexes */
         /* So next userIVs hiddenSortIndex will be right  */
@@ -2041,50 +2039,46 @@
           } else {
             userIVs[i][7] = hSIoffset-numRows;
           }
-          /* Update dt sort order using userIVs */
+          /* Update dt sort order all rows using userIVs */
           var d = dt.row(userIVs[i][4]-1).data();
-          d[d.length-1] = userIVs[i][7];
+          d[hiddenRowIndex] = userIVs[i][7];
           dt.row(userIVs[i][4]-1).data(d);
         }
-        if (perfTiming) {T4 = performance.now();}
+        if (perfTiming) {T3 = performance.now();}
         /* Redraw DataTable dt with updated rows */
         dt.draw();
+        if (perfTiming) {T4 = performance.now();}
+
+        /* If there is only one row, reset values instead of deleting */
+        if (userIVs.length === 1) {
+          setInputTableRow(rowNum, "", 15, 15, false);
+        } else {
+          /* Otherwise, proceed with deleting row from DOM and userIVs */
+          for (var i=0; i<userIVs.length; i++)
+          {
+            if (i>=rowNum) {
+              console.log("removeInputTableRow: Fixing offset for i:"+i);
+              document.getElementById("shdw["+i+"]").id = "shdw["+(i-1)+"]";
+              document.getElementById("aIV["+i+"]").id = "aIV["+(i-1)+"]";
+              document.getElementById("dIV["+i+"]").id = "dIV["+(i-1)+"]";
+              document.getElementById("sIV["+i+"]").id = "sIV["+(i-1)+"]";
+            }
+          }
+          console.log("removeInputTableRow: userIVs before splices: "+JSON.stringify(userIVs));
+          userIVs.splice(rowNum, 1);
+          console.log("removeInputTableRow: userIVs after splices: "+JSON.stringify(userIVs));
+          tr.parentNode.removeChild(tr);
+        }
         if (perfTiming) {T5 = performance.now();}
 
-        for (var i=0; i<userIVs.length; i++)
-        {
-          if (i>=rowNum) {
-            /*console.log("Fixing offset for i:"+i);*/
-            document.getElementById("shdw["+i+"]").id = "shdw["+(i-1)+"]";
-            document.getElementById("aIV["+i+"]").id = "aIV["+(i-1)+"]";
-            document.getElementById("dIV["+i+"]").id = "dIV["+(i-1)+"]";
-            document.getElementById("sIV["+i+"]").id = "sIV["+(i-1)+"]";
-          }
-        }
-        if (perfTiming) {T6 = performance.now();}
+        console.log("removeInputTableRow: T5-T4:"+(T5-T4).toFixed(1));
+        console.log("removeInputTableRow: T4-T3:"+(T4-T3).toFixed(1));
+        console.log("removeInputTableRow: T3-T2:"+(T3-T2).toFixed(1));
+        console.log("removeInputTableRow: T2-T1:"+(T2-T1).toFixed(1));
+        console.log("removeInputTableRow: T1-T0:"+(T1-T0).toFixed(1));
 
-        console.log("doTheRemoval: userIVs before splices: "+JSON.stringify(userIVs));
-        userIVs.splice(rowNum, 1);
-        console.log("doTheRemoval: userIVs after splices: "+JSON.stringify(userIVs));
-        tr.parentNode.removeChild(tr);
-        if (perfTiming) {T7 = performance.now();}
-        
-        /* If we removed all rows, add one back */
-        if (userIVs.length/1 < 1) {
-          doTheInsert();
-        }
-        if (perfTiming) {T8 = performance.now();}
-
-        console.log("T8-T7:"+(T8-T7).toFixed(1));
-        console.log("T7-T6:"+(T7-T6).toFixed(1));
-        console.log("T6-T5:"+(T6-T5).toFixed(1));
-        console.log("T5-T4:"+(T5-T4).toFixed(1));
-        console.log("T4-T3:"+(T4-T3).toFixed(1));
-        console.log("T3-T2:"+(T3-T2).toFixed(1));
-        console.log("T2-T1:"+(T2-T1).toFixed(1));
-        console.log("T1-T0:"+(T1-T0).toFixed(1));
-
-        if (perfTiming) {stopTiming(T0, "doTheRemoval");}
+        if (perfTiming) {stopTiming(T0, "removeInputTableRow");}
+        return;
       }
 
       function checkEfficientIVs(ranks, keys, dec) {
