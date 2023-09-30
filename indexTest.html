@@ -200,8 +200,8 @@
     	</select></label>
     	<input id="pokeList" onfocus="this.value=''" placeholder="Pok&eacute;mon"/>
     	<span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a valid Pok&eacute;mon to continue...</i></span>
-      	
-      <br />
+      <br /><button id="getDetails">Get Details</button>
+      <br /><button id="revert">Revert</button>
       <table id="inputTable">
         <tr><td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td>
             <td title="Your Attack IV">Atk</td>
@@ -330,7 +330,7 @@
       var filterMod, userIVs, hiddenRowIndex, ranks, mon;
       var league, leagueName, floor, minLvl, maxLvl, dec;
       var family, fel, fel_Label, effIV, cge, dti, input;
-      var filterMod, monNames;
+      var filterMod, monNames, sbSearch, mA, mD, mHP;
 
       $( document ).ready(function() {
         /* Initialize global variables, load event handlers, then check URL */
@@ -361,7 +361,6 @@
           0,                                         /* 6:level      */
           0                                          /* 7:hidSortRank*/
         ];
-        //let mA = 0, mD = 0, mHP = 0; /*min stat filter vars*/
         filterMod = false; /*track if stat filters were adjusted*/
         input = document.getElementById("pokeList");
         monNames = Object.keys(pokeListObj);
@@ -488,8 +487,8 @@
           if (perfTiming) {stopTiming(T0, "$doc.ready():: #inputTable onChange");}
           return;
         });
-        /* Initializations complete, proceed to checkURI() */
-        checkURI();
+        /* Initializations complete, proceed to checkURL() */
+        checkURL();
       });
 
       function stopTiming(startTime, functionName) {
@@ -500,7 +499,7 @@
         document.getElementById("timing_outputs").innerHTML += docOut;
       }
       
-      function  checkURI(URL, tests) {
+      function  checkURL(URL, ...tests) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
@@ -510,20 +509,29 @@
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
           URL = window.location.href.split("?")[1];
-          /*URL = "mon=Mamoswine&cp=1500&set=0100000&cmpLim=55&IVs=0_11_13";*/
-          
+          /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
+          /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
+          /*    "mon=Carbink&r=23&cp=1500                                       &dec=2"; */
+          URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2";
         } else {
           /* Enable unit testing */
-          console.log("checkURI: URL passed in as:"+URL);
+          console.log("checkURL: URL passed in as:"+URL);
         }
          
         if (URL)
         {
-          URL = decodeURI(URL);
-          /*console.log("checkURI: Read URL as: "+URL);*/
+          try {
+            URL = decodeURI(URL);
+          } catch (e) {
+            /* Catches a malformed URI */
+            console.error("checkURL:: "+e);
+            console.log("checkURL: Skipping malformed URL, calling main()...");
+          if (perfTiming) {stopTiming(T0, "checkURL");}
+          }
+          /*console.log("checkURL: Read URL as: "+URL);*/
           var values = URL.split("&");
           var settings = "0000000";
-          /*console.log("checkURI: Values: "+JSON.stringify(values));*/
+          /*console.log("checkURL: Values: "+JSON.stringify(values));*/
           for (var i=0; i<values.length; i++)
           {
             switch (values[i].split("=")[0]) {
@@ -532,7 +540,7 @@
                 input.value = values[i].split("=")[1];
                 /* Ensure input shows in awesomplete box */
                 Awesomplete.input = input.value;
-                /*console.log("checkURI: Read mon("+values[i].split("=")[1]+") and set Awesomplete.input to:"+Awesomplete.input);*/
+                /*console.log("checkURL: Read mon("+values[i].split("=")[1]+") and set Awesomplete.input to:"+Awesomplete.input);*/
                 break;
               case "r":
                 pageLen = values[i].split("=")[1]/1;
@@ -541,7 +549,7 @@
                 league = values[i].split("=")[1];
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
                 if (league === "") {
-                  console.error("checkURI: Unknown cp value detected, defaulting to Master League");
+                  console.error("checkURL: Unknown cp value detected, defaulting to Master League");
                   league = "ML";
                 }
                 break;
@@ -564,7 +572,7 @@
                 fel = values[i].split("=")[1];
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
                 if (fel === "") {
-                  console.error("checkURI: Unknown cp value detected, defaulting to Master League");
+                  console.error("checkURL: Unknown cp value detected, defaulting to Master League");
                   fel = "ML";
                 }
                 break;
@@ -596,19 +604,19 @@
                 perfTiming = values[i].split("=")[1];
                 break;
               case "test": /* Enable test mode for website unit testing and sitemap generation */
-                console.log("checkURI: Reached 'test' case in URL switch...");
+                console.log("checkURL: Reached 'test' case in URL switch...");
                 if (URL === "sitemap") {
-                  console.log("checkURI: Calling updateSitemap()");
+                  console.log("checkURL: Calling updateSitemap()");
                   updateSitemap();
-                  console.log("checkURI: Updated sitemap output to console");
+                  console.log("checkURL: Updated sitemap output to console");
                   URL = "";
-                  if (perfTiming) {stopTiming(T0, "checkURI");}
+                  if (perfTiming) {stopTiming(T0, "checkURL");}
                   return true;
                 }
-                console.log("checkURI: Calling unitTests("+tests+")");
+                console.log("checkURL: Calling unitTests("+tests+")");
                 unitTests(tests);
-                console.log("checkURI: Finished all tests, exiting");
-                if (perfTiming) {stopTiming(T0, "checkURI");}
+                console.log("checkURL: Finished all tests, exiting");
+                if (perfTiming) {stopTiming(T0, "checkURL");}
                 return true;
               case "set":
                 settings = (''+values[i].split("=")[1]);
@@ -627,23 +635,34 @@
                 break;
             }
           }
-          if (perfTiming) {stopTiming(T0, "checkURI");}
-          console.log("checkURI: Calling main");
+          if (filterMod) {
+            /* Convert mA / mD / mHP into Custom Search Builder */
+            /* searchBuilderTitles: Rank | Level | CP | Minimum Level CP | Attack IV | Defense IV | Stamina IV
+             * XL Candy Cost | Stardust Cost | CMP vs. Rank1 (W/L/T) | CMP vs. All (Win %) | 
+             * Attack Stat | Defense Stat | HP Stat | Stat Product | Stat Prod Perfection (%) | Bulk Product */
+            var mAstring="", mDstring="", mHPstring="";//, mBPstring="";
+            if (mA > 0) {mAstring = '{ "condition": ">=", "data": "Attack Stat", "type": "num", "value": [ "'+mA+'" ] }, ';}
+            if (mD > 0) {mDstring = '{ "condition": ">=", "data": "Defense Stat", "type": "num", "value": [ "'+mD+'" ] }, ';}
+            if (mHP > 0) {mHPstring = '{ "condition": ">=", "data": "HP Stat", "type": "num", "value": [ "'+mHP+'" ] }, ';}
+            sbSearch = '{ "criteria": [ '+mAstring+''+mDstring+''+mHPstring+'], "logic": "AND" }';
+            /* Remove trailing comma (,) after criteria before logic and convert to JSON */
+            sbSearch = $.parseJSON(sbSearch.replace('] }, ], "logic":','] } ], "logic":'));
+            console.log("Built sbSearch as:'"+JSON.stringify(sbSearch)+"'");
+
+          }
+          
           /* Ensure we open Advanced if user URL has any Advanced settings enabled */
-          if (
-            settings !== "000"
-            || minLvl > 1
-            || maxLvl !== "51"
-            || fel !== "mirror"
-            || dec > 1
-            || effIV
-            ) { advCollapsible(); }
+          if (settings !== "000" || minLvl > 1 || maxLvl !== "51" || fel !== "mirror" || dec > 1 || effIV) {
+            advCollapsible(); 
+          }
+          console.log("checkURL: Calling main()");
+          if (perfTiming) {stopTiming(T0, "checkURL");}
           main();
         }
         else
         {
-          console.log("checkURI: No inputs detected, awaiting user input");
-          if (perfTiming) {stopTiming(T0, "checkURI");}
+          console.log("checkURL: No inputs detected, awaiting user input");
+          if (perfTiming) {stopTiming(T0, "checkURL");}
         }
       }
 
@@ -798,7 +817,7 @@
         userIVs.push([atk,def,sta,sha,0,0,0,0]);
         
         /* clear min stat filters, and filterMod */
-        //mA = 0; mD = 0; mHP = 0;
+        mA = 0; mD = 0; mHP = 0;
         filterMod = false;
         
         /*reset Min Level if we adjusted it previously*/
@@ -990,18 +1009,18 @@
         /*update the URL with search parameters*/
         var URL = window.location.href.split("?")[0];
         /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000000&fel=1500&mA=119.7&mD=112.6&mHP=113";*/
-        var uri = URL + "?mon="+mon+"&r="+pageLen+"&cp="+league;
+        var link = URL + "?mon="+mon+"&r="+pageLen+"&cp="+league;
         /* Only print remaining params if they aren't default values */
-        if (floor > 0) {uri += "&f="+floor}
-        if (minLvl > 1) {uri += "&min="+minLvl;}
-        if (maxLvl!== "51") {uri += "&max="+maxLvl;}
+        if (floor > 0) {link += "&f="+floor}
+        if (minLvl > 1) {link += "&min="+minLvl;}
+        if (maxLvl!== "51") {link += "&max="+maxLvl;}
         var settings = (cge ? "1":"0") + (family ? "1":"0") + (dti ? "1":"0");
         if (settings !== "000") {
           console.log("941: About to make '&set'="+settings);
-          uri += "&set="+settings;}
-        if (fel !== "mirror") {uri += "&fel="+fel;}
-        if (effIV) {uri += "&p=" + (effIV ? "1":"0");}
-        if (dec > 1) {uri += "&dec="+dec;}
+          link += "&set="+settings;}
+        if (fel !== "mirror") {link += "&fel="+fel;}
+        if (effIV) {link += "&p=" + (effIV ? "1":"0");}
+        if (dec > 1) {link += "&dec="+dec;}
         if (userIVs[0][0] && userIVs[0][1] && userIVs[0][2]) {
           var IVs = "";
           for (i=0; i<userIVs.length; i++) {
@@ -1014,15 +1033,15 @@
               }
             }
           }
-          uri += "&IVs="+IVs;
+          link += "&IVs="+IVs;
         }
-        uri = encodeURI(uri);
-        /*console.log("uri generated as:"+uri);*/
+        link = encodeURI(link);
+        console.log("updateURL:: link generated as:"+link);
         
         /* Update title and description to improve SEO for chosen mon */
         var newTitle = mon+" PvP IVs - "+leagueName+" Rankings";
         document.title = newTitle.replace(/_/g, " "); /* replace all underscores ('_') with spaces */
-        window.history.pushState(null, newTitle, uri);
+        window.history.pushState(null, newTitle, link);
         var newDescrp = mon+" PvP IVs lookup tool for Pokémon Go™ to help compare your "+mon+"'s PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified "+mon+"! Did you catch the very best?";
         document.querySelector("meta[name='description']").setAttribute("content", newDescrp);
         /* Update canonical link to include mon & league for improved SEO */
@@ -1265,10 +1284,26 @@
             pageLength: pageLen,
             responsive: true,
             scrollCollapse: true,
-            searching: true
+            searching: true//,searchBuilder: {preDefined: sbSearch}
         });
         /* Timing gate after generating table */
         if (perfTiming) {T5 = performance.now();}
+
+        if (sbSearch) {
+          console.log("Rebuilding searchBuilder search with: "+JSON.stringify(sbSearch));
+          dt.searchBuilder.rebuild(sbSearch);
+        }
+
+        $('#getDetails').on('click', function() {
+          sbSearch = dt.searchBuilder.getDetails();
+          console.log("Updated sbSearch to: "+JSON.stringify(sbSearch));
+          $('#feedbackBox').text(JSON.stringify(sbSearch, null, '\t'));
+        })
+
+        $('#revert').on('click', function() {
+          console.log("Rebuilding searchBuilder search with: "+sbSearch);
+          dt.searchBuilder.rebuild(sbSearch);
+        })
 
         /* If XL candy is used, need to unhide this column */
         if (nonZeroXL === true) {
@@ -1455,7 +1490,7 @@
         for (var i=0; i<testURLs.length;i++) {
           console.log("unitTests: "+i+": testing '"+testURLs[i]+"'");
           try {
-            checkURI(testURLs[i]);
+            checkURL(testURLs[i]);
           }
           catch (err) {
             console.log("unitTests: "+i+": test generated error:'"+err+"'");
@@ -2083,14 +2118,14 @@
         /* And update remaining userIVs hiddenSortIndexes */
         /* So next userIVs hiddenSortIndex will be right  */
         var numRows = dt.rows().count();
-        for (var i=0,hSIoffset=0; i<userIVs.length; i++,hSIoffset++) {
+        for (var i=0,hiddenSortIndex=0; i<userIVs.length; i++,hiddenSortIndex++) {
           if (i/1 === rowNum/1) {
             /* Unpin this row */
             userIVs[i][7] = 0;
-            /* Don't count this row when incrementing hSIoffset */
-            hSIoffset--;
+            /* Don't count this row when incrementing hiddenSortIndex */
+            hiddenSortIndex--;
           } else {
-            userIVs[i][7] = hSIoffset-numRows;
+            userIVs[i][7] = hiddenSortIndex-numRows;
           }
           /* Update dt sort order all rows using userIVs */
           var d = dt.row(userIVs[i][4]-1).data();
