@@ -329,12 +329,25 @@
       var mnlMod = false; /*track if min Lvl was adjusted*/
       var ivMod = false; /*track if IV floor was adjusted*/
       const userIVs = new Array(1).fill(0).map(() => new Array(8).fill(0));
+      /* Use global variables to clean up code and  */
+      /* Simplify by supporting stateless functions */
       var hiddenRowIndex;
+      var ranks; /* Used for updating trade table */
+      var mon;
+      var league = document.getElementById("league").value;
+      var leagueName= $("#league").find(":selected").text();
+      var floor = document.getElementById("floor").value;
+      var minLvl = document.getElementById("minLvl").value;
+      var maxLvl = document.getElementById("maxLvl").value;
+      var dec = document.getElementById("dec").value;
+      var fel = document.getElementById("familyEvoLeague").value;
+      var effIV = document.getElementById("effIV").checked;
+      var cge = document.getElementById("cge").checked;
       userIVs[0] = [
-        document.getElementById('aIV[0]').value,   /* 0:attack IV  */
-        document.getElementById('dIV[0]').value,   /* 1:defense IV */
-        document.getElementById('sIV[0]').value,   /* 2:stamina IV */
-        document.getElementById('shdw[0]').checked,/* 3:shadow     */
+        document.getElementById("aIV[0]").value,   /* 0:attack IV  */
+        document.getElementById("dIV[0]").value,   /* 1:defense IV */
+        document.getElementById("sIV[0]").value,   /* 2:stamina IV */
+        document.getElementById("shdw[0]").checked,/* 3:shadow     */
         0,                                         /* 4:rank       */
         0,                                         /* 5:stat prod  */
         0,                                         /* 6:level      */
@@ -349,7 +362,7 @@
       if (monNames.length<1111) /* At time of writing, monNames.length was 1166 */
       {
         console.error("monNames.length ("+monNames.length+") shorter than expected (1000), check pokeListObj load");
-        document.getElementById('feedbackBox').innerHTML = "<p><i>ERROR: Failed to load, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
+        document.getElementById("feedbackBox").innerHTML = "<p><i>ERROR: Failed to load, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
         console.log("pokeListObj: "+JSON.stringify(pokeListObj));
         console.log("monNames: "+JSON.stringify(monNames));
       } else {
@@ -360,14 +373,15 @@
             /*console.log("User Selected "+evt.text.label+", passing to main and exiting Awesomplete");*/
             if (evt.text.label.indexOf("_SPECULATIVE") > -1)
             {
-              document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";
+              document.getElementById("megaNote").innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";
             } else if (evt.text.label.indexOf("_PLACEHOLDER") > -1)
             {
-              document.getElementById('megaNote').innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";
+              document.getElementById("megaNote").innerHTML = "<p><i>Please note these base stats are unknown and not yet in the Game Master!</i></p>";
             } else {
-              document.getElementById('megaNote').innerHTML = ""; /* Clear the previous notes if any */
+              document.getElementById("megaNote").innerHTML = ""; /* Clear the previous notes if any */
             }
             inputMon = evt.text.label;
+            console.log("Awesomplete: calling main("+evt.text.label+")");
             main(evt.text.label);
           }
         });
@@ -379,7 +393,7 @@
         console.log(functionName+": Execution took "+(endTime-startTime).toFixed(1)+"ms");
         var docOut = functionName+": Execution took "+(endTime-startTime).toFixed(1)+"ms<br>";
         if (functionName === "main") {docOut = "<b>"+docOut+"</b>";}
-        document.getElementById('timing_outputs').innerHTML += docOut;
+        document.getElementById("timing_outputs").innerHTML += docOut;
       }
       
       function  checkURI(URL, tests) {
@@ -420,38 +434,38 @@
                 pageLen = values[i].split("=")[1]/1;
                 break;
               case "cp":
-                document.getElementById('league').value = values[i].split("=")[1];
+                document.getElementById("league").value = values[i].split("=")[1];
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
-                if (document.getElementById('league').value === "") {
+                if (document.getElementById("league").value === "") {
                   console.error("checkURI: Unknown cp value detected, defaulting to Master League");
-                  document.getElementById('league').value = "ML";
+                  document.getElementById("league").value = "ML";
                 }
                 break;
               case "f":
-                document.getElementById('floor').value = values[i].split("=")[1];
+                document.getElementById("floor").value = values[i].split("=")[1];
                 ivMod = true;
                 break;
               case "min":
-                document.getElementById('minLvl').value = values[i].split("=")[1];
+                document.getElementById("minLvl").value = values[i].split("=")[1];
                 mnlMod = true;
                 updateMinLvlCP_Elements();
                 break;
               case "max":
-                document.getElementById('maxLvl').value = values[i].split("=")[1];
+                document.getElementById("maxLvl").value = values[i].split("=")[1];
                 break;
               case "dec":
-                document.getElementById('dec').value = values[i].split("=")[1];
+                document.getElementById("dec").value = values[i].split("=")[1];
                 break;
               case "fel":
-                document.getElementById('familyEvoLeague').value = values[i].split("=")[1];
+                document.getElementById("familyEvoLeague").value = values[i].split("=")[1];
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
-                if (document.getElementById('familyEvoLeague').value === "") {
+                if (fel === "") {
                   console.error("checkURI: Unknown cp value detected, defaulting to Master League");
-                  document.getElementById('familyEvoLeague').value = "ML";
+                  fel = "ML";
                 }
                 break;
               case "cmpLim":
-                document.getElementById('cmpLim').value = values[i].split("=")[1];
+                document.getElementById("cmpLim").value = values[i].split("=")[1];
                 break;
               case "IVs":
                 var ivStr = (values[i].split("=")[1]).split("-");
@@ -475,7 +489,7 @@
                 filterMod = true;
                 break;
               case "p":
-                document.getElementById('effIV').checked = values[i].split("=")[1] === "1" ? true : false;
+                document.getElementById("effIV").checked = values[i].split("=")[1] === "1" ? true : false;
                 break;
               case "t": /* Enable performance timing output in console for debugging */
                 perfTiming = values[i].split("=")[1];
@@ -497,18 +511,18 @@
                 return true;
               case "set":
                 settings = (''+values[i].split("=")[1]);
-                //document.getElementById('mlCP').checked = settings[0] === "1" ? true : false;
-                //document.getElementById('cmp').checked = settings[1] === "1" ? true : false;
-                document.getElementById('cge').checked = settings[2] === "1" ? true : false;
+                //document.getElementById("mlCP").checked = settings[0] === "1" ? true : false;
+                //document.getElementById("cmp").checked = settings[1] === "1" ? true : false;
+                document.getElementById("cge").checked = settings[2] === "1" ? true : false;
                 if (settings[3] === "1") {
-                  document.getElementById('family').checked = true;
+                  document.getElementById("family").checked = true;
                   document.getElementById("familyEvoLeagueLbl").style.display = "inline-block";
                 } else {
-                  document.getElementById('family').checked = false;
+                  document.getElementById("family").checked = false;
                   document.getElementById("familyEvoLeagueLbl").style.display = "none";
                 }
-                document.getElementById('family').checked = settings[3] === "1" ? true : false;
-                document.getElementById('dti').checked = settings[4] === "1" ? true : false;
+                document.getElementById("family").checked = settings[3] === "1" ? true : false;
+                document.getElementById("dti").checked = settings[4] === "1" ? true : false;
                 break;
             }
           }
@@ -517,11 +531,11 @@
           /* Ensure we open Advanced if user URL has any Advanced settings enabled */
           if (
             settings !== "000"
-            || document.getElementById('minLvl').value > 1
-            || document.getElementById('maxLvl').value !== "51"
-            || document.getElementById('familyEvoLeague').value !== "mirror"
-            || document.getElementById('dec').value > 1
-            || document.getElementById('effIV').checked
+            || minLvl > 1
+            || maxLvl !== "51"
+            || fel !== "mirror"
+            || dec > 1
+            || effIV
             ) { advCollapsible(); }
           main();
         }
@@ -573,15 +587,15 @@
           removeInputTableRow();
         });
         $("#inputTable").on("change", "tr", function(event){
-          var T0;
+          var T0,i;
           if (perfTiming) {T0 = performance.now();}
           console.log(" ");
-          console.log("#inputTable onChange: Processing new event >>>>>>>>>");
+          console.log("#inputTable onChange: Processing new onChange event");
           console.log(" ");
           event.stopPropagation();
           event.stopImmediatePropagation();
-          document.getElementById('feedbackBox').innerHTML = "";
-          const dt = $('#monTable').DataTable();
+          document.getElementById("feedbackBox").innerHTML = "";
+          const dt = $("#monTable").DataTable();
           var rows = dt.rows().data();
           var numRows = dt.rows().count();
           var td = event.target.parentNode;
@@ -590,7 +604,7 @@
           rowNum = rowNum.split("]")[0];
           /* If oldUserIVs were valid (large negative num), keep old hiddenSortVal, otherwise initialize */
           var hiddenSortVal = (userIVs[rowNum][7]/1 < 0) ? userIVs[rowNum][7] : (userIVs.length-1)-numRows/1;
-          console.log("#inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][0]+"/"+userIVs[rowNum][1]+"/"+userIVs[rowNum][2]);
+          //console.log("#inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][0]+"/"+userIVs[rowNum][1]+"/"+userIVs[rowNum][2]);
 
           /* If oldUserIVs were valid, need to be removed from dt */
           var oldUserIVs = userIVs[rowNum];
@@ -600,36 +614,57 @@
           }
           
           /* Get IV and shadow values for new row */
-          var atk = document.getElementById('aIV['+rowNum+']').value;
-          var def = document.getElementById('dIV['+rowNum+']').value;
-          var sta = document.getElementById('sIV['+rowNum+']').value;
-          var sha = document.getElementById('shdw['+rowNum+']').checked;
+          var atk = document.getElementById("aIV['+rowNum+']").value;
+          var def = document.getElementById("dIV['+rowNum+']").value;
+          var sta = document.getElementById("sIV['+rowNum+']").value;
+          var sha = document.getElementById("shdw['+rowNum+']").checked;
 
-          console.log("Inserting new row :"+atk+"/"+def+"/"+sta+", "+sha);
-
-          /* Ensure this is a complete IV set */
+          /* Check this IV set before adding */
           if ((atk !== "") && (atk && def && sta)) {
-            /* Find this new IV set in DataTable and update userIVs with correct data */
-            for (var i=0; i<numRows; i++) {
-              if (rows[i][4] == atk && rows[i][5] == def && rows[i][6] == sta) {
-                console.log("#inputTable onChange: Found row at i: "+i+", rows[i]: "+JSON.stringify(rows[i])+", == "+atk+"/"+def+"/"+sta);
-                managePinsCSS_DT(dt, rows[i][0]-1, hiddenSortVal, tr);
-                /* It is correct to have rows[i][0]-1 above for rowNum and rows[i][0] below for rankNum */
-                userIVs[rowNum] = [atk, def, sta, sha, rows[i][0], rows[i][14], rows[i][1], rows[i][hiddenRowIndex]];
-                console.log("#inputTable onChange: Updated row to: "+JSON.stringify(rows[i]));
+            var validIVs = true;
+            /* Ensure user IVs are below league CP limit */
+            for (i=0; i<ranks.invalids.length; i++) {
+              if (atk == ranks.invalids[i].A && def == ranks.invalids[i].D && sta == ranks.invalids[i].S) {
+                validIVs = "<br /><i>"+atk+"/"+def+"/"+sta+" is "+ranks.invalids[i].cp+"CP at level "+minLvl+", ineligible for "+leagueName+" (&le;"+league+"CP).<br />Please check your input IVs, Min Level, and League then try again.</i>";
                 break;
               }
             }
+            /* Ensure user IVs are above IV Floor */
+            if (validIVs) {
+              if (atk/1 < floor/1 || def/1 < floor/1 || sta/1 < floor/1) {
+                validIVs = "<br /><i>One or more of your IVs ("+atk+"/"+def+"/"+sta+") are below IV Floor ("+floor+"), please check your inputs and try again.</i>";
+              }
+            }
+            /* Only search for user IVs in DataTable if they are valid (below CP limit and above IV Floor) */
+            if (validIVs) {
+              /* Find this new IV set in DataTable and update userIVs with correct data */
+              for (i=0; i<numRows; i++) {
+                if (rows[i][4] == atk && rows[i][5] == def && rows[i][6] == sta) {
+                  managePinsCSS_DT(dt, rows[i][0]-1, hiddenSortVal, tr);
+                  /* It is correct to have rows[i][0]-1 above for rowNum and rows[i][0] below for rankNum */
+                  userIVs[rowNum] = [atk, def, sta, sha, rows[i][0], rows[i][14], rows[i][1], rows[i][hiddenRowIndex]];
+                  break;
+                }
+              }
+            } else {
+              /* These IVs are invalid (over league CP limit or below IV Floor) */
+              console.log("#inputTable onChange: Found invalid IV set ("+atk+"/"+def+"/"+sta+"), exiting");
+              document.getElementById("feedbackBox").innerHTML += validIVs;
+              if (perfTiming) {stopTiming(T0, "#inputTable onChange");}
+              return;
+            }
           } else {
-            /* Malformed IV set, do not insert to dt */
-            console.log("userIVs after removeInputTableRow:"+JSON.stringify(userIVs));
-            console.log("#inputTable onChange: calling removeInputTableRow() to remove IV set");
+            /* Incomplete IV set, do not insert to dt */
+            console.log("#inputTable onChange: Detected incomplete IV set ("+atk+"/"+def+"/"+sta+"), calling removeInputTableRow()");
             removeInputTableRow();
-            console.log("userIVs after removeInputTableRow:"+JSON.stringify(userIVs));
           }
-          console.log("#inputTable onChange: userIVs is now: "+JSON.stringify(userIVs));
           dt.draw();
+
+          /* Now that we have updated IVs, refresh Trade and Family tables */
+          console.log("#inputTable onChange: Updated IVs, calling updateTradePcnts()...");
+          updateTradePcnts();
           if (perfTiming) {stopTiming(T0, "#inputTable onChange");}
+          return;
         });
         /* All event handlers initialized, proceed to checkURI() */
         checkURI();
@@ -638,16 +673,20 @@
       function main(mon) {
         var T0,i;
         if (perfTiming) {T0 = performance.now();}
-        else {document.getElementById('timing_outputs').innerHTML = "";}
+        else {document.getElementById("timing_outputs").innerHTML = "";}
         
-        /* Check if there is a DataTable on the page for an old mon */
-        if (mon && $.fn.DataTable.isDataTable( '#monTable' )) {
-          resetMonState();
+        if (mon) {
+          /* Check if there is a DataTable on the page for an old mon */
+          if ($.fn.DataTable.isDataTable( '#monTable' )) {
+            console.log("main: detected an old DataTable, need to clear old state. Calling resetMonState()");
+            resetMonState();
+            clearHideOldDataTable();
+            /*ensure we clear the prior output between runs*/
+            document.getElementById("tradeOutput").innerHTML = "";
+            document.getElementById("CustomGroupExport").style.display = "none";
+          }
+          /* For first run or new mon, always adjustFloors */
           adjustFloors(mon);
-          clearHideOldDataTable();
-          /*ensure we clear the prior output between runs*/
-          document.getElementById("tradeOutput").innerHTML = "";
-          document.getElementById("CustomGroupExport").style.display = "none";
         }
         
         /* Awesomeplete sends "undefined" when it did not find a valid input */
@@ -669,32 +708,29 @@
           if (perfTiming) {stopTiming(T0, "main");}
           return;
         } else { /* Have a valid mon, remove instructions */
-          document.getElementById('instructionsBox').innerHTML = "";
+          document.getElementById("instructionsBox").innerHTML = "";
           document.getElementById("IVinputShow").style.display = "none";
         }
         
         /* Ensure that pokeListObj loaded successfully */
-        var monInfo = pokeListObj[mon].split(',');
+        var monInfo = pokeListObj[mon].split(",");
         if (monInfo === "")
         {
           console.error("Fatal: Cannot find monInfo");
-          document.getElementById('instructionsBox').innerHTML = "<p><i>ERROR: Cannot find monInfo, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
+          document.getElementById("instructionsBox").innerHTML = "<p><i>ERROR: Cannot find monInfo, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
           if (perfTiming) {stopTiming(T0, "main");}
           return false;
         }
         
         /* Calculate this mon's ranks object */
-        var league = document.getElementById('league').value;
-        var leagueName= $('#league').find(":selected").text();
-        var floor = document.getElementById('floor').value;
-        var ranks = calculate(
+        ranks = calculate(
           parseInt(monInfo[1]), 
           parseInt(monInfo[2]), 
           parseInt(monInfo[3]), 
           floor, 
-          document.getElementById('minLvl').value, 
-          document.getElementById('maxLvl').value, 
-          document.getElementById("dti").checked, 
+          minLvl, 
+          maxLvl, 
+          true, 
           league,
           mon);
         var keys = Object.keys(ranks);
@@ -702,27 +738,39 @@
         /* Ensure we generated ranks to output*/
         if (ranks.numRanks/1 < 1) {
           /*nothing to output, print Error and exit*/
-          document.getElementById('instructionsBox').innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Advanced and try again</i></p><br />";
-          document.getElementById('feedbackBox').innerHTML = "";
+          document.getElementById("instructionsBox").innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Advanced and try again</i></p><br />";
+          document.getElementById("feedbackBox").innerHTML = "";
           console.log("No ranks generated!");
           if (perfTiming) {stopTiming(T0, "main");}
           return false;
         }
 
         /* Create a DataTable from the mon ranks object */
-        generateDataTable(mon, league, leagueName, ranks, keys);
+        generateDataTable(keys);
         /* Also show other tables if the user has enabled them */
-        if (document.getElementById("cge").checked) {displayPvPokeEvoGroup(mon);}
+        if (cge) {displayPvPokeEvoGroup(mon);}
+        updateTradePcnts(keys);
+        /* Finally save the state of this output to the URL for sharing */
+        updateURL();
+        
+        if (perfTiming) {stopTiming(T0, "main");}
+        return;
+      }
+
+      function updateTradePcnts(keys) {
         if (document.getElementById("dti").checked) {
+          var T0;
+          if (perfTiming) {T0 = performance.now();}
+
+          /* Check if we were passed parameters we need, if not, get them */
+          if(!keys) {keys = Object.keys(ranks);}
+          document.getElementById("tradeOutput").innerHTML = "";
           for (i=0; i<userIVs.length; i++) {
-            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks, keys, userIVs[i][5], floor, userIVs[i][0], userIVs[i][1], userIVs[i][2], league);
+            document.getElementById("tradeOutput").innerHTML += tradePcnts(keys, userIVs[i][5], floor, userIVs[i][0], userIVs[i][1], userIVs[i][2], league);
           }
           document.getElementById("tradeOutput").innerHTML += "<br />"
         }
-        /* Finally save the state of this output to the URL for sharing */
-        updateURL(mon, league, leagueName);
-        
-        if (perfTiming) {stopTiming(T0, "main");}
+        if (perfTiming) {stopTiming(T0, "updateTradePcnts");}
         return;
       }
 
@@ -730,24 +778,26 @@
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
-        var minLvl = document.getElementById('minLvl');
-        var floor = document.getElementById('floor');
+        var minLvl = document.getElementById("minLvl");
+        var floor = document.getElementById("floor");
         
         /* Clear all existing IV Input Rows */
         for (var i=0; i<userIVs.length; i++) {
           /* magic to actually remove all the rows one by one */
-          console.log("Attempting to read aIV["+i+"]");
-          var tr = document.getElementById('aIV['+i+']').parentNode;
+          console.log("resetMonState: Attempting to read aIV["+i+"]");
+          var tr = document.getElementById("aIV['+i+']").parentNode;
           tr.parentNode.parentNode.removeChild(tr.parentNode);
         }
-        /* clear the userIVs array */
         userIVs.splice(0, userIVs.length);
+
+        /* Re-insert a default IV (-/15/15) row, update DOM and userIVs */
+        var atk='', def=15, sta=15, sha=false;
+        var newRow=document.getElementById("inputTable").insertRow();
+        newRow.innerHTML = "<tr><td><input id='shdw[0]' type='checkbox'></td><td><select title='Your Attack IV' id='aIV[0]'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' id='dIV[0]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' id='sIV[0]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus[0]'></button></td></tr>";  
+        userIVs.push([atk,def,sta,sha,0,0,0,0]);
         
-        /* Re-Add default IV Input Row */
-        newInputTableRow();
-        
-        /* clear min stat filters, filterMod, and lastLeague */
-        //mA = 0; mD = 0; mHP = 0; lastLeague = undefined;
+        /* clear min stat filters, and filterMod */
+        //mA = 0; mD = 0; mHP = 0;
         filterMod = false;
         
         /*reset Min Level if we adjusted it previously*/
@@ -781,6 +831,7 @@
           ivMod = false;
         }
         if (perfTiming) {stopTiming(T0, "resetMonState");}
+        return;
       }
       
       function adjustFloors(pokeName) {
@@ -788,20 +839,29 @@
         if (perfTiming) {T0 = performance.now();}
         
         /*check if we need to adjust IV Floor or Min Level*/
-        var minLvl = document.getElementById('minLvl');
-        var floor = document.getElementById('floor');
+        var minLvl = document.getElementById("minLvl");
+        var floor = document.getElementById("floor");
         
-        if (shadowLegend.includes(pokeName) && shdw.indexOf(true) > -1) {
-          console.log("Detected Shadow Legendary:" +pokeName);
-          /*set min IVs to 10 and min Level to 20*/
-          if (minLvl.value/1 > 8) {
-            minLvl.value = 8; updateMinLvlCP_Elements();
-            mnlMod = true;
+        if (shadowLegend.includes(pokeName)) {
+          /* See if any input IVs are shadow Mon */
+          var shadowMon = false;
+          for (var i=0; i<userIVs.length; i++) {
+            if (userIVs[i][3] === true) {
+              shadowMon = true;
+            }
           }
-          floor.value = 6;
-          ivMod = true;
-          if (perfTiming) {stopTiming(T0, "adjustFloors");}
-          return;
+          if (shadowMon) {
+            console.log("Detected Shadow Legendary:" +pokeName);
+            /*set min IVs to 6 and min Level to 8*/
+            if (minLvl.value/1 > 8) {
+              minLvl.value = 8; updateMinLvlCP_Elements();
+              mnlMod = true;
+            }
+            floor.value = 6;
+            ivMod = true;
+            if (perfTiming) {stopTiming(T0, "adjustFloors");}
+            return;
+          }
         }
         
         if (boxRewrd.includes(pokeName)) {
@@ -863,11 +923,11 @@
         
         /* If old table exists, clear data and hide it */
         /* Remove old onclick events to prevent dupes */
-        if ($.fn.DataTable.isDataTable('#monTable') ) {
-          $('#monTable tbody').off('click');
-          $('#monTable').hide();
-          $('#toggleCols').hide();
-          $('.dataTables_wrapper').hide();
+        if ($.fn.DataTable.isDataTable("#monTable") ) {
+          $("#monTable tbody").off("click");
+          $("#monTable").hide();
+          $("#toggleCols").hide();
+          $(".dataTables_wrapper").hide();
         }
         if (perfTiming) {stopTiming(T0, "clearHideOldDataTable");}
         return;
@@ -936,16 +996,16 @@
         var uri = URL + "?mon="+mon+"&r="+pageLen;
         /* Only print remaining params if they aren't default values */
         uri += "&cp="+league; /* Must include league */
-        if (document.getElementById('floor').value > 0) {uri += "&f="+document.getElementById('floor').value;}
-        if (document.getElementById('minLvl').value > 1) {uri += "&min="+document.getElementById('minLvl').value;}
-        if (document.getElementById('maxLvl').value!== "51") {uri += "&max="+document.getElementById('maxLvl').value;}
-        var settings = (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0");
+        if (document.getElementById("floor").value > 0) {uri += "&f="+floor}
+        if (minLvl > 1) {uri += "&min="+minLvl;}
+        if (maxLvl!== "51") {uri += "&max="+maxLvl;}
+        var settings = (cge ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0");
         if (settings !== "000") {
           console.log("941: About to make '&set'="+settings);
           uri += "&set="+settings;}
-        if (document.getElementById('familyEvoLeague').value !== "mirror") {uri += "&fel="+document.getElementById('familyEvoLeague').value;}
-        if (document.getElementById('effIV').checked) {uri += "&p=" + (document.getElementById("effIV").checked ? "1":"0");}
-        if (document.getElementById('dec').value > 1) {uri += "&dec="+document.getElementById('dec').value;}
+        if (fel !== "mirror") {uri += "&fel="+fel;}
+        if (effIV) {uri += "&p=" + (effIV ? "1":"0");}
+        if (dec > 1) {uri += "&dec="+dec;}
         if (userIVs[0][0] && userIVs[0][1] && userIVs[0][2]) {
           var IVs = "";
           for (i=0; i<userIVs.length; i++) {
@@ -965,10 +1025,10 @@
         
         /* Update title and description to improve SEO for chosen mon */
         var newTitle = mon+" PvP IVs - "+leagueName+" Rankings";
-        document.title = newTitle.replace(/_/g, ' '); /* replace all underscores ('_') with spaces */
+        document.title = newTitle.replace(/_/g, " "); /* replace all underscores ('_') with spaces */
         window.history.pushState(null, newTitle, uri);
         var newDescrp = mon+" PvP IVs lookup tool for Pokémon Go™ to help compare your "+mon+"'s PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified "+mon+"! Did you catch the very best?";
-        document.querySelector('meta[name="description"]').setAttribute("content", newDescrp);
+        document.querySelector("meta[name='description']").setAttribute("content", newDescrp);
         /* Update canonical link to include mon & league for improved SEO */
         document.querySelector("link[rel='canonical']").setAttribute("href", "https://pvpivs.com/?mon="+mon+"&cp="+league);
 
@@ -995,7 +1055,7 @@
         /* Start by clearing all existing IV Input Rows */
         for (var i=0; i<userIVs.length; i++) {
           /* magic to actually remove all the rows one by one */
-          var tr = document.getElementById('aIV['+i+']').parentNode;
+          var tr = document.getElementById("aIV['+i+']").parentNode;
           tr.parentNode.parentNode.removeChild(tr.parentNode);
         }
         /* clear the value arrays */
@@ -1017,28 +1077,23 @@
         main();
       }
       
-      function generateDataTable(mon, league, leagueName, ranks, keys) {
+      function generateDataTable(keys) {
 
         var T0,T1,T2,T3,T4,T5,T6,candyTime=0;
         if (perfTiming) {T0 = performance.now();}
 
-        /*console.log("gDT: Received aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw+", league:"+league+", ranks"+ranks+");*/
-        var dec = document.getElementById('dec').value;
-        var minLvl = document.getElementById('minLvl').value;
-        var maxLvl = document.getElementById('maxLvl').value;
-        var floor = document.getElementById('floor').value;
+        console.log("gDT: Received mon:"+mon+", league:"+league+", leagueName:"+leagueName+", ranks.numRanks:"+ranks.numRanks+", keys.length:"+keys.length);
         var tableData = [];
         var currentRow = [];
         var nonZeroXL = false; /* track visibility of XL candy column */
         /* Copy user IV arrays so we can destructively search for them */
         var userIVsclone = [...userIVs];
         /* Ensure we clear data and feedback between table generation runs */
-        document.getElementById('feedbackBox').innerHTML = "";
+        document.getElementById("feedbackBox").innerHTML = "";
 
         ranks = cmpCalcs(ranks, keys, dec);
         if (perfTiming) {T1 = performance.now();}
 
-        var effIV = document.getElementById("effIV").checked;
         if (effIV === true){ranks = checkEfficientIVs(ranks, keys, dec);}
         if (perfTiming) {T2 = performance.now();}
 
@@ -1087,7 +1142,7 @@
             }
             
             /* Print row iff user doesn't care about IV efficiency OR if this row's IVs are efficient */
-            if (document.getElementById("effIV").checked === false || ranks[keys[i]][j].eff === true) {
+            if (effIV === false || ranks[keys[i]][j].eff === true) {
               currentRow = [
                 actualRank,              /*0: Rank*/
                 ranks[keys[i]][j].L,     /*1: Level*/
@@ -1148,8 +1203,8 @@
         candyTime = candyTime.toFixed(1);
 
         /* Make sure we show the table and column toggles before writing data to table */
-        $('#toggleCols').show();
-        $('#monTable').show();
+        $("#toggleCols").show();
+        $("#monTable").show();
 
         /* Ensure user IV rows are sorted by rank before creating DataTable */
         //sortUserIVs();
@@ -1186,13 +1241,14 @@
               { "targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false}
             ],
             createdRow: (row, data, index) => {
+              /* TODO: Use Function here instead? */
               if (data[hiddenRowIndex] !== 0) {
                 if (data[0]/1 < (0.02442/1*ranks.numRanks/1)) {
-                  $(row).addClass('good'); /*green for "good"*/
+                  $(row).addClass("good"); /*green for "good"*/
                 } else if (data[0]/1 < (0.2442/1*ranks.numRanks/1)) {
-                  $(row).addClass('ok'); /*orange for "ok"*/
+                  $(row).addClass("ok"); /*orange for "ok"*/
                 } else {
-                  $(row).addClass('rubbish'); /*red for "rubbish"*/
+                  $(row).addClass("rubbish"); /*red for "rubbish"*/
                 }
               }
             },
@@ -1225,7 +1281,7 @@
         }
 
         /* Enable user click to add IVs to compare */
-        $('#monTable tbody').on('click', 'tr', function (e) {
+        $("#monTable tbody").on('click', 'tr', function (e) {
           /* Update hiddenSortRank to "pin" this row to top of table */
           
           var hiddenSortVal = userIVs.length-dt.rows().count()/1;
@@ -1244,18 +1300,18 @@
         });
 
         /* */
-        $('#monTable_length').on( 'change', function () {
+        $("#monTable_length").on( 'change', function () {
           pageLen = dt.page.info().length/1;
           updateURL(mon, league, leagueName);
         } );
 
         /* Function to enable DataTables Column Toggling */
         /* https://datatables.net/examples/api/show_hide.html */
-        document.querySelectorAll('a.toggle-vis').forEach((el) => {
-          el.addEventListener('click', function (e) {
+        document.querySelectorAll("a.toggle-vis").forEach((el) => {
+          el.addEventListener("click", function (e) {
             e.preventDefault();
             
-            let columnIdx = e.target.getAttribute('data-column');
+            let columnIdx = e.target.getAttribute("data-column");
             let column = dt.column(columnIdx);
             
             /* Toggle the visibility */
@@ -1269,7 +1325,7 @@
         /* Final timing gate */
         if (perfTiming) {T6 = performance.now();
           console.log("genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Efficiency "+(T2-T1).toFixed(1)+"ms + Generate Data "+(T3-T2).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + Build DataTable "+(T5-T4).toFixed(1)+"ms) + XL Candy & Col Toggless "+(T6-T5).toFixed(1)+"ms)");
-          document.getElementById('timing_outputs').innerHTML += "genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Eff "+(T2-T1).toFixed(1)+"ms + Data "+(T3-T2).toFixed(1)+"ms (XL:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + DataTable "+(T5-T4).toFixed(1)+"ms) + Col Toggles "+(T6-T5).toFixed(1)+"ms)<br>";
+          document.getElementById("timing_outputs").innerHTML += "genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Eff "+(T2-T1).toFixed(1)+"ms + Data "+(T3-T2).toFixed(1)+"ms (XL:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + DataTable "+(T5-T4).toFixed(1)+"ms) + Col Toggles "+(T6-T5).toFixed(1)+"ms)<br>";
         }
         return;
       }
@@ -1280,7 +1336,7 @@
         
         /* Account for mlCP column being hidden or not */
         var offset = 3;
-        if (document.getElementById('mlCPheader')) {offset+=1;} 
+        if (document.getElementById("mlCPheader")) {offset+=1;} 
 
         /* Get the IVs we're trying to add */
         var row = window.event.target.parentNode;
@@ -1302,11 +1358,11 @@
           newInputTableRow(atk, def, sta, false, rank, level, statProd, hiddenSortRank);
         } else {
           console.log(atk+"/"+def+"/"+sta+" already exists in comparison IVs, not adding to compare");
-          if (document.getElementById('feedbackBox').innerHTML.includes(atk+"/"+def+"/"+sta+" already exists in comparison IVs")) {
+          if (document.getElementById("feedbackBox").innerHTML.includes(atk+"/"+def+"/"+sta+" already exists in comparison IVs")) {
             /*console.log("This exact error message is already on screen, skipping duplicating error message");*/
           } else {
             /*console.log("Could not find error message, need to print to screen")*/
-            document.getElementById('feedbackBox').innerHTML += "<br /><i>"+atk+"/"+def+"/"+sta+" already exists in comparison IVs</i>";
+            document.getElementById("feedbackBox").innerHTML += "<br /><i>"+atk+"/"+def+"/"+sta+" already exists in comparison IVs</i>";
           }
         }
         if (perfTiming) {stopTiming(T0, "addToCompare");}
@@ -1326,7 +1382,7 @@
       function saveCurrentSettings() {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        setUserPreference("league,floor,minLvl,maxLvl,dec,effIV,cge,family,familyEvoLeague,dti");
+        setUserPreference("league,floor,minLvl,maxLvl,dec,effIV,cge,family,familyEvoLeague,dti,save");
         if (perfTiming) {stopTiming(T0, "saveCurrentSettings");}
         main();
       }
@@ -1389,7 +1445,7 @@
             }
           }
         }
-        document.getElementById('feedbackBox').innerHTML = singleRankLinks + leagueRankLinks;
+        document.getElementById("feedbackBox").innerHTML = singleRankLinks + leagueRankLinks;
         if (perfTiming) {stopTiming(T0, "updateSitemap");}
       }
       
@@ -1485,7 +1541,8 @@
         return ranks;
     }
       
-      function tradePcnts(ranks, keys, rank, floor, atk, def, sta, league) {
+      function tradePcnts(keys, rank, floor, atk, def, sta, league) {
+        /* TODO: Rewrite to remove reliance on ranks object entirely */
         var T0;
         if (perfTiming) {T0 = performance.now();}
         /*Keep track of eligible/total higher ranked mons*/
@@ -1891,7 +1948,7 @@
         &&  document.getElementById("sIV["+(userIVs.length-1)+"]").value/1 === 15/1)
         ) {
           console.log("We already have a default row at the end, skipping duplicate insert");
-          document.getElementById('feedbackBox').innerHTML += "New Row is already awaiting input (-/15/15)<br />";
+          document.getElementById("feedbackBox").innerHTML += "New Row is already awaiting input (-/15/15)<br />";
           if (perfTiming) {stopTiming(T0, "newInputTableRow");}
           return;
         }
@@ -1909,7 +1966,7 @@
             /* Incomplete IVs received, set to defaults */
             atk = '';def = 15;sta = 15;sha = false;
           }
-          var newRow=document.getElementById('inputTable').insertRow();
+          var newRow=document.getElementById("inputTable").insertRow();
           newRowDOMoffset = userIVs.length;
           newRow.innerHTML = "<tr><td><input id='shdw["+newRowDOMoffset+"]' type='checkbox'></td><td><select title='Your Attack IV' id='aIV["+newRowDOMoffset+"]'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' id='dIV["+newRowDOMoffset+"]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' id='sIV["+newRowDOMoffset+"]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus["+newRowDOMoffset+"]'></button></td></tr>";  
           userIVs.push([atk,def,sta,sha,rank,statProd,level,hiddenSortRank]);
@@ -1917,7 +1974,7 @@
         console.log("Setting xIV["+newRowDOMoffset+"] to : "+atk+"/"+def+"/"+sta+", "+sha);
         setInputTableRow(newRowDOMoffset, atk, def, sta, sha);
         console.log("newInputTableRow: userIVs after pushes: "+JSON.stringify(userIVs));
-        document.getElementById('feedbackBox').innerHTML = "";
+        document.getElementById("feedbackBox").innerHTML = "";
         if (perfTiming) {stopTiming(T0, "newInputTableRow");}
       }
 
@@ -1928,7 +1985,7 @@
         var T0;
         if (perfTiming) {T0 = performance.now();}
         /* Remove CSS highlighting for this row */
-        table.row(rowNum).nodes().to$().removeClass('good','ok','rubbish');
+        table.row(rowNum).nodes().to$().removeClass("good","ok","rubbish");
         /* Reset hiddenRowIndex to 0 to un-pin this row and re-draw dt */
         var d = table.row(rowNum).data();
         d[hiddenRowIndex] = 0;
@@ -1957,16 +2014,16 @@
         /* Add class to properly highlight this row with CSS */
         if (addHighlight) {
           if (rankNum < (0.02442*rowCount)) {
-            addHighlight.classList.add('good'); /*green for "good"*/
+            addHighlight.classList.add("good"); /*green for "good"*/
           } else if (rankNum < (0.2442*rowCount)) {
-            addHighlight.classList.add('ok'); /*orange for "ok"*/
+            addHighlight.classList.add("ok"); /*orange for "ok"*/
           } else {
-            addHighlight.classList.add('rubbish'); /*red for "rubbish"*/
+            addHighlight.classList.add("rubbish"); /*red for "rubbish"*/
           }
         } else {
           if (removeHighlight) {
             /* Remove CSS highlighting for this row */
-            table.row(rowNum).nodes().to$().removeClass('good','ok','rubbish');
+            table.row(rowNum).nodes().to$().removeClass("good","ok","rubbish");
           }
         }
         /* Redraw DataTable to show new pins and highlights */
@@ -1994,7 +2051,7 @@
         var T0,T1,T2,T3,T4,T5,T6,T7,T8,T9;
         if (perfTiming) {T0 = performance.now();}
 
-        var dt = $('#monTable').DataTable();
+        var dt = $("#monTable").DataTable();
         var rowNum;
 
         /* Prevent user from deleting the first and only row */
@@ -2002,7 +2059,7 @@
           if (document.getElementById("aIV[0]").value == "") {
             /* This is the default row which can't be removed, ignore this request */
             console.log("Cannot remove default row, ignoring deletion request");
-            document.getElementById('feedbackBox').innerHTML += "No IV inputs to delete.<br />Please enter your "+input.value+"'s IVs to see "+$('#league').find(':selected').text()+" PvP Rank<br />";
+            document.getElementById("feedbackBox").innerHTML += "No IV inputs to delete.<br />Please enter your "+Awesomplete.input+"'s IVs to see "+leagueName+" PvP Rank<br />";
             if (perfTiming) {stopTiming(T0, "removeInputTableRow");}
             return;
           } else {
@@ -2023,7 +2080,7 @@
         }
         if (perfTiming) {T1 = performance.now();}
         /* Remove CSS highlighting for this row */
-        dt.row(userIVs[rowNum][4]-1).nodes().to$().removeClass('good','ok','rubbish');
+        dt.row(userIVs[rowNum][4]-1).nodes().to$().removeClass("good","ok","rubbish");
         if (perfTiming) {T2 = performance.now();}
 
         /* Reset hiddenSortIndex to 0 to un-pin this row  */
@@ -2154,7 +2211,7 @@
         /* Only run if the input box was changed to a new value */
         if (newVal === true) 
         {
-          setUserPreference('minLvl');
+          setUserPreference("minLvl");
         }
       }
 
@@ -2170,7 +2227,7 @@
         }
         
         if (perfTiming) {stopTiming(T0, "toggleFamilyEvos");}
-        setUserPreference('family');
+        setUserPreference("family");
       }
       </script>
       <label>IV Floor:<select id="floor" oninput="setUserPreference('floor')">
