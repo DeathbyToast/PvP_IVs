@@ -120,6 +120,8 @@
       #monTable tr:nth-child(even) {background-color: var(--tableRowEven);}
       #monTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
       #monTable tr:hover {background-color: var(--navHover);}
+      
+      /* CSS for debug Search Builder Buttons */
       #getDetails, #reload {
         color: var(--secondary);
         background-color: var(--textBoxBg);
@@ -542,8 +544,7 @@
           URL = window.location.href.split("?")[1];
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
-          /*    "mon=Carbink&r=23&cp=1500                                       &dec=2"; */
-          URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2";
+          /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -1320,7 +1321,7 @@
             data: tableData,
             deferRender: true,
             destroy: true,
-            dom: '<i><lp>tQ',
+            dom: 'i<"newline">lptQ',
             language: {
               "info": "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)",
               "lengthMenu" : "Show _MENU_ "+leagueName+" "+mon+" per page"
@@ -1335,6 +1336,7 @@
             scrollX: true,
             searching: true
         });
+        $("div.newline").html('<br /><br /><br />');
         /* Timing gate after generating table */
         if (perfTiming) {T5 = performance.now();}
 
