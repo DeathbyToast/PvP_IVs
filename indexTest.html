@@ -120,6 +120,11 @@
       #monTable tr:nth-child(even) {background-color: var(--tableRowEven);}
       #monTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
       #monTable tr:hover {background-color: var(--navHover);}
+      #getDetails, #reload {
+        color: var(--secondary);
+        background-color: var(--textBoxBg);
+        font-weight : bold;
+      }
       
       #outTable, #familyTable, #inputTable, #tradeTable {
         font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -200,8 +205,6 @@
     	</select></label>
     	<input id="pokeList" onfocus="this.value=''" placeholder="Pok&eacute;mon"/>
     	<span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a valid Pok&eacute;mon to continue...</i></span>
-      <br /><button id="getDetails">Get Details</button>
-      <br /><button id="revert">Revert</button>
       <table id="inputTable">
         <tr><td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td>
             <td title="Your Attack IV">Atk</td>
@@ -326,15 +329,43 @@
       /* Use global variables to clean up code and  */
       /* Simplify by supporting stateless functions */
       /* Initialized inside of document.ready() fxn */
-      var inputMon, pageLen, perfTiming, mnlMod, ivMod;
-      var filterMod, userIVs, hiddenRowIndex, ranks, mon;
-      var league, leagueName, floor, minLvl, maxLvl, dec;
-      var family, fel, fel_Label, effIV, cge, dti, input;
-      var filterMod, monNames, sbSearch, mA, mD, mHP;
+      var inputMon, pageLen, lenMenu, perfTiming, mnlMod;
+      var ivMod, filterMod, userIVs, hiddenRowIndex, mon;
+      var ranks, league, leagueName, floor,minLvl,maxLvl;
+      var dec, family, fel, fel_Label, effIV, cge, input;
+      var dti, filterMod, monNames, sbSearch, mA, mD,mHP;
+      /* DataTable Column numbers to help readability */
+      const dt_rank = 0;
+      const dt_lvl = 1;
+      const dt_cp = 2;
+      const dt_mlCP = 3;
+      const dt_aIV = 4;
+      const dt_dIV = 5;
+      const dt_sIV = 6;
+      const dt_perf = 7;
+      const dt_xl = 8;
+      const dt_dust = 9;
+      const dt_r1CMP = 10;
+      const dt_allCMP = 11;
+      const dt_pvpAtk = 12;
+      const dt_pvpDef = 13;
+      const dt_pvpHP = 14;
+      const dt_statProd = 15;
+      const dt_bulkProd = 16;
+      /* userIV Column numbers to help readability */
+      const uIV_aIV = 0;
+      const uIV_dIV = 1;
+      const uIV_sIV = 2;
+      const uIV_shdw = 3;
+      const uIV_rank = 4;
+      const uIV_statProd = 5;
+      const uIV_lvl = 6;
+      const uIV_hidSortRank = 7;
 
       $( document ).ready(function() {
         /* Initialize global variables, load event handlers, then check URL */
         pageLen = 10;
+        lenMenu = [ [10, 25, 50, -1], [10, 25, 50, "All"] ];
         perfTiming = true; /* used for timing execution */
         mnlMod = false; /*track if min Lvl was adjusted*/
         ivMod = false; /*track if IV floor was adjusted*/
@@ -424,14 +455,14 @@
           var rowNum = tr.innerHTML.split("aIV[")[1];
           rowNum = rowNum.split("]")[0];
           /* If oldUserIVs were valid (large negative num), keep old hiddenSortVal, otherwise initialize */
-          var hiddenSortVal = (userIVs[rowNum][7]/1 < 0) ? userIVs[rowNum][7] : (userIVs.length-1)-numRows/1;
-          //console.log("$doc.ready():: #inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][0]+"/"+userIVs[rowNum][1]+"/"+userIVs[rowNum][2]);
+          var hiddenSortVal = (userIVs[rowNum][uIV_hidSortRank]/1 < 0) ? userIVs[rowNum][uIV_hidSortRank] : (userIVs.length-1)-numRows/1;
+          //console.log("$doc.ready():: #inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][uIV_aIV]+"/"+userIVs[rowNum][uIV_dIV]+"/"+userIVs[rowNum][uIV_sIV]);
 
           /* If oldUserIVs were valid, need to be removed from dt */
           var oldUserIVs = userIVs[rowNum];
-          if (oldUserIVs[0] && oldUserIVs[1] && oldUserIVs[2]) {
+          if (oldUserIVs[uIV_aIV] && oldUserIVs[uIV_dIV] && oldUserIVs[uIV_sIV]) {
             /* Reset hiddenSortIndex to 0 to un-pin row */
-            managePinsCSS_DT(dt, userIVs[rowNum][4]-1, 0, false, true);
+            managePinsCSS_DT(dt, userIVs[rowNum][uIV_rank]-1, 0, false, true);
           }
           
           /* Get IV and shadow values for new row */
@@ -460,10 +491,10 @@
             if (validIVs) {
               /* Find this new IV set in DataTable and update userIVs with correct data */
               for (i=0; i<numRows; i++) {
-                if (rows[i][4] == atk && rows[i][5] == def && rows[i][6] == sta) {
-                  managePinsCSS_DT(dt, rows[i][0]-1, hiddenSortVal, tr);
-                  /* It is correct to have rows[i][0]-1 above for rowNum and rows[i][0] below for rankNum */
-                  userIVs[rowNum] = [atk, def, sta, sha, rows[i][0], rows[i][14], rows[i][1], rows[i][hiddenRowIndex]];
+                if (rows[i][dt_aIV] == atk && rows[i][dt_dIV] == def && rows[i][dt_sIV] == sta) {
+                  managePinsCSS_DT(dt, rows[i][dt_rank]-1, hiddenSortVal, tr);
+                  /* It is correct to have rows[i][dt_rank]-1 above for rowNum and rows[i][dt_rank] below for rankNum */
+                  userIVs[rowNum] = [atk, def, sta, sha, rows[i][dt_rank], rows[i][dt_statProd], rows[i][dt_lvl], rows[i][hiddenRowIndex]];
                   break;
                 }
               }
@@ -544,6 +575,28 @@
                 break;
               case "r":
                 pageLen = values[i].split("=")[1]/1;
+                console.log("adding pageLen to lenMenu, starts as: "+JSON.stringify(lenMenu));
+                /* Search for where to insert pageLen to lenMenu  */
+                for (var j=0; j<lenMenu[0].length; j++) {
+                  //console.log("Comparing lenMenu[0]["+j+"]("+lenMenu[0][j]+") to ("+pageLen+")pageLen...");
+                  if (pageLen/1 < 0 || lenMenu[0][j]/1 == pageLen/1) {
+                    /* pageLen is negative or already exists in lenMenu, skipping insert */
+                    //console.log("Skipped adding pageLen as it already exists in lenMenu: "+JSON.stringify(lenMenu[0]));
+                    break;
+                  }
+                  if (lenMenu[0][j] === -1) {
+                    /* We've reached the end of the array, insert here */
+                    lenMenu[0].splice(j, 0, pageLen);
+                    lenMenu[1].splice(j, 0, pageLen);
+                    break;
+                  }
+                  if (lenMenu[0][j]/1 > pageLen/1) {
+                    lenMenu[0].splice(j, 0, pageLen);
+                    lenMenu[1].splice(j, 0, pageLen);
+                    break;
+                  }
+                }
+                console.log("added pageLen to lenMenu: "+JSON.stringify(lenMenu));
                 break;
               case "cp":
                 league = values[i].split("=")[1];
@@ -647,7 +700,7 @@
             sbSearch = '{ "criteria": [ '+mAstring+''+mDstring+''+mHPstring+'], "logic": "AND" }';
             /* Remove trailing comma (,) after criteria before logic and convert to JSON */
             sbSearch = $.parseJSON(sbSearch.replace('] }, ], "logic":','] } ], "logic":'));
-            console.log("Built sbSearch as:'"+JSON.stringify(sbSearch)+"'");
+            //console.log("Built sbSearch as:'"+JSON.stringify(sbSearch)+"'");
 
           }
           
@@ -789,7 +842,7 @@
           if(!keys) {keys = Object.keys(ranks);}
           document.getElementById("tradeOutput").innerHTML = "";
           for (i=0; i<userIVs.length; i++) {
-            document.getElementById("tradeOutput").innerHTML += tradePcnts(keys, userIVs[i][5], floor, userIVs[i][0], userIVs[i][1], userIVs[i][2], league);
+            document.getElementById("tradeOutput").innerHTML += tradePcnts(keys, userIVs[i][uIV_statProd], floor, userIVs[i][uIV_aIV], userIVs[i][uIV_dIV], userIVs[i][uIV_sIV], league);
           }
           document.getElementById("tradeOutput").innerHTML += "<br />"
         }
@@ -862,7 +915,7 @@
           /* See if any input IVs are shadow Mon */
           var shadowMon = false;
           for (var i=0; i<userIVs.length; i++) {
-            if (userIVs[i][3] === true) {
+            if (userIVs[i][uIV_shdw] === true) {
               shadowMon = true;
             }
           }
@@ -966,24 +1019,24 @@
         for (var i=0; i<userIVs.length; i++) {
           validIVs = false;
           var mon = name;
-          if (userIVs[i][3]) {
+          if (userIVs[i][uIV_shdw]) {
             mon = name + "_shadow";
           }
-          if (userIVs[i][0] === "") {
-            console.log("skipping incomplete row, i:"+i+", aIV:"+userIVs[i][0]+", dIV:"+userIVs[i][1]+", sIV:"+userIVs[i][2]);
+          if (userIVs[i][uIV_aIV] === "") {
+            console.log("skipping incomplete row, i:"+i+", aIV:"+userIVs[i][uIV_aIV]+", dIV:"+userIVs[i][uIV_dIV]+", sIV:"+userIVs[i][uIV_sIV]);
             continue;
           } else {
             if (validIVs === false) {
               validIVs = true;
             }
           }
-          var row = mon+",,,,"+userIVs[i][6]+","+userIVs[i][0]+","+userIVs[i][1]+","+userIVs[i][2];
+          var row = mon+",,,,"+userIVs[i][uIV_lvl]+","+userIVs[i][uIV_aIV]+","+userIVs[i][uIV_dIV]+","+userIVs[i][uIV_sIV];
           if (row.length > maxWidth) {
             maxWidth = row.length;
           }
           if (cgeData !== "") {
             var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
-            cgeData += newline+mon+",,,,"+userIVs[i][6]+","+userIVs[i][0]+","+userIVs[i][1]+","+userIVs[i][2];
+            cgeData += newline+mon+",,,,"+userIVs[i][uIV_lvl]+","+userIVs[i][uIV_aIV]+","+userIVs[i][uIV_dIV]+","+userIVs[i][uIV_sIV];
           }
           else {
             cgeData = row;
@@ -1021,15 +1074,15 @@
         if (fel !== "mirror") {link += "&fel="+fel;}
         if (effIV) {link += "&p=" + (effIV ? "1":"0");}
         if (dec > 1) {link += "&dec="+dec;}
-        if (userIVs[0][0] && userIVs[0][1] && userIVs[0][2]) {
+        if (userIVs[0][uIV_aIV] && userIVs[0][uIV_dIV] && userIVs[0][uIV_sIV]) {
           var IVs = "";
           for (i=0; i<userIVs.length; i++) {
             /* Don't add incomplete IVs to URL */
-            if (userIVs[i][0] && userIVs[i][1] && userIVs[i][2]) {
+            if (userIVs[i][uIV_aIV] && userIVs[i][uIV_dIV] && userIVs[i][uIV_sIV]) {
               if (i > 0) {IVs += "-";} else {IVs = "";}
-              IVs += userIVs[i][0] + "_" + userIVs[i][1] + "_" + userIVs[i][2];
-              if (userIVs[i][3]) {
-                IVs += "_" + userIVs[i][3];
+              IVs += userIVs[i][uIV_aIV] + "_" + userIVs[i][uIV_dIV] + "_" + userIVs[i][uIV_sIV];
+              if (userIVs[i][uIV_shdw]) {
+                IVs += "_" + userIVs[i][uIV_shdw];
               }
             }
           }
@@ -1086,7 +1139,7 @@
           var userIVs = ivStr[j].match(/\d+/g);
           if (userIVs.length<2) {continue;} /* skip blank/incomplete entries */
           console.log("readIVs::IVs:insering userIVs: "+userIVs+" (length:"+userIVs.length+")");
-          newInputTableRow(userIVs[0],userIVs[1],userIVs[2],userIVs[3]);
+          newInputTableRow(userIVs[uIV_aIV],userIVs[uIV_dIV],userIVs[uIV_sIV],userIVs[uIV_shdw]);
         }
         console.log("readIVs: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);
         main();
@@ -1124,26 +1177,26 @@
             /* Process user IVs before we output this row's data */
             for (var k=0; k<userIVsclone.length; k++) {
               /* Ensure this IV set is complete */
-              if (userIVsclone[k][0] && userIVsclone[k][1] && userIVsclone[k][2]) {
+              if (userIVsclone[k][uIV_aIV] && userIVsclone[k][uIV_dIV] && userIVsclone[k][uIV_sIV]) {
                 /* Check if these are IVs we are looking for */
-                if (userIVsclone[k][0]/1 === ranks[keys[i]][j].IVs.A/1
-                && userIVsclone[k][1]/1 === ranks[keys[i]][j].IVs.D/1
-                && userIVsclone[k][2]/1 === ranks[keys[i]][j].IVs.S/1) {
+                if (userIVsclone[k][uIV_aIV]/1 === ranks[keys[i]][j].IVs.A/1
+                && userIVsclone[k][uIV_dIV]/1 === ranks[keys[i]][j].IVs.D/1
+                && userIVsclone[k][uIV_sIV]/1 === ranks[keys[i]][j].IVs.S/1) {
                   /* Find this user IV set in real arrays */
                   for (var l=0; l<userIVs.length; l++) {
-                    if (userIVs[l][0] && userIVs[l][1] && userIVs[l][2]) {
+                    if (userIVs[l][uIV_aIV] && userIVs[l][uIV_dIV] && userIVs[l][uIV_sIV]) {
                       /* Do not divide by 1 to avoid converting blank to 0 */
-                      if (userIVsclone[k][0] === userIVs[l][0]
-                      && userIVsclone[k][1] === userIVs[l][1]
-                      && userIVsclone[k][2] === userIVs[l][2]) {
+                      if (userIVsclone[k][uIV_aIV] === userIVs[l][uIV_aIV]
+                      && userIVsclone[k][uIV_dIV] === userIVs[l][uIV_dIV]
+                      && userIVsclone[k][uIV_sIV] === userIVs[l][uIV_sIV]) {
                         /* Save this user IV's rank for later */
-                        userIVs[l][4] = actualRank;
-                        userIVs[l][5] = keys[i].split(".")[0];
-                        userIVs[l][6] = ranks[keys[i]][j].L;
+                        userIVs[l][uIV_rank] = actualRank;
+                        userIVs[l][uIV_statProd] = keys[i].split(".")[0];
+                        userIVs[l][uIV_lvl] = ranks[keys[i]][j].L;
                         /* Set hiddenSortRank to ensure rows pin to top */
                         hiddenSortRank = l-ranks.numRanks;
-                        userIVs[l][7] = hiddenSortRank;
-                        console.log("hiddenSortRank set to: "+hiddenSortRank+" for "+userIVsclone[k][0]+"/"+userIVsclone[k][1]+"/"+userIVsclone[k][2]);
+                        userIVs[l][uIV_hidSortRank] = hiddenSortRank;
+                        console.log("hiddenSortRank set to: "+hiddenSortRank+" for "+userIVsclone[k][uIV_aIV]+"/"+userIVsclone[k][uIV_dIV]+"/"+userIVsclone[k][uIV_sIV]);
                       }
                     }
                   }
@@ -1232,23 +1285,23 @@
           columnDefs: [
               /* This is just for reference and doesn't control header names */
               {"className": "dt-center", "targets": "_all"},
-              { "name": "#", "responsivePriority": "2", "searchBuilderTitle": "Rank", "targets": 0},
-              { "name": "Lvl", "responsivePriority": "1500", "searchBuilderTitle": "Level", "targets": 1},
-              { "name": "CP", "responsivePriority": "4", "targets": 2},
-              { "name": "minLvl CP", "responsivePriority": "1900", "searchBuilderTitle": "Minimum Level CP", "targets": 3, "visible": false},
-              { "name": "Atk IV", "responsivePriority": "1", "searchBuilderTitle": "Attack IV", "targets": 4},
-              { "name": "Def", "responsivePriority": "1", "searchBuilderTitle": "Defense IV", "targets": 5},
-              { "name": "Stam", "responsivePriority": "1", "searchBuilderTitle": "Stamina IV", "targets": 6},
-              { "name": "XL", "responsivePriority": "1800", "searchBuilderTitle": "XL Candy Cost", "targets": 7, "visible": false},
-              { "name": "Dust", "responsivePriority": "1700", "searchBuilderTitle": "Stardust Cost", "targets": 8, "visible": false},
-              { "name": "R1 CMP", "responsivePriority": "1600", "searchBuilderTitle": "CMP vs. Rank1 (W/L/T)", "targets": 9, "visible": false},
-              { "name": "All CMP", "responsivePriority": "1500", "searchBuilderTitle": "CMP vs. All (Win %)", "targets": 10, "visible": false},
-              { "name": "PvP Atk", "responsivePriority": "1100", "searchBuilderTitle": "Attack Stat", "targets": 11},
-              { "name": "Def", "responsivePriority": "1200", "searchBuilderTitle": "Defense Stat", "targets": 12},
-              { "name": "HP", "responsivePriority": "1300",  "searchBuilderTitle": "HP Stat","targets": 13},
-              { "name": "Stat Prod", "responsivePriority": "1000", "searchBuilderTitle": "Stat Product", "targets": 14},
-              { "name": "Perfect", "responsivePriority": "3", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": 15},
-              { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": 16, "visible": true},
+              { "name": "#", "searchBuilderTitle": "Rank", "targets": dt_rank/*0*/},
+              { "name": "Lvl", "searchBuilderTitle": "Level", "targets": dt_lvl/*1*/},
+              { "name": "CP", "targets": dt_cp/*2*/},
+              { "name": "minLvl CP", "searchBuilderTitle": "Minimum Level CP", "targets": dt_mlCP/*3*/, "visible": false},
+              { "name": "Atk IV", "searchBuilderTitle": "Attack IV", "targets": dt_aIV/*4*/},
+              { "name": "Def", "responsivePriority": "1", "searchBuilderTitle": "Defense IV", "targets": dt_dIV/*5*/},
+              { "name": "Stam", "responsivePriority": "1", "searchBuilderTitle": "Stamina IV", "targets": dt_sIV/*6*/},
+              { "name": "Perfect", "responsivePriority": "3", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": dt_perf/*7*/},
+              { "name": "XL", "responsivePriority": "1800", "searchBuilderTitle": "XL Candy Cost", "targets": dt_xl/*8*/, "visible": false},
+              { "name": "Dust", "responsivePriority": "1700", "searchBuilderTitle": "Stardust Cost", "targets": dt_dust/*9*/, "visible": false},
+              { "name": "R1 CMP", "responsivePriority": "1600", "searchBuilderTitle": "CMP vs. Rank1 (W/L/T)", "targets": dt_r1CMP/*10*/, "visible": false},
+              { "name": "All CMP", "responsivePriority": "1500", "searchBuilderTitle": "CMP vs. All (Win %)", "targets": dt_allCMP/*11*/, "visible": false},
+              { "name": "PvP Atk", "responsivePriority": "1100", "searchBuilderTitle": "Attack Stat", "targets": dt_pvpAtk/*12*/},
+              { "name": "Def", "responsivePriority": "1200", "searchBuilderTitle": "Defense Stat", "targets": dt_pvpDef/*13*/},
+              { "name": "HP", "responsivePriority": "1300",  "searchBuilderTitle": "HP Stat","targets": dt_pvpHP/*14*/},
+              { "name": "Stat Prod", "responsivePriority": "1000", "searchBuilderTitle": "Stat Product", "targets": dt_statProd/*15*/},
+              { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": dt_bulkProd/*16*/, "visible": true},
               { "name": "AtkHP Prod", "responsivePriority": "1450", "searchBuilderTitle": "Attack * HP Product", "targets": 17, "visible": true},
               { "name": "cmpStat Prod", "responsivePriority": "1450", "searchBuilderTitle": "Attack * HP Product", "targets": 18, "visible": true},
               { "name": "aadss Stat Prod", "responsivePriority": "1450", "searchBuilderTitle": "2xA*D*2xHP", "targets": 19, "visible": true},
@@ -1256,11 +1309,11 @@
               { "targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false}
             ],
             createdRow: (row, data, index) => {
-              /* TODO: Use Function here instead? */
+              /* Could use the function here, but this is faster */
               if (data[hiddenRowIndex] !== 0) {
-                if (data[0]/1 < (0.02442/1*ranks.numRanks/1)) {
+                if (data[dt_rank]/1 < (0.02442/1*ranks.numRanks/1)) {
                   $(row).addClass("good"); /*green for "good"*/
-                } else if (data[0]/1 < (0.2442/1*ranks.numRanks/1)) {
+                } else if (data[dt_rank]/1 < (0.2442/1*ranks.numRanks/1)) {
                   $(row).addClass("ok"); /*orange for "ok"*/
                 } else {
                   $(row).addClass("rubbish"); /*red for "rubbish"*/
@@ -1270,13 +1323,13 @@
             data: tableData,
             deferRender: true,
             destroy: true,
-            dom: 'Qitlp',
+            dom: '<i><lp>tQ',
             language: {
               "info": "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)",
               "lengthMenu" : "Show _MENU_ "+leagueName+" "+mon+" per page"
             },
             lengthChange: true,
-            lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+            lengthMenu: lenMenu,
             orderFixed: {
               "pre": [hiddenRowIndex, "asc"]
             },
@@ -1290,7 +1343,7 @@
         if (perfTiming) {T5 = performance.now();}
 
         if (sbSearch) {
-          console.log("Rebuilding searchBuilder search with: "+JSON.stringify(sbSearch));
+          //console.log("Rebuilding searchBuilder search with: "+JSON.stringify(sbSearch));
           dt.searchBuilder.rebuild(sbSearch);
         }
 
@@ -1300,7 +1353,7 @@
           $('#feedbackBox').text(JSON.stringify(sbSearch, null, '\t'));
         })
 
-        $('#revert').on('click', function() {
+        $('#reload').on('click', function() {
           console.log("Rebuilding searchBuilder search with: "+sbSearch);
           dt.searchBuilder.rebuild(sbSearch);
         })
@@ -1317,17 +1370,17 @@
           
           var hiddenSortVal = userIVs.length-dt.rows().count()/1;
           /* Fix userIVs initialized to "default" -/15/15 row, really has 0 userIVs */
-          if (userIVs[0][0] === "") {
+          if (userIVs[0][uIV_aIV] === "") {
             hiddenSortVal = 0-dt.rows().count()/1;
-            console.log("#monTable onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs[0][0]==="+userIVs[0][0]+" and dt.rows().count()="+dt.rows().count());
+            console.log("#monTable onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs[0][uIV_aIV]==="+userIVs[0][uIV_aIV]+" and dt.rows().count()="+dt.rows().count());
           } else {
             console.log("#monTable onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs.length="+userIVs.length+" and dt.rows().count()="+dt.rows().count());
           }
           /* Pin row to top of DT and add CSS highlighting */
           var d = dt.row(this).data();
-          managePinsCSS_DT(dt, d[0]-1, hiddenSortVal, window.event.target.parentNode)
+          managePinsCSS_DT(dt, d[dt_rank]-1, hiddenSortVal, window.event.target.parentNode)
           /* Ensure new row is added to DOM, and aIV updated */
-          addToCompare(e, d[0], d[1], d[14], d[hiddenRowIndex]);
+          addToCompare(e, d[dt_rank], d[dt_lvl], d[dt_statProd], d[hiddenRowIndex]);
         });
 
         /* */
@@ -1378,7 +1431,7 @@
         /* Ensure we aren't duplicating IVs */
         var uniqueIVs = true;
         for (var i=0; i<userIVs.length; i++) {
-          if (atk && (atk == userIVs[i][0]) && (def == userIVs[i][1]) && (sta == userIVs[i][2])) {
+          if (atk && (atk == userIVs[i][uIV_aIV]) && (def == userIVs[i][uIV_dIV]) && (sta == userIVs[i][uIV_sIV])) {
             /* Ensure that attack is not null, to allow 0/15/15 to overwrite default row */
             uniqueIVs = false;
             break;
@@ -2039,7 +2092,7 @@
         /* Update hiddenRowIndex to pin/unpin this row */
         var d = table.row(rowNum).data();
         var rowCount = table.rows().count();
-        var rankNum = d[0]/1;
+        var rankNum = d[dt_rank]/1;
         d[hiddenRowIndex] = hiddenSortVal;
 
         /* Add class to properly highlight this row with CSS */
@@ -2096,8 +2149,8 @@
           } else {
             /* Reset this row's state back to defaults (-/15/15) */
             rowNum = 0;
-            managePinsCSS_DT(dt, userIVs[0][4]-1, 0, false, true);
-            //remove_ReDrawDT(dt, userIVs[rowNum][4]-1);
+            managePinsCSS_DT(dt, userIVs[0][uIV_rank]-1, 0, false, true);
+            //remove_ReDrawDT(dt, userIVs[rowNum][uIV_rank]-1);
             /* Finally reset this userIVs row */
             userIVs[0] = ["", 15, 15, false, 0, 0, 0, 0];
             return;
@@ -2111,7 +2164,7 @@
         }
         if (perfTiming) {T1 = performance.now();}
         /* Remove CSS highlighting for this row */
-        dt.row(userIVs[rowNum][4]-1).nodes().to$().removeClass("good","ok","rubbish");
+        dt.row(userIVs[rowNum][uIV_rank]-1).nodes().to$().removeClass("good","ok","rubbish");
         if (perfTiming) {T2 = performance.now();}
 
         /* Reset hiddenSortIndex to 0 to un-pin this row  */
@@ -2121,16 +2174,16 @@
         for (var i=0,hiddenSortIndex=0; i<userIVs.length; i++,hiddenSortIndex++) {
           if (i/1 === rowNum/1) {
             /* Unpin this row */
-            userIVs[i][7] = 0;
+            userIVs[i][uIV_hidSortRank] = 0;
             /* Don't count this row when incrementing hiddenSortIndex */
             hiddenSortIndex--;
           } else {
-            userIVs[i][7] = hiddenSortIndex-numRows;
+            userIVs[i][uIV_hidSortRank] = hiddenSortIndex-numRows;
           }
           /* Update dt sort order all rows using userIVs */
-          var d = dt.row(userIVs[i][4]-1).data();
-          d[hiddenRowIndex] = userIVs[i][7];
-          dt.row(userIVs[i][4]-1).data(d);
+          var d = dt.row(userIVs[i][uIV_rank]-1).data();
+          d[hiddenRowIndex] = userIVs[i][uIV_hidSortRank];
+          dt.row(userIVs[i][uIV_rank]-1).data(d);
         }
         if (perfTiming) {T3 = performance.now();}
         /* Redraw DataTable dt with updated rows */
@@ -2388,6 +2441,10 @@
       <label>Show Trade Improvement %:<input id="dti" type="checkbox" oninput="setUserPreference('dti')"></label><br />
       <label>Remember My Settings:<input id="save" type="checkbox" oninput="saveCurrentSettings()"></label><br />
       <button id="resetButton" type="resetSettings" onclick="localStorage.clear();location.reload();">Reset All Saved Settings to Defaults</button>
+      <br /><br />
+      <h4>Debug:</h4>
+      <button id="getDetails">Export Search Builder JSON</button><br />
+      <button id="reload">Reload Search Builder JSON</button><br />
       </div><br />
       <div style="overflow-x:auto;">
         <p style="color: var(--tableHeaderText);font-size:0.8em">© 2023 PvP IVs | <a href="https://pvpivs.com/privacy">Privacy Policy</a> | <a href="https://pvpivs.com/contact">Contact Us</a></p>
