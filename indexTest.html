@@ -291,6 +291,7 @@
             <th>Atk IV</th>
             <th>D</th>
             <th>S</th>
+            <th>Perfect</th>
             <th>XL</th>
             <th>Dust</th>
             <th>R1 CMP</th>
@@ -299,7 +300,6 @@
             <th>PvP Def</th>
             <th>PvP HP</th>
             <th>Stat Prod</th>
-            <th>Perfect</th>
             <th>Bulk Prod</th>
             <th>AtkHP Prod</th>
             <th>CMP Stat Avg</th>
@@ -1222,10 +1222,11 @@
                   * cpm[(minLvl-1)*2] * cpm[(minLvl-1)*2] / 10)), /*3: MinLvl CP*/
                 ranks[keys[i]][j].IVs.A, /*4: Attack  IV*/
                 ranks[keys[i]][j].IVs.D, /*5: Defense IV*/
-                ranks[keys[i]][j].IVs.S  /*6: Stamina IV*/
+                ranks[keys[i]][j].IVs.S,  /*6: Stamina IV*/
+                numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec))+"%" /*7: Stat Prod Perfection %*/
               ];
               
-              /*7: XL Candy Calculation and Timing */
+              /*8: XL Candy Calculation and Timing */
               var candyStart = performance.now();
               var candy = XLcandy(ranks[keys[i]][j].L/1 - 40);
               /* Used to un-hide XL column after drawing table */
@@ -1236,14 +1237,13 @@
 
               /* Finish printing current row */
               currentRow.push(
-                stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false), /*8: Stardust*/
-                ranks[keys[i]][j].IVs.R1, /*9: R1 CMP*/
-                ranks[keys[i]][j].IVs.cmp+"%", /*10: CMP Wins*/
-                numOut(ranks[keys[i]][j].battle.A,dec),/*11: Attack Stat*/
-                numOut(ranks[keys[i]][j].battle.D,dec),/*12: Defense Stat*/
-                ranks[keys[i]][j].battle.S,/*13: HP*/
-                keys[i].split(".")[0],/*14: Stat Product*/
-                numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec))+"%"); /*15: Stat Prod Perfection %*/
+                stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false), /*9: Stardust*/
+                ranks[keys[i]][j].IVs.R1, /*10: R1 CMP*/
+                ranks[keys[i]][j].IVs.cmp+"%", /*11: CMP Wins*/
+                numOut(ranks[keys[i]][j].battle.A,dec),/*12: Attack Stat*/
+                numOut(ranks[keys[i]][j].battle.D,dec),/*13: Defense Stat*/
+                ranks[keys[i]][j].battle.S,/*14: HP*/
+                keys[i].split(".")[0]);/*15: Stat Product*/
               var bulkprod = numOut(numOut(ranks[keys[i]][j].battle.D,dec) * ranks[keys[i]][j].battle.S, dec); currentRow.push(bulkprod); /*16: Bulk Product*/
               var atkHPprod = numOut(numOut(ranks[keys[i]][j].battle.A,dec) * ranks[keys[i]][j].battle.S, dec); currentRow.push(atkHPprod); /*17: Attack-HP Product*/
               var adjStatProdPerf = numOut((numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec)) - 90)*10,dec); /* Make this 0-100% instead of 90-100% */
@@ -1274,9 +1274,6 @@
         $("#toggleCols").show();
         $("#monTable").show();
 
-        /* Ensure user IV rows are sorted by rank before creating DataTable */
-        //sortUserIVs();
-
         /* Timing gate after generating table data */
         if (perfTiming) {T4 = performance.now();}
 
@@ -1290,22 +1287,22 @@
               { "name": "CP", "targets": dt_cp/*2*/},
               { "name": "minLvl CP", "searchBuilderTitle": "Minimum Level CP", "targets": dt_mlCP/*3*/, "visible": false},
               { "name": "Atk IV", "searchBuilderTitle": "Attack IV", "targets": dt_aIV/*4*/},
-              { "name": "Def", "responsivePriority": "1", "searchBuilderTitle": "Defense IV", "targets": dt_dIV/*5*/},
-              { "name": "Stam", "responsivePriority": "1", "searchBuilderTitle": "Stamina IV", "targets": dt_sIV/*6*/},
-              { "name": "Perfect", "responsivePriority": "3", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": dt_perf/*7*/},
-              { "name": "XL", "responsivePriority": "1800", "searchBuilderTitle": "XL Candy Cost", "targets": dt_xl/*8*/, "visible": false},
-              { "name": "Dust", "responsivePriority": "1700", "searchBuilderTitle": "Stardust Cost", "targets": dt_dust/*9*/, "visible": false},
-              { "name": "R1 CMP", "responsivePriority": "1600", "searchBuilderTitle": "CMP vs. Rank1 (W/L/T)", "targets": dt_r1CMP/*10*/, "visible": false},
-              { "name": "All CMP", "responsivePriority": "1500", "searchBuilderTitle": "CMP vs. All (Win %)", "targets": dt_allCMP/*11*/, "visible": false},
-              { "name": "PvP Atk", "responsivePriority": "1100", "searchBuilderTitle": "Attack Stat", "targets": dt_pvpAtk/*12*/},
-              { "name": "Def", "responsivePriority": "1200", "searchBuilderTitle": "Defense Stat", "targets": dt_pvpDef/*13*/},
-              { "name": "HP", "responsivePriority": "1300",  "searchBuilderTitle": "HP Stat","targets": dt_pvpHP/*14*/},
-              { "name": "Stat Prod", "responsivePriority": "1000", "searchBuilderTitle": "Stat Product", "targets": dt_statProd/*15*/},
-              { "name": "Bulk Prod", "responsivePriority": "1450", "searchBuilderTitle": "Bulk Product", "targets": dt_bulkProd/*16*/, "visible": true},
-              { "name": "AtkHP Prod", "responsivePriority": "1450", "searchBuilderTitle": "Attack * HP Product", "targets": 17, "visible": true},
-              { "name": "cmpStat Prod", "responsivePriority": "1450", "searchBuilderTitle": "Attack * HP Product", "targets": 18, "visible": true},
-              { "name": "aadss Stat Prod", "responsivePriority": "1450", "searchBuilderTitle": "2xA*D*2xHP", "targets": 19, "visible": true},
-              { "name": "custom Stat Prod", "responsivePriority": "1450", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 20, "visible": true},
+              { "name": "Def", "searchBuilderTitle": "Defense IV", "targets": dt_dIV/*5*/},
+              { "name": "Stam", "searchBuilderTitle": "Stamina IV", "targets": dt_sIV/*6*/},
+              { "name": "Perfect", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": dt_perf/*7*/},
+              { "name": "XL", "searchBuilderTitle": "XL Candy Cost", "targets": dt_xl/*8*/, "visible": false},
+              { "name": "Dust", "searchBuilderTitle": "Stardust Cost", "targets": dt_dust/*9*/, "visible": false},
+              { "name": "R1 CMP", "searchBuilderTitle": "CMP vs. Rank1 (W/L/T)", "targets": dt_r1CMP/*10*/, "visible": false},
+              { "name": "All CMP", "searchBuilderTitle": "CMP vs. All (Win %)", "targets": dt_allCMP/*11*/, "visible": false},
+              { "name": "PvP Atk", "searchBuilderTitle": "Attack Stat", "targets": dt_pvpAtk/*12*/},
+              { "name": "Def", "searchBuilderTitle": "Defense Stat", "targets": dt_pvpDef/*13*/},
+              { "name": "HP",  "searchBuilderTitle": "HP Stat","targets": dt_pvpHP/*14*/},
+              { "name": "Stat Prod", "searchBuilderTitle": "Stat Product", "targets": dt_statProd/*15*/},
+              { "name": "Bulk Prod", "searchBuilderTitle": "Bulk Product", "targets": dt_bulkProd/*16*/, "visible": true},
+              { "name": "AtkHP Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 17, "visible": true},
+              { "name": "cmpStat Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 18, "visible": true},
+              { "name": "aadss Stat Prod", "searchBuilderTitle": "2xA*D*2xHP", "targets": 19, "visible": true},
+              { "name": "custom Stat Prod", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 20, "visible": true},
               { "targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false}
             ],
             createdRow: (row, data, index) => {
@@ -1335,9 +1332,8 @@
             },
             paging: true,
             pageLength: pageLen,
-            responsive: true,
-            scrollCollapse: true,
-            searching: true//,searchBuilder: {preDefined: sbSearch}
+            scrollX: true,
+            searching: true
         });
         /* Timing gate after generating table */
         if (perfTiming) {T5 = performance.now();}
