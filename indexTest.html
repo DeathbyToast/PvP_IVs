@@ -22,10 +22,13 @@
     <link rel="preload" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" as="style">
     <link rel="preload" href="https://cdn.datatables.net/searchbuilder/1.5.0/js/dataTables.searchBuilder.min.js" as="script">
     <link rel="preload" href="https://cdn.datatables.net/searchbuilder/1.5.0/css/searchBuilder.dataTables.min.css" as="style">
-    <link rel="preload" href="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js" as="script">
-    <link rel="preload" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" as="style">
-    <link rel="preload" href="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js" as="script">
-    <link rel="preload" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" as="style">
+    <link rel="preload" href="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js" as="script">
+    <link rel="preload" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" as="style">
+    <link rel="preload" href="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js" as="script">
+    <!--link rel="preload" href="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js" as="script">
+    <link rel="preload" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" as="style"-->
+    <!--link rel="preload" href="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js" as="script">
+    <link rel="preload" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" as="style"-->
     <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
     <title>PvP IVs - Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,9 +36,10 @@
     <link rel=icon href=https://pvpivs.com/includes/favicon.png>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.5.0/css/searchBuilder.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <!--link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css"-->
+    <!--link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css"-->
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
       /* control highlight of trading improvement rows based on % chace to improve post-trade
@@ -199,7 +203,7 @@
     </header>
     <br />
     <section>
-      <label>Top <select id="league" oninput="setUserPreference('league')">
+      <label>Top <select id="league">
         <option value="500" label="Little Leagues">Little Leagues</option>
         <option value="1500" selected label="Great League">Great League</option>
     		<option value="2500" label="Ultra League">Ultra League</option>
@@ -311,9 +315,29 @@
           </tr>
         </thead>
       </table>
-      <div id="toggleCols" style="display:none;"><h4>Toggle column(s):</h4>
-        <!--a class="toggle-vis" data-column="0">Rank</a> | <a class="toggle-vis" data-column="1">Level</a> | <a class="toggle-vis" data-column="2">CP</a> | --><a class="toggle-vis" id="minlvlCP" data-column="3">Level 1 CP</a>  | <!--div style="display:inline-block"><b>IVs:</b> <a class="toggle-vis" data-column="4">Attack</a> - <a class="toggle-vis" data-column="5">Defense</a> - <a class="toggle-vis" data-column="6">Stamina</a></div> | --><a class="toggle-vis" style="display:inline-block" data-column="7">XL Candy Cost</a> | <a class="toggle-vis" style="display:inline-block" data-column="8">Stardust Cost</a> | 
-        <!--div style="display:inline-block"--><a class="toggle-vis" style="display:inline-block" data-column="9">R1 CMP</a> | <a class="toggle-vis" style="display:inline-block" data-column="10">All CMP</a><!--/div--> | <!--div style="display:inline-block"><b>Stats:</b> <a class="toggle-vis" data-column="11">Attack</a> - <a class="toggle-vis" data-column="12">Defense</a> - <a class="toggle-vis" data-column="13">HP</a></div> | <div style="display:inline-block"><a class="toggle-vis" style="display:inline-block" data-column="14">Stat Product</a> - <a class="toggle-vis" style="display:inline-block" data-column="15">Perfection (%)</a></div> | --><a class="toggle-vis" style="display:inline-block" data-column="16">Bulk Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="17">Attack*HP Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="18">CMP*Stat Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="19">aadss Stat Product</a></div><br />
+      <!--br /><div id="toggleCols" style="display:none;"><h4>Toggle column(s):</h4>
+        const dt_rank = 0;
+      const dt_lvl = 1;
+      const dt_cp = 2;
+      const dt_mlCP = 3;
+      const dt_aIV = 4;
+      const dt_dIV = 5;
+      const dt_sIV = 6;
+      const dt_perf = 7;
+      const dt_xl = 8;
+      const dt_dust = 9;
+      const dt_r1CMP = 10;
+      const dt_allCMP = 11;
+      const dt_pvpAtk = 12;
+      const dt_pvpDef = 13;
+      const dt_pvpHP = 14;
+      const dt_statProd = 15;
+      const dt_bulkProd = 16;
+        <!--a class="toggle-vis" data-column="0">Rank</a> | <a class="toggle-vis" data-column="1">Level</a> | <a class="toggle-vis" data-column="2">CP</a> | 
+        <a class="toggle-vis" id="minlvlCP" data-column="3">Level 1 CP</a>  | <!--div style="display:inline-block"><b>IVs:</b> <a class="toggle-vis" data-column="4">Attack</a> - <a class="toggle-vis" data-column="5">Defense</a> - <a class="toggle-vis" data-column="6">Stamina</a></div> | 
+        <a class="toggle-vis" style="display:inline-block" data-column="7">XL Candy Cost</a> | <a class="toggle-vis" style="display:inline-block" data-column="8">Stardust Cost</a> | 
+        <!--div style="display:inline-block"<a class="toggle-vis" style="display:inline-block" data-column="9">R1 CMP</a> | <a class="toggle-vis" style="display:inline-block" data-column="10">All CMP</a><!--/div> | <!--div style="display:inline-block"><b>Stats:</b> <a class="toggle-vis" data-column="11">Attack</a> - <a class="toggle-vis" data-column="12">Defense</a> - <a class="toggle-vis" data-column="13">HP</a></div> | <div style="display:inline-block"><a class="toggle-vis" style="display:inline-block" data-column="14">Stat Product</a> - <a class="toggle-vis" style="display:inline-block" data-column="15">Perfection (%)</a></div> | 
+        <a class="toggle-vis" style="display:inline-block" data-column="16">Bulk Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="17">Attack*HP Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="18">CMP*Stat Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="19">aadss Stat Product</a></div><br /-->
       <div style="overflow-x:auto;" id="tradeOutput"></div>
     
       <!-- Load various scripts for PvPIVs, Awesomplete, and DataTables -->
@@ -324,8 +348,10 @@
       <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
       <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
       <script src="https://cdn.datatables.net/searchbuilder/1.5.0/js/dataTables.searchBuilder.min.js"></script>
-      <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-      <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+      <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+      <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
+      <!--script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script-->
+      <!--script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script-->
       
       <script>
       /* Use global variables to clean up code and  */
@@ -336,6 +362,9 @@
       var ranks, league, leagueName, floor,minLvl,maxLvl;
       var dec, family, fel, fel_Label, effIV, cge, input;
       var dti, filterMod, monNames, sbSearch, mA, mD,mHP;
+      var prevWidth, domWidth, infoText,infoFilteredText;
+      var pageType;
+
       /* DataTable Column numbers to help readability */
       const dt_rank = 0;
       const dt_lvl = 1;
@@ -427,27 +456,122 @@
           });
           /* end Awesomeplete https://leaverou.github.io/awesomplete/ */
         }
+        $(window).on('resize', function(event) {
+          stopDuplicateEvents(event);
+          var newWidth = $(window).width();
+          if ($.fn.DataTable.isDataTable("#monTable") ) {
+            /* Returns true when table needs to be recreated */
+            if (sizeDataTableElements(newWidth) === true) {
+              console.log("$window.resize: Window size passed 767px threshold, calling main() to recreate DataTable");
+              main();
+            }
+          } else {
+            console.log("$window.resize: No DataTable to resize yet");
+          }
+          prevWidth = newWidth;
+        });
 
-        /* Initialize #inputTable event handlers */
+        /* BEGIN: Initializations for all select events    */
+        /* for user inputs, also update their global vars: */
+        /* league, leagueName, floor, minLvl, maxLvl, dec  */
+        /* family, fel, fel_Label, effIV, cge, dti, input  */
+        $("#league").on("change", function(event) {
+          stopDuplicateEvents(event);
+          league = document.getElementById("league").value;
+          leagueName= $("#league").find(":selected").text();
+          setUserPreference("league");
+          main();
+          return;
+        });
+        $("#floor").on("change", function(event) {
+          stopDuplicateEvents(event);
+          floor = document.getElementById("floor").value;
+          setUserPreference("floor");
+          main();
+          return;
+        });
+        $("#minLvl").on("change", function(event) {
+          stopDuplicateEvents(event);
+          minLvl = document.getElementById("minLvl").value;
+          setUserPreference("minLvl");
+          main();
+          return;
+        });
+        $("#maxLvl").on("change", function(event) {
+          stopDuplicateEvents(event);
+          maxLvl = document.getElementById("maxLvl").value;
+          setUserPreference("maxLvl");
+          main();
+          return;
+        });
+        $("#maxLvl").on("change", function(event) {
+          stopDuplicateEvents(event);
+          maxLvl = document.getElementById("maxLvl").value;
+          setUserPreference("maxLvl");
+          main();
+          return;
+        });
+        $("#dec").on("change", function(event) {
+          stopDuplicateEvents(event);
+          dec = document.getElementById("dec").value;
+          setUserPreference("dec");
+          main();
+          return;
+        });
+        $("#family").on("change", function(event) {
+          stopDuplicateEvents(event);
+          family = document.getElementById("family").checked;
+          fel = document.getElementById("familyEvoLeague").value;
+          fel_Label = document.getElementById("familyEvoLeagueLbl").style.display;
+          setUserPreference("family");
+          main();
+          return;
+        });
+        $("#effIV").on("change", function(event) {
+          stopDuplicateEvents(event);
+          effIV = document.getElementById("effIV").checked;
+          setUserPreference("effIV");
+          main();
+          return;
+        });
+        $("#cge").on("change", function(event) {
+          stopDuplicateEvents(event);
+          cge = document.getElementById("cge").checked;
+          setUserPreference("cge");
+          main();
+          return;
+        });
+        $("#dti").on("change", function(event) {
+          stopDuplicateEvents(event);
+          dti = document.getElementById("dti").checked;
+          if (dti) {
+            /* Only need to build trade table, not re-run main when checked */
+            updateTradePcnts();
+          } else {
+            /* Ensure we clear old output when dti is unchecked */
+            document.getElementById("tradeOutput").innerHTML = "";
+          }
+          setUserPreference("dti");
+          return;
+        });
+        /* END: Initializations for select event handlers */
+
+        /* BEGIN: Initializations for #inputTable event handlers */
         $("#inputTable").on("click", ".circle.plus", function(event) {
-          /* Ensure we don't have duplicate bubbled up events */
-          event.stopPropagation();
-          event.stopImmediatePropagation();
+          stopDuplicateEvents(event);
           newInputTableRow();
         });
         $("#inputTable").on("click", ".circle.minus", function(event){
-          event.stopPropagation();
-          event.stopImmediatePropagation();
+          stopDuplicateEvents(event);
           removeInputTableRow();
         });
         $("#inputTable").on("change", "tr", function(event){
           var T0,i;
           if (perfTiming) {T0 = performance.now();}
+          stopDuplicateEvents(event);
           console.log(" ");
           console.log("$doc.ready():: #inputTable onChange: Processing new onChange event");
           console.log(" ");
-          event.stopPropagation();
-          event.stopImmediatePropagation();
           document.getElementById("feedbackBox").innerHTML = "";
           const dt = $("#monTable").DataTable();
           var rows = dt.rows().data();
@@ -520,9 +644,45 @@
           if (perfTiming) {stopTiming(T0, "$doc.ready():: #inputTable onChange");}
           return;
         });
-        /* Initializations complete, proceed to checkURL() */
+        /* END: Initializations for #inputTable event handlers */
+        
+        /* All initializations complete, proceed to checkURL() */
         checkURL();
+        main();
       });
+
+      function sizeDataTableElements(windowSize) {
+        /* First run with prevWidth===undefined, triggers initialization of dt Elements */
+        /* Check if window size has changed above/below 767px which triggers new layout */
+        if (prevWidth && ((windowSize/1 < 767 && prevWidth/1 < 767) || (windowSize/1 >= 767 && prevWidth/1 >= 767))) {
+          console.log("sizeDataTableElements: Screen size hasn't crossed layout threshold, no resizing needed");
+          return false;
+        }
+        if (windowSize/1 > 767) {
+          /* Default DataTable elements for tablet / desktop screens */
+          domWidth = 'ltip<"newline">Q';
+          infoText = "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)";
+          infoFilteredText  = "(filtered from _MAX_)";
+          pageType = "full_numbers";
+        } else {
+          /* Condensed DataTable elements for smaller mobile screens */
+          domWidth = 'ltipB';
+          let leagueAcronym = leagueName.split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'')
+          infoText = "#_START_-_END_ of _TOTAL_ "+leagueAcronym+" "+mon;
+          infoFilteredText = "(from _MAX_)";
+          pageType = "full";
+        }
+        console.log("sizeDataTableElements: Set domWidth='"+domWidth+"', infoText='"+infoText+"', infoFilteredText='"+infoFilteredText+"', pageType='"+pageType+"'");
+        /* Return true to indicate table needs to implement new layouts */
+        return true;
+      }
+      
+      function stopDuplicateEvents(event){
+        /* Ensure we don't have duplicate bubbled up events */
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        return;
+      }
 
       function stopTiming(startTime, functionName) {
         var endTime = performance.now();
@@ -576,13 +736,10 @@
                 break;
               case "r":
                 pageLen = values[i].split("=")[1]/1;
-                console.log("adding pageLen to lenMenu, starts as: "+JSON.stringify(lenMenu));
                 /* Search for where to insert pageLen to lenMenu  */
                 for (var j=0; j<lenMenu[0].length; j++) {
-                  //console.log("Comparing lenMenu[0]["+j+"]("+lenMenu[0][j]+") to ("+pageLen+")pageLen...");
                   if (pageLen/1 < 0 || lenMenu[0][j]/1 == pageLen/1) {
                     /* pageLen is negative or already exists in lenMenu, skipping insert */
-                    //console.log("Skipped adding pageLen as it already exists in lenMenu: "+JSON.stringify(lenMenu[0]));
                     break;
                   }
                   if (lenMenu[0][j] === -1) {
@@ -592,12 +749,12 @@
                     break;
                   }
                   if (lenMenu[0][j]/1 > pageLen/1) {
+                    /* Found where to insert pageLen */
                     lenMenu[0].splice(j, 0, pageLen);
                     lenMenu[1].splice(j, 0, pageLen);
                     break;
                   }
                 }
-                console.log("added pageLen to lenMenu: "+JSON.stringify(lenMenu));
                 break;
               case "cp":
                 league = values[i].split("=")[1];
@@ -702,21 +859,20 @@
             /* Remove trailing comma (,) after criteria before logic and convert to JSON */
             sbSearch = $.parseJSON(sbSearch.replace('] }, ], "logic":','] } ], "logic":'));
             //console.log("Built sbSearch as:'"+JSON.stringify(sbSearch)+"'");
-
           }
           
           /* Ensure we open Advanced if user URL has any Advanced settings enabled */
           if (settings !== "000" || minLvl > 1 || maxLvl !== "51" || fel !== "mirror" || dec > 1 || effIV) {
             advCollapsible(); 
           }
-          console.log("checkURL: Calling main()");
           if (perfTiming) {stopTiming(T0, "checkURL");}
-          main();
+          return;
         }
         else
         {
           console.log("checkURL: No inputs detected, awaiting user input");
           if (perfTiming) {stopTiming(T0, "checkURL");}
+          return;
         }
       }
 
@@ -751,11 +907,15 @@
         if (perfTiming) {T0 = performance.now();}
         else {document.getElementById("timing_outputs").innerHTML = "";}
         
+        console.log("main: monInput:"+JSON.stringify(monInput)+", mon:"+JSON.stringify(mon));
+
+        /* Check if we need to reset mon state */
         if (monInput) {
           /* Check if there is a DataTable on the page for an old mon */
           if ($.fn.DataTable.isDataTable( '#monTable' )) {
             console.log("main: detected an old DataTable, need to clear old state. Calling resetMonState()");
             resetMonState();
+            mon = undefined;
             clearHideOldDataTable();
             /*ensure we clear the prior output between runs*/
             document.getElementById("tradeOutput").innerHTML = "";
@@ -766,7 +926,6 @@
         }
         
         /* Awesomeplete sends "undefined" when it did not find a valid input */
-        console.log("main: monInput:"+JSON.stringify(monInput));
         if (mon === undefined) { /* Determine if we have a valid, previously selected mon we can use */
           if ((pokeListObj[input.value]) || (pokeListObj[inputMon]) || (pokeListObj[monInput])) {
             console.log("main: Found a valid input.value of:"+JSON.stringify(input.value));
@@ -818,9 +977,15 @@
           document.getElementById("instructionsBox").innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Advanced and try again</i></p><br />";
           document.getElementById("feedbackBox").innerHTML = "";
           console.log("No ranks generated!");
+          clearHideOldDataTable();
           if (perfTiming) {stopTiming(T0, "main");}
           return false;
         }
+
+        /* Ensure we have properly sized the DataTable Elements */
+        var tempWidth = $(window).width();
+        sizeDataTableElements(tempWidth);
+        prevWidth = tempWidth;
 
         /* Create a DataTable from the mon ranks object */
         generateDataTable(keys);
@@ -830,16 +995,14 @@
         /* Finally save the state of this output to the URL for sharing */
         updateURL();
         
-        if (perfTiming) {stopTiming(T0, "main");}
+        if (perfTiming) {stopTiming(T0, "main");console.log("");}
         return;
       }
 
       function updateTradePcnts(keys) {
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
         if (dti) {
-          var T0;
-          if (perfTiming) {T0 = performance.now();}
-
-          /* Check if we were passed parameters we need, if not, get them */
           if(!keys) {keys = Object.keys(ranks);}
           document.getElementById("tradeOutput").innerHTML = "";
           for (i=0; i<userIVs.length; i++) {
@@ -870,8 +1033,10 @@
         newRow.innerHTML = "<tr><td><input id='shdw[0]' type='checkbox'></td><td><select title='Your Attack IV' id='aIV[0]'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' id='dIV[0]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' id='sIV[0]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus[0]'></button></td></tr>";  
         userIVs.push([atk,def,sta,sha,0,0,0,0]);
         
-        /* clear min stat filters, and filterMod */
+        /* clear min stat filters, reset pageLen and lenMenu, and filterMod */
         mA = 0; mD = 0; mHP = 0;
+        pageLen = 10;
+        lenMenu = [ [10, 25, 50, -1], [10, 25, 50, "All"] ];
         filterMod = false;
         
         /*reset Min Level if we adjusted it previously*/
@@ -994,6 +1159,7 @@
         /* If old table exists, clear data and hide it */
         /* Remove old onclick events to prevent dupes */
         if ($.fn.DataTable.isDataTable("#monTable") ) {
+          console.log("Found an old table, clearing state...");
           $("#monTable tbody").off("click");
           $("#monTable").hide();
           $("#toggleCols").hide();
@@ -1278,6 +1444,10 @@
         /* Timing gate after generating table data */
         if (perfTiming) {T4 = performance.now();}
 
+        //console.log("Creating DataTable with domWidth:"+domWidth+", infoText:"+infoText+", infoFilteredText:"+infoFilteredText+", pageType:"+pageType+", leagueName:"+leagueName+", mon:"+mon+", lenMenu:"+lenMenu+", pageLen:"+pageLen);
+        //console.log(dt_rank,dt_lvl,dt_cp,dt_mlCP,dt_aIV,dt_dIV,dt_sIV,dt_perf,dt_xl,dt_dust,dt_r1CMP,dt_allCMP,dt_pvpAtk,dt_pvpDef,dt_pvpHP,dt_statProd,dt_bulkProd,hiddenRowIndex);
+        //console.log(tableData);
+        
         /*Build table with generated tableData*/
         const dt = new DataTable('#monTable', {
           columnDefs: [
@@ -1306,6 +1476,7 @@
               { "name": "custom Stat Prod", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 20, "visible": true},
               { "targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false}
             ],
+            /* TODO: conditionalPaging: true, */
             createdRow: (row, data, index) => {
               /* Could use the function here, but this is faster */
               if (data[hiddenRowIndex] !== 0) {
@@ -1321,22 +1492,29 @@
             data: tableData,
             deferRender: true,
             destroy: true,
-            dom: 'i<"newline">lptQ',
+            dom: domWidth,
             language: {
-              "info": "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)",
-              "lengthMenu" : "Show _MENU_ "+leagueName+" "+mon+" per page"
+              info: infoText,
+              infoFiltered : infoFilteredText,
+              lengthMenu : "Show _MENU_ "+leagueName+" "+mon+" per page",
+              paginate: {first:'«',previous:'‹',next:'›',last:'»'},
+              aria: {paginate: {first:'First',previous:'Previous',next:'Next',last:'Last'}},
+              searchBuilder: {button: "Filters (%d)"}
             },
+            buttons: ["searchBuilder"],
             lengthChange: true,
             lengthMenu: lenMenu,
             orderFixed: {
               "pre": [hiddenRowIndex, "asc"]
             },
-            paging: true,
+            pagingType: pageType,
             pageLength: pageLen,
             scrollX: true,
             searching: true
         });
-        $("div.newline").html('<br /><br /><br />');
+        /* Help space out Custom Search Builder */
+        $("div.newline").html('<br /><br />');
+
         /* Timing gate after generating table */
         if (perfTiming) {T5 = performance.now();}
 
@@ -1381,7 +1559,7 @@
           addToCompare(e, d[dt_rank], d[dt_lvl], d[dt_statProd], d[hiddenRowIndex]);
         });
 
-        /* */
+        /* Update URL when user changes page length */
         $("#monTable_length").on( 'change', function () {
           pageLen = dt.page.info().length/1;
           updateURL();
@@ -1469,26 +1647,36 @@
         main();
       }
       
-      function setUserPreference(settings) {
+      function setUserPreference(...settings) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        /* Ensure each setting is a full word, not characters */
+        /* Double check that user wants settings saved */
+        league = document.getElementById("league").value;
+        leagueName= $("#league").find(":selected").text();
+        floor = document.getElementById("floor").value;
+        minLvl = document.getElementById("minLvl").value;
+        maxLvl = document.getElementById("maxLvl").value;
+        dec = document.getElementById("dec").value;
+        family = document.getElementById("family").checked;
+        fel = document.getElementById("familyEvoLeague").value;
+        
         if (document.getElementById("save").checked) {
-          settings = settings.split(",");
-          for (var i=0; i<settings.length; i++) {
-            /*console.log("Attempting to save settings["+i+"]:"+settings[i]);*/
+          for (const setting of settings) {
+            console.log("setUserPreference: Attempting to save setting:"+setting);
             if (["familyEvoLeague","league"].includes(settings[i])) {
-              localStorage[settings[i]] = document.getElementById(settings[i]).options[document.getElementById(settings[i]).selectedIndex].innerHTML;
-            } else if (["floor","minLvl","maxLvl"].includes(settings[i])) {
-              localStorage[settings[i]] = document.getElementById(settings[i]).value;
-            } else {
-              localStorage[settings[i]] = document.getElementById(settings[i]).checked ? "true" : "false";
+              localStorage[setting] = document.getElementById(setting).options[document.getElementById(setting).selectedIndex].innerHTML;
+            } else if (["floor","minLvl","maxLvl"].includes(setting)) {
+              localStorage[setting] = document.getElementById(setting).value;
+            } else if (["family","effIV","cge","dti","save"].includes(setting)) {
+              localStorage[setting] = document.getElementById(setting).checked ? "true" : "false";
             }
-            console.log("Stored user's preference for "+settings[i]+" as "+localStorage[settings[i]]);
+            console.log("setUserPreference: Stored user's preference for "+setting+" as "+localStorage[setting]);
           }/*else{console.log("User does not want preferences saved");}*/
+        } else {
+          console.log("setUserPreference: User does not want preference for "+settings+" saved");
         }
         if (perfTiming) {stopTiming(T0, "setUserPreference");}
-        main();
+        return;
       }
       
       function updateSitemap() {
@@ -2311,7 +2499,7 @@
         setUserPreference("family");
       }
       </script>
-      <label>IV Floor:<select id="floor" oninput="setUserPreference('floor')">
+      <label>IV Floor:<select id="floor">
         <option value="0">0: Wild Caught</option>
         <option value="1">1: Trade, Good Friend</option>
         <option value="2">2: Trade, Great / Purified</option>
@@ -2366,7 +2554,7 @@
         <option value="39">39</option>
         <option value="40">40</option>
       </select></label><br />
-      <label>Max Level:<select title="What Level Ceiling to Search?" id="maxLvl" oninput="setUserPreference('maxLvl')">
+      <label>Max Level:<select title="What Level Ceiling to Search?" id="maxLvl">
         <option value="1">1: Wild Caught</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -2423,12 +2611,12 @@
         <option value="54">54 (SPECULATIVE)</option>
         <option value="55">55 (SPECULATIVE)</option>
       </select></label><br />
-      <label>PvP Stat Decimal Places:<input title="How many decimal places to Output?" type="number" value="1" id="dec" min="1" oninput="setUserPreference('dec')"></label><br />
-      <label>Only Show Efficient IVs:<input id="effIV" type="checkbox" oninput="setUserPreference('effIV')"></label><br />
-      <label>Export PvPoke Custom Group:<input id="cge" type="checkbox" oninput="setUserPreference('cge')"></label><br />
+      <label>PvP Stat Decimal Places:<input title="How many decimal places to Output?" type="number" value="1" id="dec" min="1"></label><br />
+      <label>Only Show Efficient IVs:<input id="effIV" type="checkbox"></label><br />
+      <label>Export PvPoke Custom Group:<input id="cge" type="checkbox"></label><br />
       <label>Show Family Evolutions:<input id="family" type="checkbox" oninput="toggleFamilyEvos()"></label><br />
       <div id="familyEvoLeagueDiv"><label id="familyEvoLeagueLbl" for="familyEvoLeague" style="display: none;">Family Evos League:
-        <select id="familyEvoLeague" oninput="setUserPreference('familyEvoLeague')">
+        <select id="familyEvoLeague">
           <option value="mirror" label="Mirror Selected">Mirror Selected</option>
           <option value="500" label="Little Leagues">Little Leagues</option>
           <option value="1500" label="Great League">Great League</option>
@@ -2436,7 +2624,7 @@
       		<option value="ML" label="Master League">Master League</option>
       	</select></label>
       </div>
-      <label>Show Trade Improvement %:<input id="dti" type="checkbox" oninput="setUserPreference('dti')"></label><br />
+      <label>Show Trade Improvement %:<input id="dti" type="checkbox"></label><br />
       <label>Remember My Settings:<input id="save" type="checkbox" oninput="saveCurrentSettings()"></label><br />
       <button id="resetButton" type="resetSettings" onclick="localStorage.clear();location.reload();">Reset All Saved Settings to Defaults</button>
       <br /><br />
