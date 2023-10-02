@@ -117,9 +117,11 @@
         max-width: 1551px;
         margin: 0 auto;
       }
-      #toggleCols {
-        max-width: 888px;
-        margin: 0 auto;
+      div.dtsb-searchBuilder {
+        margin-bottom: 100px;
+      }
+      button.buttons-colvis {
+        margin-bottom: 100px;
       }
       #monTable tr:nth-child(even) {background-color: var(--tableRowEven);}
       #monTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
@@ -315,31 +317,7 @@
           </tr>
         </thead>
       </table>
-      <!--br /><div id="toggleCols" style="display:none;"><h4>Toggle column(s):</h4>
-        const dt_rank = 0;
-      const dt_lvl = 1;
-      const dt_cp = 2;
-      const dt_mlCP = 3;
-      const dt_aIV = 4;
-      const dt_dIV = 5;
-      const dt_sIV = 6;
-      const dt_perf = 7;
-      const dt_xl = 8;
-      const dt_dust = 9;
-      const dt_r1CMP = 10;
-      const dt_allCMP = 11;
-      const dt_pvpAtk = 12;
-      const dt_pvpDef = 13;
-      const dt_pvpHP = 14;
-      const dt_statProd = 15;
-      const dt_bulkProd = 16;
-        <!--a class="toggle-vis" data-column="0">Rank</a> | <a class="toggle-vis" data-column="1">Level</a> | <a class="toggle-vis" data-column="2">CP</a> | 
-        <a class="toggle-vis" id="minlvlCP" data-column="3">Level 1 CP</a>  | <!--div style="display:inline-block"><b>IVs:</b> <a class="toggle-vis" data-column="4">Attack</a> - <a class="toggle-vis" data-column="5">Defense</a> - <a class="toggle-vis" data-column="6">Stamina</a></div> | 
-        <a class="toggle-vis" style="display:inline-block" data-column="7">XL Candy Cost</a> | <a class="toggle-vis" style="display:inline-block" data-column="8">Stardust Cost</a> | 
-        <!--div style="display:inline-block"<a class="toggle-vis" style="display:inline-block" data-column="9">R1 CMP</a> | <a class="toggle-vis" style="display:inline-block" data-column="10">All CMP</a><!--/div> | <!--div style="display:inline-block"><b>Stats:</b> <a class="toggle-vis" data-column="11">Attack</a> - <a class="toggle-vis" data-column="12">Defense</a> - <a class="toggle-vis" data-column="13">HP</a></div> | <div style="display:inline-block"><a class="toggle-vis" style="display:inline-block" data-column="14">Stat Product</a> - <a class="toggle-vis" style="display:inline-block" data-column="15">Perfection (%)</a></div> | 
-        <a class="toggle-vis" style="display:inline-block" data-column="16">Bulk Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="17">Attack*HP Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="18">CMP*Stat Product</a> | <a class="toggle-vis" style="display:inline-block" data-column="19">aadss Stat Product</a></div><br /-->
       <div style="overflow-x:auto;" id="tradeOutput"></div>
-    
       <!-- Load various scripts for PvPIVs, Awesomplete, and DataTables -->
       <script src="https://pvpivs.com/includes/footer.js"></script>
       <script src="https://pvpivs.com/includes/calculate.js"></script>
@@ -352,7 +330,6 @@
       <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
       <!--script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script-->
       <!--script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script-->
-      
       <script>
       /* Use global variables to clean up code and  */
       /* Simplify by supporting stateless functions */
@@ -363,7 +340,7 @@
       var dec, family, fel, fel_Label, effIV, cge, input;
       var dti, filterMod, monNames, sbSearch, mA, mD,mHP;
       var prevWidth, domWidth, infoText,infoFilteredText;
-      var pageType;
+      var pageType, buttonArray;
 
       /* DataTable Column numbers to help readability */
       const dt_rank = 0;
@@ -663,12 +640,14 @@
           console.log("sizeDataTableElements: Screen size hasn't crossed layout threshold, no resizing needed");
           return false;
         }
+        buttonArray = [{extend: 'colvis',postfixButtons: [ 'colvisRestore' ],columns: ':not(.noVis)'}];
         if (windowSize/1 > 767) {
           /* Default DataTable elements for tablet / desktop screens */
-          domWidth = 'ltip<"newline">Q';
+          domWidth = 'lti<"br">p<"br">B<"br"><"br"><"br">Q';
           infoText = "Rank _START_-_END_ "+leagueName+" "+mon+" (_TOTAL_ total)";
           infoFilteredText  = "(filtered from _MAX_)";
           pageType = "full_numbers";
+          /* Button array is fine as defined above for desktop */
         } else {
           /* Condensed DataTable elements for smaller mobile screens */
           domWidth = 'ltipB';
@@ -676,6 +655,7 @@
           infoText = "#_START_-_END_ of _TOTAL_ "+leagueAcronym+" "+mon;
           infoFilteredText = "(from _MAX_)";
           pageType = "full";
+          buttonArray.push("searchBuilder");
         }
         console.log("sizeDataTableElements: Set domWidth='"+domWidth+"', infoText='"+infoText+"', infoFilteredText='"+infoFilteredText+"', pageType='"+pageType+"'");
         /* Return true to indicate table needs to implement new layouts */
@@ -1167,7 +1147,6 @@
           console.log("Found an old table, clearing state...");
           $("#monTable tbody").off("click");
           $("#monTable").hide();
-          $("#toggleCols").hide();
           $(".dataTables_wrapper").hide();
         }
         if (perfTiming) {stopTiming(T0, "clearHideOldDataTable");}
@@ -1447,7 +1426,6 @@
         candyTime = candyTime.toFixed(1);
 
         /* Make sure we show the table and column toggles before writing data to table */
-        $("#toggleCols").show();
         $("#monTable").show();
 
         /* Timing gate after generating table data */
@@ -1485,7 +1463,6 @@
               { "name": "custom Stat Prod", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 20, "visible": true},
               { "targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false}
             ],
-            /* TODO: conditionalPaging: true, */
             createdRow: (row, data, index) => {
               /* Could use the function here, but this is faster */
               if (data[hiddenRowIndex] !== 0) {
@@ -1503,14 +1480,20 @@
             destroy: true,
             dom: domWidth,
             language: {
+              buttons: {
+                colvis: "Change Columns"
+              },
               info: infoText,
               infoFiltered : infoFilteredText,
               lengthMenu : "Show _MENU_ "+leagueName+" "+mon+" per page",
               paginate: {first:'«',previous:'‹',next:'›',last:'»'},
               aria: {paginate: {first:'First',previous:'Previous',next:'Next',last:'Last'}},
-              searchBuilder: {button: "Filters (%d)"}
+              searchBuilder: {
+                button: "Filters (%d)",
+                title: {0: 'Filter '+mon, _: mon+' Filters (%d)'}
+              }
             },
-            buttons: ["searchBuilder"],
+            buttons: buttonArray,
             lengthChange: true,
             lengthMenu: lenMenu,
             orderFixed: {
@@ -1522,7 +1505,7 @@
             searching: true
         });
         /* Help space out Custom Search Builder */
-        $("div.newline").html('<br /><br />');
+        $("div.br").html('<br/>');
 
         /* Timing gate after generating table */
         if (perfTiming) {T5 = performance.now();}
