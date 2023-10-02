@@ -537,8 +537,13 @@
         $("#cge").on("change", function(event) {
           stopDuplicateEvents(event);
           cge = document.getElementById("cge").checked;
+          if (cge) {
+            /* Only need to export IVs, not re-run main when checked */
+            displayPvPokeEvoGroup(mon);
+          } else {
+            document.getElementById("CustomGroupExport").style.display = "none";
+          }
           setUserPreference("cge");
-          main();
           return;
         });
         $("#dti").on("change", function(event) {
@@ -1174,6 +1179,10 @@
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
+        if(!inputName) {
+          console.error("Did not receive required inputName");
+          inputName = mon;
+        }
         var name = inputName;
         /* Game Master uses Alola, but PvPoke uses Alolan, need to fix for valid data export */
         console.log("displayPvPokeEvoGroup starting...");
@@ -1672,9 +1681,9 @@
             }
             console.log("setUserPreference: Stored user's preference for "+setting+" as "+localStorage[setting]);
           }/*else{console.log("User does not want preferences saved");}*/
-        } else {
+        }/* else {
           console.log("setUserPreference: User does not want preference for "+settings+" saved");
-        }
+        }*/
         if (perfTiming) {stopTiming(T0, "setUserPreference");}
         return;
       }
