@@ -1456,12 +1456,12 @@
               { "name": "Def", "searchBuilderTitle": "Defense Stat", "targets": dt_pvpDef/*13*/},
               { "name": "HP",  "searchBuilderTitle": "HP Stat","targets": dt_pvpHP/*14*/},
               { "name": "Stat Prod", "searchBuilderTitle": "Stat Product", "targets": dt_statProd/*15*/},
-              { "name": "Bulk Prod", "searchBuilderTitle": "Bulk Product", "targets": dt_bulkProd/*16*/, "visible": true},
-              { "name": "AtkHP Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 17, "visible": true},
-              { "name": "cmpStat Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 18, "visible": true},
-              { "name": "aadss Stat Prod", "searchBuilderTitle": "2xA*D*2xHP", "targets": 19, "visible": true},
-              { "name": "custom Stat Prod", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 20, "visible": true},
-              { "targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false}
+              { "name": "Bulk Prod", "searchBuilderTitle": "Bulk Product", "targets": dt_bulkProd/*16*/, "visible": false},
+              { "name": "AtkHP Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 17, "visible": false},
+              { "name": "cmpStat Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 18, "visible": false},
+              { "name": "aadss Stat Prod", "searchBuilderTitle": "2xA*D*2xHP", "targets": 19, "visible": false},
+              { "name": "custom Stat Prod", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 20, "visible": false},
+              { "targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false, className: 'noVis'}
             ],
             createdRow: (row, data, index) => {
               /* Could use the function here, but this is faster */
@@ -1481,7 +1481,8 @@
             dom: domWidth,
             language: {
               buttons: {
-                colvis: "Change Columns"
+                colvis: "Change Columns",
+                columns: ':not(.noVis)'
               },
               info: infoText,
               infoFiltered : infoFilteredText,
@@ -1528,7 +1529,7 @@
 
         /* If XL candy is used, need to unhide this column */
         if (nonZeroXL === true) {
-          dt.columns(7).visible(true);
+          dt.columns(dt_xl).visible(true);
           dt.columns.adjust().draw();
         }
 
