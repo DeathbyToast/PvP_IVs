@@ -117,11 +117,35 @@
         max-width: 1551px;
         margin: 0 auto;
       }
-      div.dtsb-searchBuilder {
-        margin-bottom: 100px;
-      }
-      button.buttons-colvis {
-        margin-bottom: 100px;
+      /* On mobile hide the sorting arrows */
+      @media only screen and (max-width: 767px) {
+        /* ref https://datatables.net/forums/discussion/70046/how-can-i-remove-all-sort-arrows-from-all-columns */
+        /*table.dataTable>thead .sorting::before,
+        table.dataTable>thead .sorting_asc::before,
+        table.dataTable>thead .sorting_desc::before,
+        table.dataTable>thead .sorting_asc_disabled::before,
+        table.dataTable>thead .sorting_desc_disabled::before {
+            right: 0 !important;
+            content: "" !important;
+        }
+        table.dataTable>thead .sorting::after,
+        table.dataTable>thead .sorting_asc::after,
+        table.dataTable>thead .sorting_desc::after,
+        table.dataTable>thead .sorting_asc_disabled::after,
+        table.dataTable>thead .sorting_desc_disabled::after {
+            right: 0 !important;
+            content: "" !important;
+        }
+        /*table.dataTable>thead>tr>th:not(.sorting_disabled),
+        table.dataTable>thead>tr>td:not(.sorting_disabled) {
+            padding-right: 0px !important;
+            padding-left: 0px !important;
+        }
+        table.dataTable>thead>tr>th,
+        table.dataTable>thead>tr>td {
+            padding-right: 0px !important;
+            padding-left: 0px !important;
+        }*/
       }
       #monTable tr:nth-child(even) {background-color: var(--tableRowEven);}
       #monTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
@@ -756,7 +780,6 @@
               case "min":
                 minLvl = values[i].split("=")[1];
                 mnlMod = true;
-                updateMinLvlCP_Elements();
                 break;
               case "max":
                 maxLvl = values[i].split("=")[1];
@@ -1026,27 +1049,26 @@
         
         /*reset Min Level if we adjusted it previously*/
         if (mnlMod === true) {
-          if ((minLvl.value/1 === 8) || (minLvl.value/1 === 15) || (minLvl.value/1 === 20)) {
+          if ((minLvl/1 === 8) || (minLvl/1 === 15) || (minLvl/1 === 20)) {
             /* Check if User has Saved Setting for minLvl before we reset */
             if (localStorage.minLvl === undefined) {
               /* User has no preference for us to load, reset to default */
-              minLvl.value = 1;
+              minLvl = 1;
             } else {
               minLvl = localStorage.minLvl;
               console.log("resetMonState: Successfully reset Min Level to User's Preference of "+localStorage.minLvl);
             }
           }
           mnlMod = false;
-          updateMinLvlCP_Elements();
         }
 
         /*reset IV Floor if we adjusted it previously*/
         if (ivMod) {
-          if ((floor.value/1 === 1) || (floor.value/1 === 6) || (floor.value/1 === 10)) {
+          if ((floor/1 === 1) || (floor/1 === 6) || (floor/1 === 10)) {
             /* Check if User has Saved Setting for floor before we reset */
             if (localStorage.floor === undefined) {
               /* User has no preference for us to load, reset to default */
-              floor.value = 0;
+              floor = 0;
             } else {
               floor = localStorage.floor;
               console.log("resetMonState: Successfully reset Min Level to User's Preference of "+localStorage.floor);
@@ -1073,11 +1095,11 @@
           if (shadowMon) {
             console.log("Detected Shadow Legendary:" +pokeName);
             /*set min IVs to 6 and min Level to 8*/
-            if (minLvl.value/1 > 8) {
-              minLvl.value = 8; updateMinLvlCP_Elements();
+            if (minLvl/1 > 8) {
+              minLvl = 8;
               mnlMod = true;
             }
-            floor.value = 6;
+            floor = 6;
             ivMod = true;
             if (perfTiming) {stopTiming(T0, "adjustFloors");}
             return;
@@ -1087,11 +1109,11 @@
         if (boxRewrd.includes(pokeName)) {
           console.log("Detected box reward mon:" +pokeName);
           /*set min IVs to 1 and min Level to 15*/
-          if (minLvl.value/1 < 15) {
-            minLvl.value = 15; updateMinLvlCP_Elements();
+          if (minLvl/1 < 15) {
+            minLvl = 15;
             mnlMod = true;
           }
-          floor.value = 1;
+          floor = 1;
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1100,11 +1122,11 @@
         if (raidOnly.includes(pokeName)) {
           console.log("Detected Raid+Trade mon:" +pokeName);
           /*set min IVs to 1 and min Level to 20*/
-          if (minLvl.value/1 < 20) {
-            minLvl.value = 20; updateMinLvlCP_Elements();
+          if (minLvl/1 < 20) {
+            minLvl = 20;
             mnlMod = true;
           }
-          floor.value = 1;
+          floor = 1;
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1113,11 +1135,11 @@
         if (boxMyth.includes(pokeName)) {
           console.log("Detected Mythical mon:" +pokeName);
           /*set min IVs to 10 and min Level to 15*/
-          if (minLvl.value/1 < 15) {
-            minLvl.value = 15; updateMinLvlCP_Elements();
+          if (minLvl/1 < 15) {
+            minLvl = 15;
             mnlMod = true;
           }
-          floor.value = 10;
+          floor = 10;
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1126,11 +1148,11 @@
         if (raidMyth.includes(pokeName)) {
           console.log("Detected Raid no Trade mon:" +pokeName);
           /*set min IVs to 10 and min Level to 20*/
-          if (minLvl.value/1 < 20) {
-            minLvl.value = 20; updateMinLvlCP_Elements();
+          if (minLvl/1 < 20) {
+            minLvl = 20;
             mnlMod = true;
           }
-          floor.value = 10;
+          floor = 10;
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1216,7 +1238,7 @@
 
         /*update the URL with search parameters*/
         var URL = window.location.href.split("?")[0];
-        /*URL = "mon=Venusaur&r=10&cp=1500&f=0&min=1&max=40&set=000000&fel=1500&mA=119.7&mD=112.6&mHP=113";*/
+        /*URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2";*/
         var link = URL + "?mon="+mon+"&r="+pageLen+"&cp="+league;
         /* Only print remaining params if they aren't default values */
         if (floor > 0) {link += "&f="+floor}
@@ -1430,10 +1452,6 @@
 
         /* Timing gate after generating table data */
         if (perfTiming) {T4 = performance.now();}
-
-        //console.log("Creating DataTable with domWidth:"+domWidth+", infoText:"+infoText+", infoFilteredText:"+infoFilteredText+", pageType:"+pageType+", leagueName:"+leagueName+", mon:"+mon+", lenMenu:"+lenMenu+", pageLen:"+pageLen);
-        //console.log(dt_rank,dt_lvl,dt_cp,dt_mlCP,dt_aIV,dt_dIV,dt_sIV,dt_perf,dt_xl,dt_dust,dt_r1CMP,dt_allCMP,dt_pvpAtk,dt_pvpDef,dt_pvpHP,dt_statProd,dt_bulkProd,hiddenRowIndex);
-        //console.log(tableData);
         
         /*Build table with generated tableData*/
         const dt = new DataTable('#monTable', {
@@ -1443,7 +1461,7 @@
               { "name": "#", "searchBuilderTitle": "Rank", "targets": dt_rank/*0*/},
               { "name": "Lvl", "searchBuilderTitle": "Level", "targets": dt_lvl/*1*/},
               { "name": "CP", "targets": dt_cp/*2*/},
-              { "name": "minLvl CP", "searchBuilderTitle": "Minimum Level CP", "targets": dt_mlCP/*3*/, "visible": false},
+              { "name": "minLvl CP", "searchBuilderTitle": "Minimum Level CP", "targets": dt_mlCP/*3*/, "title": "L"+minLvl+" CP", "visible": false},
               { "name": "Atk IV", "searchBuilderTitle": "Attack IV", "targets": dt_aIV/*4*/},
               { "name": "Def", "searchBuilderTitle": "Defense IV", "targets": dt_dIV/*5*/},
               { "name": "Stam", "searchBuilderTitle": "Stamina IV", "targets": dt_sIV/*6*/},
@@ -1456,7 +1474,7 @@
               { "name": "Def", "searchBuilderTitle": "Defense Stat", "targets": dt_pvpDef/*13*/},
               { "name": "HP",  "searchBuilderTitle": "HP Stat","targets": dt_pvpHP/*14*/},
               { "name": "Stat Prod", "searchBuilderTitle": "Stat Product", "targets": dt_statProd/*15*/},
-              { "name": "Bulk Prod", "searchBuilderTitle": "Bulk Product", "targets": dt_bulkProd/*16*/, "visible": false},
+              { "name": "Bulk Prod", "searchBuilderTitle": "Bulk Product", "targets": dt_bulkProd/*16*/},
               { "name": "AtkHP Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 17, "visible": false},
               { "name": "cmpStat Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 18, "visible": false},
               { "name": "aadss Stat Prod", "searchBuilderTitle": "2xA*D*2xHP", "targets": 19, "visible": false},
@@ -1511,10 +1529,10 @@
         /* Timing gate after generating table */
         if (perfTiming) {T5 = performance.now();}
 
-        if (sbSearch) {
+        /*if (sbSearch) {
           //console.log("Rebuilding searchBuilder search with: "+JSON.stringify(sbSearch));
           dt.searchBuilder.rebuild(sbSearch);
-        }
+        }*/
 
         $('#getDetails').on('click', function() {
           sbSearch = dt.searchBuilder.getDetails();
@@ -1557,23 +1575,6 @@
           pageLen = dt.page.info().length/1;
           updateURL();
         } );
-
-        /* Function to enable DataTables Column Toggling */
-        /* https://datatables.net/examples/api/show_hide.html */
-        document.querySelectorAll("a.toggle-vis").forEach((el) => {
-          el.addEventListener("click", function (e) {
-            e.preventDefault();
-            
-            let columnIdx = e.target.getAttribute("data-column");
-            let column = dt.column(columnIdx);
-            
-            /* Toggle the visibility */
-            column.visible(!column.visible());
-
-            /* Update minLvl CP column (col3) header's level */
-            if (columnIdx/1 === 3) {updateMinLvlCP_Elements();}
-          });
-        });
 
         /* Final timing gate */
         if (perfTiming) {T6 = performance.now();
@@ -2453,30 +2454,6 @@
       }
       /* Update minLvl on all minLvlCP Elements whenever minLvl is changed */
       
-      function updateMinLvlCP_Elements(newVal) {
-
-        /* Only update if minLvl needs updating */
-        const new_mlCP = "Level "+minLvl.value+" CP";
-        if (new_mlCP !== document.getElementById("minlvlCP").innerHTML) {
-          document.getElementById("minlvlCP").innerHTML = "Level "+minLvl.value+" CP";
-        }
-
-        /* Only update if mlCPheader exists and needs updating */
-        const mlCPheader = document.getElementById("mlCPheader");
-        if (mlCPheader !== null) {
-          const new_mlCPheader = "L"+minLvl.value+" CP";
-          if (new_mlCPheader !== mlCPheader.innerHTML) {
-            mlCPheader.innerHTML = "L"+minLvl.value+" CP";
-          }
-        }
-
-        /* Only run if the input box was changed to a new value */
-        if (newVal === true) 
-        {
-          setUserPreference("minLvl");
-        }
-      }
-
       function toggleFamilyEvos() {
         var T0;
         if (perfTiming) {T0 = performance.now();}
@@ -2505,7 +2482,7 @@
       </select></label><br />
       <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
       <div id=advCollapsible hidden>
-      <label>Min Level:<select title="What Level Floor to Search?" id="minLvl" oninput="updateMinLvlCP_Elements(true)">
+      <label>Min Level:<select title="What Level Floor to Search?" id="minLvl">
         <option value="1">1: Wild Caught</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -2607,7 +2584,7 @@
       <label>PvP Stat Decimal Places:<input title="How many decimal places to Output?" type="number" value="1" id="dec" min="1"></label><br />
       <label>Only Show Efficient IVs:<input id="effIV" type="checkbox"></label><br />
       <label>Export PvPoke Custom Group:<input id="cge" type="checkbox"></label><br />
-      <label>Show Family Evolutions:<input id="family" type="checkbox" oninput="toggleFamilyEvos()"></label><br />
+      <label>Show Family Evolutions:<input id="family" type="checkbox"></label><br />
       <div id="familyEvoLeagueDiv"><label id="familyEvoLeagueLbl" for="familyEvoLeague" style="display: none;">Family Evos League:
         <select id="familyEvoLeague">
           <option value="mirror" label="Mirror Selected">Mirror Selected</option>
