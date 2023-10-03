@@ -234,7 +234,7 @@
         <option value="1500" selected label="Great League">Great League</option>
     		<option value="2500" label="Ultra League">Ultra League</option>
     		<option value="ML" label="Master League">Master League</option>
-        <option value="ALL" label="All Leagues">Master League</option>
+        <option value="All" label="All Leagues">Master League</option>
     	</select></label>
     	<input id="pokeList" onfocus="this.value=''" placeholder="Pok&eacute;mon"/>
     	<span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a valid Pok&eacute;mon to continue...</i></span>
@@ -477,15 +477,14 @@
       const uIV_hidSortRank = 7;
 
       $( document ).ready(function() {
-        /* Initialize global variables, load event handlers, then check URL */
+        /* First check URL, then initialize global variables, load event handlers, then call main() */
         pageLen = 10;
-        lenMenu = [ [3, 10, 25, 50, -1], [3, 10, 25, 50, "All"] ];
+        lenMenu = [ [3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"] ];
         ranks=[], league=[], leagueName=[];
         perfTiming = true; /* used for timing execution */
         mnlMod = false; /*track if min Lvl was adjusted*/
         ivMod = false; /*track if IV floor was adjusted*/
         userIVs = new Array(1).fill(0).map(() => new Array(8).fill(0));
-        checkSetAllLeagueOptions();
         floor = document.getElementById("floor").value;
         minLvl = document.getElementById("minLvl").value;
         maxLvl = document.getElementById("maxLvl").value;
@@ -509,6 +508,9 @@
         filterMod = false; /*track if stat filters were adjusted*/
         input = document.getElementById("pokeList");
         monNames = Object.keys(pokeListObj);
+        checkURL();
+        /* TODO: Add check to see if URL had params to skip duplicate call to checkSetAllLeagueOptions() */
+        checkSetAllLeagueOptions();
 
         /* Ensure we've successfully loaded pokeListObj, and converted to list for awesomplete */
         if (monNames.length<1111) /* At time of writing, monNames.length was 1166 */
@@ -748,8 +750,7 @@
         });
         /* END: Initializations for #inputTable event handlers */
         
-        /* All initializations complete, proceed to checkURL() */
-        checkURL();
+        /* All initializations complete, proceed to main() */
         main();
       });
 
@@ -770,8 +771,14 @@
           return;
         }
         
-        if (document.getElementById("league").value == "ALL") {
-          /* Ensure we clear old output from arrays */
+        if (inputLeague == "All" || document.getElementById("league").value == "All") {
+          if (document.getElementById("league").value !== "All") {
+            console.log("Received inputLeague as "+inputLeague+", updating $(#league) to 'All' from: "+document.getElementById("league").value);
+            document.getElementById("league").value = "All";
+            console.log("Updating $(#league) to: "+document.getElementById("league").value);
+          }
+          
+          /* Clear old output from arrays */
           league = [];
           leagueName = [];
 
@@ -781,11 +788,12 @@
             league.push($(this).val());
             leagueName.push($(this).text());
           });
+          console.log("After loop, league is: "+JSON.stringify(league));
           /* https://stackoverflow.com/a/3596141 */
-          league.splice( $.inArray("ALL", league), 1 );
+          league.splice( $.inArray("All", league), 1 );
           leagueName.splice( $.inArray("All Leagues", leagueName), 1 );
           /* Also shorten page length for all league table outputs */
-          pageLen = 3;
+          if (pageLen/1 == 10) {pageLen = 3;}
         } else {
           league[0] = document.getElementById("league").value;
           leagueName[0] = $("#league").find(":selected").text();
@@ -851,6 +859,7 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
+          URL = "mon=Blastoise&r=5&cp=All";
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -864,12 +873,15 @@
             /* Catches a malformed URI */
             console.error("checkURL:: "+e);
             console.log("checkURL: Skipping malformed URL, calling main()...");
-          if (perfTiming) {stopTiming(T0, "checkURL");}
+            if (perfTiming) {stopTiming(T0, "checkURL");}
+            main();
+            return;
           }
-          /*console.log("checkURL: Read URL as: "+URL);*/
+          console.log("checkURL: Read URL as: "+URL);
           var values = URL.split("&");
+          /* TODO: Fix or delete this */
           var settings = "0000000";
-          /*console.log("checkURL: Values: "+JSON.stringify(values));*/
+          console.log("checkURL: Values: "+JSON.stringify(values));
           for (var i=0; i<values.length; i++)
           {
             switch (values[i].split("=")[0]) {
@@ -882,6 +894,7 @@
                 break;
               case "r":
                 pageLen = values[i].split("=")[1]/1;
+                console.log("checkURL: received r="+values[i].split("=")[1]+", set pageLen to: "+pageLen);
                 /* Search for where to insert pageLen to lenMenu  */
                 for (var j=0; j<lenMenu[0].length; j++) {
                   if (pageLen/1 < 0 || lenMenu[0][j]/1 == pageLen/1) {
@@ -903,6 +916,7 @@
                 }
                 break;
               case "cp":
+                console.log("checkURL: calling checkSetAllLeagueOptions("+values[i].split("=")[1]+")");
                 checkSetAllLeagueOptions(values[i].split("=")[1]);
                 break;
               case "f":
@@ -987,6 +1001,7 @@
             }
           }
           if (filterMod) {
+            /* TODO: Finish this, decide on how to handle all of this, especially bulk product */
             /* Convert mA / mD / mHP into Custom Search Builder */
             /* searchBuilderTitles: Rank | Level | CP | Minimum Level CP | Attack IV | Defense IV | Stamina IV
              * XL Candy Cost | Stardust Cost | CMP vs. Rank1 (W/L/T) | CMP vs. All (Win %) | 
@@ -1002,6 +1017,7 @@
           }
           
           /* Ensure we open Advanced if user URL has any Advanced settings enabled */
+          /* TODO: Fix this */
           if (settings !== "000" || minLvl > 1 || maxLvl !== "51" || fel !== "mirror" || dec > 1 || effIV) {
             advCollapsible(); 
           }
@@ -1184,7 +1200,7 @@
         /* clear min stat filters, reset pageLen and lenMenu, and filterMod */
         mA = 0; mD = 0; mHP = 0;
         pageLen = 10;
-        lenMenu = [ [3, 10, 25, 50, -1], [3, 10, 25, 50, "All"] ];
+        lenMenu = [ [3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"] ];
         filterMod = false;
         
         /*reset Min Level if we adjusted it previously*/
@@ -1391,6 +1407,7 @@
         if (minLvl > 1) {link += "&min="+minLvl;}
         if (maxLvl!== "51") {link += "&max="+maxLvl;}
         var settings = (cge ? "1":"0") + (family ? "1":"0") + (dti ? "1":"0");
+        /* TODO: Fix this */
         if (settings !== "000") {
           console.log("941: About to make '&set'="+settings);
           link += "&set="+settings;}
@@ -1821,7 +1838,7 @@
         var singleRankLinks = "";
         var leagueRankLinks = "";
         var searchStrLinks = "";
-        var leagues = ["500","1500","2500","ML","ALL"];
+        var leagues = ["500","1500","2500","ML",ranks[l].invalids];
         var langs = ["en","fr","de","es","it","ja","ko","pt","zh"];
         var levels = ["51","50","49","48","47","46","45","44","43","42","41","40","39","38","37","36","35","34","33","32","31","30","29","28","27","26","25","24","23","22","21","20","19","18","17","16","15","14","13","12","11","10","9","8","7","6","5","4","3","2","1"];
         var first = true;
@@ -2751,7 +2768,7 @@
           <option value="1500" label="Great League">Great League</option>
       		<option value="2500" label="Ultra League">Ultra League</option>
       		<option value="ML" label="Master League">Master League</option>
-          <option value="ALL" label="All Leagues">Master League</option>
+          <option value="All" label="All Leagues">Master League</option>
       	</select></label>
       </div>
       <label>Show Trade Improvement %:<input id="dti" type="checkbox"></label><br />
