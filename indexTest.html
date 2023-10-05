@@ -1010,11 +1010,18 @@
                 dti = settings[3] === "1" ? true : false;
                 save = settings[4] === "1" ? true : false;
                 break;
+                /* TODO: Implement all of these as one function */
               case "col_LL":
+                console.log("checkURL: received col_LL: "+values[i].split("=")[1]);
+                break;
               case "col_GL":
+                console.log("checkURL: received col_GL: "+values[i].split("=")[1]);
+                break;
               case "col_UL":
+                console.log("checkURL: received col_UL: "+values[i].split("=")[1]);
+                break;
               case "col_ML":
-                /* TODO: Implement this */
+                console.log("checkURL: received col_ML: "+values[i].split("=")[1]);
                 break;
             }
           }
