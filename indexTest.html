@@ -234,7 +234,7 @@
         <option value="1500" selected label="Great League">Great League</option>
     		<option value="2500" label="Ultra League">Ultra League</option>
     		<option value="ML" label="Master League">Master League</option>
-        <option value="All" label="All Leagues">Master League</option>
+        <option value="All" label="All Leagues">All Leagues</option>
     	</select></label>
     	<input id="pokeList" onfocus="this.value=''" placeholder="Pok&eacute;mon"/>
     	<span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a valid Pok&eacute;mon to continue...</i></span>
@@ -444,8 +444,8 @@
       /* Simplify by supporting stateless functions */
       /* Initialized inside of document.ready() fxn */
       var inputMon, pageLen, lenMenu, perfTiming, mnlMod, ivMod, filterMod, userIVs, hiddenRowIndex, mon;
-      var ranks, league, leagueName, tableIDs, floor, minLvl, maxLvl, dec, family, fel, fel_Label, effIV;
-      var cge, input, monNames, filterMod, sbSearch, mA, mD, mHP, dti, prevWidth, domWidth, infoText;
+      var ranks, league, leagueName, tableIDs, floor, minLvl, maxLvl, dec, effIV, cge, family, fel, fel_Label;
+      var dti, save, input, monNames, filterMod, sbSearch, mA, mD, mHP, prevWidth, domWidth, infoText;
       var infoFilteredText, pageType, buttonArray;
 
       /* DataTable Column numbers to help readability */
@@ -489,12 +489,13 @@
         minLvl = document.getElementById("minLvl").value;
         maxLvl = document.getElementById("maxLvl").value;
         dec = document.getElementById("dec").value;
+        effIV = document.getElementById("effIV").checked;
+        cge = document.getElementById("cge").checked;
         family = document.getElementById("family").checked;
         fel = document.getElementById("familyEvoLeague").value;
         fel_Label = document.getElementById("familyEvoLeagueLbl").style.display;
-        effIV = document.getElementById("effIV").checked;
-        cge = document.getElementById("cge").checked;
         dti = document.getElementById("dti").checked;
+        save = document.getElementById("save").checked;
         userIVs[0] = [
           document.getElementById("aIV[0]").value,   /* 0:attack IV  */
           document.getElementById("dIV[0]").value,   /* 1:defense IV */
@@ -779,9 +780,9 @@
         
         if (inputLeague == "All" || document.getElementById("league").value == "All") {
           if (document.getElementById("league").value !== "All") {
-            console.log("Received inputLeague as "+inputLeague+", updating $(#league) to 'All' from: "+document.getElementById("league").value);
+            //console.log("Received inputLeague as "+inputLeague+", updating $(#league) to 'All' from: "+document.getElementById("league").value);
             document.getElementById("league").value = "All";
-            console.log("Updating $(#league) to: "+document.getElementById("league").value);
+            //console.log("Updating $(#league) to: "+document.getElementById("league").value);
           }
 
           /* https://stackoverflow.com/a/590219 */
@@ -791,10 +792,11 @@
             leagueName.push($(this).text());
             tableIDs.push("#monTable_"+$(this).text().split(/\s/).reduce((response,word)=> response+=word.slice(0,1),''));
           });
-          console.log("checkSetAllLeagueOptions: After loop, league is: "+JSON.stringify(league)+", leagueName is: "+JSON.stringify(leagueName)+", tableIDs is: "+JSON.stringify(tableIDs));
+          //console.log("checkSetAllLeagueOptions: After loop, league is: "+JSON.stringify(league)+", leagueName is: "+JSON.stringify(leagueName)+", tableIDs is: "+JSON.stringify(tableIDs));
           /* https://stackoverflow.com/a/3596141 */
           league.splice( $.inArray("All", league), 1 );
           leagueName.splice( $.inArray("All Leagues", leagueName), 1 );
+          tableIDs.splice( $.inArray("#monTable_AL", leagueName), 1 );
           /* Also shorten page length for all league table outputs */
           if (pageLen/1 == 10) {pageLen = 3;}
         } else {
@@ -885,7 +887,7 @@
           console.log("checkURL: Read URL as: "+URL);
           var values = URL.split("&");
           /* TODO: Fix or delete this */
-          var settings = "0000000";
+          var settings = "00000";
           console.log("checkURL: Values: "+JSON.stringify(values));
           for (var i=0; i<values.length; i++)
           {
@@ -967,9 +969,9 @@
                 mHP = values[i].split("=")[1];
                 filterMod = true;
                 break;
-              case "p":
+              /*case "p":
                 effIV = values[i].split("=")[1] === "1" ? true : false;
-                break;
+                break;*/
               case "t": /* Enable performance timing output in console for debugging */
                 perfTiming = values[i].split("=")[1];
                 break;
@@ -990,18 +992,29 @@
                 return true;
               case "set":
                 settings = (''+values[i].split("=")[1]);
-                //document.getElementById("mlCP").checked = settings[0] === "1" ? true : false;
-                //document.getElementById("cmp").checked = settings[1] === "1" ? true : false;
-                cge = settings[2] === "1" ? true : false;
-                if (settings[3] === "1") {
-                  family = true;
-                  fel_Label = "inline-block";
-                } else {
-                  family = false;
-                  fel_Label = "none";
-                }
-                family = settings[3] === "1" ? true : false;
-                dti = settings[4] === "1" ? true : false;
+                document.getElementById('mlCP').checked = settings[0] === "1" ? true : false;
+                document.getElementById('cmp').checked = settings[1] === "1" ? true : false;
+                document.getElementById('cge').checked = settings[2] === "1" ? true : false;
+                document.getElementById('family').checked = settings[3] === "1" ? true : false;
+                if (document.getElementById('family').checked) {document.getElementById("familyEvoLeagueLbl").style.display = "inline-block";}
+                document.getElementById('dti').checked = settings[4] === "1" ? true : false;
+                document.getElementById('dust').checked = settings[5] === "1" ? true : false;
+                document.getElementById('bulk').checked = settings[6] === "1" ? true : false;
+                break;
+              case "adv":
+                settings = (''+values[i].split("=")[1]);
+                effIV = settings[0] === "1" ? true : false;
+                cge = settings[1] === "1" ? true : false;
+                family = settings[2] === "1" ? true : false;
+                if (family) {fel_Label = "inline-block";}
+                dti = settings[3] === "1" ? true : false;
+                save = settings[4] === "1" ? true : false;
+                break;
+              case "col_LL":
+              case "col_GL":
+              case "col_UL":
+              case "col_ML":
+                /* TODO: Implement this */
                 break;
             }
           }
@@ -1126,16 +1139,16 @@
         /* Set this only once before entering loop */
         var tempWidth = $(window).width();
 
-        console.log("main: About to pass league: "+JSON.stringify(league)+" to calculate");
+        //console.log("main: About to pass league: "+JSON.stringify(league)+" to calculate");
         for (var l=0; l<leagueName.length; l++) {
           /* Calculate this mon's ranks object */
-          console.log("main: About to pass league[l]: "+league[l]+" to calculate");
+          //console.log("main: About to pass league[l]: "+league[l]+" to calculate");
           ranks[l] = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), floor, minLvl, maxLvl, true, league[l], mon);
-          console.log("main: Passed league[l]: "+league[l]+" to calculate, received ranks[l]: "+ranks[l].numRanks);
+          //console.log("main: Passed league[l]: "+league[l]+" to calculate, received ranks[l]: "+ranks[l].numRanks);
           var keys = Object.keys(ranks[l]);
 
           /* Ensure we have properly sized the DataTable Elements */
-          console.log("About to pass leagueName[l]: "+leagueName[l]+" to sizeDataTableElements()");
+          //console.log("About to pass leagueName[l]: "+leagueName[l]+" to sizeDataTableElements()");
           sizeDataTableElements(false, leagueName[l]);
         
           /* Ensure we generated ranks to output*/
@@ -1151,7 +1164,6 @@
 
           /* Create a DataTable from the mon ranks object */
           console.log("main: Calling generateDataTable("+ranks[l].numRanks, ", "+league[l]+", "+leagueName[l]+", "+keys.length+")");
-          console.log(tableIDs);
           generateDataTable(ranks[l], league[l], leagueName[l], keys, tableIDs[l]);
           /* Also show other tables if the user has enabled them */
           if (cge) {displayPvPokeEvoGroup(mon);}
@@ -1411,13 +1423,31 @@
         if (floor > 0) {link += "&f="+floor}
         if (minLvl > 1) {link += "&min="+minLvl;}
         if (maxLvl!== "51") {link += "&max="+maxLvl;}
-        var settings = (cge ? "1":"0") + (family ? "1":"0") + (dti ? "1":"0");
+        var settings = (effIV ? "1":"0") + (cge ? "1":"0") + (family ? "1":"0") + (dti ? "1":"0") + (save ? "1":"0");
+        if (settings !== "00000") {
+          console.log("updateURL: Made '&set'="+settings);
+          link += "&set="+settings;
+        }
+
+        //console.log("Checking tableIDs: "+JSON.stringify(tableIDs)+", .length:"+tableIDs.length);
+        for (var i=0; i<tableIDs.length; i++) {
+          if ($.fn.DataTable.isDataTable(tableIDs[i])) {
+            var col = "";
+            const dt = $(tableIDs[i]).DataTable();
+            const visCols = dt.columns().visible().toArray();
+            /* Convert true/false to 1/0 for URL */
+            for (var j=0; j<=dt_bulkProd; j++) {
+              col += Number(visCols[j]);
+            }
+            const leagueAcronym = tableIDs[i].split("_")[1];
+            //console.log("visible columns for "+leagueAcronym+", "+tableIDs[i]+" are: "+col+" or "+visCols);
+            if (col !== "11101111000011111") {
+              link += "&col_"+leagueAcronym+"="+col;
+            }
+          }
+        }
         /* TODO: Fix this */
-        if (settings !== "000") {
-          console.log("941: About to make '&set'="+settings);
-          link += "&set="+settings;}
-        if (fel !== "mirror") {link += "&fel="+fel;}
-        if (effIV) {link += "&p=" + (effIV ? "1":"0");}
+        if (family && fel !== "mirror") {link += "&fel="+fel;}
         if (dec > 1) {link += "&dec="+dec;}
         if (userIVs[0][uIV_aIV] && userIVs[0][uIV_dIV] && userIVs[0][uIV_sIV]) {
           var IVs = "";
@@ -1702,13 +1732,15 @@
           dt.searchBuilder.rebuild(sbSearch);
         }*/
 
-        $('#getDetails').on('click', function() {
+        $('#getDetails').on('click', function(event) {
+          stopDuplicateEvents(event);
           sbSearch = dt.searchBuilder.getDetails();
           console.log("Updated sbSearch to: "+JSON.stringify(sbSearch));
           $('#feedbackBox').text(JSON.stringify(sbSearch, null, '\t'));
         })
 
-        $('#reload').on('click', function() {
+        $('#reload').on('click', function(event) {
+          stopDuplicateEvents(event);
           console.log("Rebuilding searchBuilder search with: "+sbSearch);
           dt.searchBuilder.rebuild(sbSearch);
         })
@@ -1719,8 +1751,16 @@
           dt.columns.adjust().draw();
         }
 
+        /* Ensure URL is updated when column visibility is toggled */
+        $(tableID).on( 'column-visibility.dt', function ( event, settings, column, state ) {
+          stopDuplicateEvents(event);
+          console.log('Column '+ column +' has changed to '+ (state ? 'visible' : 'hidden'));
+          updateURL();
+        } );
+
         /* Enable user click to add IVs to compare */
-        $(tableID+" tbody").on('click', 'tr', function (e) {
+        $(tableID+" tbody").on('click', 'tr', function (event) {
+          stopDuplicateEvents(event);
           /* Ensure we add clicked row to all league tables */
           for (var l=0; l<leagueName.length; l++) {
             /* Update hiddenSortRank to "pin" this row to top of table */
@@ -1743,7 +1783,8 @@
         });
 
         /* Update URL when user changes page length */
-        $(tableID+"_length").on( 'change', function () {
+        $(tableID+"_length").on( 'change', function (event) {
+          stopDuplicateEvents(event);
           pageLen = dt.page.info().length/1;
           updateURL();
         } );
