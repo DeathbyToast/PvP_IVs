@@ -446,7 +446,7 @@
       var inputMon, pageLen, lenMenu, perfTiming, mnlMod, ivMod, filterMod, userIVs, hiddenRowIndex, mon;
       var ranks, league, leagueName, tableIDs, floor, minLvl, maxLvl, dec, effIV, cge, family, fel, fel_Label;
       var dti, save, input, monNames, filterMod, sbSearch, mA, mD, mHP, prevWidth, domWidth, infoText;
-      var infoFilteredText, pageType, buttonArray;
+      var infoFilteredText, pageType, buttonArray, colVis;
 
       /* DataTable Column numbers to help readability */
       const dt_rank = 0;
@@ -480,7 +480,7 @@
         /* First check URL, then initialize global variables, load event handlers, then call main() */
         pageLen = 10;
         lenMenu = [ [3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"] ];
-        ranks=[], league=[], leagueName=[], tableIDs=[];
+        ranks=[], league=[], leagueName=[], tableIDs=[], colVis=[];
         perfTiming = true; /* used for timing execution */
         mnlMod = false; /*track if min Lvl was adjusted*/
         ivMod = false; /*track if IV floor was adjusted*/
@@ -1012,16 +1012,20 @@
                 break;
                 /* TODO: Implement all of these as one function */
               case "col_LL":
-                console.log("checkURL: received col_LL: "+values[i].split("=")[1]);
+                colVis[0] = values[i].split("=")[1];
+                console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_GL":
-                console.log("checkURL: received col_GL: "+values[i].split("=")[1]);
+                colVis[1] = values[i].split("=")[1];
+                console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_UL":
-                console.log("checkURL: received col_UL: "+values[i].split("=")[1]);
+                colVis[2] = values[i].split("=")[1];
+                console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_ML":
-                console.log("checkURL: received col_ML: "+values[i].split("=")[1]);
+                colVis[3] = values[i].split("=")[1];
+                console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
             }
           }
@@ -1702,6 +1706,51 @@
             deferRender: true,
             destroy: true,
             dom: domWidth,
+            initComplete: function () {
+              /* Show/hide columns per any URL user preferences */
+              var colsChanged = false;
+              for (var c=0; c<tableIDs; c++) {
+                if (tableID === tableIDs[c]) {
+                  console.log("This is a "+tableIDs[c]+" table!");
+                  break;
+                }
+              }
+              console.log("before loop colVis["+c+"]:"+JSON.stringify(colVis[c]));
+              var currColVis = this.api().columns().visible();
+              console.log("before loop currColVis:"+JSON.stringify(currColVis.toArray()));
+              for (var i=0; colVis[c]!==undefined && i<colVis[c].length; i++) {
+                if (i==dt_xl) {
+                  /* If XL candy is used, need to unhide this column */
+                  if ((nonZeroXL === true) || (colVis[c][i] == "1" && currColVis[1] === false)) {
+                    this.api().columns(dt_xl).visible(true);
+                    console.log('Updated Column '+ i +' visibility to true');
+                    colsChanged = true;
+                  }
+                }
+                if (colVis[c][i] == "1" && currColVis[i] === false) {
+                  this.api().columns(i).visible(true);
+                  console.log('Updated Column '+ i +' visibility to true');
+                  colsChanged = true;
+                } else {
+                  this.api().columns(i).visible(false);
+                  console.log('Updated Column '+ i +' visibility to false');
+                  colsChanged = true;
+                }
+              }
+              if (colsChanged === false) {
+                console.log("colsChanged is still false after loop, checking nonZeroXL for XL col visibility...");
+                /* Double check XL candy column visibility */
+                if (nonZeroXL === true && this.api().columns(dt_xl).visible()[0] === false) {
+                  this.api().columns(dt_xl).visible(true);
+                  console.log('Outside loop: Updated Column '+ dt_xl +' visibility to true');
+                  colsChanged = true;
+                }
+              }
+              if (colsChanged === true) {
+                /* Only re-draw if a column's visibility changed */
+                this.api().columns.adjust().draw();
+              }
+            },
             language: {
               buttons: {
                 colvis: "Change Columns",
@@ -1744,24 +1793,18 @@
           sbSearch = dt.searchBuilder.getDetails();
           console.log("Updated sbSearch to: "+JSON.stringify(sbSearch));
           $('#feedbackBox').text(JSON.stringify(sbSearch, null, '\t'));
-        })
+        });
 
         $('#reload').on('click', function(event) {
           stopDuplicateEvents(event);
           console.log("Rebuilding searchBuilder search with: "+sbSearch);
           dt.searchBuilder.rebuild(sbSearch);
-        })
-
-        /* If XL candy is used, need to unhide this column */
-        if (nonZeroXL === true) {
-          dt.columns(dt_xl).visible(true);
-          dt.columns.adjust().draw();
-        }
-
+        });
+        
         /* Ensure URL is updated when column visibility is toggled */
         $(tableID).on( 'column-visibility.dt', function ( event, settings, column, state ) {
           stopDuplicateEvents(event);
-          console.log('Column '+ column +' has changed to '+ (state ? 'visible' : 'hidden'));
+          console.log('Column '+ column +' has changed to '+ (state ? 'visible' : 'hidden'));   
           updateURL();
         } );
 
