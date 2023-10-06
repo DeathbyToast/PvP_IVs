@@ -446,7 +446,7 @@
       var inputMon, pageLen, lenMenu, perfTiming, mnlMod, ivMod, filterMod, userIVs, hiddenRowIndex, mon;
       var ranks, league, leagueName, tableIDs, floor, minLvl, maxLvl, dec, effIV, cge, family, fel, fel_Label;
       var dti, save, input, monNames, filterMod, sbSearch, mA, mD, mHP, prevWidth, domWidth, infoText;
-      var infoFilteredText, pageType, buttonArray, colVis;
+      var infoFilteredText, pageType, buttonArray, colVis, colVisLock;
 
       /* DataTable Column numbers to help readability */
       const dt_rank = 0;
@@ -480,7 +480,8 @@
         /* First check URL, then initialize global variables, load event handlers, then call main() */
         pageLen = 10;
         lenMenu = [ [3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"] ];
-        ranks=[], league=[], leagueName=[], tableIDs=[], colVis=[];
+        ranks=[], league=[], leagueName=[], tableIDs=[], colVis=[], colVisLock=false;
+        domWidth=[], infoText=[], infoFilteredText=[], pageType=[]; buttonArray=[];
         perfTiming = true; /* used for timing execution */
         mnlMod = false; /*track if min Lvl was adjusted*/
         ivMod = false; /*track if IV floor was adjusted*/
@@ -525,7 +526,7 @@
           /*https://github.com/LeaVerou/awesomplete/issues/16438#issuecomment-195921708*/
           Awesomplete.$.bind(input, {
             "awesomplete-selectcomplete": function(evt) {
-              console.log("$doc.ready():: User Selected "+evt.text.label+", passing to main and exiting Awesomplete");
+              //console.log("$doc.ready():: User Selected "+evt.text.label+", passing to main and exiting Awesomplete");
               if (evt.text.label.indexOf("_SPECULATIVE") > -1)
               {
                 document.getElementById("megaNote").innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";
@@ -536,7 +537,7 @@
                 document.getElementById("megaNote").innerHTML = ""; /* Clear the previous notes if any */
               }
               inputMon = evt.text.label;
-              console.log("$doc.ready():: Awesomplete: calling main("+evt.text.label+")");
+              //console.log("$doc.ready():: Awesomplete: calling main("+evt.text.label+")");
               main(evt.text.label);
             }
           });
@@ -545,16 +546,21 @@
         $(window).on('resize', function(event) {
           stopDuplicateEvents(event);
           var newWidth = $(window).width();
+          var resized = false;
           /* TODO: Search by .monTable instead */
-          if ($.fn.DataTable.isDataTable("#monTable_LL")
-           || $.fn.DataTable.isDataTable("#monTable_GL")
-           || $.fn.DataTable.isDataTable("#monTable_UL")
-           || $.fn.DataTable.isDataTable("#monTable_ML")) {
-            /* Returns true when table needs to be recreated */
-            if (sizeDataTableElements(newWidth) === true) {
-              console.log("$window.resize: Window size passed 767px threshold, calling main() to recreate DataTable");
-              main();
+          console.log("About to enter loop with tableIDs.length:"+tableIDs.length);
+          for (var l=0; l<tableIDs.length; l++) {
+            if ($.fn.DataTable.isDataTable(tableIDs[l])) {
+              if (sizeDataTableElements(newWidth, l) === true) {
+                /* Returns true when table needs to be resized & recreated */
+                console.log("$window.resize: Window size passed 767px threshold, calling main() to recreate DataTable");
+                resized = true;
+              }
             }
+          }
+          if (resized === true) {
+            console.log("$window.resize: Calling main() to resize DataTable");
+            main();
           } else {
             console.log("$window.resize: No DataTable to resize yet");
           }
@@ -809,32 +815,43 @@
         return;
       }
 
-      function sizeDataTableElements(windowSize, thisLeagueName) {
+      function sizeDataTableElements(windowSize, l) {
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
         /* First run with prevWidth===undefined, triggers initialization of dt Elements */
         /* Check if window size has changed above/below 767px which triggers new layout */
-        if (prevWidth && ((windowSize/1 < 767 && prevWidth/1 < 767) || (windowSize/1 >= 767 && prevWidth/1 >= 767))) {
-          console.log("sizeDataTableElements: Screen size hasn't crossed layout threshold, no resizing needed");
-          return false;
+        if (domWidth[l] && infoText[l] && infoFilteredText[l] && pageType[l] && buttonArray[l]) {
+          if (prevWidth && ((windowSize/1 < 767 && prevWidth/1 < 767) || (windowSize/1 >= 767 && prevWidth/1 >= 767))) {
+            console.log("sizeDataTableElements: Screen size hasn't crossed layout threshold, no resizing needed");
+            if (perfTiming) {stopTiming(T0, "sizeDataTableElements");}
+            return false;
+          }
+        } else {
+          console.log("sizeDataTableElements: Found uninitialized elements, initializing...");
         }
-        buttonArray = [{extend: 'colvis',postfixButtons: [ 'colvisRestore' ],columns: ':not(.noVis)'}];
+        console.log("sizeDataTableElements: Starting loop with tableIDs.length:"+tableIDs.length+", tableIDs:"+JSON.stringify(tableIDs));
+        buttonArray[l] = [{extend: 'colvis',postfixButtons: [ 'colvisRestore' ],columns: ':not(.noVis)'}];
         if (windowSize/1 > 767) {
+          console.log("sizeDataTableElements: Detected screen size > 767px, setting desktop mode");
           /* Default DataTable elements for tablet / desktop screens */
-          domWidth = 'lti<"br">p<"br">B<"br"><"br"><"br">Q';
-          infoText = "Rank _START_-_END_ "+thisLeagueName+" "+mon+" (_TOTAL_ total)";
-          infoFilteredText  = "(filtered from _MAX_)";
-          pageType = "full_numbers";
+          domWidth[l] = 'lti<"br">p<"br">B<"br"><"br"><"br">Q';
+          infoText[l] = "Rank _START_-_END_ "+leagueName[l]+" "+mon+" (_TOTAL_ total)";
+          infoFilteredText[l]  = "(filtered from _MAX_)";
+          pageType[l] = "full_numbers";
           /* Button array is fine as defined above for desktop */
         } else {
+          console.log("sizeDataTableElements: Detected screen size < 767px, setting mobile mode");
           /* Condensed DataTable elements for smaller mobile screens */
-          domWidth = 'ltipB';
-          var leagueAcronym = thisLeagueName.split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'');
-          infoText = "#_START_-_END_ of _TOTAL_ "+leagueAcronym+" "+mon;
-          infoFilteredText = "(from _MAX_)";
-          pageType = "full";
-          buttonArray.push("searchBuilder");
+          domWidth[l] = 'ltipB';
+          var leagueAcronym = leagueName[l].split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'');
+          infoText[l] = "#_START_-_END_ of _TOTAL_ "+leagueAcronym+" "+mon;
+          infoFilteredText[l] = "(from _MAX_)";
+          pageType[l] = "full";
+          buttonArray[l].push("searchBuilder");
         }
-        console.log("sizeDataTableElements: Set domWidth='"+domWidth+"', infoText='"+infoText+"', infoFilteredText='"+infoFilteredText+"', pageType='"+pageType+"'");
+        console.log("sizeDataTableElements: l="+l+", set domWidth='"+domWidth+"', infoText='"+infoText+"', infoFilteredText='"+infoFilteredText+"', pageType='"+pageType+"'");
         /* Return true to indicate table needs to implement new layouts */
+        if (perfTiming) {stopTiming(T0, "sizeDataTableElements");}
         return true;
       }
       
@@ -1102,9 +1119,10 @@
            || $.fn.DataTable.isDataTable("#monTable_GL")
            || $.fn.DataTable.isDataTable("#monTable_UL")
            || $.fn.DataTable.isDataTable("#monTable_ML")) {
-            console.log("main: detected an old DataTable, need to clear old state. Calling resetMonState()");
+            console.log("main: detected existing DataTables, calling resetMonState()");
             resetMonState();
             mon = undefined;
+            console.log("main: calling clearHideOldDataTable()");
             clearHideOldDataTable();
             /*ensure we clear the prior output between runs*/
             document.getElementById("tradeOutput").innerHTML = "";
@@ -1117,13 +1135,13 @@
         /* Awesomeplete sends "undefined" when it did not find a valid input */
         if (mon === undefined) { /* Determine if we have a valid, previously selected mon we can use */
           if ((pokeListObj[input.value]) || (pokeListObj[inputMon]) || (pokeListObj[monInput])) {
-            console.log("main: Found a valid input.value of:"+JSON.stringify(input.value));
+            //console.log("main: Found a valid input.value of:"+JSON.stringify(input.value));
             /* Correct for autocomplete input being cleared accidentally */
             if ((!(pokeListObj[input.value])) && (pokeListObj[inputMon])) {
               input.value = inputMon;
             }
             mon = input.value;
-            console.log("SET MON TO:"+mon);
+            console.log("main: set mon="+mon);
           }
         }
         
@@ -1150,17 +1168,13 @@
         /* Set this only once before entering loop */
         var tempWidth = $(window).width();
 
-        //console.log("main: About to pass league: "+JSON.stringify(league)+" to calculate");
         for (var l=0; l<leagueName.length; l++) {
           /* Calculate this mon's ranks object */
-          //console.log("main: About to pass league[l]: "+league[l]+" to calculate");
           ranks[l] = calculate(parseInt(monInfo[1]), parseInt(monInfo[2]), parseInt(monInfo[3]), floor, minLvl, maxLvl, true, league[l], mon);
-          //console.log("main: Passed league[l]: "+league[l]+" to calculate, received ranks[l]: "+ranks[l].numRanks);
           var keys = Object.keys(ranks[l]);
 
           /* Ensure we have properly sized the DataTable Elements */
-          //console.log("About to pass leagueName[l]: "+leagueName[l]+" to sizeDataTableElements()");
-          sizeDataTableElements(false, leagueName[l]);
+          sizeDataTableElements($(window).width(), l);
         
           /* Ensure we generated ranks to output*/
           if (ranks[l].numRanks/1 < 1) {
@@ -1174,8 +1188,8 @@
           }
 
           /* Create a DataTable from the mon ranks object */
-          console.log("main: Calling generateDataTable("+ranks[l].numRanks, ", "+league[l]+", "+leagueName[l]+", "+keys.length+")");
-          generateDataTable(ranks[l], league[l], leagueName[l], keys, tableIDs[l]);
+          console.log("main: Calling gDT("+ranks[l].numRanks, ", "+keys.length+", "+l+")");
+          generateDataTable(ranks[l], keys, l);
           /* Also show other tables if the user has enabled them */
           if (cge) {displayPvPokeEvoGroup(mon);}
           updateTradePcnts(keys);
@@ -1349,16 +1363,27 @@
         
         /* If old table exists, clear data and hide it */
         /* Remove old onclick events to prevent dupes */
-        /* TODO: Search by .monTable instead */
-        if ($.fn.DataTable.isDataTable("#monTable_LL")
-         || $.fn.DataTable.isDataTable("#monTable_GL")
-         || $.fn.DataTable.isDataTable("#monTable_UL")
-         || $.fn.DataTable.isDataTable("#monTable_ML")) {
-          console.log("clearHideOldDataTable: Found an old table, clearing state...");
-          $(".monTable tbody").off("click");
-          $(".monTable").hide();
-          $(".dataTables_wrapper").hide();
+        /* TODO: Convert function to use .monTable instead
+        $(".monTable tbody").off("click");
+        $(".monTable").hide();
+        $(".dataTables_wrapper").hide(); */
+        colVisLock = true;
+        for (var i=0; i<tableIDs.length; i++) {
+          console.log("clearHideOldDataTable: checking if "+tableIDs[i]+" is already a DataTable...");
+          if ($.fn.DataTable.isDataTable(tableIDs[i])) {
+            console.log("clearHideOldDataTable: Found an old "+tableIDs[i]+" DataTable, clearing state...");
+            $(tableIDs[i]+" tbody").off("click");
+            $(tableIDs[i]).hide();
+            $(tableIDs[i]+"_wrapper").hide();
+            $(tableIDs[i]).DataTable().destroy();
+            if ($.fn.DataTable.isDataTable(tableIDs[i])) {
+              console.log("clearHideOldDataTable: Still found "+tableIDs[i]+" DataTable, failed to clear state...");
+            } else {
+              console.log("clearHideOldDataTable: Unable to find "+tableIDs[i]+" as a DataTable, successfully cleared old state!");
+            }
+          }
         }
+        colVisLock = false;
         if (perfTiming) {stopTiming(T0, "clearHideOldDataTable");}
         return;
       }
@@ -1475,7 +1500,7 @@
           link += "&IVs="+IVs;
         }
         link = encodeURI(link);
-        console.log("updateURL:: link generated as:"+link);
+        //console.log("updateURL:: link generated as:"+link);
         
         /* Update title and description to improve SEO for chosen mon */
         var newTitle = mon+" PvP IVs - "+selectedLeagueName+" Rankings";
@@ -1531,12 +1556,11 @@
         main();
       }
       
-      function generateDataTable(leagueRanks, thisLeague, thisLeagueName, keys, tableID) {
-
+      function generateDataTable(leagueRanks, keys, l) {
         var T0,T1,T2,T3,T4,T5,T6,candyTime=0;
         if (perfTiming) {T0 = performance.now();}
 
-        console.log("gDT: Received leagueRanks.numRanks:"+leagueRanks.numRanks+", thisLeague:"+thisLeague+", thisLeagueName:"+thisLeagueName+", keys.length:"+keys.length+", tableID:"+tableID);
+        console.log("gDT: Received leagueRanks.numRanks:"+leagueRanks.numRanks+", leagueName["+l+"]:"+leagueName[l]+", keys.length:"+keys.length+", tableIDs["+l+"]:"+tableIDs[l]);
         var tableData = [];
         var currentRow = [];
         var nonZeroXL = false; /* track visibility of XL candy column */
@@ -1569,19 +1593,19 @@
                 && userIVsclone[k][uIV_dIV]/1 === leagueRanks[keys[i]][j].IVs.D/1
                 && userIVsclone[k][uIV_sIV]/1 === leagueRanks[keys[i]][j].IVs.S/1) {
                   /* Find this user IV set in real arrays */
-                  for (var l=0; l<userIVs.length; l++) {
-                    if (userIVs[l][uIV_aIV] && userIVs[l][uIV_dIV] && userIVs[l][uIV_sIV]) {
+                  for (var u=0; u<userIVs.length; u++) {
+                    if (userIVs[u][uIV_aIV] && userIVs[u][uIV_dIV] && userIVs[u][uIV_sIV]) {
                       /* Do not divide by 1 to avoid converting blank to 0 */
-                      if (userIVsclone[k][uIV_aIV] === userIVs[l][uIV_aIV]
-                      && userIVsclone[k][uIV_dIV] === userIVs[l][uIV_dIV]
-                      && userIVsclone[k][uIV_sIV] === userIVs[l][uIV_sIV]) {
+                      if (userIVsclone[k][uIV_aIV] === userIVs[u][uIV_aIV]
+                      && userIVsclone[k][uIV_dIV] === userIVs[u][uIV_dIV]
+                      && userIVsclone[k][uIV_sIV] === userIVs[u][uIV_sIV]) {
                         /* Save this user IV's rank for later */
-                        userIVs[l][uIV_rank] = actualRank;
-                        userIVs[l][uIV_statProd] = keys[i].split(".")[0];
-                        userIVs[l][uIV_lvl] = leagueRanks[keys[i]][j].L;
+                        userIVs[u][uIV_rank] = actualRank;
+                        userIVs[u][uIV_statProd] = keys[i].split(".")[0];
+                        userIVs[u][uIV_lvl] = leagueRanks[keys[i]][j].L;
                         /* Set hiddenSortRank to ensure rows pin to top */
-                        hiddenSortRank = l-leagueRanks.numRanks;
-                        userIVs[l][uIV_hidSortRank] = hiddenSortRank;
+                        hiddenSortRank = u-leagueRanks.numRanks;
+                        userIVs[u][uIV_hidSortRank] = hiddenSortRank;
                         console.log("hiddenSortRank set to: "+hiddenSortRank+" for "+userIVsclone[k][uIV_aIV]+"/"+userIVsclone[k][uIV_dIV]+"/"+userIVsclone[k][uIV_sIV]);
                       }
                     }
@@ -1657,13 +1681,14 @@
         candyTime = candyTime.toFixed(1);
 
         /* Make sure we show the table and column toggles before writing data to table */
-        $(tableID).show();
+        $(tableIDs[l]).show();
 
         /* Timing gate after generating table data */
         if (perfTiming) {T4 = performance.now();}
         
+        console.log("Building "+tableIDs[l]+" DataTable with l="+l+", domWidth[l]:"+domWidth[l]+", infoText[l]:"+infoText[l]+",infoFilteredText[l]:"+infoFilteredText[l]);
         /*Build table with generated tableData*/
-        const dt = new DataTable(tableID, {
+        const dt = new DataTable(tableIDs[l], {
           columnDefs: [
               /* This is just for reference and doesn't control header names */
               {"className": "dt-center", "targets": "_all"},
@@ -1705,44 +1730,39 @@
             data: tableData,
             deferRender: true,
             destroy: true,
-            dom: domWidth,
+            dom: domWidth[l],
             initComplete: function () {
+              console.log("Hello from initComplete!");
               /* Show/hide columns per any URL user preferences */
               var colsChanged = false;
-              for (var c=0; c<tableIDs; c++) {
-                if (tableID === tableIDs[c]) {
-                  console.log("This is a "+tableIDs[c]+" table!");
-                  break;
-                }
-              }
-              console.log("before loop colVis["+c+"]:"+JSON.stringify(colVis[c]));
+              //console.log("before loop colVis["+l+"]:"+JSON.stringify(colVis[l]));
               var currColVis = this.api().columns().visible();
-              console.log("before loop currColVis:"+JSON.stringify(currColVis.toArray()));
-              for (var i=0; colVis[c]!==undefined && i<colVis[c].length; i++) {
+              //console.log("before loop currColVis:"+JSON.stringify(currColVis.toArray()));
+              for (var i=0; colVis[l]!==undefined && i<colVis[l].length; i++) {
                 if (i==dt_xl) {
                   /* If XL candy is used, need to unhide this column */
-                  if ((nonZeroXL === true) || (colVis[c][i] == "1" && currColVis[1] === false)) {
+                  if ((nonZeroXL === true) || (colVis[l][i] == "1" && currColVis[1] === false)) {
                     this.api().columns(dt_xl).visible(true);
-                    console.log('Updated Column '+ i +' visibility to true');
+                    //console.log('Updated Column '+ i +' visibility to true');
                     colsChanged = true;
                   }
                 }
-                if (colVis[c][i] == "1" && currColVis[i] === false) {
+                if (colVis[l][i] == "1" && currColVis[i] === false) {
                   this.api().columns(i).visible(true);
-                  console.log('Updated Column '+ i +' visibility to true');
+                  //console.log('Updated Column '+ i +' visibility to true');
                   colsChanged = true;
                 } else {
                   this.api().columns(i).visible(false);
-                  console.log('Updated Column '+ i +' visibility to false');
+                  //console.log('Updated Column '+ i +' visibility to false');
                   colsChanged = true;
                 }
               }
               if (colsChanged === false) {
-                console.log("colsChanged is still false after loop, checking nonZeroXL for XL col visibility...");
+                //console.log("colsChanged is still false after loop, checking nonZeroXL for XL col visibility...");
                 /* Double check XL candy column visibility */
                 if (nonZeroXL === true && this.api().columns(dt_xl).visible()[0] === false) {
                   this.api().columns(dt_xl).visible(true);
-                  console.log('Outside loop: Updated Column '+ dt_xl +' visibility to true');
+                  //console.log('Outside loop: Updated Column '+ dt_xl +' visibility to true');
                   colsChanged = true;
                 }
               }
@@ -1756,9 +1776,9 @@
                 colvis: "Change Columns",
                 columns: ':not(.noVis)'
               },
-              info: infoText,
-              infoFiltered : infoFilteredText,
-              lengthMenu : "Show _MENU_ "+thisLeagueName+" "+mon+" per page",
+              info: infoText[l],
+              infoFiltered : infoFilteredText[l],
+              lengthMenu : "Show _MENU_ "+leagueName[l]+" "+mon+" per page",
               paginate: {first:'«',previous:'‹',next:'›',last:'»'},
               aria: {paginate: {first:'First',previous:'Previous',next:'Next',last:'Last'}},
               searchBuilder: {
@@ -1766,13 +1786,13 @@
                 title: {0: 'Filter '+mon, _: mon+' Filters (%d)'}
               }
             },
-            buttons: buttonArray,
+            buttons: buttonArray[l],
             lengthChange: true,
             lengthMenu: lenMenu,
             orderFixed: {
               "pre": [hiddenRowIndex, "asc"]
             },
-            pagingType: pageType,
+            pagingType: pageType[l],
             pageLength: pageLen,
             scrollX: true,
             searching: true
@@ -1782,6 +1802,7 @@
 
         /* Timing gate after generating table */
         if (perfTiming) {T5 = performance.now();}
+        console.log("Finished building "+tableIDs[l]+" DataTable");
 
         /*if (sbSearch) {
           //console.log("Rebuilding searchBuilder search with: "+JSON.stringify(sbSearch));
@@ -1802,38 +1823,42 @@
         });
         
         /* Ensure URL is updated when column visibility is toggled */
-        $(tableID).on( 'column-visibility.dt', function ( event, settings, column, state ) {
+        $(tableIDs[l]).on( 'column-visibility.dt', function ( event, settings, column, state ) {
           stopDuplicateEvents(event);
-          console.log('Column '+ column +' has changed to '+ (state ? 'visible' : 'hidden'));   
-          updateURL();
+          if (colVisLock === false && $.fn.dataTable.isDataTable(tableIDs[l])) {
+            console.log("Column#"+column+" has changed to "+ (state ? "visible" : "hidden"));   
+            updateURL();
+          } else {
+            console.log("Supressing column-visibility.dt onChange event for Column#"+column+" in tableIDs["+l+"]: "+tableIDs[l]);
+          }
         } );
 
         /* Enable user click to add IVs to compare */
-        $(tableID+" tbody").on('click', 'tr', function (event) {
+        $(tableIDs[l]+" tbody").on('click', 'tr', function (event) {
           stopDuplicateEvents(event);
-          /* Ensure we add clicked row to all league tables */
-          for (var l=0; l<leagueName.length; l++) {
+          /* Ensure we add clicked row to all DataTables */
+          for (var t=0; t<tableIDs.length; t++) {
             /* Update hiddenSortRank to "pin" this row to top of table */
             var hiddenSortVal = userIVs.length-dt.rows().count()/1;
             /* Fix userIVs initialized to "default" -/15/15 row, really has 0 userIVs */
             if (userIVs[0][uIV_aIV] === "") {
               hiddenSortVal = 0-dt.rows().count()/1;
-              console.log(tableID+" onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs[0][uIV_aIV]==="+userIVs[0][uIV_aIV]+" and dt.rows().count()="+dt.rows().count());
+              console.log(tableIDs[l]+" onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs[0][uIV_aIV]==="+userIVs[0][uIV_aIV]+" and dt.rows().count()="+dt.rows().count());
             } else {
-              console.log(tableID+" onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs.length="+userIVs.length+" and dt.rows().count()="+dt.rows().count());
+              console.log(tableIDs[l]+" onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs.length="+userIVs.length+" and dt.rows().count()="+dt.rows().count());
             }
             /* Pin row to top of DT and add CSS highlighting */
             var d = dt.row(this).data();
             /* TODO: Correct hiddenSortVal for other tables */
-            managePinsCSS_DT(tableIDs[l], d[dt_rank]-1, hiddenSortVal, window.event.target.parentNode)
+            managePinsCSS_DT(tableIDs[t], d[dt_rank]-1, hiddenSortVal, window.event.target.parentNode)
             /* Ensure new row is added to DOM, and userIVs updated */
             /* TODO: Enabled clicked row be added to all tables but only add to DOM once */
-            addToCompare(tableIDs[l], d[dt_rank], d[dt_lvl], d[dt_statProd], d[hiddenRowIndex]);
+            addToCompare(tableIDs[t], d[dt_rank], d[dt_lvl], d[dt_statProd], d[hiddenRowIndex]);
           }
         });
 
         /* Update URL when user changes page length */
-        $(tableID+"_length").on( 'change', function (event) {
+        $(tableIDs[l]+"_length").on( 'change', function (event) {
           stopDuplicateEvents(event);
           pageLen = dt.page.info().length/1;
           updateURL();
