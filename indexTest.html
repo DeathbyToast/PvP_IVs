@@ -1825,12 +1825,12 @@
         /* Ensure URL is updated when column visibility is toggled */
         $(tableIDs[l]).on( 'column-visibility.dt', function ( event, settings, column, state ) {
           stopDuplicateEvents(event);
+          /* TODO: Remove colVisLock? */
           if (colVisLock === false && $.fn.dataTable.isDataTable(tableIDs[l])) {
             console.log("Column#"+column+" has changed to "+ (state ? "visible" : "hidden"));   
             updateURL();
-          } else {
-            console.log("Supressing column-visibility.dt onChange event for Column#"+column+" in tableIDs["+l+"]: "+tableIDs[l]);
-          }
+          } else {//console.log("Supressing column-visibility.dt onChange event for Column#"+column+" in tableIDs["+l+"]: "+tableIDs[l]);
+                  }
         } );
 
         /* Enable user click to add IVs to compare */
