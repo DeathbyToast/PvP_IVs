@@ -327,8 +327,10 @@
 13	15	12
 14	11	6-->
       <p onclick="hideIVinput()"><i><small id="IVinputHide" hidden>Hide IV input textbox</small></i></p>
-      <textarea id="CustomGroupExport" hidden></textarea>
-      
+      <div id="CustomGroupExport_LL" class="CustomGroupExport" hidden><label>LL PvPoke Export<br/><textarea id="cgeTextArea_LL"></textarea></label></div>
+      <div id="CustomGroupExport_GL" class="CustomGroupExport" hidden><label>GL PvPoke Export<br/><textarea id="cgeTextArea_GL"></textarea></label></div>
+      <div id="CustomGroupExport_UL" class="CustomGroupExport" hidden><label>UL PvPoke Export<br/><textarea id="cgeTextArea_UL"></textarea></label></div>
+      <div id="CustomGroupExport_ML" class="CustomGroupExport" hidden><label>ML PvPoke Export<br/><textarea id="cgeTextArea_ML"></textarea></label></div>
       <div style="overflow-x:auto;" id="megaNote"></div>
       <div id="feedbackBox"><br /></div>
       <table id="monTable_LL" class="compact monTable" style="width:100%; display:none;">
@@ -560,29 +562,31 @@
           });
           /* end Awesomeplete https://leaverou.github.io/awesomplete/ */
         }
-        $(window).on('resize', function(event) {
+
+        /* Debounce used for window resize event handler below */
+        function debounce(func){
+          var timer;
+          return function(event){
+            if(timer) clearTimeout(timer);
+            timer = setTimeout(func,100,event);
+          };
+        }
+
+        $(window).on('resize', /*debounce(*/function(event) {
           stopDuplicateEvents(event);
           var newWidth = $(window).width();
           var resized = false;
-          /* TODO: Search by .monTable instead */
-          console.log("About to enter loop with tableIDs.length:"+tableIDs.length);
-          for (var l=0; l<tableIDs.length; l++) {
-            if ($.fn.DataTable.isDataTable(tableIDs[l])) {
-              if (sizeDataTableElements(newWidth, l) === true) {
-                /* Returns true when table needs to be resized & recreated */
-                console.log("$window.resize: Window size passed 767px threshold, calling main() to recreate DataTable");
-                resized = true;
-              }
-            }
+
+          /* Check if we need to reSizeDataTableElements */
+          if ((newWidth/1 < 767 && prevWidth/1 < 767) || (newWidth/1 >= 767 && prevWidth/1 >= 767)) {
+            console.log("$window.resize: Screen size hasn't crossed layout threshold, no resizing needed");
+            return;
           }
-          if (resized === true) {
-            console.log("$window.resize: Calling main() to resize DataTable");
-            main();
-          } else {
-            console.log("$window.resize: No DataTable to resize yet");
-          }
+          
+          console.log("$window.resize: Calling main() to resize DataTable and updating prevWidth");
+          main();
           prevWidth = newWidth;
-        });
+        }/*)*/);
 
         /* BEGIN: Initializations for all select events    */
         /* for user inputs, also update their global vars: */
@@ -591,7 +595,7 @@
         $("#league").on("change", function(event) {
           stopDuplicateEvents(event);
           console.log("Received onChange request for league!");
-          /* TODO: When going from ALL -> single league, actually hide other tables */
+          /* TODO: When going from single <-> All leagues, show/hide other tables */
           clearHideOldDataTable();
           checkSetAllLeagueOptions($("#league").val());
           setUserPreference("league");
@@ -654,9 +658,9 @@
           cge = document.getElementById("cge").checked;
           if (cge) {
             /* Only need to export IVs, not re-run main when checked */
-            displayPvPokeEvoGroup(mon);
+            displayPvPokeEvoGroup();
           } else {
-            document.getElementById("CustomGroupExport").style.display = "none";
+            $('.CustomGroupExport').hide();
           }
           setUserPreference("cge");
           return;
@@ -834,18 +838,7 @@
       function sizeDataTableElements(windowSize, l) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        /* First run with prevWidth===undefined, triggers initialization of dt Elements */
-        /* Check if window size has changed above/below 767px which triggers new layout */
-        if (domWidth[l] && infoText[l] && infoFilteredText[l] && pageType[l] && buttonArray[l]) {
-          if (prevWidth && ((windowSize/1 < 767 && prevWidth/1 < 767) || (windowSize/1 >= 767 && prevWidth/1 >= 767))) {
-            console.log("sizeDataTableElements: Screen size hasn't crossed layout threshold, no resizing needed");
-            if (perfTiming) {stopTiming(T0, "sizeDataTableElements");}
-            return false;
-          }
-        } else {
-          console.log("sizeDataTableElements: Found uninitialized elements, initializing...");
-        }
-        console.log("sizeDataTableElements: Starting loop with tableIDs.length:"+tableIDs.length+", tableIDs:"+JSON.stringify(tableIDs));
+        
         buttonArray[l] = [{extend: 'colvis',postfixButtons: [ 'colvisRestore' ],columns: ':not(.noVis)'}];
         if (windowSize/1 > 767) {
           console.log("sizeDataTableElements: Detected screen size > 767px, setting desktop mode");
@@ -899,7 +892,7 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
-          URL = "mon=Blastoise&r=5&cp=All";
+          /* URL = "mon=Blastoise&r=5&cp=All"; */
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -1142,7 +1135,7 @@
             clearHideOldDataTable();
             /*ensure we clear the prior output between runs*/
             document.getElementById("tradeOutput").innerHTML = "";
-            document.getElementById("CustomGroupExport").style.display = "none";
+            $('.CustomGroupExport').hide();
           }
           /* For first run or new mon, always adjustFloors */
           adjustFloors(monInput);
@@ -1208,13 +1201,12 @@
           generateDataTable(ranks[l], keys, l);
         }
         /* Also show other tables if the user has enabled them */
-        if (cge) {displayPvPokeEvoGroup(mon);}
+        if (cge) {displayPvPokeEvoGroup();}
         if (dti) {updateTradePcnts();}
         /* Finally save the state of this output to the URL for sharing */
         updateURL();
-        /* Update after loop is completed */
+        /* Initialize prevWidth so $window.resize event works correctly */
         prevWidth = tempWidth;
-        
         if (perfTiming) {stopTiming(T0, "main");console.log("");}
         return;
       }
@@ -1227,7 +1219,7 @@
         for (i=0; i<league.length; i++) {
           var keys = Object.keys(ranks[i]);
           for (j=0; j<userIVs.length; j++) {
-            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks[i], keys, userIVs[j][uIV_statProd], floor, userIVs[j][uIV_aIV], userIVs[j][uIV_dIV], userIVs[j][uIV_sIV], league[i], leagueName[i]);
+            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks[i], keys, userIVs[j][uIV_statProd][i], floor, userIVs[j][uIV_aIV], userIVs[j][uIV_dIV], userIVs[j][uIV_sIV], league[i], leagueName[i]);
           }
           document.getElementById("tradeOutput").innerHTML += "<br />"
         }
@@ -1381,10 +1373,8 @@
         
         /* If old table exists, clear data and hide it */
         /* Remove old onclick events to prevent dupes */
-        /* TODO: Convert function to use .monTable instead
-        $(".monTable tbody").off("click");
-        $(".monTable").hide();
-        $(".dataTables_wrapper").hide(); */
+        
+        /* TODO: Remove colVisLock hack to prevent show/hide table firing multiple colVis events */
         colVisLock = true;
         for (var i=0; i<tableIDs.length; i++) {
           console.log("clearHideOldDataTable: checking if "+tableIDs[i]+" is already a DataTable...");
@@ -1406,16 +1396,12 @@
         return;
       }
 
-      function displayPvPokeEvoGroup(inputName) {
+      function displayPvPokeEvoGroup() {
       /*show textbox with PvPoke Custom Group Export data*/
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
-        if(!inputName) {
-          console.error("Did not receive required inputName");
-          inputName = mon;
-        }
-        var name = inputName;
+        var name = mon;
         /* Game Master uses Alola, but PvPoke uses Alolan, need to fix for valid data export */
         console.log("displayPvPokeEvoGroup starting...");
         if (name.includes("_Alola")) {
@@ -1424,40 +1410,43 @@
         var cgeData = "";
         var maxWidth = 0;
         var validIVs;
-        for (var i=0; i<userIVs.length; i++) {
-          validIVs = false;
-          var mon = name;
-          if (userIVs[i][uIV_shdw]) {
-            mon = name + "_shadow";
-          }
-          if (userIVs[i][uIV_aIV] === "") {
-            console.log("skipping incomplete row, i:"+i+", aIV:"+userIVs[i][uIV_aIV]+", dIV:"+userIVs[i][uIV_dIV]+", sIV:"+userIVs[i][uIV_sIV]);
-            continue;
-          } else {
-            if (validIVs === false) {
-              validIVs = true;
+        for (i=0; i<league.length; i++) {
+          const leagueAcronym = tableIDs[i].split("_")[1];
+          for (var j=0; j<userIVs.length; j++) {
+            validIVs = false;
+            var pvpokeName = name;
+            if (userIVs[j][uIV_shdw]) {
+              pvpokeName = name + "_shadow";
+            }
+            if (userIVs[j][uIV_aIV] === "") {
+              console.log("skipping incomplete row, j:"+j+", aIV:"+userIVs[j][uIV_aIV]+", dIV:"+userIVs[j][uIV_dIV]+", sIV:"+userIVs[j][uIV_sIV]);
+              continue;
+            } else {
+              if (validIVs === false) {
+                validIVs = true;
+              }
+            }
+            var row = pvpokeName+",,,,"+userIVs[j][uIV_lvl]+","+userIVs[j][uIV_aIV]+","+userIVs[j][uIV_dIV]+","+userIVs[j][uIV_sIV];
+            if (row.length > maxWidth) {
+              maxWidth = row.length;
+            }
+            if (cgeData !== "") {
+              var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
+              cgeData += newline+pvpokeName+",,,,"+userIVs[j][uIV_lvl]+","+userIVs[j][uIV_aIV]+","+userIVs[j][uIV_dIV]+","+userIVs[j][uIV_sIV];
+            }
+            else {
+              cgeData = row;
             }
           }
-          var row = mon+",,,,"+userIVs[i][uIV_lvl]+","+userIVs[i][uIV_aIV]+","+userIVs[i][uIV_dIV]+","+userIVs[i][uIV_sIV];
-          if (row.length > maxWidth) {
-            maxWidth = row.length;
+          document.getElementById("CustomGroupExport"+"_"+leagueAcronym).style.display = "inline-block";
+          document.getElementById("cgeTextArea"+"_"+leagueAcronym).cols = maxWidth;
+          if (validIVs === false) {/* User doesn't have any valid IVs entered, replace box with error message */
+            document.getElementById("cgeTextArea"+"_"+leagueAcronym).rows = 3;
+            document.getElementById("cgeTextArea"+"_"+leagueAcronym).value = "No valid IVs input, failed to output PvPoke Custom Group";
+          } else { /* We have at least one set of valid IVs, output the PvPoke Custom Group */
+            document.getElementById("cgeTextArea"+"_"+leagueAcronym).rows = userIVs.length;
+            document.getElementById("cgeTextArea"+"_"+leagueAcronym).value = cgeData;
           }
-          if (cgeData !== "") {
-            var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
-            cgeData += newline+mon+",,,,"+userIVs[i][uIV_lvl]+","+userIVs[i][uIV_aIV]+","+userIVs[i][uIV_dIV]+","+userIVs[i][uIV_sIV];
-          }
-          else {
-            cgeData = row;
-          }
-        }
-        document.getElementById("CustomGroupExport").style.display = "inline-block";
-        document.getElementById("CustomGroupExport").cols = maxWidth;
-        if (validIVs === false) {/* User doesn't have any valid IVs entered, replace box with error message */
-          document.getElementById("CustomGroupExport").rows = 3;
-          document.getElementById("CustomGroupExport").value = "No valid IVs input, failed to output PvPoke Custom Group";
-        } else { /* We have at least one set of valid IVs, output the PvPoke Custom Group */
-          document.getElementById("CustomGroupExport").rows = userIVs.length;
-          document.getElementById("CustomGroupExport").value = cgeData;
         }
       if (perfTiming) {stopTiming(T0, "displayPvPokeEvoGroup");}
       return;
@@ -1617,10 +1606,10 @@
                       if (userIVsclone[k][uIV_aIV] === userIVs[u][uIV_aIV]
                       && userIVsclone[k][uIV_dIV] === userIVs[u][uIV_dIV]
                       && userIVsclone[k][uIV_sIV] === userIVs[u][uIV_sIV]) {
-                        /* Save this user IV's rank for later */
-                        userIVs[u][uIV_rank] = actualRank;
-                        userIVs[u][uIV_statProd] = keys[i].split(".")[0];
-                        userIVs[u][uIV_lvl] = leagueRanks[keys[i]][j].L;
+                        /* Save this user IV's rank for this league[l] for later */
+                        userIVs[u][uIV_rank][l] = actualRank;
+                        userIVs[u][uIV_statProd][l] = keys[i].split(".")[0];
+                        userIVs[u][uIV_lvl][l] = leagueRanks[keys[i]][j].L;
                         /* Set hiddenSortRank to ensure rows pin to top */
                         hiddenSortRank = u-leagueRanks.numRanks;
                         userIVs[u][uIV_hidSortRank] = hiddenSortRank;
@@ -1703,6 +1692,9 @@
 
         /* Timing gate after generating table data */
         if (perfTiming) {T4 = performance.now();}
+
+        /* TODO: Remove colVisLock hack to prevent show/hide table firing multiple colVis events */
+        colVisLock = true;
         
         console.log("Building "+tableIDs[l]+" DataTable with l="+l+", domWidth[l]:"+domWidth[l]+", infoText[l]:"+infoText[l]+",infoFilteredText[l]:"+infoFilteredText[l]);
         /*Build table with generated tableData*/
@@ -1843,12 +1835,13 @@
         /* Ensure URL is updated when column visibility is toggled */
         $(tableIDs[l]).on( 'column-visibility.dt', function ( event, settings, column, state ) {
           stopDuplicateEvents(event);
-          /* TODO: Remove colVisLock? */
+          /* TODO: Remove colVisLock hack to prevent show/hide table firing multiple colVis events */
           if (colVisLock === false && $.fn.dataTable.isDataTable(tableIDs[l])) {
             console.log("Column#"+column+" has changed to "+ (state ? "visible" : "hidden"));   
             updateURL();
-          } else {//console.log("Supressing column-visibility.dt onChange event for Column#"+column+" in tableIDs["+l+"]: "+tableIDs[l]);
-                  }
+          } else {
+            //console.log("Supressing column-visibility.dt onChange event for Column#"+column+" in tableIDs["+l+"]: "+tableIDs[l]);
+          }
         } );
 
         /* Enable user click to add IVs to compare */
@@ -1867,12 +1860,11 @@
             }
             /* Pin row to top of DT and add CSS highlighting */
             var d = dt.row(this).data();
-            /* TODO: Correct hiddenSortVal for other tables */
             managePinsCSS_DT(tableIDs[t], d[dt_rank]-1, hiddenSortVal, window.event.target.parentNode)
             /* Ensure new row is added to DOM, and userIVs updated */
             /* TODO: Enabled clicked row be added to all tables but only add to DOM once */
-            addToCompare(tableIDs[t], d[dt_rank], d[dt_lvl], d[dt_statProd], d[hiddenRowIndex]);
           }
+          addToCompare(tableIDs[l], d[dt_rank], d[dt_lvl], d[dt_statProd], d[hiddenRowIndex]);
         });
 
         /* Update URL when user changes page length */
@@ -1887,6 +1879,7 @@
           console.log("genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Efficiency "+(T2-T1).toFixed(1)+"ms + Generate Data "+(T3-T2).toFixed(1)+"ms (XL Candy:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + Build DataTable "+(T5-T4).toFixed(1)+"ms) + XL Candy & Col Toggless "+(T6-T5).toFixed(1)+"ms)");
           document.getElementById("timing_outputs").innerHTML += "genDT: "+(T6-T0).toFixed(1)+"ms (CMP "+(T1-T0).toFixed(1)+"ms +IV Eff "+(T2-T1).toFixed(1)+"ms + Data "+(T3-T2).toFixed(1)+"ms (XL:"+candyTime+"ms) + Unhide Cols "+(T4-T3).toFixed(1)+"ms + DataTable "+(T5-T4).toFixed(1)+"ms) + Col Toggles "+(T6-T5).toFixed(1)+"ms)<br>";
         }
+        colVisLock = false;
         return;
       }
 
@@ -2537,9 +2530,9 @@
           newRow.innerHTML = "<tr><td><input id='shdw["+newRowDOMoffset+"]' type='checkbox'></td><td><select title='Your Attack IV' id='aIV["+newRowDOMoffset+"]'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' id='dIV["+newRowDOMoffset+"]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' id='sIV["+newRowDOMoffset+"]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus["+newRowDOMoffset+"]'></button></td></tr>";  
           userIVs.push([atk,def,sta,sha,rank,statProd,level,hiddenSortRank]);
         }
-        //console.log("newInputTableRow: Setting xIV["+newRowDOMoffset+"] to : "+atk+"/"+def+"/"+sta+", "+sha);
+        console.log("newInputTableRow: Setting xIV["+newRowDOMoffset+"] to : "+atk+"/"+def+"/"+sta+", "+sha);
         setInputTableRow(newRowDOMoffset, atk, def, sta, sha);
-        //console.log("newInputTableRow: userIVs after pushes: "+JSON.stringify(userIVs));
+        console.log("newInputTableRow: userIVs after pushes: "+JSON.stringify(userIVs));
         document.getElementById("feedbackBox").innerHTML = "";
         if (perfTiming) {stopTiming(T0, "newInputTableRow");}
       }
