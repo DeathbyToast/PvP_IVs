@@ -464,7 +464,7 @@
       /* Initialized inside of document.ready() fxn */
       var inputMon, pageLen, lenMenu, perfTiming, mnlMod, ivMod, filterMod, userIVs, hiddenRowIndex, mon;
       var ranks, league, leagueName, tableIDs, floor, minLvl, maxLvl, dec, effIV, cge, family, fel, fel_Label;
-      var dti, save, input, monNames, filterMod, sbSearch, mA, mD, mHP, prevWidth, domWidth, infoText;
+      var dti, save, input, monNames, filterMod, sbSearch, mA, mD, mHP, mBP, prevWidth, domWidth, infoText;
       var infoFilteredText, pageType, buttonArray, colVis, colVisLock;
 
       /* DataTable Column numbers to help readability */
@@ -767,7 +767,8 @@
           for (i=0; i<ranks[l].invalids.length; i++) {
             if (atk == ranks[l].invalids[i].A && def == ranks[l].invalids[i].D && sta == ranks[l].invalids[i].S) {
               /* Stop once we have determined this IV set is invalid for this league / DataTable */
-              var leagueAcronym = leagueName[l].split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'');
+              //var leagueAcronym = leagueName[l].split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'');
+              const leagueAcronym = tableIDs[l].split("_")[1];
               var message = "IVs:"+atk+"/"+def+"/"+sta+" are over "+leagueAcronym+" CP limit ("+ranks[l].invalids[i].cp+"CP at Level "+minLvl+")";
               document.getElementById("feedbackBox").innerHTML += "<br /><i>"+message+".<br />Please check your input IVs, Min Level, and League then try again.</i>";
               console.log("findAddDataTableRow: "+message);
@@ -884,7 +885,8 @@
           //console.log("sizeDataTableElements: Detected screen size < 767px, setting mobile mode");
           /* Condensed DataTable elements for smaller mobile screens */
           domWidth[l] = 'ltipB';
-          var leagueAcronym = leagueName[l].split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'');
+          //var leagueAcronym = leagueName[l].split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'');
+          const leagueAcronym = tableIDs[l].split("_")[1];
           infoText[l] = "#_START_-_END_ of _TOTAL_ "+leagueAcronym+" "+mon;
           infoFilteredText[l] = "(from _MAX_)";
           pageType[l] = "full";
@@ -924,8 +926,7 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
-          /* TODO: Fix All Leagues URL Support */
-          /* URL = "mon=Blastoise&r=5&cp=All"; */
+          /* URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15"; */
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -937,16 +938,14 @@
             URL = decodeURI(URL);
           } catch (e) {
             /* Catches a malformed URI */
-            console.error("checkURL:: "+e);
-            console.log("checkURL: Skipping malformed URL, calling main()...");
+            console.error("checkURL: Skipping malformed URL, e:"+e);
             if (perfTiming) {stopTiming(T0, "checkURL");}
-            main();
-            return;
+            return false;
           }
-          console.log("checkURL: Read URL as: "+URL);
+          //console.log("checkURL: Read URL as: "+URL);
           var values = URL.split("&");
           var settings;
-          console.log("checkURL: Values: "+JSON.stringify(values));
+          //console.log("checkURL: Values: "+JSON.stringify(values));
           for (var i=0; i<values.length; i++)
           {
             switch (values[i].split("=")[0]) {
@@ -959,7 +958,7 @@
                 break;
               case "r":
                 pageLen = values[i].split("=")[1]/1;
-                console.log("checkURL: received r="+values[i].split("=")[1]+", set pageLen to: "+pageLen);
+                //console.log("checkURL: received r="+values[i].split("=")[1]+", set pageLen to: "+pageLen);
                 /* Search for where to insert pageLen to lenMenu  */
                 for (var j=0; j<lenMenu[0].length; j++) {
                   if (pageLen/1 < 0 || lenMenu[0][j]/1 == pageLen/1) {
@@ -981,7 +980,7 @@
                 }
                 break;
               case "cp":
-                console.log("checkURL: calling checkSetAllLeagueOptions("+values[i].split("=")[1]+")");
+                //console.log("checkURL: calling checkSetAllLeagueOptions("+values[i].split("=")[1]+")");
                 checkSetAllLeagueOptions(values[i].split("=")[1]);
                 break;
               case "f":
@@ -1025,6 +1024,10 @@
                 break;
               case "mHP":
                 mHP = values[i].split("=")[1];
+                filterMod = true;
+                break;
+              case "mBP":
+                mBP = values[i].split("=")[1];
                 filterMod = true;
                 break;
               /*case "p":
@@ -1071,33 +1074,34 @@
                 break;
               case "col_LL":
                 colVis[0] = values[i].split("=")[1];
-                console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_GL":
                 colVis[1] = values[i].split("=")[1];
-                console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_UL":
                 colVis[2] = values[i].split("=")[1];
-                console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_ML":
                 colVis[3] = values[i].split("=")[1];
-                console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
             }
           }
           if (filterMod) {
             /* TODO: Finish this, decide on how to handle all of this, especially bulk product */
-            /* Convert mA / mD / mHP into Custom Search Builder */
+            /* Convert mA / mD / mHP / mBP into Custom Search Builder */
             /* searchBuilderTitles: Rank | Level | CP | Minimum Level CP | Attack IV | Defense IV | Stamina IV
              * XL Candy Cost | Stardust Cost | CMP vs. Rank1 (W/L/T) | CMP vs. All (Win %) | 
              * Attack Stat | Defense Stat | HP Stat | Stat Product | Stat Prod Perfection (%) | Bulk Product */
-            var mAstring="", mDstring="", mHPstring="";//, mBPstring="";
+            var mAstring="", mDstring="", mHPstring="", mBPstring="";
             if (mA > 0) {mAstring = '{ "condition": ">=", "data": "Attack Stat", "type": "num", "value": [ "'+mA+'" ] }, ';}
             if (mD > 0) {mDstring = '{ "condition": ">=", "data": "Defense Stat", "type": "num", "value": [ "'+mD+'" ] }, ';}
             if (mHP > 0) {mHPstring = '{ "condition": ">=", "data": "HP Stat", "type": "num", "value": [ "'+mHP+'" ] }, ';}
-            sbSearch = '{ "criteria": [ '+mAstring+''+mDstring+''+mHPstring+'], "logic": "AND" }';
+            if (mBP > 0) {mBPstring = '{ "condition": ">=", "data": "Bulk Product", "type": "num", "value": [ "'+mBP+'" ] }, ';}
+            sbSearch = '{ "criteria": [ '+mAstring+''+mDstring+''+mHPstring+''+mBPstring+'], "logic": "AND" }';
             /* Remove trailing comma (,) after criteria before logic and convert to JSON */
             sbSearch = $.parseJSON(sbSearch.replace('] }, ], "logic":','] } ], "logic":'));
             //console.log("Built sbSearch as:'"+JSON.stringify(sbSearch)+"'");
@@ -1281,7 +1285,7 @@
         userIVs.push([atk,def,sta,sha,0,0,0,0]);
         
         /* clear min stat filters, reset pageLen and lenMenu, and filterMod */
-        mA = 0; mD = 0; mHP = 0;
+        mA = 0; mD = 0; mHP = 0; mBP = 0;
         pageLen = 10;
         lenMenu = [ [3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"] ];
         filterMod = false;
@@ -1515,7 +1519,7 @@
             }
             const leagueAcronym = tableIDs[i].split("_")[1];
             //console.log("visible columns for "+leagueAcronym+", "+tableIDs[i]+" are: "+col+" or "+visCols);
-            if (col !== "11101111000011111") {
+            if ((leagueAcronym !== "ML" && col !== "11101111000011111") || (leagueAcronym === "ML" && col !== "11101111100011111")) {
               link += "&col_"+leagueAcronym+"="+col;
             }
           }
@@ -1729,6 +1733,7 @@
         colVisLock = true;
         
         //console.log("Building "+tableIDs[l]+" DataTable with l="+l+", domWidth[l]:"+domWidth[l]+", infoText[l]:"+infoText[l]+",infoFilteredText[l]:"+infoFilteredText[l]);
+        const leagueAcronym = tableIDs[l].split("_")[1];
         /*Build table with generated tableData*/
         const dt = new DataTable(tableIDs[l], {
           columnDefs: [
@@ -1786,13 +1791,14 @@
                     this.api().columns(dt_xl).visible(true);
                     //console.log('Updated Column '+ i +' visibility to true');
                     colsChanged = true;
+                    continue;
                   }
                 }
                 if (colVis[l][i] == "1" && currColVis[i] === false) {
                   this.api().columns(i).visible(true);
                   //console.log('Updated Column '+ i +' visibility to true');
                   colsChanged = true;
-                } else {
+                } else if (colVis[l][i] == "0" && currColVis[i] === true){
                   this.api().columns(i).visible(false);
                   //console.log('Updated Column '+ i +' visibility to false');
                   colsChanged = true;
@@ -1824,7 +1830,7 @@
               aria: {paginate: {first:'First',previous:'Previous',next:'Next',last:'Last'}},
               searchBuilder: {
                 button: "Filters (%d)",
-                title: {0: 'Filter '+mon, _: mon+' Filters (%d)'}
+                title: {0: "Filter "+leagueAcronym+" "+mon, _: leagueAcronym+" "+mon+" Filters (%d)"}
               }
             },
             buttons: buttonArray[l],
@@ -1862,6 +1868,11 @@
           console.log("Rebuilding searchBuilder search with: "+sbSearch);
           dt.searchBuilder.rebuild(sbSearch);
         });
+        
+        /* TODO: Ensure mA / mD / mHP / mBP are updated when filters are added */
+        dt.on( 'search.dt', function () {
+            console.log("Currently applied global search: "+JSON.stringify(dt.search()));
+        } );
         
         /* Ensure URL is updated when column visibility is toggled */
         $(tableIDs[l]).on( 'column-visibility.dt', function ( event, settings, column, state ) {
