@@ -462,10 +462,10 @@
       /* Use global variables to clean up code and  */
       /* Simplify by supporting stateless functions */
       /* Initialized inside of document.ready() fxn */
-      var inputMon, pageLen, lenMenu, perfTiming, mnlMod, ivMod, filterMod, userIVs, hiddenRowIndex, mon;
-      var ranks, league, leagueName, tableIDs, floor, minLvl, maxLvl, dec, effIV, cge, family, fel, fel_Label;
-      var dti, save, input, monNames, filterMod, sbSearch, mA, mD, mHP, mBP, prevWidth, domWidth, infoText;
-      var infoFilteredText, pageType, buttonArray, colVis, colVisLock;
+      var inputMon, pageLen, originalPL, lenMenu, perfTiming, mnlMod, ivMod, filterMod, userIVs, mon;
+      var hiddenRowIndex, ranks, league, leagueName, tableIDs, floor, minLvl, maxLvl, dec, effIV, cge;
+      var family, fel, fel_Label, dti, save, input, monNames, filterMod, sbSearch, mA, mD, mHP, mBP;
+      var prevWidth, domWidth, infoText, infoFilteredText, pageType, buttonArray, colVis, colVisLock;
 
       /* DataTable Column numbers to help readability */
       const dt_rank = 0;
@@ -498,6 +498,7 @@
       $( document ).ready(function() {
         /* First check URL, then initialize global variables, load event handlers, then call main() */
         pageLen = 10;
+        originalPL = 10;
         lenMenu = [ [3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"] ];
         ranks=[], league=[], leagueName=[], tableIDs=[], colVis=[], colVisLock=false;
         domWidth=[], infoText=[], infoFilteredText=[], pageType=[]; buttonArray=[];
@@ -701,15 +702,9 @@
           //console.log("$doc.ready():: #inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][uIV_aIV]+"/"+userIVs[rowNum][uIV_dIV]+"/"+userIVs[rowNum][uIV_sIV]);
 
           /* Manage pageLen for user as they add/remove rows */
-          console.log("pageLen("+pageLen+")-("+userIVs.length+")userIVs.length="+(pageLen-userIVs.length));
-          console.log("pageLen("+pageLen+")+("+userIVs.length+")userIVs.length="+(pageLen+userIVs.length));
-          /* TODO: Fix this logic */
-          if ((pageLen-userIVs.length) < 3) {
+          if ((pageLen-userIVs.length) < originalPL) {
             pageLen++;
-            console.log("Incremented pageLen to: "+pageLen);
-          } else if ((userIVs.length-pageLen) < 1) {
-            console.log("Incremented pageLen to: "+pageLen);
-            pageLen++;
+            console.log("$doc.ready():: #inputTable onChange: Incremented pageLen to: "+pageLen+", originalPL:"+originalPL);
           }
 
           /* Get IV and shadow values for new row */
@@ -857,7 +852,7 @@
           leagueName.splice( $.inArray("All Leagues", leagueName), 1 );
           tableIDs.splice( $.inArray("#monTable_AL", leagueName), 1 );
           /* Also shorten page length for all league table outputs */
-          if (pageLen/1 == 10) {pageLen = 3;}
+          if (pageLen/1 == 10) {pageLen = 3;originalPL=3;}
         } else {
           league[0] = document.getElementById("league").value;
           leagueName[0] = $("#league").find(":selected").text();
@@ -958,6 +953,7 @@
                 break;
               case "r":
                 pageLen = values[i].split("=")[1]/1;
+                originalPL = values[i].split("=")[1]/1;
                 //console.log("checkURL: received r="+values[i].split("=")[1]+", set pageLen to: "+pageLen);
                 /* Search for where to insert pageLen to lenMenu  */
                 for (var j=0; j<lenMenu[0].length; j++) {
@@ -1287,6 +1283,7 @@
         /* clear min stat filters, reset pageLen and lenMenu, and filterMod */
         mA = 0; mD = 0; mHP = 0; mBP = 0;
         pageLen = 10;
+        originalPL = 10;
         lenMenu = [ [3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"] ];
         filterMod = false;
         
@@ -1891,12 +1888,11 @@
           stopDuplicateEvents(event);
           /* Ensure we add clicked row to all DataTables */
           
-          /* Manage pageLen for user as they add rows */
-          if ((pageLen-userIVs.length) < 3) {
+          /* Manage pageLen for user as they add/remove rows */
+          if ((pageLen-userIVs.length) < originalPL) {
             pageLen++;
-            console.log(tableIDs[l]+" onClick: Incremented pageLen to: "+pageLen);
+            console.log(tableIDs[l]+" onClick: Incremented pageLen to: "+pageLen+", originalPL:"+originalPL);
           }
-          
           
           /* Update hiddenSortRank to "pin" this row to top of table */
           var hiddenSortVal = userIVs.length-dt.rows().count()/1;
@@ -1925,6 +1921,7 @@
         $(tableIDs[l]+"_length").on( 'change', function (event) {
           stopDuplicateEvents(event);
           pageLen = dt.page.info().length/1;
+          originalPL = dt.page.info().length/1;
           updateURL();
         } );
 
@@ -2759,8 +2756,13 @@
             d[hiddenRowIndex] = userIVs[i][uIV_hidSortRank];
             dt.row(userIVs[i][uIV_rank][l]-1).data(d);
           }
-          /* Redraw DataTable with updated rows */
-          dt.draw();
+          /* Manage pageLen for user as they add/remove rows */
+          if ((pageLen-userIVs.length) > originalPL) {
+            pageLen--;
+            console.log("removeInputTableRow: Decremented pageLen to: "+pageLen+", originalPL:"+originalPL);
+          }
+          /* Redraw DataTable with updated rows and pageLen */
+          dt.page.len(pageLen).draw();
         }
 
         /* If there is only one row, reset values instead of deleting */
@@ -2771,16 +2773,16 @@
           for (var i=0; i<userIVs.length; i++)
           {
             if (i>=rowNum) {
-              console.log("removeInputTableRow: Fixing offset for i:"+i);
+              //console.log("removeInputTableRow: Fixing offset for i:"+i);
               document.getElementById("shdw["+i+"]").id = "shdw["+(i-1)+"]";
               document.getElementById("aIV["+i+"]").id = "aIV["+(i-1)+"]";
               document.getElementById("dIV["+i+"]").id = "dIV["+(i-1)+"]";
               document.getElementById("sIV["+i+"]").id = "sIV["+(i-1)+"]";
             }
           }
-          console.log("removeInputTableRow: userIVs before splices: "+JSON.stringify(userIVs));
+          //console.log("removeInputTableRow: userIVs before splices: "+JSON.stringify(userIVs));
           userIVs.splice(rowNum, 1);
-          console.log("removeInputTableRow: userIVs after splices: "+JSON.stringify(userIVs));
+          //console.log("removeInputTableRow: userIVs after splices: "+JSON.stringify(userIVs));
           tr.parentNode.removeChild(tr);
         }
 
