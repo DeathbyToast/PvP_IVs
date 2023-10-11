@@ -256,14 +256,16 @@
     	<input id="pokeList" onfocus="this.value=''" placeholder="Pok&eacute;mon"/>
     	<span style="overflow-x:auto;" id="instructionsBox"><i><br />Please enter a valid Pok&eacute;mon to continue...</i></span>
       <table id="inputTable">
-        <tr><td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td>
-            <td title="Your Attack IV">Atk</td>
-            <td title="Your Defense IV">Def</td>
-            <td title="Your Stamina IV">Sta</td>
-            <td id="plusCell"><button class="circle plus" id="circlePlus"></button></td>
+        <tr>
+          <td id="plusCell"><button class="circle plus" id="circlePlus"></button></td>
+          <td title="Your Attack IV">Atk</td>
+          <td title="Your Defense IV">Def</td>
+          <td title="Your Stamina IV">Sta</td>
+          <td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td>
+          <td><img src="https://www.pvpivs.com/includes/icon-purified-blue.png" alt="Purified" width="17" height="17"></td>
         </tr>
         <tr>
-          <td><input id="shdw[0]" type="checkbox"></td>
+          <td id="minusCell"><button class="circle minus" id="minus[0]"></button></td>
           <td><select title="Your Attack IV" id="aIV[0]">
             <option value="">&nbsp;</option>
             <option value="15">15</option>
@@ -318,8 +320,10 @@
             <option value="2">2</option>
             <option value="1">1</option>
             <option value="0">0</option>
-          </select></td>
-          <td id="minusCell"><button class="circle minus" id="minus[0]"></button></td>
+          </select>
+          </td>
+          <td><input id="shdw[0]" type="checkbox"></td>
+          <td><input id="pure[0]" type="checkbox"></td>
         </tr>
       </table>
       <p id="IVinputShow" onclick="showIVinput()"><i><small>Show IV input textbox</small></i></p>
@@ -489,11 +493,12 @@
       const uIV_aIV = 0;
       const uIV_dIV = 1;
       const uIV_sIV = 2;
-      const uIV_shdw = 3;
-      const uIV_rank = 4;
-      const uIV_statProd = 5;
-      const uIV_lvl = 6;
-      const uIV_hidSortRank = 7;
+      const uIV_pure = 3;
+      const uIV_shdw = 4;
+      const uIV_rank = 5;
+      const uIV_statProd = 6;
+      const uIV_lvl = 7;
+      const uIV_hidSortRank = 8;
 
       $( document ).ready(function() {
         /* First check URL, then initialize global variables, load event handlers, then call main() */
@@ -517,15 +522,16 @@
         fel_Label = document.getElementById("familyEvoLeagueLbl").style.display;
         dti = document.getElementById("dti").checked;
         save = document.getElementById("save").checked;
-        userIVs[0] = [
+        userIVs[0] = [  
           document.getElementById("aIV[0]").value,   /* 0:attack IV  */
           document.getElementById("dIV[0]").value,   /* 1:defense IV */
           document.getElementById("sIV[0]").value,   /* 2:stamina IV */
           document.getElementById("shdw[0]").checked,/* 3:shadow     */
-          [],                                         /* 4:rank       */
-          [],                                         /* 5:stat prod  */
-          [],                                         /* 6:level      */
-          0                                          /* 7:hidSortRank*/
+          document.getElementById("pure[0]").checked,/* 4:purified   */
+          [],                                        /* 5:rank       */
+          [],                                        /* 6:stat prod  */
+          [],                                        /* 7:level      */
+          0                                          /* 8:hidSortRank*/
         ];
         filterMod = false; /*track if stat filters were adjusted*/
         input = document.getElementById("pokeList");
@@ -712,8 +718,9 @@
           var def = document.getElementById("dIV["+rowNum+"]").value;
           var sta = document.getElementById("sIV["+rowNum+"]").value;
           var sha = document.getElementById("shdw["+rowNum+"]").checked;
+          var pure = document.getElementById("pure["+rowNum+"]").checked;
 
-          findAddDataTableRow(atk, def, sta, sha, rowNum, tr);
+          findAddDataTableRow(atk, def, sta, sha, pure, rowNum, tr);
 
           /* Now that we have updated IVs, refresh Trade, PvPoke, and Family tables */
           if (cge) {displayPvPokeEvoGroup();}
@@ -728,7 +735,7 @@
         main();
       });
 
-      function findAddDataTableRow(atk, def, sta, sha, rowNum, tr) {
+      function findAddDataTableRow(atk, def, sta, sha, pure, rowNum, tr) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
 
@@ -757,6 +764,10 @@
 
         /* Loop through league DataTable(s) to process this IV set (atk/def/sta) */
         for (var l=0; l<leagueName.length; l++) {
+          /* Ensure this DataTable exists before proceeding */
+          if (!($.fn.DataTable.isDataTable(tableIDs[l]))) {
+            continue;
+          }
           var invalidIVs = false;
           /* Ensure user IVs are below this DataTable/league CP limit */
           for (i=0; i<ranks[l].invalids.length; i++) {
@@ -804,7 +815,7 @@
             dt.page.len(pageLen).draw();
           }
         }
-        userIVs[rowNum] = [atk, def, sta, sha, rankArray, spArray, lvlArray, hiddenRowIndexArray];
+        userIVs[rowNum] = [atk, def, sta, sha, pure, rankArray, spArray, lvlArray, hiddenRowIndexArray];
         console.log("findAddDataTableRow: All done, userIVs now: "+JSON.stringify(userIVs));
       }
 
@@ -1007,7 +1018,8 @@
                 {
                   var inputIVs = ivStr[j].split("_");
                   if (inputIVs.length<2) {continue;} /* skip blank/incomplete entries */
-                  newInputTableRow(inputIVs[0],inputIVs[1],inputIVs[2],inputIVs[3]);
+                  /* TODO: Re-align properly */
+                  newInputTableRow(inputIVs[0],inputIVs[1],inputIVs[2],inputIVs[3],inputIVs[4]);
                 }
                 break;
               case "mA":
@@ -1275,10 +1287,10 @@
         console.log("userIVs after splice: "+JSON.stringify(userIVs));
 
         /* Re-insert a default IV (-/15/15) row, update DOM and userIVs */
-        var atk='', def=15, sta=15, sha=false;
+        var atk='', def=15, sta=15, sha=false, pure=false;
         var newRow=document.getElementById("inputTable").insertRow();
-        newRow.innerHTML = "<tr><td><input id='shdw[0]' type='checkbox'></td><td><select title='Your Attack IV' id='aIV[0]'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' id='dIV[0]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' id='sIV[0]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus[0]'></button></td></tr>";  
-        userIVs.push([atk,def,sta,sha,0,0,0,0]);
+        newRow.innerHTML = "<tr><td><button class='circle minus' id='minus[0]'></button></td><td><select title='Your Attack IV' id='aIV[0]'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' id='dIV[0]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' id='sIV[0]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><input id='shdw[0]' type='checkbox'></td><td><input id='pure[0]' type='checkbox'></td></tr>";  
+        userIVs.push([atk,def,sta,sha,pure,[],[],[],0]);
         
         /* clear min stat filters, reset pageLen and lenMenu, and filterMod */
         mA = 0; mD = 0; mHP = 0; mBP = 0;
@@ -1590,7 +1602,7 @@
           var userIVs = ivStr[j].match(/\d+/g);
           if (userIVs.length<2) {continue;} /* skip blank/incomplete entries */
           console.log("readIVs::IVs:insering userIVs: "+userIVs+" (length:"+userIVs.length+")");
-          newInputTableRow(userIVs[uIV_aIV],userIVs[uIV_dIV],userIVs[uIV_sIV],userIVs[uIV_shdw]);
+          newInputTableRow(userIVs[uIV_aIV],userIVs[uIV_dIV],userIVs[uIV_sIV],userIVs[uIV_shdw],userIVs[uIV_pure]);
         }
         console.log("readIVs: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);
         main();
@@ -1678,6 +1690,7 @@
               
               /*8: XL Candy Calculation and Timing */
               var candyStart = performance.now();
+              /* TODO_Someday: Support user level input here */
               var candy = XLcandy(leagueRanks[keys[i]][j].L/1 - 40);
               /* Used to un-hide XL column after drawing table */
               if (!nonZeroXL && candy > 0) {nonZeroXL = true;}
@@ -1687,7 +1700,8 @@
 
               /* Finish printing current row */
               currentRow.push(
-                stardust(minLvl/1, leagueRanks[keys[i]][j].L/1, 0, false), /*9: Stardust*/
+                /* TODO_Someday: Support user level input here */
+                stardust(minLvl/1, leagueRanks[keys[i]][j].L/1), /*9: Stardust*/
                 leagueRanks[keys[i]][j].IVs.R1, /*10: R1 CMP*/
                 leagueRanks[keys[i]][j].IVs.cmp+"%", /*11: CMP Wins*/
                 numOut(leagueRanks[keys[i]][j].battle.A,dec),/*12: Attack Stat*/
@@ -1965,7 +1979,7 @@
         //console.log("addToCompare: uniqueIVs:"+uniqueIVs);
         
         if (uniqueIVs) {
-          newInputTableRow(atk, def, sta, false, rank, level, statProd, hiddenSortRank);
+          newInputTableRow(atk, def, sta, false, false, rank, level, statProd, hiddenSortRank);
           //console.log("addToCompare: after newInputTableRow:"+JSON.stringify(userIVs));
         } else {
           console.log(atk+"/"+def+"/"+sta+" already exists in comparison IVs, not adding to compare");
@@ -2331,78 +2345,103 @@
         return outHTML+"</table>";
       }
       
-      function XLcandy(xlev, shdw) {
+      function XLcandy(xlev, shdw, pure) {
         /* Returns calculated XL candy costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier */
         switch (xlev) {
           case 11:
           case 10:
             if (shdw) {return 360;}
+            if (pure) {return 272;}
             return 296;
           case 10.5:
           case 9.5:
             if (shdw) {return 336;}
+            if (pure) {return 254;}
             return 276;
           case 9:
             if (shdw) {return 312;}
+            if (pure) {return 236;}
             return 256;
           case 8.5:
             if (shdw) {return 288;}
+            if (pure) {return 218;}
             return 236;
           case 8:
             if (shdw) {return 264;}
+            if (pure) {return 200;}
             return 216;
           case 7.5:
             if (shdw) {return 243;}
+            if (pure) {return 184;}
             return 199;
           case 7:
             if (shdw) {return 222;}
+            if (pure) {return 168;}
             return 182;
           case 6.5:
             if (shdw) {return 201;}
+            if (pure) {return 152;}
             return 165;
           case 6:
             if (shdw) {return 180;}
+            if (pure) {return 136;}
             return 148;
           case 5.5:
             if (shdw) {return 162;}
+            if (pure) {return 122;}
             return 133;
           case 5:
             if (shdw) {return 144;}
+            if (pure) {return 108;}
             return 118;
           case 4.5:
             if (shdw) {return 126;}
+            if (pure) {return 94;}
             return 103;
           case 4:
             if (shdw) {return 108;}
+            if (pure) {return 80;}
             return 88;
           case 3.5:
             if (shdw) {return 93;}
+            if (pure) {return 69;}
             return 76;
           case 3:
             if (shdw) {return 78;}
+            if (pure) {return 58;}
             return 64;
           case 2.5:
             if (shdw) {return 63;}
+            if (pure) {return 47;}
             return 52;
           case 2:
             if (shdw) {return 48;}
+            if (pure) {return 36;}
             return 40;
           case 1.5:
             if (shdw) {return 36;}
+            if (pure) {return 27;}
             return 30;
           case 1:
             if (shdw) {return 24;}
+            if (pure) {return 18;}
             return 20;
           case 0.5:
             if (shdw) {return 12;}
+            if (pure) {return 9;}
             return 10;
           default:
             return 0;
         }
       }
       
-      function stardust(startlvl, endlvl, totaldust, shdw) {
+      function stardust(startlvl, endlvl, shdw, pure) {
         /* Returns calculated stardust power-up costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier*/
+        var totaldust = 0;
+        if (pure && startlvl/1 < 25) {
+          /* Purification sets lvl to 25 */
+          startlvl = 25;
+        }
         while (startlvl < endlvl) {
           switch (startlvl) {
             case 1:
@@ -2485,8 +2524,10 @@
           }
         }
         /* Adjust for shadow power up penalty */
-        if (shdw) {
+        if (shdw === true) {
           totaldust = totaldust*1.2;
+        } else if (pure === true) {
+          totaldust = totaldust*0.9;
         }
         if (totaldust > 1000) {
           totaldust = Math.round(totaldust/1000) + "K";
@@ -2550,7 +2591,7 @@
         return false;
       }
       
-      function newInputTableRow(atk, def, sta, sha, rank, level, statProd, hiddenSortRank) {
+      function newInputTableRow(atk, def, sta, sha, pure, rank, level, statProd, hiddenSortRank) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
         
@@ -2601,21 +2642,22 @@
         &&  document.getElementById("dIV["+(newRowDOMoffset)+"]").value/1 === 15/1
         &&  document.getElementById("sIV["+(newRowDOMoffset)+"]").value/1 === 15/1) {
           /* Overwrite existing default row (-/15/15) with new values */
-          userIVs[newRowDOMoffset] = [atk,def,sta,sha,rankArray,spArray,lvlArray,hiddenSortRank];
+          userIVs[newRowDOMoffset] = [atk,def,sta,sha,pure,rankArray,spArray,lvlArray,hiddenSortRank];
         } else {
           /* We need to insert a new row, create DOM placeholders */
           if (!(atk && def && sta)) {
             /* Incomplete IVs received, set to defaults */
-            atk = '';def = 15;sta = 15;sha = false;
+            atk = ''; def = 15; sta = 15; sha = false; pure = false;
           }
           var newRow=document.getElementById("inputTable").insertRow();
           newRowDOMoffset = userIVs.length;
-          newRow.innerHTML = "<tr><td><input id='shdw["+newRowDOMoffset+"]' type='checkbox'></td><td><select title='Your Attack IV' id='aIV["+newRowDOMoffset+"]'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' id='dIV["+newRowDOMoffset+"]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' id='sIV["+newRowDOMoffset+"]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus["+newRowDOMoffset+"]'></button></td></tr>";  
+          newRow.innerHTML = "<tr><td><button class='circle minus' id='minus["+newRowDOMoffset+"]'></button></td><td><select title='Your Attack IV' id='aIV["+newRowDOMoffset+"]'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' id='dIV["+newRowDOMoffset+"]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' id='sIV["+newRowDOMoffset+"]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><input id='shdw["+newRowDOMoffset+"]' type='checkbox'></td><td><input id='pure["+newRowDOMoffset+"]' type='checkbox'></td></tr>";  
           /* This is a default row, insert default values */
-          userIVs.push([atk,def,sta,sha,rankArray,spArray,lvlArray,hiddenSortRank]);
+          userIVs.push([atk,def,sta,sha,pure,rankArray,spArray,lvlArray,hiddenSortRank]);
         }
         //console.log("newInputTableRow: Setting inputTable DOM row["+newRowDOMoffset+"] to : "+atk+"/"+def+"/"+sta+", "+sha);
-        setInputTableRow(newRowDOMoffset, atk, def, sta, sha);
+        //TODO: Set pure
+        setInputTableRow(newRowDOMoffset, atk, def, sta, sha, pure);
         //console.log("newInputTableRow: All done, userIVs now: "+JSON.stringify(userIVs));
         document.getElementById("feedbackBox").innerHTML = "";
         if (perfTiming) {stopTiming(T0, "newInputTableRow");}
@@ -2676,7 +2718,7 @@
         return;
       }
 
-      function setInputTableRow(index, atk, def, sta, shadow){
+      function setInputTableRow(index, atk, def, sta, shadow, purified){
         /* Helper funciton for code readability & reliability */
         var T0;
         if (perfTiming) {T0 = performance.now();}
@@ -2685,6 +2727,7 @@
         document.getElementById("dIV["+index+"]").selectedIndex = [...document.getElementById("dIV["+index+"]").options].findIndex (option => option.text == def);
         document.getElementById("sIV["+index+"]").selectedIndex = [...document.getElementById("sIV["+index+"]").options].findIndex (option => option.text == sta);
         document.getElementById("shdw["+index+"]").checked = shadow;
+        document.getElementById("pure["+index+"]").checked = purified;
 
         if (perfTiming) {stopTiming(T0, "setInputTableRow");}
         return;
@@ -2716,8 +2759,8 @@
             }
             /* Reset this row's state back to defaults (-/15/15) */
             //console.log("removeInputTableRow: Resetting first row back to default values (-/15/15), leagueName.length:"+leagueName.length);
-            userIVs[0] = ["", 15, 15, false, 0, 0, 0, 0];
-            setInputTableRow(rowNum, "", 15, 15, false);
+            userIVs[0] = ["", 15, 15, false, false, [], [], [], 0];
+            setInputTableRow(rowNum, "", 15, 15, false, false);
             //console.log("removeInputTableRow: all done, userIVs:"+JSON.stringify(userIVs));
             if (perfTiming) {stopTiming(T0, "removeInputTableRow");}
             return;
@@ -2767,17 +2810,18 @@
 
         /* If there is only one row, reset values instead of deleting */
         if (userIVs.length === 1) {
-          setInputTableRow(rowNum, "", 15, 15, false);
+          setInputTableRow(rowNum, false, false, "", 15, 15);
         } else {
           /* Otherwise, proceed with deleting row from DOM and userIVs */
           for (var i=0; i<userIVs.length; i++)
           {
             if (i>=rowNum) {
               //console.log("removeInputTableRow: Fixing offset for i:"+i);
-              document.getElementById("shdw["+i+"]").id = "shdw["+(i-1)+"]";
               document.getElementById("aIV["+i+"]").id = "aIV["+(i-1)+"]";
               document.getElementById("dIV["+i+"]").id = "dIV["+(i-1)+"]";
               document.getElementById("sIV["+i+"]").id = "sIV["+(i-1)+"]";
+              document.getElementById("shdw["+i+"]").id = "shdw["+(i-1)+"]";
+              document.getElementById("pure["+i+"]").id = "pure["+(i-1)+"]";
             }
           }
           //console.log("removeInputTableRow: userIVs before splices: "+JSON.stringify(userIVs));
