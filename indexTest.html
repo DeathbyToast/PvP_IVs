@@ -1018,7 +1018,7 @@
                 {
                   var inputIVs = ivStr[j].split("_");
                   if (inputIVs.length<2) {continue;} /* skip blank/incomplete entries */
-                  /* TODO: Re-align properly */
+                  /* TODO: Check that this reads IVs, shadow, and purified status correctly */
                   newInputTableRow(inputIVs[0],inputIVs[1],inputIVs[2],inputIVs[3],inputIVs[4]);
                 }
                 break;
@@ -1545,6 +1545,9 @@
               IVs += userIVs[i][uIV_aIV] + "_" + userIVs[i][uIV_dIV] + "_" + userIVs[i][uIV_sIV];
               if (userIVs[i][uIV_shdw]) {
                 IVs += "_" + userIVs[i][uIV_shdw];
+              }
+              if (userIVs[i][uIV_pure]) {
+                IVs += "_" + userIVs[i][uIV_pure];
               }
             }
           }
@@ -2682,6 +2685,7 @@
           console.error("managePinsCSS_DT: Exiting, missing required variable(s):"+tableID,rowNum,hiddenSortVal);
           return false;
         }
+        /* TODO: Implement shadow highlighting and shadow/purified XL Candy and Stardust costs */
         
         /* Update hiddenRowIndex to pin/unpin this row */
         const table = $(tableID).DataTable();
