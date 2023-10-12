@@ -855,9 +855,15 @@
         dt.cell(rowNum, dt_dust).data(dust);
 
         /* Update PvP Attack */
-        //numOut(ranks[keys[i]][j].battle.A*1.2,dec)
+        var modifier = (apply == true) ? 1.2 : 1/1.2;
+        /* TODO: Fix number drift from rounding */
+        var pvpAtk = numOut(rowData[dt_pvpAtk]*modifier,dec);
+        dt.cell(rowNum, dt_pvpAtk).data(pvpAtk);
         /* Update PvP Defense */
-        //numOut(ranks[keys[i]][j].battle.D*0.8,dec)
+        var modifier = (apply == true) ? 0.8 : 1/0.8;
+        /* TODO: Fix number drift from rounding */
+        var pvpDef = numOut(rowData[dt_pvpDef]*modifier,dec);
+        dt.cell(rowNum, dt_pvpDef).data(pvpDef);
 
         /* Table is redrawn at end of calling function */
         //dt.draw();
