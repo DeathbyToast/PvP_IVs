@@ -256,7 +256,7 @@
           <td title="Your Defense IV">Def</td>
           <td title="Your Stamina IV">Sta</td>
           <td><img src="https://www.pvpivs.com/includes/icon-shadow-purple.png" alt="Shadow" width="17" height="17"></td>
-          <td><img src="https://www.pvpivs.com/includes/icon-purified-blue.png" alt="Purified" width="17" height="17"></td>
+          <td><img src="https://www.pvpivs.com/includes/icon-purified-cyan.png" alt="Purified" width="17" height="17"></td>
         </tr>
         <tr>
           <td id="minusCell"><button class="circle minus" id="minus[0]"></button></td>
@@ -599,8 +599,12 @@
         $("#league").on("change", function(event) {
           stopDuplicateEvents(event);
           //console.log("Received onChange request for league!");
+          var currentLeague = $("#league").val();
           clearHideOldDataTable();
-          checkSetAllLeagueOptions($("#league").val());
+          /* Ensure we reset pageLen when swapping from All Leagues to specific League */
+          if (league.length > 1 && pageLen/1 == 3 && currentLeague !== "All") {pageLen = 10;originalPL=10;}
+          /* Update remaining league variables */
+          checkSetAllLeagueOptions(currentLeague);
           setUserPreference("league");
           main();
         });
@@ -796,28 +800,35 @@
           if (invalidIVs === false) {
             if (oldUserIVs[uIV_aIV] && oldUserIVs[uIV_dIV] && oldUserIVs[uIV_sIV]) {
               /* oldUserIVs were valid, need to be removed from this league's DataTable */
-              //console.log("770: findAddDataTableRow: Calling managePinsCSS_DT("+tableIDs[l]+", "+(oldUserIVs[uIV_rank][l]-1)+", 0, false, true)...");
-              managePinsCSS_DT(tableIDs[l], oldUserIVs[uIV_rank][l]-1, 0, false, true);
+              //console.log("770: findAddDataTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(oldUserIVs[uIV_rank][l]-1)+", 0, false, true)...");
+              pinUnpinRow(tableIDs[l], oldUserIVs[uIV_rank][l]-1, 0, false, true);
             }
             /* Find this new IV set in DataTable and update userIVs with correct data */
             const dt = $(tableIDs[l]).DataTable();
-            var rows = dt.rows().data();
-            var numRows = dt.rows().count();
+            const rows = dt.rows().data();
+            const numRows = dt.rows().count();
             /* Use previous hiddenSortVal if it exists, otherwise initialize using numRows for this league DataTable */
             var hiddenSortVal = (userIVs[rowNum][uIV_hidSortRank]/1 < 0) ? userIVs[rowNum][uIV_hidSortRank] : (userIVs.length-1)-numRows/1;
             /* Find this IV set's row in DataTable */
             for (i=0; i<numRows; i++) {
               if (rows[i][dt_aIV] == atk && rows[i][dt_dIV] == def && rows[i][dt_sIV] == sta) {
-                //console.log("findAddDataTableRow: found row at i="+i+", rows[i][dt_aIV]("+rows[i][dt_aIV]+") == ("+atk+")atk, rows[i][dt_dIV]("+rows[i][dt_dIV]+") == ("+def+")def, rows[i][dt_sIV]("+rows[i][dt_sIV]+") == ("+sta+")sta");
-                //console.log("findAddDataTableRow: rows["+i+"]:"+JSON.stringify(rows[i]));
-                //console.log("778: findAddDataTableRow: Calling managePinsCSS_DT("+tableIDs[l]+", "+(rows[i][dt_rank]-1)+", "+hiddenSortVal+", true)...");
-                managePinsCSS_DT(tableIDs[l], rows[i][dt_rank]-1, hiddenSortVal, true);
+                console.log("findAddDataTableRow: found row at i="+i+", rows[i][dt_aIV]("+rows[i][dt_aIV]+") == ("+atk+")atk, rows[i][dt_dIV]("+rows[i][dt_dIV]+") == ("+def+")def, rows[i][dt_sIV]("+rows[i][dt_sIV]+") == ("+sta+")sta");
+                console.log("findAddDataTableRow: rows["+i+"]:"+JSON.stringify(rows[i]));
+                console.log("813: findAddDataTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(rows[i][dt_rank]-1)+", "+hiddenSortVal+", true)...");
+                pinUnpinRow(tableIDs[l], rows[i][dt_rank]-1, hiddenSortVal, true);
                 /* It is correct to have rows[i][dt_rank]-1 above for rowNum and rows[i][dt_rank] below for rankArray */
                 rankArray[l] = rows[i][dt_rank];
                 spArray[l] = rows[i][dt_statProd];
                 lvlArray[l] = rows[i][dt_lvl];
                 hiddenRowIndexArray[l] = rows[i][hiddenRowIndex];
-                //console.log("761: findAddDataTableRow: Updated userIVs["+rowNum+"]: "+userIVs[rowNum]);
+                console.log("820: findAddDataTableRow: Updated userIVs["+rowNum+"]: "+userIVs[rowNum]);
+                if (sha || oldUserIVs[uIV_shdw]) {
+                  console.log("822: findAddDataTableRow: calling manageShadows("+sha, tableIDs[l], i+")");
+                  manageShadows(sha, tableIDs[l], i);
+                } else if (pure || oldUserIVs[uIV_pure]) {
+                  console.log("825: findAddDataTableRow: calling managePurified("+pure, tableIDs[l], i+")");
+                  managePurified(pure, tableIDs[l], i);
+                }
                 break;
               }
             }
@@ -827,6 +838,50 @@
         }
         userIVs[rowNum] = [atk, def, sta, sha, pure, rankArray, spArray, lvlArray, hiddenRowIndexArray];
         console.log("findAddDataTableRow: All done, userIVs now: "+JSON.stringify(userIVs));
+      }
+
+      function manageShadows(apply, tableID, rowNum) {
+        const dt = $(tableID).DataTable();
+        const rowData = dt.rows().data()[rowNum];
+
+        console.log("manageShadows: received apply:"+apply+", tableID:"+tableID+", rowNum:"+rowNum);
+        
+        /* Update XL Candy Cost */ dt_lvl
+        var XL = XLcandy(rowData[dt_lvl]/1 - 40, apply);
+        dt.cell(rowNum, dt_xl).data(XL);
+        
+        /* Update Stardust Candy Cost */
+        var dust = stardust(minLvl/1, rowData[dt_lvl], apply);
+        dt.cell(rowNum, dt_dust).data(dust);
+
+        /* Update PvP Attack */
+        //numOut(ranks[keys[i]][j].battle.A*1.2,dec)
+        /* Update PvP Defense */
+        //numOut(ranks[keys[i]][j].battle.D*0.8,dec)
+
+        /* Table is redrawn at end of calling function */
+        //dt.draw();
+      }
+
+      function managePurified(apply, tableID, rowNum) {
+        const dt = $(tableID).DataTable();
+        const rowData = dt.rows().data()[rowNum];
+        console.log("managePurified: received apply:"+apply+", tableID:"+tableID+", rowNum:"+rowNum);
+        console.log("managePurified: XL:"+JSON.stringify(rowData[dt_xl])+", dust:"+JSON.stringify(rowData[dt_dust]));
+        
+        /* Update XL Candy Cost */
+        var XL = XLcandy(rowData[dt_lvl]/1 - 40, false, apply);
+        dt.cell(rowNum, dt_xl).data(XL);
+        //rowData[dt_xl].nodes().to$().css({color: "cyan"});
+
+        /* Update Stardust Candy Cost */
+        var dust = stardust(minLvl/1, rowData[dt_lvl], false, apply);
+        dt.cell(rowNum, dt_dust).data(dust);
+        //rowData[dt_dust].nodes().to$().css({color: "cyan"});
+        console.log("managePurified: Calculated Purified XL:"+XL+", dust:"+dust);
+        
+        /* Table is redrawn at end of calling function */
+        //dt.draw();
       }
 
       function checkSetAllLeagueOptions(inputLeague) {
@@ -855,9 +910,9 @@
         
         if (inputLeague == "All" || document.getElementById("league").value == "All") {
           if (document.getElementById("league").value !== "All") {
-            //console.log("Received inputLeague as "+inputLeague+", updating $(#league) to 'All' from: "+document.getElementById("league").value);
+            console.log("Received inputLeague as "+inputLeague+", updating $(#league) to 'All' from: "+document.getElementById("league").value);
             document.getElementById("league").value = "All";
-            //console.log("Updating $(#league) to: "+document.getElementById("league").value);
+            console.log("Updating $(#league) to: "+document.getElementById("league").value);
           }
 
           /* https://stackoverflow.com/a/590219 */
@@ -867,7 +922,7 @@
             leagueName.push($(this).text());
             tableIDs.push("#monTable_"+$(this).text().split(/\s/).reduce((response,word)=> response+=word.slice(0,1),''));
           });
-          //console.log("checkSetAllLeagueOptions: After loop, league is: "+JSON.stringify(league)+", leagueName is: "+JSON.stringify(leagueName)+", tableIDs is: "+JSON.stringify(tableIDs));
+          console.log("checkSetAllLeagueOptions: After loop, league is: "+JSON.stringify(league)+", leagueName is: "+JSON.stringify(leagueName)+", tableIDs is: "+JSON.stringify(tableIDs));
           /* https://stackoverflow.com/a/3596141 */
           league.splice( $.inArray("All", league), 1 );
           leagueName.splice( $.inArray("All Leagues", leagueName), 1 );
@@ -875,11 +930,12 @@
           /* Also shorten page length for all league table outputs */
           if (pageLen/1 == 10) {pageLen = 3;originalPL=3;}
         } else {
+          if (inputLeague) {document.getElementById("league").value = inputLeague;}
           league[0] = document.getElementById("league").value;
           leagueName[0] = $("#league").find(":selected").text();
           tableIDs[0] = "#monTable_"+leagueName[0].split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'');
         }
-        //console.log("checkSetAllLeagueOptions: Finished, league is: "+JSON.stringify(league)+", leagueName is: "+JSON.stringify(leagueName)+", tableIDs is: "+JSON.stringify(tableIDs));
+        console.log("checkSetAllLeagueOptions: Finished, league is: "+JSON.stringify(league)+", leagueName is: "+JSON.stringify(leagueName)+", tableIDs is: "+JSON.stringify(tableIDs));
         if (perfTiming) {stopTiming(T0, "checkSetAllLeagueOptions");}
         return;
       }
@@ -942,7 +998,7 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
-           URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-12_13_14_false_true"; 
+          /* URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-12_13_14_false_true"; */
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -997,7 +1053,7 @@
                 }
                 break;
               case "cp":
-                //console.log("checkURL: calling checkSetAllLeagueOptions("+values[i].split("=")[1]+")");
+                console.log("checkURL: calling checkSetAllLeagueOptions("+values[i].split("=")[1]+")");
                 checkSetAllLeagueOptions(values[i].split("=")[1]);
                 break;
               case "f":
@@ -1977,8 +2033,8 @@
             var rowNum = userIVs[newIndex][uIV_rank][t]-1;
             //console.log(tableIDs[l]+" onClick: rowNum is now: "+rowNum+" for "+tableIDs[t]);
             /* Highlight and pin this row in each DataTable */
-            //console.log(tableIDs[l]+" onClick: Calling managePinsCSS_DT("+tableIDs[t]+", "+rowNum+", "+hiddenSortVal+", true)...");
-            managePinsCSS_DT(tableIDs[t], rowNum, hiddenSortVal, true);
+            //console.log(tableIDs[l]+" onClick: Calling pinUnpinRow("+tableIDs[t]+", "+rowNum+", "+hiddenSortVal+", true)...");
+            pinUnpinRow(tableIDs[t], rowNum, hiddenSortVal, true);
           }
         });
 
@@ -2713,7 +2769,7 @@
         if (perfTiming) {stopTiming(T0, "newInputTableRow");}
       }
 
-      function managePinsCSS_DT(tableID, rowNum, hiddenSortVal, addHighlight, removeHighlight) {
+      function pinUnpinRow(tableID, rowNum, hiddenSortVal, addHighlight, removeHighlight) {
         /* Helper funciton for code readability & reliability */
         /* Sets or Resets hiddenRowIndex thus pinning or un-  */
         /* Pinning rows to the top of DataTable and manages   */
@@ -2726,46 +2782,48 @@
         var T0;
         if (perfTiming) {T0 = performance.now();}
 
-        //console.log("managePinsCSS_DT:"+tableID+": beginning with: tableID("+tableID+"), rowNum("+JSON.stringify(rowNum)+"), hiddenSortVal("+JSON.stringify(hiddenSortVal)+"), addHighlight("+JSON.stringify(addHighlight)+"), removeHighlight("+JSON.stringify(removeHighlight)+")");
+        //console.log("pinUnpinRow:"+tableID+": beginning with: tableID("+tableID+"), rowNum("+JSON.stringify(rowNum)+"), hiddenSortVal("+JSON.stringify(hiddenSortVal)+"), addHighlight("+JSON.stringify(addHighlight)+"), removeHighlight("+JSON.stringify(removeHighlight)+")");
         /* TODO_Someday: Remove params check */
         if (!tableID || isNaN(rowNum) || isNaN(hiddenSortVal)) {
-          console.error("managePinsCSS_DT: Exiting, missing required variable(s):"+tableID,rowNum,hiddenSortVal);
+          console.error("pinUnpinRow: Exiting, missing required variable(s):"+tableID,rowNum,hiddenSortVal);
           return false;
         }
-        /* TODO: Implement shadow highlighting and shadow/purified XL Candy and Stardust costs */
         
         /* Update hiddenRowIndex to pin/unpin this row */
         const table = $(tableID).DataTable();
         var d = table.row(rowNum).data();
         var rowCount = table.rows().count();
-        //console.log("managePinsCSS_DT:"+tableID+": rowCount: "+rowCount);
+        //console.log("pinUnpinRow:"+tableID+": rowCount: "+rowCount);
         var rankNum = d[dt_rank]/1;
         d[hiddenRowIndex] = hiddenSortVal;
+
+        /* TODO: Implement shadow highlighting and shadow/purified XL Candy and Stardust costs */
+
 
         /* Add class to properly highlight this row with CSS */
         if (addHighlight) {
           if (rankNum < (0.02442*rowCount)) {
             table.row(rowNum).nodes().to$().addClass("good"); /*green for "good"*/
-            //console.log("managePinsCSS_DT:"+tableID+": added 'good' highlight to row: "+rowNum);
+            //console.log("pinUnpinRow:"+tableID+": added 'good' highlight to row: "+rowNum);
           } else if (rankNum < (0.2442*rowCount)) {
             table.row(rowNum).nodes().to$().addClass("ok"); /*orange for "ok"*/
-            //console.log("managePinsCSS_DT:"+tableID+": added 'ok' highlight to row: "+rowNum);
+            //console.log("pinUnpinRow:"+tableID+": added 'ok' highlight to row: "+rowNum);
           } else {
             table.row(rowNum).nodes().to$().addClass("rubbish"); /*red for "rubbish"*/
-            //console.log("managePinsCSS_DT:"+tableID+": added 'rubbish' highlight to row: "+rowNum);
+            //console.log("pinUnpinRow:"+tableID+": added 'rubbish' highlight to row: "+rowNum);
           }
         } else {
           if (removeHighlight) {
             /* Remove CSS highlighting for this row */
             table.row(rowNum).nodes().to$().removeClass("good","ok","rubbish");
-            //console.log("managePinsCSS_DT:"+tableID+": removed all highlights from row: "+rowNum+", with data: "+JSON.stringify(table.row(rowNum).data()));
+            //console.log("pinUnpinRow:"+tableID+": removed all highlights from row: "+rowNum+", with data: "+JSON.stringify(table.row(rowNum).data()));
           }
         }
         /* Redraw DataTable to show new pins and highlights */
-        //console.log("managePinsCSS_DT:"+tableID+": Redrawing DataTable");
+        //console.log("pinUnpinRow:"+tableID+": Redrawing DataTable");
         table.page.len(pageLen);
         table.row(rowNum).data(d).draw();
-        if (perfTiming) {stopTiming(T0, "managePinsCSS_DT");}
+        if (perfTiming) {stopTiming(T0, "pinUnpinRow");}
         return;
       }
 
@@ -2814,8 +2872,15 @@
             for (var l=0; l<leagueName.length; l++) {
               //console.log("removeInputTableRow: Removing row from DataTable: "+tableIDs[l]);
               /* Need to pass row number for these IVs in each table to be removed */
-              //console.log("removeInputTableRow: Calling managePinsCSS_DT("+tableIDs[l]+", "+(userIVs[0][uIV_rank][l]-1)+", 0, false, true)...");
-              managePinsCSS_DT(tableIDs[l], userIVs[0][uIV_rank][l]-1, 0, false, true);
+              //console.log("removeInputTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(userIVs[0][uIV_rank][l]-1)+", 0, false, true)...");
+              pinUnpinRow(tableIDs[l], userIVs[rowNum][uIV_rank][l]-1, 0, false, true);
+              if (userIVs[rowNum][uIV_shdw]) {
+                console.log("2873: removeInputTableRow: calling manageShadows("+false, tableIDs[l], rowNum+")");
+                manageShadows(false, tableIDs[l], rowNum);
+              } else if (userIVs[rowNum][uIV_pure]) {
+                console.log("2876: removeInputTableRow: calling managePurified("+false, tableIDs[l], rowNum+")");
+                managePurified(false, tableIDs[l], rowNum);
+              }
             }
             /* Reset this row's state back to defaults (-/15/15) */
             //console.log("removeInputTableRow: Resetting first row back to default values (-/15/15), leagueName.length:"+leagueName.length);
@@ -2840,6 +2905,14 @@
 
           /* Remove CSS highlighting for this row */
           dt.row(userIVs[rowNum][uIV_rank][l]-1).nodes().to$().removeClass("good","ok","rubbish");
+
+          if (userIVs[rowNum][uIV_shdw]) {
+            console.log("2905: removeInputTableRow: calling manageShadows("+false, tableIDs[l], rowNum+")");
+            manageShadows(false, tableIDs[l], rowNum);
+          } else if (userIVs[rowNum][uIV_pure]) {
+            console.log("2908: removeInputTableRow: calling managePurified("+false, tableIDs[l], rowNum+")");
+            managePurified(false, tableIDs[l], rowNum);
+          }
 
           /* Reset hiddenSortIndex to 0 to un-pin this row  */
           /* And update remaining userIVs hiddenSortIndexes */
