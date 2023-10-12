@@ -25,10 +25,6 @@
     <link rel="preload" href="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js" as="script">
     <link rel="preload" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" as="style">
     <link rel="preload" href="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js" as="script">
-    <!--link rel="preload" href="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js" as="script">
-    <link rel="preload" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" as="style"-->
-    <!--link rel="preload" href="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js" as="script">
-    <link rel="preload" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" as="style"-->
     <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
     <title>PvP IVs - Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,8 +34,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.5.0/css/searchBuilder.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-    <!--link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css"-->
-    <!--link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css"-->
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
       /* control highlight of trading improvement rows based on % chace to improve post-trade
@@ -460,8 +454,6 @@
       <script src="https://cdn.datatables.net/searchbuilder/1.5.0/js/dataTables.searchBuilder.min.js"></script>
       <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
       <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
-      <!--script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script-->
-      <!--script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script-->
       <script>
       /* Use global variables to clean up code and  */
       /* Simplify by supporting stateless functions */
@@ -493,8 +485,8 @@
       const uIV_aIV = 0;
       const uIV_dIV = 1;
       const uIV_sIV = 2;
-      const uIV_pure = 3;
-      const uIV_shdw = 4;
+      const uIV_shdw = 3;
+      const uIV_pure = 4;
       const uIV_rank = 5;
       const uIV_statProd = 6;
       const uIV_lvl = 7;
@@ -705,10 +697,11 @@
           var tr = td.parentNode;
           var rowNum = tr.innerHTML.split("aIV[")[1];
           rowNum = rowNum.split("]")[0];
-          //console.log("$doc.ready():: #inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][uIV_aIV]+"/"+userIVs[rowNum][uIV_dIV]+"/"+userIVs[rowNum][uIV_sIV]);
+          console.log("$doc.ready():: #inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][uIV_aIV]+"/"+userIVs[rowNum][uIV_dIV]+"/"+userIVs[rowNum][uIV_sIV]);
 
           /* Manage pageLen for user as they add/remove rows */
           if ((pageLen-userIVs.length) < originalPL) {
+            /* TODO: Fix length selector blanking out */
             pageLen++;
             console.log("$doc.ready():: #inputTable onChange: Incremented pageLen to: "+pageLen+", originalPL:"+originalPL);
           }
@@ -761,6 +754,23 @@
         var oldUserIVs = userIVs[rowNum];
         var rankArray = [], spArray = [], lvlArray = [], hiddenRowIndexArray = [];
         //console.log("746: findAddDataTableRow: About to enter loop to process "+atk+"/"+def+"/"+sta);
+
+        /* Correct for both shadow and purified being checked */
+        if (sha && pure) {
+          /* Keep whichever box was checked first */
+          if (oldUserIVs[uIV_pure] === true) {
+            sha = false;
+            document.getElementById("shdw["+rowNum+"]").checked = false;
+            document.getElementById("feedbackBox").innerHTML += "<br /><i>"+atk+"/"+def+"/"+sta+" "+mon+" cannot be both Purified and Shadow, please uncheck Purified before checking Shadow</i>";
+            console.error("User checked Shadow after having already checked Purified, it is impossible for "+mon+" to be both, unchecking Shadow.");
+          } else {
+            pure = false;
+            document.getElementById("pure["+rowNum+"]").checked = false;
+            document.getElementById("feedbackBox").innerHTML += "<br /><i>"+atk+"/"+def+"/"+sta+" "+mon+" cannot be both Purified and Shadow, please uncheck Shadow before checking Purified</i>";
+            console.error("User checked Purified after having already checked Shadow, it is impossible for "+mon+" to be both, unchecking Purified.");
+          }
+          return false;
+        }
 
         /* Loop through league DataTable(s) to process this IV set (atk/def/sta) */
         for (var l=0; l<leagueName.length; l++) {
@@ -932,7 +942,7 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
-          /* URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15"; */
+           URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-12_13_14_false_true"; 
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -1016,10 +1026,21 @@
                 var ivStr = (values[i].split("=")[1]).split("-");
                 for (var j=0; j<ivStr.length; j++)
                 {
+                  var shadow = false;
+                  var purified = false;
                   var inputIVs = ivStr[j].split("_");
                   if (inputIVs.length<2) {continue;} /* skip blank/incomplete entries */
-                  /* TODO: Check that this reads IVs, shadow, and purified status correctly */
-                  newInputTableRow(inputIVs[0],inputIVs[1],inputIVs[2],inputIVs[3],inputIVs[4]);
+                  if (inputIVs[3] == "true") {
+                    console.log("checkURL: Detected inputIVs[3] true ("+inputIVs[3]+")");
+                    shadow = true;
+                  /* Can't have both shadow and purified mon */
+                  /* so if both are checked only keep shadow */
+                  } else if (inputIVs[4] == "true") {
+                    console.log("checkURL: Detected inputIVs[4] true ("+inputIVs[4]+")");
+                    purified = true;
+                  }
+                  console.log("checkURL: Calling newInputTableRow("+inputIVs[0],inputIVs[1],inputIVs[2],shadow,purified+")");
+                  newInputTableRow(inputIVs[0],inputIVs[1],inputIVs[2],shadow,purified);
                 }
                 break;
               case "mA":
@@ -1543,11 +1564,18 @@
             if (userIVs[i][uIV_aIV] && userIVs[i][uIV_dIV] && userIVs[i][uIV_sIV]) {
               if (i > 0) {IVs += "-";} else {IVs = "";}
               IVs += userIVs[i][uIV_aIV] + "_" + userIVs[i][uIV_dIV] + "_" + userIVs[i][uIV_sIV];
-              if (userIVs[i][uIV_shdw]) {
-                IVs += "_" + userIVs[i][uIV_shdw];
-              }
-              if (userIVs[i][uIV_pure]) {
-                IVs += "_" + userIVs[i][uIV_pure];
+              if (userIVs[i][uIV_shdw] === true || userIVs[i][uIV_pure] === true) {
+                console.log("Detected at least one true between pure("+userIVs[i][uIV_pure]+") and shdw("+userIVs[i][uIV_shdw]+")");
+                /* If at least one is true, need to add to URL */
+                if (userIVs[i][uIV_pure] === false) {
+                  console.log("Just adding shdw to URL because pure("+userIVs[i][uIV_pure]+") and shdw("+userIVs[i][uIV_shdw]+")");
+                  /* If purified is false, URL is simple */
+                  IVs += "_" + userIVs[i][uIV_shdw];
+                } else {
+                  console.log("Adding both to URL because pure("+userIVs[i][uIV_pure]+") and shdw("+userIVs[i][uIV_shdw]+")");
+                  /* Otherwise need to include both shdw and pure */
+                  IVs += "_" + userIVs[i][uIV_shdw] + "_" + userIVs[i][uIV_pure];
+                }
               }
             }
           }
@@ -1745,6 +1773,7 @@
 
         /* TODO_Someday: Remove colVisLock hack to prevent show/hide table firing multiple colVis events */
         colVisLock = true;
+        var SearchBuilderState = false;
         
         //console.log("Building "+tableIDs[l]+" DataTable with l="+l+", domWidth[l]:"+domWidth[l]+", infoText[l]:"+infoText[l]+",infoFilteredText[l]:"+infoFilteredText[l]);
         const leagueAcronym = tableIDs[l].split("_")[1];
@@ -1792,7 +1821,30 @@
             deferRender: true,
             destroy: true,
             dom: domWidth[l],
+            /*drawCallback: function( settings ) {
+              return;
+              console.log("SearchBuilderState:"+SearchBuilderState);
+              var api = new $.fn.dataTable.Api( settings );
+              console.log("Row1:"+JSON.stringify(api.row(1).data()));
+              if (SearchBuilderState === false) {
+                //DataTable not yet initialized
+                return;
+              }
+              console.log("SB details:"+JSON.stringify(api.searchBuilder.getDetails()));
+              if (SearchBuilderState === true){
+                //Initialize SearchBuilderState once initComplete finishes
+                SearchBuilderState = api.searchBuilder.getDetails();
+                return;
+              }
+              if (SearchBuilderState !== api.searchBuilder.getDetails()) {
+                console.log("Detected change in Search Builder state from "+JSON.stringify(SearchBuilderState)+" to "+JSON.stringify(api.searchBuilder.getDetails()));
+                SearchBuilderState = api.searchBuilder.getDetails();
+                //TODO: Call UpdateURL if changes
+              }
+            },*/
             initComplete: function () {
+              /* Update SearchBuilderState to true once initialized */
+              SearchBuilderState = true;
               /* Show/hide columns per any URL user preferences */
               var colsChanged = false;
               //console.log("before loop colVis["+l+"]:"+JSON.stringify(colVis[l]));
@@ -1882,12 +1934,7 @@
           console.log("Rebuilding searchBuilder search with: "+sbSearch);
           dt.searchBuilder.rebuild(sbSearch);
         });
-        
-        /* TODO: Ensure mA / mD / mHP / mBP are updated when filters are added */
-        dt.on( 'search.dt', function () {
-            console.log("Currently applied global search: "+JSON.stringify(dt.search()));
-        } );
-        
+
         /* Ensure URL is updated when column visibility is toggled */
         $(tableIDs[l]).on( 'column-visibility.dt', function ( event, settings, column, state ) {
           stopDuplicateEvents(event);
@@ -1907,6 +1954,7 @@
           
           /* Manage pageLen for user as they add/remove rows */
           if ((pageLen-userIVs.length) < originalPL) {
+            /* TODO: Fix length selector blanking out */
             pageLen++;
             console.log(tableIDs[l]+" onClick: Incremented pageLen to: "+pageLen+", originalPL:"+originalPL);
           }
@@ -2659,7 +2707,6 @@
           userIVs.push([atk,def,sta,sha,pure,rankArray,spArray,lvlArray,hiddenSortRank]);
         }
         //console.log("newInputTableRow: Setting inputTable DOM row["+newRowDOMoffset+"] to : "+atk+"/"+def+"/"+sta+", "+sha);
-        //TODO: Set pure
         setInputTableRow(newRowDOMoffset, atk, def, sta, sha, pure);
         //console.log("newInputTableRow: All done, userIVs now: "+JSON.stringify(userIVs));
         document.getElementById("feedbackBox").innerHTML = "";
@@ -2727,11 +2774,20 @@
         var T0;
         if (perfTiming) {T0 = performance.now();}
 
+        console.log("setInputTableRow: received index:"+index+", atk:"+atk+", def:"+def+", sta:"+sta+", shadow:"+shadow+", purified:"+purified);
+
         document.getElementById("aIV["+index+"]").selectedIndex = [...document.getElementById("aIV["+index+"]").options].findIndex (option => option.text == atk);
         document.getElementById("dIV["+index+"]").selectedIndex = [...document.getElementById("dIV["+index+"]").options].findIndex (option => option.text == def);
         document.getElementById("sIV["+index+"]").selectedIndex = [...document.getElementById("sIV["+index+"]").options].findIndex (option => option.text == sta);
-        document.getElementById("shdw["+index+"]").checked = shadow;
-        document.getElementById("pure["+index+"]").checked = purified;
+        document.getElementById("shdw["+index+"]").checked = (shadow == true) ? true : false;
+        document.getElementById("pure["+index+"]").checked = (purified == true) ? true : false;
+        //$( "shdw["+index+"]" ).prop( "checked", shadow );
+        //$( "pure["+index+"]" ).prop( "checked", purified );
+        //document.getElementById("shdw["+index+"]").checked = shadow;
+        //document.getElementById("pure["+index+"]").checked = purified;
+
+        console.log("setInputTableRow: document.getElementById('shdw['+index+']').checked: "+document.getElementById("shdw["+index+"]").checked);
+        console.log("setInputTableRow: document.getElementById('pure['+index+']').checked: "+document.getElementById("pure["+index+"]").checked);
 
         if (perfTiming) {stopTiming(T0, "setInputTableRow");}
         return;
@@ -2805,6 +2861,7 @@
           }
           /* Manage pageLen for user as they add/remove rows */
           if ((pageLen-userIVs.length) > originalPL) {
+            /* TODO: Fix length selector blanking out */
             pageLen--;
             console.log("removeInputTableRow: Decremented pageLen to: "+pageLen+", originalPL:"+originalPL);
           }
