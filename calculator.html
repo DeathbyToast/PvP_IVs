@@ -424,9 +424,9 @@
             <option value="1">1</option>
             <option value="0">0</option>
           </select></td>
-          <td>
-            <input maxlength="4" id="combatPowerInput" onchange="console.log(this.value)"></input>
-          </td>
+        <td>
+          <input maxlength="4" id="combatPowerInput" onchange="calcInputLevel()"></input>
+        </td>
 
       </tr>
     </table>
@@ -528,7 +528,7 @@
         const aIV = parseInt(document.getElementById('levelAttackIV').value, 10);
         const dIV = parseInt(document.getElementById('levelDefenseIV').value, 10);
         const sIV = parseInt(document.getElementById('levelStaminaIV').value, 10);
-        const inputCP = document.getElementById('combatPowerInput').value;
+        const inputCP = parseInt(document.getElementById('combatPowerInput').value, 10);
         let pokemon = document.getElementById("pokeList")?.text?.label;
         if (!pokemon) pokemon = document.getElementById("pokeList")?.value
         let attack = 0;
@@ -536,21 +536,21 @@
         let stamina = 0;
 
         if (pokemon && pokeListObj[pokemon]) {
+          console.log('test')
           const monInfo = pokeListObj[pokemon].split(',');
           attack = parseInt(monInfo[1], 10);
           defense = parseInt(monInfo[2], 10);
           stamina = parseInt(monInfo[3], 10);
           const levelElement = document.getElementById("level");
-          const cp = calculateCP(attack, defense, stamina, aIV, dIV, sIV, level);
-          // binary search for matching level
-          let lowLvl = 1;
-          let highLvl = 51;
-          if (cpElement && cp) {
-            levelElement.textContent = `Pokemon: ${pokemon} CP: ${cp}`;
+          const level = calculateLevel(attack, defense, stamina, aIV, dIV, sIV, inputCP);
+          if (levelElement) {
+            if (level >= 1 && level <= 51){
+              levelElement.textContent = `Pokemon: ${pokemon} CP: ${inputCP} Level:${level}`;
+            }
+            else{
+              levelElement.textContent = `Pokemon: ${pokemon} CP: ${inputCP} Could not find a matching level`;
+            }
           }
-
-          // console.log(attack, defense, stamina, aIV, dIV, sIV, level, pokemon)
-          // console.log('cp:', cp, pokemon, aIV, attack, level)
         }
 
       }
@@ -1131,7 +1131,7 @@
           }
         }
 
-  
+
 
         /* Exit if we don't have a valid mon yet */
         if (typeof mon === 'undefined' || mon === null || typeof pokeListObj[mon] === 'undefined') {
@@ -1142,7 +1142,7 @@
           document.getElementById('instructionsBox').innerHTML = "";
           // document.getElementById("IVinputShow").style.display = "none";
         }
-        
+
 
         /*ensure we clear the prior output between runs*/
         // document.getElementById('outputBox').innerHTML = "";
