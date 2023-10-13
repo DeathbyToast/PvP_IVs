@@ -1,4 +1,10 @@
-import calculateCP from "./calculateCP";
+// didn't import/export since modules don't work on some browsers
+// https://caniuse.com/es6-module
+function calculateCP(baseatk, basedef, basesta, atkIV, defIV, staIV, level) {
+  const index = Math.round((level - 1) * 2);
+  const cp = Math.max(10, Math.floor((baseatk + atkIV) * Math.sqrt(basedef + defIV) * Math.sqrt(basesta + staIV) * cpm[index] * cpm[index] / 10));
+  return cp;
+} 
 
 function testCalculateCP() {
   const haunterCPs = [
