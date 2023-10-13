@@ -787,10 +787,7 @@
           if (!($.fn.DataTable.isDataTable(tableIDs[l]))) {
             continue;
           }
-          /* Ensure this IV set isn't purified and too big for this league CP limit */
-          if (userIVs[rowNum][UIV_PURE == true]) {
-            /* TODO: Finish this */
-          }
+
           var invalidIVs = false;
           /* Ensure user IVs are below this DataTable/league CP limit */
           for (i=0; i<ranks[l].invalids.length; i++) {
@@ -829,6 +826,20 @@
                 spArray[l] = rows[i][DT_STAT_PROD];
                 lvlArray[l] = rows[i][DT_LVL];
                 hiddenRowIndexArray[l] = rows[i][hiddenRowIndex];
+
+                /* Ensure this IV set isn't purified and too big for this league CP limit */
+                /* Check if this row will be purified or was purified */
+                if (pure == true || userIVs[rowNum][UIV_PURE] == true) {
+                  /* This will be OR was a purified row */
+                  //console.log("findAddDataTableRow: calling managePurified("+pure, tableIDs[l], i, rowNum+")");
+                  if (managePurified(pure, tableIDs[l], i, rowNum) == false) {
+                    document.getElementById("feedbackBox").innerHTML += "<i>Removed purified "+userIVs[rowNum][UIV_AIV]+"/"+userIVs[rowNum][UIV_DIV]+"/"+userIVs[rowNum][UIV_DIV]+" from "+leagueName[l]+" table, over CP Limit.</i><br />";
+                  }
+                } else if (sha == true || userIVs[rowNum][UIV_SHDW] == true) {
+                  /* This will be shadow OR was a shadow row */
+                  //console.log("findAddDataTableRow: calling manageShadows("+sha, tableIDs[l], i, rowNum+")");
+                  manageShadows(sha, tableIDs[l], i, rowNum);
+                }
                 break;
               }
             }
@@ -1034,7 +1045,7 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
-          //URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-12_13_14_false_true"; 
+          //URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-0_9_12_false_true"; 
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -3039,15 +3050,15 @@
             rowNum = 0;
             /* Loop through all DataTables to remove this user IV row */
             for (var l=0; l<leagueName.length; l++) {
-              //console.log("removeInputTableRow: Removing row from DataTable: "+tableIDs[l]);
+              console.log("removeInputTableRow: Removing row from DataTable: "+tableIDs[l]);
               /* Need to pass row number for these IVs in each table to be removed */
-              //console.log("removeInputTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(userIVs[0][UIV_RANK][l]-1)+", 0, false, true)...");
+              console.log("3044: removeInputTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(userIVs[0][UIV_RANK][l]-1)+", 0, false, true)...");
               pinUnpinRow(tableIDs[l], userIVs[rowNum][UIV_RANK][l]-1, 0, false, true);
               if (userIVs[rowNum][UIV_SHDW]) {
-                console.log("2873: removeInputTableRow: calling manageShadows("+false, tableIDs[l], rowNum+")");
+                console.log("3047: removeInputTableRow: calling manageShadows("+false, tableIDs[l], rowNum+")");
                 manageShadows(false, tableIDs[l], userIVs[rowNum][UIV_RANK][l]-1, rowNum);
               } else if (userIVs[rowNum][UIV_PURE]) {
-                console.log("2876: removeInputTableRow: calling managePurified("+false, tableIDs[l], rowNum+")");
+                console.log("3050: removeInputTableRow: calling managePurified("+false, tableIDs[l], rowNum+")");
                 managePurified(false, tableIDs[l], userIVs[rowNum][UIV_RANK][l]-1, rowNum);
               }
             }
@@ -3073,13 +3084,14 @@
           const dt = $(tableIDs[l]).DataTable();
 
           /* Remove CSS highlighting for this row */
+          console.log("3076: removeInputTableRow: removing classes from row");
           dt.row(userIVs[rowNum][UIV_RANK][l]-1).nodes().to$().removeClass("good","ok","rubbish");
 
           if (userIVs[rowNum][UIV_SHDW]) {
-            console.log("2905: removeInputTableRow: calling manageShadows("+false, tableIDs[l], rowNum+")");
+            console.log("3079: removeInputTableRow: calling manageShadows("+false, tableIDs[l], rowNum+")");
             manageShadows(false, tableIDs[l], userIVs[rowNum][UIV_RANK][l]-1, rowNum);
           } else if (userIVs[rowNum][UIV_PURE]) {
-            console.log("2908: removeInputTableRow: calling managePurified("+false, tableIDs[l], rowNum+")");
+            console.log("3082: removeInputTableRow: calling managePurified("+false, tableIDs[l], rowNum+")");
             managePurified(false, tableIDs[l], userIVs[rowNum][UIV_RANK][l]-1, rowNum);
           }
 
