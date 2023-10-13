@@ -460,49 +460,51 @@
       /* Initialized inside of document.ready() fxn */
       var inputMon, pageLen, originalPL, lenMenu, perfTiming, mnlMod, ivMod, filterMod, userIVs, mon;
       var hiddenRowIndex, ranks, league, leagueName, tableIDs, floor, minLvl, maxLvl, dec, effIV, cge;
-      var family, fel, fel_Label, dti, save, input, monNames, filterMod, sbSearch, mA, mD, mHP, mBP;
-      var prevWidth, domWidth, infoText, infoFilteredText, pageType, buttonArray, colVis, colVisLock;
+      var family, fel, fel_Label, dti, save, input, monNames, filterMod, prevWidth, domWidth, infoText;
+      var infoFilteredText, pageType, buttonArray, colVis, colVisLock, sbSearch, sbVals, sbConds, sbLogic;
 
       /* DataTable Column numbers to help readability */
-      const dt_rank = 0;
-      const dt_lvl = 1;
-      const dt_cp = 2;
-      const dt_mlCP = 3;
-      const dt_aIV = 4;
-      const dt_dIV = 5;
-      const dt_sIV = 6;
-      const dt_perf = 7;
-      const dt_xl = 8;
-      const dt_dust = 9;
-      const dt_r1CMP = 10;
-      const dt_allCMP = 11;
-      const dt_pvpAtk = 12;
-      const dt_pvpDef = 13;
-      const dt_pvpHP = 14;
-      const dt_statProd = 15;
-      const dt_bulkProd = 16;
+      const DT_RANK = 0;
+      const DT_LVL = 1;
+      const DT_CP = 2;
+      const DT_ML_CMP = 3;
+      const DT_AIV = 4;
+      const DT_DIV = 5;
+      const DT_SIV = 6;
+      const DT_PERF = 7;
+      const DT_XL = 8;
+      const DT_DUST = 9;
+      const DT_R1_CMP = 10;
+      const DT_ALL_CMP = 11;
+      const DT_PVP_ATK = 12;
+      const DT_PVP_DEF = 13;
+      const DT_PVP_HP = 14;
+      const DT_STAT_PROD = 15;
+      const DT_BULK_PROD = 16;
       /* userIV Column numbers to help readability */
-      const uIV_aIV = 0;
-      const uIV_dIV = 1;
-      const uIV_sIV = 2;
-      const uIV_shdw = 3;
-      const uIV_pure = 4;
-      const uIV_rank = 5;
-      const uIV_statProd = 6;
-      const uIV_lvl = 7;
-      const uIV_hidSortRank = 8;
+      const UIV_AIV = 0;
+      const UIV_DIV = 1;
+      const UIV_SIV = 2;
+      const UIV_SHDW = 3;
+      const UIV_PURE = 4;
+      const UIV_RANK = 5;
+      const UIV_STAT_PROD = 6;
+      const UIV_LVL = 7;
+      const UIV_HIDDEN_SORT_RANK = 8;
 
       $( document ).ready(function() {
         /* First check URL, then initialize global variables, load event handlers, then call main() */
         pageLen = 10;
         originalPL = 10;
         lenMenu = [ [3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"] ];
-        ranks=[], league=[], leagueName=[], tableIDs=[], colVis=[], colVisLock=false;
-        domWidth=[], infoText=[], infoFilteredText=[], pageType=[]; buttonArray=[];
+        ranks=[]; league=[]; leagueName=[]; tableIDs=[]; colVis=[]; colVisLock=false;
+        domWidth=[]; infoText=[]; infoFilteredText=[]; pageType=[]; buttonArray=[];
+        sbVals=[]; sbConds=[];
+
         perfTiming = true; /* used for timing execution */
         mnlMod = false; /*track if min Lvl was adjusted*/
         ivMod = false; /*track if IV floor was adjusted*/
-        userIVs = new Array(1).fill(0).map(() => new Array(8).fill(0));
+        userIVs = new Array(1).fill(0).map(() => new Array(9).fill(0));
         floor = document.getElementById("floor").value;
         minLvl = document.getElementById("minLvl").value;
         maxLvl = document.getElementById("maxLvl").value;
@@ -701,12 +703,12 @@
           var tr = td.parentNode;
           var rowNum = tr.innerHTML.split("aIV[")[1];
           rowNum = rowNum.split("]")[0];
-          console.log("$doc.ready():: #inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][uIV_aIV]+"/"+userIVs[rowNum][uIV_dIV]+"/"+userIVs[rowNum][uIV_sIV]);
+          console.log("$doc.ready():: #inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][UIV_AIV]+"/"+userIVs[rowNum][UIV_DIV]+"/"+userIVs[rowNum][UIV_SIV]);
 
           /* Manage pageLen for user as they add/remove rows */
           if ((pageLen-userIVs.length) < originalPL) {
             /* TODO: Fix length selector blanking out */
-            pageLen++;
+            //pageLen = originalPL + userIVs.length + 1;
             console.log("$doc.ready():: #inputTable onChange: Incremented pageLen to: "+pageLen+", originalPL:"+originalPL);
           }
 
@@ -757,12 +759,11 @@
         /* Store oldUserIVs to ensure we remove from league DataTable(s) */
         var oldUserIVs = userIVs[rowNum];
         var rankArray = [], spArray = [], lvlArray = [], hiddenRowIndexArray = [];
-        //console.log("746: findAddDataTableRow: About to enter loop to process "+atk+"/"+def+"/"+sta);
 
         /* Correct for both shadow and purified being checked */
         if (sha && pure) {
           /* Keep whichever box was checked first */
-          if (oldUserIVs[uIV_pure] === true) {
+          if (oldUserIVs[UIV_PURE] === true) {
             sha = false;
             document.getElementById("shdw["+rowNum+"]").checked = false;
             document.getElementById("feedbackBox").innerHTML += "<br /><i>"+atk+"/"+def+"/"+sta+" "+mon+" cannot be both Purified and Shadow, please uncheck Purified before checking Shadow</i>";
@@ -776,8 +777,11 @@
           return false;
         }
 
+        console.log("findAddDataTableRow: before loop -- UserIVs:"+JSON.stringify(userIVs));
+
         /* Loop through league DataTable(s) to process this IV set (atk/def/sta) */
         for (var l=0; l<leagueName.length; l++) {
+          console.log("findAddDataTableRow: start of loop (l="+l+") -- UserIVs:"+JSON.stringify(userIVs));
           /* Ensure this DataTable exists before proceeding */
           if (!($.fn.DataTable.isDataTable(tableIDs[l]))) {
             continue;
@@ -787,7 +791,6 @@
           for (i=0; i<ranks[l].invalids.length; i++) {
             if (atk == ranks[l].invalids[i].A && def == ranks[l].invalids[i].D && sta == ranks[l].invalids[i].S) {
               /* Stop once we have determined this IV set is invalid for this league / DataTable */
-              //var leagueAcronym = leagueName[l].split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'');
               const leagueAcronym = tableIDs[l].split("_")[1];
               var message = "IVs:"+atk+"/"+def+"/"+sta+" are over "+leagueAcronym+" CP limit ("+ranks[l].invalids[i].cp+"CP at Level "+minLvl+")";
               document.getElementById("feedbackBox").innerHTML += "<br /><i>"+message+".<br />Please check your input IVs, Min Level, and League then try again.</i>";
@@ -798,36 +801,36 @@
             }
           }
           if (invalidIVs === false) {
-            if (oldUserIVs[uIV_aIV] && oldUserIVs[uIV_dIV] && oldUserIVs[uIV_sIV]) {
+            if (oldUserIVs[UIV_AIV] && oldUserIVs[UIV_DIV] && oldUserIVs[UIV_SIV]) {
               /* oldUserIVs were valid, need to be removed from this league's DataTable */
-              //console.log("770: findAddDataTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(oldUserIVs[uIV_rank][l]-1)+", 0, false, true)...");
-              pinUnpinRow(tableIDs[l], oldUserIVs[uIV_rank][l]-1, 0, false, true);
+              //console.log("770: findAddDataTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(oldUserIVs[UIV_RANK][l]-1)+", 0, false, true)...");
+              pinUnpinRow(tableIDs[l], oldUserIVs[UIV_RANK][l]-1, 0, false, true);
             }
             /* Find this new IV set in DataTable and update userIVs with correct data */
             const dt = $(tableIDs[l]).DataTable();
             const rows = dt.rows().data();
             const numRows = dt.rows().count();
-            /* Use previous hiddenSortVal if it exists, otherwise initialize using numRows for this league DataTable */
-            var hiddenSortVal = (userIVs[rowNum][uIV_hidSortRank]/1 < 0) ? userIVs[rowNum][uIV_hidSortRank] : (userIVs.length-1)-numRows/1;
+            /* Initialize using numRows for this league DataTable */
+            var hiddenSortVal = (userIVs.length-1)-numRows/1;
             /* Find this IV set's row in DataTable */
             for (i=0; i<numRows; i++) {
-              if (rows[i][dt_aIV] == atk && rows[i][dt_dIV] == def && rows[i][dt_sIV] == sta) {
-                console.log("findAddDataTableRow: found row at i="+i+", rows[i][dt_aIV]("+rows[i][dt_aIV]+") == ("+atk+")atk, rows[i][dt_dIV]("+rows[i][dt_dIV]+") == ("+def+")def, rows[i][dt_sIV]("+rows[i][dt_sIV]+") == ("+sta+")sta");
-                console.log("findAddDataTableRow: rows["+i+"]:"+JSON.stringify(rows[i]));
-                console.log("813: findAddDataTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(rows[i][dt_rank]-1)+", "+hiddenSortVal+", true)...");
-                pinUnpinRow(tableIDs[l], rows[i][dt_rank]-1, hiddenSortVal, true);
-                /* It is correct to have rows[i][dt_rank]-1 above for rowNum and rows[i][dt_rank] below for rankArray */
-                rankArray[l] = rows[i][dt_rank];
-                spArray[l] = rows[i][dt_statProd];
-                lvlArray[l] = rows[i][dt_lvl];
+              if (rows[i][DT_AIV] == atk && rows[i][DT_DIV] == def && rows[i][DT_SIV] == sta) {
+                //console.log("findAddDataTableRow: found row at i="+i+", rows[i][DT_AIV]("+rows[i][DT_AIV]+") == ("+atk+")atk, rows[i][DT_DIV]("+rows[i][DT_DIV]+") == ("+def+")def, rows[i][DT_SIV]("+rows[i][DT_SIV]+") == ("+sta+")sta");
+                //console.log("findAddDataTableRow: rows["+i+"]:"+JSON.stringify(rows[i]));
+                //console.log("821: findAddDataTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(rows[i][DT_RANK]-1)+", "+hiddenSortVal+", true)...");
+                pinUnpinRow(tableIDs[l], rows[i][DT_RANK]-1, hiddenSortVal, true);
+                /* It is correct to have rows[i][DT_RANK]-1 above for rowNum and rows[i][DT_RANK] below for rankArray */
+                rankArray[l] = rows[i][DT_RANK];
+                spArray[l] = rows[i][DT_STAT_PROD];
+                lvlArray[l] = rows[i][DT_LVL];
                 hiddenRowIndexArray[l] = rows[i][hiddenRowIndex];
-                console.log("820: findAddDataTableRow: Updated userIVs["+rowNum+"]: "+userIVs[rowNum]);
-                if (sha || oldUserIVs[uIV_shdw]) {
-                  console.log("822: findAddDataTableRow: calling manageShadows("+sha, tableIDs[l], i+")");
-                  manageShadows(sha, tableIDs[l], i);
-                } else if (pure || oldUserIVs[uIV_pure]) {
-                  console.log("825: findAddDataTableRow: calling managePurified("+pure, tableIDs[l], i+")");
-                  managePurified(pure, tableIDs[l], i);
+                /* Update shadow and purified stats / costs */
+                if (sha || oldUserIVs[UIV_SHDW]) {
+                  //console.log("822: findAddDataTableRow: calling manageShadows("+sha, tableIDs[l], rows[i][DT_RANK]-1+")");
+                  manageShadows(sha, tableIDs[l], rows[i][DT_RANK]-1, rowNum);
+                } else if (pure || oldUserIVs[UIV_PURE]) {
+                  //console.log("825: findAddDataTableRow: calling managePurified("+pure, tableIDs[l], rows[i][DT_RANK]-1+")");
+                  managePurified(pure, tableIDs[l], rows[i][DT_RANK]-1, rowNum);
                 }
                 break;
               }
@@ -835,59 +838,73 @@
             /* Update pageLen before re-draw incase it was changed by #inputTable onChange event */
             dt.page.len(pageLen).draw();
           }
+          console.log("findAddDataTableRow: bp4 -- UserIVs:"+JSON.stringify(userIVs));
         }
+        console.log("findAddDataTableRow: overwriting userIVs[rowNum]:"+JSON.stringify(userIVs[rowNum])+", using hiddenRowIndexArray:"+JSON.stringify(hiddenRowIndexArray));
         userIVs[rowNum] = [atk, def, sta, sha, pure, rankArray, spArray, lvlArray, hiddenRowIndexArray];
         console.log("findAddDataTableRow: All done, userIVs now: "+JSON.stringify(userIVs));
       }
 
-      function manageShadows(apply, tableID, rowNum) {
-        const dt = $(tableID).DataTable();
-        const rowData = dt.rows().data()[rowNum];
+      function manageShadows(apply, tableID, dtRowNum, uIVrowNum) {
+        var T0,pvpAtk,pvpDef, monInfo, level;
+        if (perfTiming) {T0 = performance.now();}
 
-        console.log("manageShadows: received apply:"+apply+", tableID:"+tableID+", rowNum:"+rowNum);
+        //console.log("manageShadows: received apply:"+apply+", tableID:"+tableID+", dtRowNum:"+dtRowNum);
+        const dt = $(tableID).DataTable();
+        const rowData = dt.rows().data()[uIVrowNum];
+        console.log("rowData: "+JSON.stringify(rowData));
         
-        /* Update XL Candy Cost */ dt_lvl
-        var XL = XLcandy(rowData[dt_lvl]/1 - 40, apply);
-        dt.cell(rowNum, dt_xl).data(XL);
+        /* Update XL Candy Cost */ DT_LVL
+        var XL = XLcandy(rowData[DT_LVL]/1 - 40, apply);
+        dt.cell(dtRowNum, DT_XL).data(XL);
         
         /* Update Stardust Candy Cost */
-        var dust = stardust(minLvl/1, rowData[dt_lvl], apply);
-        dt.cell(rowNum, dt_dust).data(dust);
+        var dust = stardust(minLvl/1, rowData[DT_LVL], apply);
+        dt.cell(dtRowNum, DT_DUST).data(dust);
 
-        /* Update PvP Attack */
-        var modifier = (apply == true) ? 1.2 : 1/1.2;
-        /* TODO: Fix number drift from rounding */
-        var pvpAtk = numOut(rowData[dt_pvpAtk]*modifier,dec);
-        dt.cell(rowNum, dt_pvpAtk).data(pvpAtk);
-        /* Update PvP Defense */
-        var modifier = (apply == true) ? 0.8 : 1/0.8;
-        /* TODO: Fix number drift from rounding */
-        var pvpDef = numOut(rowData[dt_pvpDef]*modifier,dec);
-        dt.cell(rowNum, dt_pvpDef).data(pvpDef);
+        /* Update PvP Attack and Defense */
+        if (apply == true) {
+          pvpAtk = numOut(rowData[DT_PVP_ATK]*1.2,dec);
+          pvpDef = numOut(rowData[DT_PVP_DEF]*0.8,dec);
+        } else {
+          var monInfo = pokeListObj[mon].split(",");
+          var level = (rowData[DT_LVL] - 1) * 2;
+          pvpAtk = numOut((parseInt(monInfo[1]) + rowData[DT_AIV])*cpm[level],dec);
+          console.log("pvpAtk: "+pvpAtk);
+          pvpDef = numOut((parseInt(monInfo[2]) + rowData[DT_DIV])*cpm[level],dec);
+          console.log("pvpDef: "+pvpDef);
+        }
+        /* TODO: Add purple highlight to modified cells */
+        dt.cell(dtRowNum, DT_PVP_ATK).data(pvpAtk);
+        dt.cell(dtRowNum, DT_PVP_DEF).data(pvpDef);
 
-        /* Table is redrawn at end of calling function */
-        //dt.draw();
+        if (perfTiming) {stopTiming(T0, "manageShadows");}
+        return;
       }
 
-      function managePurified(apply, tableID, rowNum) {
+      function managePurified(apply, tableID, dtRowNum, uIVrowNum) {
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
+
         const dt = $(tableID).DataTable();
-        const rowData = dt.rows().data()[rowNum];
-        console.log("managePurified: received apply:"+apply+", tableID:"+tableID+", rowNum:"+rowNum);
-        console.log("managePurified: XL:"+JSON.stringify(rowData[dt_xl])+", dust:"+JSON.stringify(rowData[dt_dust]));
+        const rowData = dt.rows().data()[uIVrowNum];
+        console.log("managePurified: received apply:"+apply+", tableID:"+tableID+", dtRowNum:"+dtRowNum);
+        console.log("managePurified: XL:"+JSON.stringify(rowData[DT_XL])+", dust:"+JSON.stringify(rowData[DT_DUST]));
         
         /* Update XL Candy Cost */
-        var XL = XLcandy(rowData[dt_lvl]/1 - 40, false, apply);
-        dt.cell(rowNum, dt_xl).data(XL);
-        //rowData[dt_xl].nodes().to$().css({color: "cyan"});
+        var XL = XLcandy(rowData[DT_LVL]/1 - 40, false, apply);
+        dt.cell(dtRowNum, DT_XL).data(XL);
+        /* TODO: Add cyan highlight to modified cells */
+        //rowData[DT_XL].nodes().to$().css({color: "cyan"});
 
         /* Update Stardust Candy Cost */
-        var dust = stardust(minLvl/1, rowData[dt_lvl], false, apply);
-        dt.cell(rowNum, dt_dust).data(dust);
-        //rowData[dt_dust].nodes().to$().css({color: "cyan"});
+        var dust = stardust(minLvl/1, rowData[DT_LVL], false, apply);
+        dt.cell(dtRowNum, DT_DUST).data(dust);
+        //rowData[DT_DUST].nodes().to$().css({color: "cyan"});
         console.log("managePurified: Calculated Purified XL:"+XL+", dust:"+dust);
         
-        /* Table is redrawn at end of calling function */
-        //dt.draw();
+        if (perfTiming) {stopTiming(T0, "managePurified");}
+        return;
       }
 
       function checkSetAllLeagueOptions(inputLeague) {
@@ -1101,24 +1118,28 @@
                     console.log("checkURL: Detected inputIVs[4] true ("+inputIVs[4]+")");
                     purified = true;
                   }
+                  /* TODO: Ensure shadow / purified costs are adjusted correctly */
                   console.log("checkURL: Calling newInputTableRow("+inputIVs[0],inputIVs[1],inputIVs[2],shadow,purified+")");
                   newInputTableRow(inputIVs[0],inputIVs[1],inputIVs[2],shadow,purified);
                 }
                 break;
               case "mA":
-                mA = values[i].split("=")[1];
+              case "vA":
+                sbVals[DT_PVP_ATK] = values[i].split("=")[1];
                 filterMod = true;
                 break;
               case "mD":
-                mD = values[i].split("=")[1];
+              case "vD":
+                sbVals[DT_PVP_DEF] = values[i].split("=")[1];
                 filterMod = true;
                 break;
               case "mHP":
-                mHP = values[i].split("=")[1];
+              case "vHP":
+                sbVals[DT_PVP_HP] = values[i].split("=")[1];
                 filterMod = true;
                 break;
-              case "mBP":
-                mBP = values[i].split("=")[1];
+              case "vBP":
+                sbVals[DT_BULK_PROD] = values[i].split("=")[1];
                 filterMod = true;
                 break;
               /*case "p":
@@ -1183,16 +1204,16 @@
           }
           if (filterMod) {
             /* TODO: Finish this, decide on how to handle all of this, especially bulk product */
-            /* Convert mA / mD / mHP / mBP into Custom Search Builder */
+            /* Convert mA / vD / vHP / vBP into Custom Search Builder */
             /* searchBuilderTitles: Rank | Level | CP | Minimum Level CP | Attack IV | Defense IV | Stamina IV
              * XL Candy Cost | Stardust Cost | CMP vs. Rank1 (W/L/T) | CMP vs. All (Win %) | 
              * Attack Stat | Defense Stat | HP Stat | Stat Product | Stat Prod Perfection (%) | Bulk Product */
-            var mAstring="", mDstring="", mHPstring="", mBPstring="";
-            if (mA > 0) {mAstring = '{ "condition": ">=", "data": "Attack Stat", "type": "num", "value": [ "'+mA+'" ] }, ';}
-            if (mD > 0) {mDstring = '{ "condition": ">=", "data": "Defense Stat", "type": "num", "value": [ "'+mD+'" ] }, ';}
-            if (mHP > 0) {mHPstring = '{ "condition": ">=", "data": "HP Stat", "type": "num", "value": [ "'+mHP+'" ] }, ';}
-            if (mBP > 0) {mBPstring = '{ "condition": ">=", "data": "Bulk Product", "type": "num", "value": [ "'+mBP+'" ] }, ';}
-            sbSearch = '{ "criteria": [ '+mAstring+''+mDstring+''+mHPstring+''+mBPstring+'], "logic": "AND" }';
+            var strA="", strD="", strHP="", strBP="";
+            if (sbVals[DT_PVP_ATK] > 0) {strA = '{ "condition": '+sbConds[DT_PVP_ATK]+', "data": "Attack Stat", "type": "num", "value": [ "'+sbVals[DT_PVP_ATK]+'" ] }, ';}
+            if (sbVals[DT_PVP_DEF] > 0) {strD = '{ "condition": '+sbConds[DT_PVP_DEF]+', "data": "Defense Stat", "type": "num", "value": [ "'+sbVals[DT_PVP_DEF]+'" ] }, ';}
+            if (sbVals[DT_PVP_HP] > 0) {strHP = '{ "condition": '+sbConds[DT_PVP_HP]+', "data": "HP Stat", "type": "num", "value": [ "'+sbVals[DT_PVP_HP]+'" ] }, ';}
+            if (sbVals[DT_BULK_PROD] > 0) {strBP = '{ "condition": '+sbConds[DT_BULK_PROD]+', "data": "Bulk Product", "type": "num", "value": [ "'+sbVals[DT_BULK_PROD]+'" ] }, ';}
+            sbSearch = '{ "criteria": [ '+strA+''+strD+''+strHP+''+strBP+'], "logic": '+sbLogic+' }';
             /* Remove trailing comma (,) after criteria before logic and convert to JSON */
             sbSearch = $.parseJSON(sbSearch.replace('] }, ], "logic":','] } ], "logic":'));
             //console.log("Built sbSearch as:'"+JSON.stringify(sbSearch)+"'");
@@ -1325,6 +1346,7 @@
           /* Create a DataTable from the mon ranks object */
           //console.log("main: Calling gDT("+ranks[l].numRanks, ", "+keys.length+", "+l+")");
           generateDataTable(ranks[l], keys, l);
+          console.log("main: Finished gDT, userIVs now:("+JSON.stringify(userIVs));
         }
         /* Also show other tables if the user has enabled them */
         if (cge) {displayPvPokeEvoGroup();}
@@ -1345,7 +1367,7 @@
         for (l=0; l<league.length; l++) {
           var keys = Object.keys(ranks[i]);
           for (i=0; i<userIVs.length; i++) {
-            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks[i], keys, userIVs[i][uIV_statProd][i], floor, userIVs[i][uIV_aIV], userIVs[i][uIV_dIV], userIVs[i][uIV_sIV], league[i], leagueName[i]);
+            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks[i], keys, userIVs[i][UIV_STAT_PROD][i], floor, userIVs[i][UIV_AIV], userIVs[i][UIV_DIV], userIVs[i][UIV_SIV], league[i], leagueName[i]);
           }
           document.getElementById("tradeOutput").innerHTML += "<br />"
         }
@@ -1375,8 +1397,8 @@
         newRow.innerHTML = "<tr><td><button class='circle minus' id='minus[0]'></button></td><td><select title='Your Attack IV' id='aIV[0]'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' id='dIV[0]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' id='sIV[0]'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><input id='shdw[0]' type='checkbox'></td><td><input id='pure[0]' type='checkbox'></td></tr>";  
         userIVs.push([atk,def,sta,sha,pure,[],[],[],0]);
         
-        /* clear min stat filters, reset pageLen and lenMenu, and filterMod */
-        mA = 0; mD = 0; mHP = 0; mBP = 0;
+        /* clear searchBuilder arrays, reset pageLen and lenMenu, and filterMod */
+        sbVals=[]; sbConds=[]; sbLogic="";
         pageLen = 10;
         originalPL = 10;
         lenMenu = [ [3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"] ];
@@ -1423,7 +1445,7 @@
           /* See if any input IVs are shadow Mon */
           var shadowMon = false;
           for (var i=0; i<userIVs.length; i++) {
-            if (userIVs[i][uIV_shdw] === true) {
+            if (userIVs[i][UIV_SHDW] === true) {
               shadowMon = true;
             }
           }
@@ -1542,24 +1564,24 @@
           for (i=0; i<userIVs.length; i++) {
             validIVs = false;
             var pvpokeName = name;
-            if (userIVs[i][uIV_shdw]) {
+            if (userIVs[i][UIV_SHDW]) {
               pvpokeName = name + "_shadow";
             }
-            if (userIVs[i][uIV_aIV] === "") {
-              console.log("skipping incomplete row, i:"+i+", aIV:"+userIVs[i][uIV_aIV]+", dIV:"+userIVs[i][uIV_dIV]+", sIV:"+userIVs[i][uIV_sIV]);
+            if (userIVs[i][UIV_AIV] === "") {
+              console.log("skipping incomplete row, i:"+i+", aIV:"+userIVs[i][UIV_AIV]+", dIV:"+userIVs[i][UIV_DIV]+", sIV:"+userIVs[i][UIV_SIV]);
               continue;
             } else {
               if (validIVs === false) {
                 validIVs = true;
               }
             }
-            var row = pvpokeName+",,,,"+userIVs[i][uIV_lvl][l]+","+userIVs[i][uIV_aIV]+","+userIVs[i][uIV_dIV]+","+userIVs[i][uIV_sIV];
+            var row = pvpokeName+",,,,"+userIVs[i][UIV_LVL][l]+","+userIVs[i][UIV_AIV]+","+userIVs[i][UIV_DIV]+","+userIVs[i][UIV_SIV];
             if (row.length > maxWidth) {
               maxWidth = row.length;
             }
             if (cgeData !== "") {
               var newline = String.fromCharCode(13, 10); /*https://stackoverflow.com/a/28106346*/
-              cgeData += newline+pvpokeName+",,,,"+userIVs[i][uIV_lvl][l]+","+userIVs[i][uIV_aIV]+","+userIVs[i][uIV_dIV]+","+userIVs[i][uIV_sIV];
+              cgeData += newline+pvpokeName+",,,,"+userIVs[i][UIV_LVL][l]+","+userIVs[i][UIV_AIV]+","+userIVs[i][UIV_DIV]+","+userIVs[i][UIV_SIV];
             }
             else {
               cgeData = row;
@@ -1585,7 +1607,7 @@
 
         /*update the URL with search parameters*/
         var URL = window.location.href.split("?")[0];
-        /*URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2";*/
+        /*URL = "mon=Carbink&r=23&cp=1500&set=0000001&vA=81.38&mD=247.67&mHP=128&dec=2";*/
         var selectedLeague = document.getElementById("league").value;
         var selectedLeagueName = $("#league").find(":selected").text();
         var link = URL + "?mon="+mon+"&r="+pageLen+"&cp="+selectedLeague;
@@ -1606,7 +1628,7 @@
             const dt = $(tableIDs[i]).DataTable();
             const visCols = dt.columns().visible().toArray();
             /* Convert true/false to 1/0 for URL */
-            for (var j=0; j<=dt_bulkProd; j++) {
+            for (var j=0; j<=DT_BULK_PROD; j++) {
               col += Number(visCols[j]);
             }
             const leagueAcronym = tableIDs[i].split("_")[1];
@@ -1619,24 +1641,24 @@
         /* TODO: Implement Family Evo Tables */
         if (family && fel !== "mirror") {link += "&fel="+fel;}
         if (dec > 1) {link += "&dec="+dec;}
-        if (userIVs[0][uIV_aIV] && userIVs[0][uIV_dIV] && userIVs[0][uIV_sIV]) {
+        if (userIVs[0][UIV_AIV] && userIVs[0][UIV_DIV] && userIVs[0][UIV_SIV]) {
           var IVs = "";
           for (i=0; i<userIVs.length; i++) {
             /* Don't add incomplete IVs to URL */
-            if (userIVs[i][uIV_aIV] && userIVs[i][uIV_dIV] && userIVs[i][uIV_sIV]) {
+            if (userIVs[i][UIV_AIV] && userIVs[i][UIV_DIV] && userIVs[i][UIV_SIV]) {
               if (i > 0) {IVs += "-";} else {IVs = "";}
-              IVs += userIVs[i][uIV_aIV] + "_" + userIVs[i][uIV_dIV] + "_" + userIVs[i][uIV_sIV];
-              if (userIVs[i][uIV_shdw] === true || userIVs[i][uIV_pure] === true) {
-                console.log("Detected at least one true between pure("+userIVs[i][uIV_pure]+") and shdw("+userIVs[i][uIV_shdw]+")");
+              IVs += userIVs[i][UIV_AIV] + "_" + userIVs[i][UIV_DIV] + "_" + userIVs[i][UIV_SIV];
+              if (userIVs[i][UIV_SHDW] === true || userIVs[i][UIV_PURE] === true) {
+                //console.log("Detected at least one true between pure("+userIVs[i][UIV_PURE]+") and shdw("+userIVs[i][UIV_SHDW]+")");
                 /* If at least one is true, need to add to URL */
-                if (userIVs[i][uIV_pure] === false) {
-                  console.log("Just adding shdw to URL because pure("+userIVs[i][uIV_pure]+") and shdw("+userIVs[i][uIV_shdw]+")");
+                if (userIVs[i][UIV_PURE] === false) {
+                  //console.log("Just adding shdw to URL because pure("+userIVs[i][UIV_PURE]+") and shdw("+userIVs[i][UIV_SHDW]+")");
                   /* If purified is false, URL is simple */
-                  IVs += "_" + userIVs[i][uIV_shdw];
+                  IVs += "_" + userIVs[i][UIV_SHDW];
                 } else {
-                  console.log("Adding both to URL because pure("+userIVs[i][uIV_pure]+") and shdw("+userIVs[i][uIV_shdw]+")");
+                  //console.log("Adding both to URL because pure("+userIVs[i][UIV_PURE]+") and shdw("+userIVs[i][UIV_SHDW]+")");
                   /* Otherwise need to include both shdw and pure */
-                  IVs += "_" + userIVs[i][uIV_shdw] + "_" + userIVs[i][uIV_pure];
+                  IVs += "_" + userIVs[i][UIV_SHDW] + "_" + userIVs[i][UIV_PURE];
                 }
               }
             }
@@ -1695,7 +1717,7 @@
           var userIVs = ivStr[j].match(/\d+/g);
           if (userIVs.length<2) {continue;} /* skip blank/incomplete entries */
           console.log("readIVs::IVs:insering userIVs: "+userIVs+" (length:"+userIVs.length+")");
-          newInputTableRow(userIVs[uIV_aIV],userIVs[uIV_dIV],userIVs[uIV_sIV],userIVs[uIV_shdw],userIVs[uIV_pure]);
+          newInputTableRow(userIVs[UIV_AIV],userIVs[UIV_DIV],userIVs[UIV_SIV],userIVs[UIV_SHDW],userIVs[UIV_PURE]);
         }
         console.log("readIVs: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);
         main();
@@ -1732,26 +1754,26 @@
             /* Process user IVs before we output this row's data */
             for (var k=0; k<userIVsclone.length; k++) {
               /* Ensure this IV set is complete */
-              if (userIVsclone[k][uIV_aIV] && userIVsclone[k][uIV_dIV] && userIVsclone[k][uIV_sIV]) {
+              if (userIVsclone[k][UIV_AIV] && userIVsclone[k][UIV_DIV] && userIVsclone[k][UIV_SIV]) {
                 /* Check if these are IVs we are looking for */
-                if (userIVsclone[k][uIV_aIV]/1 === leagueRanks[keys[i]][j].IVs.A/1
-                && userIVsclone[k][uIV_dIV]/1 === leagueRanks[keys[i]][j].IVs.D/1
-                && userIVsclone[k][uIV_sIV]/1 === leagueRanks[keys[i]][j].IVs.S/1) {
+                if (userIVsclone[k][UIV_AIV]/1 === leagueRanks[keys[i]][j].IVs.A/1
+                && userIVsclone[k][UIV_DIV]/1 === leagueRanks[keys[i]][j].IVs.D/1
+                && userIVsclone[k][UIV_SIV]/1 === leagueRanks[keys[i]][j].IVs.S/1) {
                   /* Find this user IV set in real arrays */
                   for (var u=0; u<userIVs.length; u++) {
-                    if (userIVs[u][uIV_aIV] && userIVs[u][uIV_dIV] && userIVs[u][uIV_sIV]) {
+                    if (userIVs[u][UIV_AIV] && userIVs[u][UIV_DIV] && userIVs[u][UIV_SIV]) {
                       /* Do not divide by 1 to avoid converting blank to 0 */
-                      if (userIVsclone[k][uIV_aIV] === userIVs[u][uIV_aIV]
-                      && userIVsclone[k][uIV_dIV] === userIVs[u][uIV_dIV]
-                      && userIVsclone[k][uIV_sIV] === userIVs[u][uIV_sIV]) {
+                      if (userIVsclone[k][UIV_AIV] === userIVs[u][UIV_AIV]
+                      && userIVsclone[k][UIV_DIV] === userIVs[u][UIV_DIV]
+                      && userIVsclone[k][UIV_SIV] === userIVs[u][UIV_SIV]) {
                         /* Save this user IV's rank for this league[l] for later */
-                        userIVs[u][uIV_rank][l] = actualRank;
-                        userIVs[u][uIV_statProd][l] = keys[i].split(".")[0];
-                        userIVs[u][uIV_lvl][l] = leagueRanks[keys[i]][j].L;
+                        userIVs[u][UIV_RANK][l] = actualRank;
+                        userIVs[u][UIV_STAT_PROD][l] = keys[i].split(".")[0];
+                        userIVs[u][UIV_LVL][l] = leagueRanks[keys[i]][j].L;
                         /* Set hiddenSortRank to ensure rows pin to top */
                         hiddenSortRank = u-leagueRanks.numRanks;
-                        userIVs[u][uIV_hidSortRank] = hiddenSortRank;
-                        //console.log("hiddenSortRank set to: "+hiddenSortRank+" for "+userIVsclone[k][uIV_aIV]+"/"+userIVsclone[k][uIV_dIV]+"/"+userIVsclone[k][uIV_sIV]);
+                        userIVs[u][UIV_HIDDEN_SORT_RANK] = hiddenSortRank;
+                        //console.log("hiddenSortRank set to: "+hiddenSortRank+" for "+userIVsclone[k][UIV_AIV]+"/"+userIVsclone[k][UIV_DIV]+"/"+userIVsclone[k][UIV_SIV]);
                       }
                     }
                   }
@@ -1835,7 +1857,7 @@
 
         /* TODO_Someday: Remove colVisLock hack to prevent show/hide table firing multiple colVis events */
         colVisLock = true;
-        var SearchBuilderState = false;
+        var priorSearchBuilderDetails;
         
         //console.log("Building "+tableIDs[l]+" DataTable with l="+l+", domWidth[l]:"+domWidth[l]+", infoText[l]:"+infoText[l]+",infoFilteredText[l]:"+infoFilteredText[l]);
         const leagueAcronym = tableIDs[l].split("_")[1];
@@ -1844,38 +1866,57 @@
           columnDefs: [
               /* This is just for reference and doesn't control header names */
               {"className": "dt-center", "targets": "_all"},
-              { "name": "#", "searchBuilderTitle": "Rank", "targets": dt_rank/*0*/},
-              { "name": "Lvl", "searchBuilderTitle": "Level", "targets": dt_lvl/*1*/},
-              { "name": "CP", "targets": dt_cp/*2*/},
-              { "name": "minLvl CP", "searchBuilderTitle": "Minimum Level CP", "targets": dt_mlCP/*3*/, "title": "L"+minLvl+" CP", "visible": false},
-              { "name": "Atk IV", "searchBuilderTitle": "Attack IV", "targets": dt_aIV/*4*/},
-              { "name": "Def", "searchBuilderTitle": "Defense IV", "targets": dt_dIV/*5*/},
-              { "name": "Stam", "searchBuilderTitle": "Stamina IV", "targets": dt_sIV/*6*/},
-              { "name": "Perfect", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": dt_perf/*7*/},
-              { "name": "XL", "searchBuilderTitle": "XL Candy Cost", "targets": dt_xl/*8*/, "visible": false},
-              { "name": "Dust", "searchBuilderTitle": "Stardust Cost", "targets": dt_dust/*9*/, "visible": false},
-              { "name": "R1 CMP", "searchBuilderTitle": "CMP vs. Rank1 (W/L/T)", "targets": dt_r1CMP/*10*/, "visible": false},
-              { "name": "All CMP", "searchBuilderTitle": "CMP vs. All (Win %)", "targets": dt_allCMP/*11*/, "visible": false},
-              { "name": "PvP Atk", "searchBuilderTitle": "Attack Stat", "targets": dt_pvpAtk/*12*/},
-              { "name": "Def", "searchBuilderTitle": "Defense Stat", "targets": dt_pvpDef/*13*/},
-              { "name": "HP",  "searchBuilderTitle": "HP Stat","targets": dt_pvpHP/*14*/},
-              { "name": "Stat Prod", "searchBuilderTitle": "Stat Product", "targets": dt_statProd/*15*/},
-              { "name": "Bulk Prod", "searchBuilderTitle": "Bulk Product", "targets": dt_bulkProd/*16*/},
+              { "name": "#", "searchBuilderTitle": "Rank", "targets": DT_RANK/*0*/},
+              { "name": "Lvl", "searchBuilderTitle": "Level", "targets": DT_LVL/*1*/},
+              { "name": "CP", "targets": DT_CP/*2*/},
+              { "name": "minLvl CP", "searchBuilderTitle": "Minimum Level CP", "targets": DT_ML_CMP/*3*/, "title": "L"+minLvl+" CP", "visible": false},
+              { "name": "Atk IV", "searchBuilderTitle": "Attack IV", "targets": DT_AIV/*4*/},
+              { "name": "Def", "searchBuilderTitle": "Defense IV", "targets": DT_DIV/*5*/},
+              { "name": "Stam", "searchBuilderTitle": "Stamina IV", "targets": DT_SIV/*6*/},
+              { "name": "Perfect", "searchBuilderTitle": "Stat Prod Perfection (%)", "targets": DT_PERF/*7*/},
+              { "name": "XL", "searchBuilderTitle": "XL Candy Cost", "targets": DT_XL/*8*/, "visible": false},
+              { "name": "Dust", "searchBuilderTitle": "Stardust Cost", "targets": DT_DUST/*9*/, "visible": false},
+              { "name": "R1 CMP", "searchBuilderTitle": "CMP vs. Rank1 (W/L/T)", "targets": DT_R1_CMP/*10*/, "visible": false},
+              { "name": "All CMP", "searchBuilderTitle": "CMP vs. All (Win %)", "targets": DT_ALL_CMP/*11*/, "visible": false},
+              { "name": "PvP Atk", "searchBuilderTitle": "Attack Stat", "targets": DT_PVP_ATK/*12*/},
+              { "name": "Def", "searchBuilderTitle": "Defense Stat", "targets": DT_PVP_DEF/*13*/},
+              { "name": "HP",  "searchBuilderTitle": "HP Stat","targets": DT_PVP_HP/*14*/},
+              { "name": "Stat Prod", "searchBuilderTitle": "Stat Product", "targets": DT_STAT_PROD/*15*/},
+              { "name": "Bulk Prod", "searchBuilderTitle": "Bulk Product", "targets": DT_BULK_PROD/*16*/},
               { "name": "AtkHP Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 17, "visible": false},
               { "name": "cmpStat Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 18, "visible": false},
               { "name": "aadss Stat Prod", "searchBuilderTitle": "2xA*D*2xHP", "targets": 19, "visible": false},
               { "name": "custom Stat Prod", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 20, "visible": false},
               { "targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false, className: 'noVis'}
             ],
-            createdRow: (row, data, index) => {
+            createdRow: (row, data, dtRowIndex) => {
               /* Could use the function here, but this is faster */
               if (data[hiddenRowIndex] !== 0) {
-                if (data[dt_rank]/1 < (0.02442/1*leagueRanks.numRanks/1)) {
+                if (data[DT_RANK]/1 < (0.02442/1*leagueRanks.numRanks/1)) {
                   $(row).addClass("good"); /*green for "good"*/
-                } else if (data[dt_rank]/1 < (0.2442/1*leagueRanks.numRanks/1)) {
+                } else if (data[DT_RANK]/1 < (0.2442/1*leagueRanks.numRanks/1)) {
                   $(row).addClass("ok"); /*orange for "ok"*/
                 } else {
                   $(row).addClass("rubbish"); /*red for "rubbish"*/
+                }
+
+                /* Determine if this row is shadow or purified */
+                console.log("gDT: createdRow: Searching for data[DT_AIV]:"+data[DT_AIV]+", data[DT_DIV]:"+data[DT_DIV]+", data[DT_SIV]:"+data[DT_SIV]);
+                console.log("gDT: createdRow: with userIVs:"+JSON.stringify(userIVs));
+                for (var uivIndex=0; uivIndex<userIVs.length; uivIndex++) {
+                  if (data[DT_AIV] == userIVs[uivIndex][UIV_AIV] && data[DT_DIV] == userIVs[uivIndex][UIV_DIV] && data[DT_SIV] == userIVs[uivIndex][UIV_SIV]) {
+                    console.log("gDT: createdRow: "+data[DT_AIV]+" == "+userIVs[uivIndex][UIV_AIV]+" && "+data[DT_DIV]+" == "+userIVs[uivIndex][UIV_DIV]+" && "+data[DT_SIV]+" == "+userIVs[uivIndex][UIV_SIV]+", userIVs[uivIndex][UIV_SHDW]:"+userIVs[uivIndex][UIV_SHDW]+", userIVs[uivIndex][UIV_PURE]:"+userIVs[uivIndex][UIV_PURE]);
+                    if (userIVs[uivIndex][UIV_SHDW] == true) {
+                      console.log("gDT: createdRow: calling manageShadows("+userIVs[uivIndex][UIV_SHDW], tableIDs[l], dtRowIndex, uivIndex+")");
+                      manageShadows(userIVs[uivIndex][UIV_SHDW], tableIDs[l], dtRowIndex, uivIndex);
+                    } else if (userIVs[uivIndex][UIV_PURE] == true) {
+                      console.log("gDT: createdRow: calling managePurified("+userIVs[uivIndex][UIV_PURE], tableIDs[l], dtRowIndex, uivIndex+")");
+                      managePurified(userIVs[uivIndex][UIV_PURE], tableIDs[l], dtRowIndex, uivIndex);
+                    }
+                    break;
+                  } else {
+                    console.log("gDT: createdRow: "+data[DT_AIV]+" != "+userIVs[uivIndex][UIV_AIV]+" || "+data[DT_DIV]+" != "+userIVs[uivIndex][UIV_DIV]+" || "+data[DT_SIV]+" != "+userIVs[uivIndex][UIV_SIV]);
+                  }
                 }
               }
             },
@@ -1883,40 +1924,32 @@
             deferRender: true,
             destroy: true,
             dom: domWidth[l],
-            /*drawCallback: function( settings ) {
-              return;
-              console.log("SearchBuilderState:"+SearchBuilderState);
+            drawCallback: function( settings ) {
               var api = new $.fn.dataTable.Api( settings );
-              console.log("Row1:"+JSON.stringify(api.row(1).data()));
-              if (SearchBuilderState === false) {
-                //DataTable not yet initialized
-                return;
-              }
-              console.log("SB details:"+JSON.stringify(api.searchBuilder.getDetails()));
-              if (SearchBuilderState === true){
-                //Initialize SearchBuilderState once initComplete finishes
-                SearchBuilderState = api.searchBuilder.getDetails();
-                return;
-              }
-              if (SearchBuilderState !== api.searchBuilder.getDetails()) {
-                console.log("Detected change in Search Builder state from "+JSON.stringify(SearchBuilderState)+" to "+JSON.stringify(api.searchBuilder.getDetails()));
-                SearchBuilderState = api.searchBuilder.getDetails();
-                //TODO: Call UpdateURL if changes
-              }
-            },*/
+
+              setTimeout(function() {
+                var updatedSearchBuilderDetails = api.searchBuilder.getDetails();
+                if (JSON.stringify(priorSearchBuilderDetails) !== JSON.stringify(updatedSearchBuilderDetails)) {
+                  //console.log("drawCallback: got pSBD: "+JSON.stringify(priorSearchBuilderDetails));
+                  priorSearchBuilderDetails = processSearchBuilderDetails(updatedSearchBuilderDetails, priorSearchBuilderDetails);
+                  //console.log("drawCallback: set pSBD: "+JSON.stringify(priorSearchBuilderDetails));
+                  updateURL();
+                } else {
+                console.log("drawCallback: Search Builder state did not change!");
+                }
+              }, 100);
+            },
             initComplete: function () {
-              /* Update SearchBuilderState to true once initialized */
-              SearchBuilderState = true;
               /* Show/hide columns per any URL user preferences */
               var colsChanged = false;
               //console.log("before loop colVis["+l+"]:"+JSON.stringify(colVis[l]));
               var currColVis = this.api().columns().visible();
               //console.log("before loop currColVis:"+JSON.stringify(currColVis.toArray()));
               for (var i=0; colVis[l]!==undefined && i<colVis[l].length; i++) {
-                if (i==dt_xl) {
+                if (i==DT_XL) {
                   /* If XL candy is used, need to unhide this column */
                   if ((nonZeroXL === true) || (colVis[l][i] == "1" && currColVis[1] === false)) {
-                    this.api().columns(dt_xl).visible(true);
+                    this.api().columns(DT_XL).visible(true);
                     //console.log('Updated Column '+ i +' visibility to true');
                     colsChanged = true;
                     continue;
@@ -1935,9 +1968,9 @@
               if (colsChanged === false) {
                 //console.log("colsChanged is still false after loop, checking nonZeroXL for XL col visibility...");
                 /* Double check XL candy column visibility */
-                if (nonZeroXL === true && this.api().columns(dt_xl).visible()[0] === false) {
-                  this.api().columns(dt_xl).visible(true);
-                  //console.log('Outside loop: Updated Column '+ dt_xl +' visibility to true');
+                if (nonZeroXL === true && this.api().columns(DT_XL).visible()[0] === false) {
+                  this.api().columns(DT_XL).visible(true);
+                  //console.log('Outside loop: Updated Column '+ DT_XL +' visibility to true');
                   colsChanged = true;
                 }
               }
@@ -1970,7 +2003,8 @@
             pagingType: pageType[l],
             pageLength: pageLen,
             scrollX: true,
-            searching: true
+            searching: true,
+            searchBuilder: {depthLimit: 1}
         });
         /* Help space out Custom Search Builder */
         $("div.br").html('<br/>');
@@ -2017,26 +2051,26 @@
           /* Manage pageLen for user as they add/remove rows */
           if ((pageLen-userIVs.length) < originalPL) {
             /* TODO: Fix length selector blanking out */
-            pageLen++;
+            //pageLen = originalPL + userIVs.length + 1;
             console.log(tableIDs[l]+" onClick: Incremented pageLen to: "+pageLen+", originalPL:"+originalPL);
           }
           
           /* Update hiddenSortRank to "pin" this row to top of table */
           var hiddenSortVal = userIVs.length-dt.rows().count()/1;
           /* Fix userIVs initialized to "default" -/15/15 row, really has 0 userIVs */
-          if (userIVs[0][uIV_aIV] === "") {
+          if (userIVs[0][UIV_AIV] === "") {
             hiddenSortVal = 0-dt.rows().count()/1;
-            //console.log(tableIDs[l]+" onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs[0][uIV_aIV]==="+userIVs[0][uIV_aIV]+" and dt.rows().count()="+dt.rows().count());
+            //console.log(tableIDs[l]+" onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs[0][UIV_AIV]==="+userIVs[0][UIV_AIV]+" and dt.rows().count()="+dt.rows().count());
           } //else {console.log(tableIDs[l]+" onClick: Setting hiddenSortVal="+hiddenSortVal+" because userIVs.length="+userIVs.length+" and dt.rows().count()="+dt.rows().count());}
           /* Pin row to top of DT and add CSS highlighting */
           var d = dt.row(this).data();
           /* Add this row to userIVs and DOM */
           //console.log(tableIDs[l]+" onClick: userIVs before addToCompare: "+JSON.stringify(userIVs));
-          addToCompare(tableIDs[l], d[dt_rank], d[dt_lvl], d[dt_statProd], d[hiddenRowIndex]);
+          addToCompare(tableIDs[l], d[DT_RANK], d[DT_LVL], d[DT_STAT_PROD], d[hiddenRowIndex]);
           //console.log(tableIDs[l]+" onClick: userIVs after addToCompare: "+JSON.stringify(userIVs));
           var newIndex = userIVs.length-1;
           for (var t=0; t<tableIDs.length; t++) {
-            var rowNum = userIVs[newIndex][uIV_rank][t]-1;
+            var rowNum = userIVs[newIndex][UIV_RANK][t]-1;
             //console.log(tableIDs[l]+" onClick: rowNum is now: "+rowNum+" for "+tableIDs[t]);
             /* Highlight and pin this row in each DataTable */
             //console.log(tableIDs[l]+" onClick: Calling pinUnpinRow("+tableIDs[t]+", "+rowNum+", "+hiddenSortVal+", true)...");
@@ -2061,6 +2095,127 @@
         return;
       }
 
+      function processSearchBuilderDetails(newSBD, oldSBD) {
+        /* Function to update global arrays used in tracking URL when searchBuilder.getDetails() changes */
+
+        if ($.isEmptyObject(newSBD)) {
+          console.log("No searchBuilderDetails to process yet, returning newSBD:"+JSON.stringify(newSBD));
+          return newSBD;
+        }
+
+        console.log("Attempting to loop through newSBD.criteria: "+JSON.stringify(newSBD.criteria));
+        console.log("Attempting to loop through oldSBD.criteria: "+JSON.stringify(oldSBD.criteria));
+
+        for (var i=0; i<newSBD.criteria.length; i++) {
+          var T0;
+          if (perfTiming) {T0 = performance.now();}
+          
+          /* Check if we already processed this Filter last time so we only process changes to Filters */
+          if ($.isEmptyObject(oldSBD) === false && JSON.stringify(newSBD.criteria[i]) === JSON.stringify(oldSBD.criteria[i])) {
+            //console.log("Skipping processing newSBD:"+JSON.stringify(newSBD.criteria[i])+" as it is identical to oldSBD:"+JSON.stringify(oldSBD.criteria[i]));
+            continue;
+          }
+
+          console.log("Processing newSBD.criteria["+i+"].data: "+JSON.stringify(newSBD.criteria[i].data));
+          switch (newSBD.criteria[i].data) {
+            /* DT_RANK | DT_LVL | DT_CP | DT_ML_CMP | DT_AIV | DT_DIV | DT_SIV | DT_PERF | DT_XL | DT_DUST */
+            /* DT_R1_CMP | DT_ALL_CMP | DT_PVP_ATK | DT_PVP_DEF | DT_PVP_HP | DT_STAT_PROD | DT_BULK_PROD */
+            case "Rank":
+              sbVals[DT_RANK] = newSBD.criteria[i].value;
+              sbConds[DT_RANK] = newSBD.criteria[i].condition;
+              //console.log("Found Rank: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_RANK]="+sbVals[DT_RANK]+", sbConds[DT_RANK]="+sbConds[DT_RANK]);
+              break;
+            case "Level":
+              sbVals[DT_LVL] = newSBD.criteria[i].value;
+              sbConds[DT_LVL] = newSBD.criteria[i].condition;
+              //console.log("Found Level: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_LVL]="+sbVals[DT_LVL]+", sbConds[DT_LVL]="+sbConds[DT_LVL]);
+              break;
+            case "CP":
+              sbVals[DT_CP] = newSBD.criteria[i].value;
+              sbConds[DT_CP] = newSBD.criteria[i].condition;
+              //console.log("Found CP: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_CP]="+sbVals[DT_CP]+", sbConds[DT_CP]="+sbConds[DT_CP]);
+              break;
+            case "Minimum Level CP":
+              sbVals[DT_ML_CMP] = newSBD.criteria[i].value;
+              sbConds[DT_ML_CMP] = newSBD.criteria[i].condition;
+              //console.log("Found Minimum Level CP: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_ML_CMP]="+sbVals[DT_ML_CMP]+", sbConds[DT_ML_CMP]="+sbConds[DT_ML_CMP]);
+              break;
+            case "Attack IV":
+              sbVals[DT_AIV] = newSBD.criteria[i].value;
+              sbConds[DT_AIV] = newSBD.criteria[i].condition;
+              //console.log("Found Attack IV: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_AIV]="+sbVals[DT_AIV]+", sbConds[DT_AIV]="+sbConds[DT_AIV]);
+              break;
+            case "Defense IV":
+              sbVals[DT_DIV] = newSBD.criteria[i].value;
+              sbConds[DT_DIV] = newSBD.criteria[i].condition;
+              //console.log("Found Defense IV: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_DIV]="+sbVals[DT_DIV]+", sbConds[DT_DIV]="+sbConds[DT_DIV]);
+              break;
+            case "Stamina  IV":
+              sbVals[DT_SIV] = newSBD.criteria[i].value;
+              sbConds[DT_SIV] = newSBD.criteria[i].condition;
+              //console.log("Found Stamina  IV: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_SIV]="+sbVals[DT_SIV]+", sbConds[DT_SIV]="+sbConds[DT_SIV]);
+              break;
+            case "Stat Prod Perfection (%)":
+              sbVals[DT_PERF] = newSBD.criteria[i].value;
+              sbConds[DT_PERF] = newSBD.criteria[i].condition;
+              //console.log("Found Stat Prod Perfection (%): "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PERF]="+sbVals[DT_PERF]+", sbConds[DT_PERF]="+sbConds[DT_PERF]);
+              break;
+            case "XL Candy Cost":
+              sbVals[DT_XL] = newSBD.criteria[i].value;
+              sbConds[DT_XL] = newSBD.criteria[i].condition;
+              //console.log("Found XL Candy Cost: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_XL]="+sbVals[DT_XL]+", sbConds[DT_XL]="+sbConds[DT_XL]);
+              break;
+            case "Stardust Cost":
+              sbVals[DT_DUST] = newSBD.criteria[i].value;
+              sbConds[DT_DUST] = newSBD.criteria[i].condition;
+              //console.log("Found Stardust Cost: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_DUST]="+sbVals[DT_DUST]+", sbConds[DT_DUST]="+sbConds[DT_DUST]);
+              break;
+            case "CMP vs. Rank1 (W/L/T)":
+              sbVals[DT_R1_CMP] = newSBD.criteria[i].value;
+              sbConds[DT_R1_CMP] = newSBD.criteria[i].condition;
+              //console.log("Found CMP vs. Rank1 (W/L/T): "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_R1_CMP]="+sbVals[DT_R1_CMP]+", sbConds[DT_R1_CMP]="+sbConds[DT_R1_CMP]);
+              break;
+            case "CMP vs. All (Win %)":
+              sbVals[DT_ALL_CMP] = newSBD.criteria[i].value;
+              sbConds[DT_ALL_CMP] = newSBD.criteria[i].condition;
+              //console.log("Found CMP vs. All (Win %): "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_ALL_CMP]="+sbVals[DT_ALL_CMP]+", sbConds[DT_ALL_CMP]="+sbConds[DT_ALL_CMP]);
+              break;
+            case "Attack Stat":
+              sbVals[DT_PVP_ATK] = newSBD.criteria[i].value;
+              sbConds[DT_PVP_ATK] = newSBD.criteria[i].condition;
+              //console.log("Found Attack Stat: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PVP_ATK]="+sbVals[DT_PVP_ATK]+", sbConds[DT_PVP_ATK]="+sbConds[DT_PVP_ATK]);
+              break;
+            case "Defense Stat":
+              sbVals[DT_PVP_DEF] = newSBD.criteria[i].value;
+              sbConds[DT_PVP_DEF] = newSBD.criteria[i].condition;
+              //console.log("Found Defense Stat: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PVP_DEF]="+sbVals[DT_PVP_DEF]+", sbConds[DT_PVP_DEF]="+sbConds[DT_PVP_DEF]);
+              break;
+            case "HP Stat":
+              sbVals[DT_PVP_HP] = newSBD.criteria[i].value;
+              sbConds[DT_PVP_HP] = newSBD.criteria[i].condition;
+              //console.log("Found HP Stat: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PVP_HP]="+sbVals[DT_PVP_HP]+", sbConds[DT_PVP_HP]="+sbConds[DT_PVP_HP]);
+              break;
+            case "Stat Product":
+              sbVals[DT_STAT_PROD] = newSBD.criteria[i].value;
+              sbConds[DT_STAT_PROD] = newSBD.criteria[i].condition;
+              //console.log("Found Stat Product: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_STAT_PROD]="+sbVals[DT_STAT_PROD]+", sbConds[DT_STAT_PROD]="+sbConds[DT_STAT_PROD]);
+              break;
+            case "Bulk Product":
+              sbVals[DT_BULK_PROD] = newSBD.criteria[i].value;
+              sbConds[DT_BULK_PROD] = newSBD.criteria[i].condition;
+              //console.log("Found Bulk Product: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_BULK_PROD]="+sbVals[DT_BULK_PROD]+", sbConds[DT_BULK_PROD]="+sbConds[DT_BULK_PROD]);
+              break;
+            default:
+              console.error("Did not recognize newSBD.criteria["+i+"]: "+JSON.stringify(newSBD.criteria[i]));
+          }
+        }
+        sbLogic = newSBD.logic;
+        console.log("processSearchBuilderDetails: Finished with sbVals:"+JSON.stringify(sbVals)+", sbConds:"+JSON.stringify(sbConds)+", sbLogic:"+JSON.stringify(sbLogic));
+
+        if (perfTiming) {stopTiming(T0, "processSearchBuilderDetails");}
+        return newSBD;
+      }
+
       function addToCompare(tableID, rank, level, statProd, hiddenSortRank) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
@@ -2070,8 +2225,8 @@
         /* Account for mlCP column being hidden or not */
         var offset = 3;
         const dt = $(tableID).DataTable();
-        if (dt.column(dt_mlCP).visible() === true) {offset+=1;}
-        //console.log("addToCompare: offset computed as: "+offset+", because mlCPheader is visible ?="+dt.column(dt_mlCP).visible());
+        if (dt.column(DT_ML_CMP).visible() === true) {offset+=1;}
+        //console.log("addToCompare: offset computed as: "+offset+", because mlCPheader is visible ?="+dt.column(DT_ML_CMP).visible());
 
         /* Get the IVs we're trying to add */
         var row = window.event.target.parentNode;
@@ -2082,7 +2237,7 @@
         /* Ensure we aren't duplicating IVs */
         var uniqueIVs = true;
         for (var i=0; i<userIVs.length; i++) {
-          if (atk && (atk == userIVs[i][uIV_aIV]) && (def == userIVs[i][uIV_dIV]) && (sta == userIVs[i][uIV_sIV])) {
+          if (atk && (atk == userIVs[i][UIV_AIV]) && (def == userIVs[i][UIV_DIV]) && (sta == userIVs[i][UIV_SIV])) {
             /* Ensure that attack is not null, to allow 0/15/15 to overwrite default row */
             uniqueIVs = false;
             break;
@@ -2729,17 +2884,17 @@
             const rows = dt.rows().data();
             /* Skip the loop for the table that was clicked on */
             var checkRow = rank/1-1;
-            if (rows[checkRow][dt_aIV] == atk && rows[checkRow][dt_dIV] == def && rows[checkRow][dt_sIV] == sta) {
-              rankArray[l] = rows[checkRow][dt_rank];
-              spArray[l] = rows[checkRow][dt_statProd];
-              lvlArray[l] = rows[checkRow][dt_lvl];
+            if (rows[checkRow][DT_AIV] == atk && rows[checkRow][DT_DIV] == def && rows[checkRow][DT_SIV] == sta) {
+              rankArray[l] = rows[checkRow][DT_RANK];
+              spArray[l] = rows[checkRow][DT_STAT_PROD];
+              lvlArray[l] = rows[checkRow][DT_LVL];
             } else {
               for (var i=0; i<rows.length; i++) {
                 /* Need to search all rows until we find these atk/def/sta IVs */
-                if (rows[i][dt_aIV] == atk && rows[i][dt_dIV] == def && rows[i][dt_sIV] == sta) {
-                  rankArray[l] = rows[i][dt_rank];
-                  spArray[l] = rows[i][dt_statProd];
-                  lvlArray[l] = rows[i][dt_lvl];
+                if (rows[i][DT_AIV] == atk && rows[i][DT_DIV] == def && rows[i][DT_SIV] == sta) {
+                  rankArray[l] = rows[i][DT_RANK];
+                  spArray[l] = rows[i][DT_STAT_PROD];
+                  lvlArray[l] = rows[i][DT_LVL];
                   break;
                 }
               }
@@ -2770,7 +2925,7 @@
         }
         //console.log("newInputTableRow: Setting inputTable DOM row["+newRowDOMoffset+"] to : "+atk+"/"+def+"/"+sta+", "+sha);
         setInputTableRow(newRowDOMoffset, atk, def, sta, sha, pure);
-        //console.log("newInputTableRow: All done, userIVs now: "+JSON.stringify(userIVs));
+        console.log("newInputTableRow: All done, userIVs now: "+JSON.stringify(userIVs));
         document.getElementById("feedbackBox").innerHTML = "";
         if (perfTiming) {stopTiming(T0, "newInputTableRow");}
       }
@@ -2788,7 +2943,7 @@
         var T0;
         if (perfTiming) {T0 = performance.now();}
 
-        //console.log("pinUnpinRow:"+tableID+": beginning with: tableID("+tableID+"), rowNum("+JSON.stringify(rowNum)+"), hiddenSortVal("+JSON.stringify(hiddenSortVal)+"), addHighlight("+JSON.stringify(addHighlight)+"), removeHighlight("+JSON.stringify(removeHighlight)+")");
+        console.log("pinUnpinRow:"+tableID+": beginning with: tableID("+tableID+"), rowNum("+JSON.stringify(rowNum)+"), hiddenSortVal("+JSON.stringify(hiddenSortVal)+"), addHighlight("+JSON.stringify(addHighlight)+"), removeHighlight("+JSON.stringify(removeHighlight)+")");
         /* TODO_Someday: Remove params check */
         if (!tableID || isNaN(rowNum) || isNaN(hiddenSortVal)) {
           console.error("pinUnpinRow: Exiting, missing required variable(s):"+tableID,rowNum,hiddenSortVal);
@@ -2800,11 +2955,8 @@
         var d = table.row(rowNum).data();
         var rowCount = table.rows().count();
         //console.log("pinUnpinRow:"+tableID+": rowCount: "+rowCount);
-        var rankNum = d[dt_rank]/1;
+        var rankNum = d[DT_RANK]/1;
         d[hiddenRowIndex] = hiddenSortVal;
-
-        /* TODO: Implement shadow highlighting and shadow/purified XL Candy and Stardust costs */
-
 
         /* Add class to properly highlight this row with CSS */
         if (addHighlight) {
@@ -2838,20 +2990,11 @@
         var T0;
         if (perfTiming) {T0 = performance.now();}
 
-        console.log("setInputTableRow: received index:"+index+", atk:"+atk+", def:"+def+", sta:"+sta+", shadow:"+shadow+", purified:"+purified);
-
         document.getElementById("aIV["+index+"]").selectedIndex = [...document.getElementById("aIV["+index+"]").options].findIndex (option => option.text == atk);
         document.getElementById("dIV["+index+"]").selectedIndex = [...document.getElementById("dIV["+index+"]").options].findIndex (option => option.text == def);
         document.getElementById("sIV["+index+"]").selectedIndex = [...document.getElementById("sIV["+index+"]").options].findIndex (option => option.text == sta);
         document.getElementById("shdw["+index+"]").checked = (shadow == true) ? true : false;
         document.getElementById("pure["+index+"]").checked = (purified == true) ? true : false;
-        //$( "shdw["+index+"]" ).prop( "checked", shadow );
-        //$( "pure["+index+"]" ).prop( "checked", purified );
-        //document.getElementById("shdw["+index+"]").checked = shadow;
-        //document.getElementById("pure["+index+"]").checked = purified;
-
-        console.log("setInputTableRow: document.getElementById('shdw['+index+']').checked: "+document.getElementById("shdw["+index+"]").checked);
-        console.log("setInputTableRow: document.getElementById('pure['+index+']').checked: "+document.getElementById("pure["+index+"]").checked);
 
         if (perfTiming) {stopTiming(T0, "setInputTableRow");}
         return;
@@ -2878,14 +3021,14 @@
             for (var l=0; l<leagueName.length; l++) {
               //console.log("removeInputTableRow: Removing row from DataTable: "+tableIDs[l]);
               /* Need to pass row number for these IVs in each table to be removed */
-              //console.log("removeInputTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(userIVs[0][uIV_rank][l]-1)+", 0, false, true)...");
-              pinUnpinRow(tableIDs[l], userIVs[rowNum][uIV_rank][l]-1, 0, false, true);
-              if (userIVs[rowNum][uIV_shdw]) {
+              //console.log("removeInputTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(userIVs[0][UIV_RANK][l]-1)+", 0, false, true)...");
+              pinUnpinRow(tableIDs[l], userIVs[rowNum][UIV_RANK][l]-1, 0, false, true);
+              if (userIVs[rowNum][UIV_SHDW]) {
                 console.log("2873: removeInputTableRow: calling manageShadows("+false, tableIDs[l], rowNum+")");
-                manageShadows(false, tableIDs[l], rowNum);
-              } else if (userIVs[rowNum][uIV_pure]) {
+                manageShadows(false, tableIDs[l], userIVs[rowNum][UIV_RANK][l]-1, rowNum);
+              } else if (userIVs[rowNum][UIV_PURE]) {
                 console.log("2876: removeInputTableRow: calling managePurified("+false, tableIDs[l], rowNum+")");
-                managePurified(false, tableIDs[l], rowNum);
+                managePurified(false, tableIDs[l], userIVs[rowNum][UIV_RANK][l]-1, rowNum);
               }
             }
             /* Reset this row's state back to defaults (-/15/15) */
@@ -2910,14 +3053,14 @@
           const dt = $(tableIDs[l]).DataTable();
 
           /* Remove CSS highlighting for this row */
-          dt.row(userIVs[rowNum][uIV_rank][l]-1).nodes().to$().removeClass("good","ok","rubbish");
+          dt.row(userIVs[rowNum][UIV_RANK][l]-1).nodes().to$().removeClass("good","ok","rubbish");
 
-          if (userIVs[rowNum][uIV_shdw]) {
+          if (userIVs[rowNum][UIV_SHDW]) {
             console.log("2905: removeInputTableRow: calling manageShadows("+false, tableIDs[l], rowNum+")");
-            manageShadows(false, tableIDs[l], rowNum);
-          } else if (userIVs[rowNum][uIV_pure]) {
+            manageShadows(false, tableIDs[l], userIVs[rowNum][UIV_RANK][l]-1, rowNum);
+          } else if (userIVs[rowNum][UIV_PURE]) {
             console.log("2908: removeInputTableRow: calling managePurified("+false, tableIDs[l], rowNum+")");
-            managePurified(false, tableIDs[l], rowNum);
+            managePurified(false, tableIDs[l], userIVs[rowNum][UIV_RANK][l]-1, rowNum);
           }
 
           /* Reset hiddenSortIndex to 0 to un-pin this row  */
@@ -2927,21 +3070,21 @@
           for (var i=0,hiddenSortIndex=0; i<userIVs.length; i++,hiddenSortIndex++) {
             if (i/1 === rowNum/1) {
               /* Unpin this row */
-              userIVs[i][uIV_hidSortRank] = 0;
+              userIVs[i][UIV_HIDDEN_SORT_RANK] = 0;
               /* Don't count this row when incrementing hiddenSortIndex */
               hiddenSortIndex--;
             } else {
-              userIVs[i][uIV_hidSortRank] = hiddenSortIndex-numRows;
+              userIVs[i][UIV_HIDDEN_SORT_RANK] = hiddenSortIndex-numRows;
             }
             /* Update DataTable sort order all rows using userIVs */
-            var d = dt.row(userIVs[i][uIV_rank][l]-1).data();
-            d[hiddenRowIndex] = userIVs[i][uIV_hidSortRank];
-            dt.row(userIVs[i][uIV_rank][l]-1).data(d);
+            var d = dt.row(userIVs[i][UIV_RANK][l]-1).data();
+            d[hiddenRowIndex] = userIVs[i][UIV_HIDDEN_SORT_RANK];
+            dt.row(userIVs[i][UIV_RANK][l]-1).data(d);
           }
           /* Manage pageLen for user as they add/remove rows */
           if ((pageLen-userIVs.length) > originalPL) {
             /* TODO: Fix length selector blanking out */
-            pageLen--;
+            pageLen = originalPL + userIVs.length + 1;
             console.log("removeInputTableRow: Decremented pageLen to: "+pageLen+", originalPL:"+originalPL);
           }
           /* Redraw DataTable with updated rows and pageLen */
