@@ -739,13 +739,6 @@
             console.log("$doc.ready():: #inputTable onChange: userIVs.length:"+userIVs.length+", atk:"+atk);
           }
 
-          /* Manage pageLen for user as they add/remove rows */
-          if ((pageLen-userIVs.length) < originalPL) {
-            /* TODO: Fix length selector blanking out */
-            //pageLen = originalPL + userIVs.length + 1;
-            console.log("$doc.ready():: #inputTable onChange: Incremented pageLen to: "+pageLen+", originalPL:"+originalPL);
-          }
-
           findAddDataTableRow(atk, def, sta, sha, pure, rowNum, tr);
 
           /* Now that we have updated IVs, refresh Trade, PvPoke, and Family tables */
@@ -2074,13 +2067,6 @@
           stopDuplicateEvents(event);
           /* Ensure we add clicked row to all DataTables */
           
-          /* Manage pageLen for user as they add/remove rows */
-          if ((pageLen-userIVs.length) < originalPL) {
-            /* TODO: Fix length selector blanking out */
-            //pageLen = originalPL + userIVs.length + 1;
-            console.log(tableIDs[l]+" onClick: Incremented pageLen to: "+pageLen+", originalPL:"+originalPL);
-          }
-          
           /* Update hiddenSortRank to "pin" this row to top of table */
           var hiddenSortVal = userIVs.length-dt.rows().count()/1;
           /* Fix userIVs initialized to "default" -/15/15 row, really has 0 userIVs */
@@ -3107,12 +3093,7 @@
             d[hiddenRowIndex] = userIVs[i][UIV_HIDDEN_SORT_RANK];
             dt.row(userIVs[i][UIV_RANK][l]-1).data(d);
           }
-          /* Manage pageLen for user as they add/remove rows */
-          if ((pageLen-userIVs.length) > originalPL) {
-            /* TODO: Fix length selector blanking out */
-            pageLen = originalPL + userIVs.length + 1;
-            console.log("removeInputTableRow: Decremented pageLen to: "+pageLen+", originalPL:"+originalPL);
-          }
+          
           /* Redraw DataTable with updated rows and pageLen */
           dt.page.len(pageLen).draw();
         }
