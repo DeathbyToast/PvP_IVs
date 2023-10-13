@@ -536,7 +536,6 @@
         let stamina = 0;
 
         if (pokemon && pokeListObj[pokemon]) {
-          console.log('test')
           const monInfo = pokeListObj[pokemon].split(',');
           attack = parseInt(monInfo[1], 10);
           defense = parseInt(monInfo[2], 10);
@@ -544,10 +543,10 @@
           const levelElement = document.getElementById("level");
           const level = calculateLevel(attack, defense, stamina, aIV, dIV, sIV, inputCP);
           if (levelElement) {
-            if (level >= 1 && level <= 51){
+            if (level >= 1 && level <= 51) {
               levelElement.textContent = `Pokemon: ${pokemon} CP: ${inputCP} Level:${level}`;
             }
-            else{
+            else {
               levelElement.textContent = `Pokemon: ${pokemon} CP: ${inputCP} Could not find a matching level`;
             }
           }
@@ -595,7 +594,6 @@
           var userIVs = ivStr[j].match(/\d+/g);
           if (userIVs.length < 2) { continue; } /* skip blank/incomplete entries */
           console.log("readIVs::IVs:insering userIVs: " + userIVs + " (length:" + userIVs.length + ")");
-          doTheInsert(userIVs[0], userIVs[1], userIVs[2], userIVs[3]);
         }
         console.log("readIVs: IVs set to aIV:" + aIV + ", dIV:" + dIV + ", sIV:" + sIV + ", shdw:" + shdw);
         main();
@@ -709,9 +707,6 @@
         sIV.splice(0, sIV.length);
         // shdw.splice(0, shdw.length);
 
-        /* Re-Add default IV Input Row */
-        doTheInsert();
-
         /* clear min stat filters, filterMod, and lastLeague */
         mA = 0; mD = 0; mHP = 0; filterMod = false; lastLeague = undefined;
 
@@ -800,11 +795,6 @@
         /*include XL candy costs if Max Level > 41*/
         if (maxLvl > 41 && ranks.maxLvl > 41) {
           html += "<th>XL</th>";
-        }
-
-        /*include stardust costs if enabled*/
-        if (document.getElementById("dust").checked) {
-          html += "<th>Dust</th>";
         }
 
         /*print main table output and count actual outputted rows/ranks*/
@@ -910,11 +900,6 @@
                       /*if this is a second evo, just add it*/
                       evoHtml += evoGMRhtml;
                     } else {
-                      /*include stardust costs if enabled*/
-                      var dustHeader = "";
-                      if (document.getElementById("dust").checked) {
-                        dustHeader = "<th>Dust</th>";
-                      }
                       /*include Bulk Product if enabled*/
                       var bulkProdHeader = "";
                       if (document.getElementById("bulk").checked) {
@@ -1001,7 +986,6 @@
                   html += "<td>" + candy + "</td>";
                   if (!nonZeroXL && candy > 0) { nonZeroXL = true; } /*XL*/
                 }
-                if (document.getElementById("dust").checked) { html += "<td>" + stardust(minLvl / 1, ranks[keys[i]][j].L / 1, 0, false) + "</td>"; } /*Stardust*/
                 if (document.getElementById("cmp").checked) {
                   html += "<td>" + ranks[keys[i]][j].IVs.R1 + "</td>"; /*R1 CMP*/
                   html += "<td>" + ranks[keys[i]][j].IVs.cmp + "%" + "</td>"; /*CMP Wins*/
@@ -1335,7 +1319,6 @@
           }
 
           if (uniqueIVs) {
-            doTheInsert(atk, def, sta);
             main();
           } else {
             console.log(atk + "/" + def + "/" + sta + " already exists in comparison IVs, not adding to compare");
@@ -1564,7 +1547,6 @@
                 for (var j = 0; j < ivStr.length; j++) {
                   var userIVs = ivStr[j].split("_");
                   if (userIVs.length < 2) { continue; } /* skip blank/incomplete entries */
-                  doTheInsert(userIVs[0], userIVs[1], userIVs[2], userIVs[3]);
                 }
                 /*console.log("checkURI: IVs set to aIV:"+aIV+", dIV:"+dIV+", sIV:"+sIV+", shdw:"+shdw);*/
                 break;
@@ -1968,9 +1950,6 @@
               if (!evo && maxLvl > 41 && ranks.maxLvl > 41) {
                 html += shdw ? "<td style='color:purple'>" : "<td>"; html += XLcandy(ranks[keys[i]][j].L / 1 - 40, shdw) + "</td>";
               }
-              if (document.getElementById("dust").checked) {
-                html += shdw ? "<td style='color:purple'>" : "<td>"; html += stardust(document.getElementById('minLvl').value / 1, ranks[keys[i]][j].L / 1, 0, shdw) + "</td>";
-              }
               if (!evo && document.getElementById("cmp").checked) {
                 html += "<td>" + ranks[keys[i]][j].IVs.R1 + "</td>"; /*R1 CMP*/
                 html += "<td>" + ranks[keys[i]][j].IVs.cmp + "%" + "</td>"; /*CMP Wins*/
@@ -2079,103 +2058,6 @@
         }
       }
 
-      function stardust(startlvl, endlvl, totaldust, shdw) {
-        /* Returns calculated stardust power-up costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier*/
-        var T0;
-        if (perfTiming) { T0 = performance.now(); }
-
-        while (startlvl < endlvl) {
-          switch (startlvl) {
-            case 1:
-            case 2:
-              startlvl += 1; totaldust += 400; break;
-            case 3:
-            case 4:
-              startlvl += 1; totaldust += 800; break;
-            case 5:
-            case 6:
-              startlvl += 1; totaldust += 1200; break;
-            case 7:
-            case 8:
-              startlvl += 1; totaldust += 1600; break;
-            case 9:
-            case 10:
-              startlvl += 1; totaldust += 2000; break;
-            case 11:
-            case 12:
-              startlvl += 1; totaldust += 2600; break;
-            case 13:
-            case 14:
-              startlvl += 1; totaldust += 3200; break;
-            case 15:
-            case 16:
-              startlvl += 1; totaldust += 3800; break;
-            case 17:
-            case 18:
-              startlvl += 1; totaldust += 4400; break;
-            case 19:
-            case 20:
-              startlvl += 1; totaldust += 5000; break;
-            case 21:
-            case 22:
-              startlvl += 1; totaldust += 6000; break;
-            case 23:
-            case 24:
-              startlvl += 1; totaldust += 7000; break;
-            case 25:
-            case 26:
-              startlvl += 1; totaldust += 8000; break;
-            case 27:
-            case 28:
-              startlvl += 1; totaldust += 9000; break;
-            case 29:
-            case 30:
-              startlvl += 1; totaldust += 10000; break;
-            case 31:
-            case 32:
-              startlvl += 1; totaldust += 12000; break;
-            case 33:
-            case 34:
-              startlvl += 1; totaldust += 14000; break;
-            case 35:
-            case 36:
-              startlvl += 1; totaldust += 16000; break;
-            case 37:
-            case 38:
-              startlvl += 1; totaldust += 18000; break;
-            case 39:
-            case 40:
-              startlvl += 1; totaldust += 20000; break;
-            case 41:
-            case 42:
-              startlvl += 1; totaldust += 22000; break;
-            case 43:
-            case 44:
-              startlvl += 1; totaldust += 24000; break;
-            case 45:
-            case 46:
-              startlvl += 1; totaldust += 26000; break;
-            case 47:
-            case 48:
-              startlvl += 1; totaldust += 28000; break;
-            case 49:
-              startlvl += 1; totaldust += 30000; break;
-            case 50:
-            case 51:
-              startlvl += 1; break;
-          }
-        }
-        /* Adjust for shadow power up penalty */
-        if (shdw) {
-          totaldust = totaldust * 1.2;
-        }
-        if (totaldust > 1000) {
-          totaldust = Math.round(totaldust / 1000) + "K";
-        }
-        if (perfTiming) { stopTiming(T0, "stardust"); }
-        return totaldust;
-      }
-
       function validTyroEvo(aIV, dIV, sIV, evo) {
         var T0;
         if (perfTiming) { T0 = performance.now(); }
@@ -2234,85 +2116,6 @@
         } else { console.error("validTyroEvo: Not sure how this is possible?"); if (perfTiming) { stopTiming(T0, "validTyroEvo"); } return false; }
         if (perfTiming) { stopTiming(T0, "validTyroEvo"); }
         return false;
-      }
-
-      function doTheInsert(atk, def, sta, sha) {
-        return;
-        var T0;
-        if (perfTiming) { T0 = performance.now(); }
-
-        var newRow = document.getElementById('inputTable').insertRow();
-        var shadowCB = document.getElementsByClassName('shadowCB');
-
-        newRow.innerHTML = "<tr><td><input class='shadowCB' id='shdw[" + shadowCB.length + "]' type='checkbox' oninput='shdwUpdater()'></td><td><select title='Your Attack IV' class='aIV' id='aIV[" + aIV.length + "]' oninput='main()'><option value=''></option><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Defense IV' class='dIV' id='dIV[" + dIV.length + "]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><select title='Your Stamina IV' class='sIV' id='sIV[" + sIV.length + "]' oninput='main()'><option value='15'>15</option><option value='14'>14</option><option value='13'>13</option><option value='12'>12</option><option value='11'>11</option><option value='10'>10</option><option value='9'>9</option><option value='8'>8</option><option value='7'>7</option><option value='6'>6</option><option value='5'>5</option><option value='4'>4</option><option value='3'>3</option><option value='2'>2</option><option value='1'>1</option><option value='0'>0</option></select></td><td><button class='circle minus' id='minus[" + shadowCB.length + "]' onclick='doTheRemoval()'></button></td></tr>";
-
-        /* Check if this row should have default IVs or specific IVs */
-        if (!(atk && def && sta)) {
-          console.log("doTheInsert: Missing one or more IVs, inserting default values");
-          atk = '';
-          def = '15';
-          sta = '15';
-        } else {
-          document.getElementById("aIV[" + aIV.length + "]").selectedIndex = [...document.getElementById("aIV[" + aIV.length + "]").options].findIndex(option => option.text === atk);
-          document.getElementById("dIV[" + dIV.length + "]").selectedIndex = [...document.getElementById("dIV[" + dIV.length + "]").options].findIndex(option => option.text === def);
-          document.getElementById("sIV[" + sIV.length + "]").selectedIndex = [...document.getElementById("sIV[" + sIV.length + "]").options].findIndex(option => option.text === sta);
-        }
-        aIV.push(atk);
-        dIV.push(def);
-        sIV.push(sta);
-
-        if (aIV.length / 1 === 2) {
-          /*Need to check if we still have -/15/15 row and remove it*/
-          if ((document.getElementById('aIV[0]').value === '') && (document.getElementById('dIV[0]').value === '15') && (document.getElementById('sIV[0]').value === '15')) {
-            /* Confirmed that first row is default row (-/15/15) and needs to be removed*/
-
-            var td = document.getElementById('aIV[0]').parentNode;
-            var tr = td.parentNode; /*the row for -/15/15 to be removed*/
-
-            /* Update remaining row element */
-            document.getElementById("aIV[1]").id = "aIV[0]";
-            document.getElementById("dIV[1]").id = "dIV[0]";
-            document.getElementById("sIV[1]").id = "sIV[0]";
-
-            aIV.splice(0, 1);
-            dIV.splice(0, 1);
-            sIV.splice(0, 1);
-            tr.parentNode.removeChild(tr);
-          }
-        }
-
-        if (perfTiming) { stopTiming(T0, "doTheInsert"); }
-      }
-
-      /* https://stackoverflow.com/q/11553768 */
-      function doTheRemoval() {
-        var T0;
-        if (perfTiming) { T0 = performance.now(); }
-        /*event.target will be the input element*/
-        /*console.log("doTheRemoval: event.target.parentNode.parentNode:"+JSON.stringify(event.target.parentNode.parentNode.innerHTML));*/
-        var td = event.target.parentNode;
-        var tr = td.parentNode; /*the row to be removed*/
-        var rowNum = tr.innerHTML.split("aIV[")[1];
-        rowNum = rowNum.split("]")[0];
-        for (var i = 0; i < aIV.length; i++) {
-          if (i >= rowNum) {
-            /*console.log("Fixing offset for i:"+i);*/
-            document.getElementById("aIV[" + i + "]").id = "aIV[" + (i - 1) + "]";
-            document.getElementById("dIV[" + i + "]").id = "dIV[" + (i - 1) + "]";
-            document.getElementById("sIV[" + i + "]").id = "sIV[" + (i - 1) + "]";
-          }
-        }
-        aIV.splice(rowNum, 1);
-        dIV.splice(rowNum, 1);
-        sIV.splice(rowNum, 1);
-        tr.parentNode.removeChild(tr);
-
-        /* If we removed all rows, add one back */
-        if (aIV.length / 1 < 1) {
-          doTheInsert();
-        }
-        if (perfTiming) { stopTiming(T0, "doTheRemoval"); }
-        main();
       }
 
       function checkEfficientIVs(ranks, keys, dec) {
