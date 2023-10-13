@@ -41,9 +41,9 @@
        * 1000/4096 ~= 0.2442 and 100/4096 ~= 0.02442
        * use 0.02442 to approximate "Top 100" (green) when there are less than 4096 results
        * use 0.2442 to approximate "Top 1000" (orange) when there are less than 4096 results */
-      .monTable tr.good > *, #familyTable tr.good > *, #tradeTable tr.highMaxRow > * {background-color: var(--goodResult); color: var(--navActiveText);}
-      .monTable tr.ok > *, #familyTable tr.ok > *, #tradeTable tr.okMaxRow > * {background-color: var(--okResult); color: var(--navActiveText);}
-      .monTable tr.rubbish > *, #familyTable tr.rubbish > *, #tradeTable tr.lowMaxRow > * {background-color: var(--badResult); color: var(--navActiveText);}
+      .monTable tr.good > *, #familyTable tr.good > *, #tradeTable tr.highMaxRow > * {background-color: var(--goodResult); color: var(--resultText);}
+      .monTable tr.ok > *, #familyTable tr.ok > *, #tradeTable tr.okMaxRow > * {background-color: var(--okResult); color: var(--resultText);}
+      .monTable tr.rubbish > *, #familyTable tr.rubbish > *, #tradeTable tr.lowMaxRow > * {background-color: var(--badResult); color: var(--resultText);}
       /* the > * operator applies the css to all children (cells) */
       #outTable, #familyTable a {
         color: var(--navActiveText);
@@ -160,7 +160,7 @@
       }
       .monTable tr:nth-child(even) {background-color: var(--tableRowEven);}
       .monTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
-      .monTable tr:hover {background-color: var(--navHover);}
+      .monTable tr:hover {background-color: var(--navHover), color: var(--navHoverText)}
       
       /* CSS for debug Search Builder Buttons */
       #getDetails, #reload {
@@ -882,10 +882,14 @@
         var dust = stardust(minLvl/1, rowData[DT_LVL], apply);
         dt.cell(dtRowNum, DT_DUST).data(dust);
 
-        /* Update PvP Attack and Defense */
+        /* Update PvP Attack and Defense and purple highlighting */
         if (apply == true) {
           pvpAtk = numOut(rowData[DT_PVP_ATK]*1.2,dec);
           pvpDef = numOut(rowData[DT_PVP_DEF]*0.8,dec);
+          $(dt.cell(dtRowNum,DT_XL).node()).css({"background-color": "purple", "color": "white"});
+          $(dt.cell(dtRowNum,DT_DUST).node()).css({"background-color": "purple", "color": "white"});
+          $(dt.cell(dtRowNum,DT_PVP_ATK).node()).css({"background-color": "purple", "color": "white"});
+          $(dt.cell(dtRowNum,DT_PVP_DEF).node()).css({"background-color": "purple", "color": "white"});
         } else {
           var monInfo = pokeListObj[mon].split(",");
           var level = (rowData[DT_LVL] - 1) * 2;
@@ -893,6 +897,10 @@
           console.log("pvpAtk: "+pvpAtk);
           pvpDef = numOut((parseInt(monInfo[2]) + rowData[DT_DIV])*cpm[level],dec);
           console.log("pvpDef: "+pvpDef);
+          $(dt.cell(dtRowNum,DT_XL).node()).css({"background-color": "", "color": ""});
+          $(dt.cell(dtRowNum,DT_DUST).node()).css({"background-color": "", "color": ""});
+          $(dt.cell(dtRowNum,DT_PVP_ATK).node()).css({"background-color": "", "color": ""});
+          $(dt.cell(dtRowNum,DT_PVP_DEF).node()).css({"background-color": "", "color": ""});
         }
         /* TODO: Add purple highlight to modified cells */
         dt.cell(dtRowNum, DT_PVP_ATK).data(pvpAtk);
@@ -911,15 +919,21 @@
         console.log("managePurified: received apply:"+apply+", tableID:"+tableID+", dtRowNum:"+dtRowNum);
         console.log("managePurified: XL:"+JSON.stringify(rowData[DT_XL])+", dust:"+JSON.stringify(rowData[DT_DUST]));
         
-        /* Update XL Candy Cost */
+        /* Update XL Candy and Stardust Costs */
         var XL = XLcandy(rowData[DT_LVL]/1 - 40, false, apply);
-        dt.cell(dtRowNum, DT_XL).data(XL);
-        /* TODO: Add cyan highlight to modified cells */
-        $("td", dtRowNum).css("color", "red");
-
-        /* Update Stardust Candy Cost */
         var dust = stardust(minLvl/1, rowData[DT_LVL], false, apply);
+        dt.cell(dtRowNum, DT_XL).data(XL);
         dt.cell(dtRowNum, DT_DUST).data(dust);
+        
+        /* Add / remove cyan highlighting */
+        if (apply == true) {
+          $(dt.cell(dtRowNum,DT_XL).node()).css({"background-color": "cyan", "color": "black"});
+          $(dt.cell(dtRowNum,DT_DUST).node()).css({"background-color": "cyan", "color": "black"});
+        } else {
+          $(dt.cell(dtRowNum,DT_XL).node()).css({"background-color": "", "color": ""});
+          $(dt.cell(dtRowNum,DT_DUST).node()).css({"background-color": "", "color": ""});
+        }
+        
         console.log("managePurified: Calculated Purified XL:"+XL+", dust:"+dust);
         
         if (perfTiming) {stopTiming(T0, "managePurified");}
@@ -3327,7 +3341,7 @@
       </div><br />
       <div style="overflow-x:auto;">
         <p style="color: var(--tableHeaderText);font-size:0.8em">© 2023 PvP IVs | <a href="https://pvpivs.com/privacy">Privacy Policy</a> | <a href="https://pvpivs.com/contact">Contact Us</a></p>
-        <p style="color: var(--tableDividers);font-size:0.6em">Pokémon and Pokémon GO are copyright of The Pokémon Company, Niantic, Inc., and Nintendo.<br/>All trademarked images and names are property of their respective owners, and any such material is used on this site for educational purposes only.<br/>PvP IVs has no affiliation with The Pokémon Company, Niantic, Inc., or Nintendo.</p>
+        <p style="color: var(--tableHeaderText);font-size:0.6em">Pokémon and Pokémon GO are copyright of The Pokémon Company, Niantic, Inc., and Nintendo.<br/>All trademarked images and names are property of their respective owners, and any such material is used on this site for educational purposes only.<br/>PvP IVs has no affiliation with The Pokémon Company, Niantic, Inc., or Nintendo.</p>
       </div><p style="overflow-x:auto;" id="timing_outputs"></p>
       <br /><br /><br /><br />
     </section>
