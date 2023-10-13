@@ -895,12 +895,11 @@
         var XL = XLcandy(rowData[DT_LVL]/1 - 40, false, apply);
         dt.cell(dtRowNum, DT_XL).data(XL);
         /* TODO: Add cyan highlight to modified cells */
-        //rowData[DT_XL].nodes().to$().css({color: "cyan"});
+        $("td", dtRowNum).css("color", "red");
 
         /* Update Stardust Candy Cost */
         var dust = stardust(minLvl/1, rowData[DT_LVL], false, apply);
         dt.cell(dtRowNum, DT_DUST).data(dust);
-        //rowData[DT_DUST].nodes().to$().css({color: "cyan"});
         console.log("managePurified: Calculated Purified XL:"+XL+", dust:"+dust);
         
         if (perfTiming) {stopTiming(T0, "managePurified");}
