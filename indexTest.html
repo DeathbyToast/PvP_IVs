@@ -1380,9 +1380,9 @@
         /* Ensure all old tables are cleared */
         document.getElementById("tradeOutput").innerHTML = "";
         for (l=0; l<league.length; l++) {
-          var keys = Object.keys(ranks[i]);
+          var keys = Object.keys(ranks[l]);
           for (i=0; i<userIVs.length; i++) {
-            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks[i], keys, userIVs[i][UIV_STAT_PROD][i], $("#floor").val(), userIVs[i][UIV_AIV], userIVs[i][UIV_DIV], userIVs[i][UIV_SIV], league[i], leagueName[i]);
+            document.getElementById("tradeOutput").innerHTML += tradePcnts(ranks[i], keys, userIVs[i][UIV_STAT_PROD][i], $("#floor").val(), userIVs[i][UIV_AIV], userIVs[i][UIV_DIV], userIVs[i][UIV_SIV], league[l], leagueName[l]);
           }
           document.getElementById("tradeOutput").innerHTML += "<br />"
         }
