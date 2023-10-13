@@ -704,6 +704,40 @@
           var rowNum = tr.innerHTML.split("aIV[")[1];
           rowNum = rowNum.split("]")[0];
           console.log("$doc.ready():: #inputTable onChange: Event triggered by row#"+rowNum+" "+userIVs[rowNum][UIV_AIV]+"/"+userIVs[rowNum][UIV_DIV]+"/"+userIVs[rowNum][UIV_SIV]);
+          
+          /* Get IV and shadow values for new row */
+          var atk = document.getElementById("aIV["+rowNum+"]").value;
+          var def = document.getElementById("dIV["+rowNum+"]").value;
+          var sta = document.getElementById("sIV["+rowNum+"]").value;
+          var sha = document.getElementById("shdw["+rowNum+"]").checked;
+          var pure = document.getElementById("pure["+rowNum+"]").checked;
+
+          /* Ensure user can't check both purified and shadow checkboxes */
+          if (sha && pure) {
+            /* Keep whichever box was checked first */
+            if ($(event.target).attr('id') == "shdw["+rowNum+"]") {
+              sha = false;
+              document.getElementById("shdw["+rowNum+"]").checked = false;
+              document.getElementById("feedbackBox").innerHTML += "<br /><i>"+atk+"/"+def+"/"+sta+" "+mon+" cannot be both Purified and Shadow, please uncheck Purified before checking Shadow</i>";
+              console.error("User checked Shadow after having already checked Purified, it is impossible for "+mon+" to be both, unchecking Shadow.");
+            } else {
+              pure = false;
+              document.getElementById("pure["+rowNum+"]").checked = false;
+              document.getElementById("feedbackBox").innerHTML += "<br /><i>"+atk+"/"+def+"/"+sta+" "+mon+" cannot be both Purified and Shadow, please uncheck Shadow before checking Purified</i>";
+              console.error("User checked Purified after having already checked Shadow, it is impossible for "+mon+" to be both, unchecking Purified.");
+            }
+            return false;
+          }
+
+          /* Determine if this input should be processed */
+          if (userIVs.length == 1 && atk == "") {
+            console.log("$doc.ready():: #inputTable onChange: detected incomplete row ("+atk+"/"+def+"/"+sta+"), ignoring input");
+            document.getElementById('feedbackBox').innerHTML += "<p><i>Row "+rowNum+" ("+atk+"/"+def+"/"+sta+") incomplete, unable to check this "+mon+"'s "+leagueName+" PvP Rank</i></p>";
+            if (perfTiming) {stopTiming(T0, "$doc.ready():: #inputTable onChange");}
+            return;
+          } else {
+            console.log("$doc.ready():: #inputTable onChange: userIVs.length:"+userIVs.length+", atk:"+atk);
+          }
 
           /* Manage pageLen for user as they add/remove rows */
           if ((pageLen-userIVs.length) < originalPL) {
@@ -711,13 +745,6 @@
             //pageLen = originalPL + userIVs.length + 1;
             console.log("$doc.ready():: #inputTable onChange: Incremented pageLen to: "+pageLen+", originalPL:"+originalPL);
           }
-
-          /* Get IV and shadow values for new row */
-          var atk = document.getElementById("aIV["+rowNum+"]").value;
-          var def = document.getElementById("dIV["+rowNum+"]").value;
-          var sta = document.getElementById("sIV["+rowNum+"]").value;
-          var sha = document.getElementById("shdw["+rowNum+"]").checked;
-          var pure = document.getElementById("pure["+rowNum+"]").checked;
 
           findAddDataTableRow(atk, def, sta, sha, pure, rowNum, tr);
 
