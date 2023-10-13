@@ -1034,7 +1034,7 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
-           //URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-12_13_14_false_true"; 
+          //URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-12_13_14_false_true"; 
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -2966,7 +2966,7 @@
         var d = table.row(rowNum).data();
         var rowCount = table.rows().count();
         var rankNum = d[DT_RANK]/1;
-        console.log("pinUnpinRow: Old rowData:"+JSON.stringify(d)+", hiddenSortVal:"+);
+        console.log("pinUnpinRow: Old rowData:"+JSON.stringify(d)+", hiddenSortVal:"+hiddenSortVal);
         d[hiddenRowIndex] = hiddenSortVal;
         /* TODO: Why isn't purified row un-sorting */
         console.log("pinUnpinRow: Updated rowData:"+JSON.stringify(d));
