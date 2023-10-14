@@ -156,9 +156,10 @@
       <li class="dropdown active left">
         <a href="javascript:void(0)" class="dropbtn active">PvP IVs</a>
         <div class="dropdown-content">
-          <a href="/" class="active">Rankings (Single)</a>
+          <a href="/">Rankings (Single)</a>
           <a href="/leagueRanks.html">Rankings (League)</a>
           <a href="/searchStr.html">Search Strings</a>
+          <a href="/calculator.html" class="active">Calculator</a>
         </div>
       </li>
       <li class="dropdown left">
@@ -369,6 +370,7 @@
       <option value="1">1</option>
     </select><br/>
     <br /><label for="cp" id="cpInput">CP: </label><input type="number" id="cp" min="10">
+          <label for="hp" id="hpInput">HP: </label><input type="number" id="hp" min="10">
     <br /><br />
     <span style="overflow-x:auto;" id="outputBox"><i>Please enter a valid Pok&eacute;mon above to 
       continue...</i></span>
@@ -384,12 +386,10 @@
     <script>
       $( document ).ready(function() {
 
-        $("#aIV, #dIV, #sIV, #level, #cp").on( "change", function() {
-          console.log("User has changed "+$(this).attr('id'));
-          main();
-        } );
+        /* Run main() whenever user adds new input */
+        $("#aIV, #dIV, #sIV, #level, #cp, #hp").on( "change", function() {main();} );
 
-        var perfTiming = false; /* used for timing execution */
+        var perfTiming = true; /* used for timing execution */
         var input = document.getElementById("pokeList");
         var monNames = Object.keys(pokeListObj);
         /* Ensure we've successfully loaded pokeListObj, and converted to list for awesomplete */
@@ -423,13 +423,17 @@
       }
 
       function calcCP(pokemon) {
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
+
         const aIV = $("#aIV").val();
         const dIV = $("#dIV").val();
         const sIV = $("#sIV").val();
         const level = $("#level").val();
         const cp = $("#cp").val();
+        const hp = $("#hp").val();
 
-        console.log("calcCP: Received inputs: aIV: "+aIV+", dIV: "+dIV+", sIV: "+sIV+", level: "+level+", cp: "+cp+", pokemon: "+pokemon);
+        //console.log("calcCP: Received "+pokemon+" inputs: aIV: "+aIV+", dIV: "+dIV+", sIV: "+sIV+", level: "+level+", cp: "+cp+", hp: "+hp);
         
         if ((aIV && sIV && dIV && (level || cp)) || (level && cp)) {
           const monInfo = pokeListObj[pokemon].split(',');
@@ -438,25 +442,54 @@
           const baseSta = parseInt(monInfo[3], 10);
 
           if (level) {
-            const cpmIndex = Math.round((level - 1) * 2);
-            const cp = Math.max(10, Math.floor((baseAtk + aIV/1) * Math.sqrt(baseDef + dIV/1) * Math.sqrt(baseSta + sIV/1) * cpm[cpmIndex] * cpm[cpmIndex] / 10));
-            $("#outputBox").text(`${pokemon} CP: ${cp}`);
-          } else if (cp) {
-            /* Need to just reverse formula to solve for level rather than looping */
+            if (cp/1>=10) {
+              /* Calculate IVs from level and CP */
+              const cpmIndex = Math.round((level - 1) * 2);
+              var possibleIVs = [];
+              for (var a=15; a>=0; a--) {
+                for (var d=15; d>=0; d--) {
+                  for (var s=15; s>=0; s--) {
+                    const computedCP = Math.max(10, Math.floor((baseAtk + a/1) * Math.sqrt(baseDef + d/1) * Math.sqrt(baseSta + s/1) * cpm[cpmIndex] * cpm[cpmIndex] / 10));
+                    const computedHP = Math.floor((baseSta + s/1)*cpm[cpmIndex]);
+                    if (cp/1 == computedCP/1) {
+                      if (hp/1>=10) {
+                        if (hp/1 == computedHP/1) {
+                          /* Matched HP and CP! */
+                          possibleIVs.push([a,d,s]);
+                        }
+                      } else {
+                        /* Matched CP, no HP input */
+                        possibleIVs.push([a,d,s]);
+                      }
+                    }
+                  }
+                }
+              }
+              //console.log("Found possible IVs: "+JSON.stringify(possibleIVs));
+              $("#outputBox").text(`${pokemon} Possible IVs: ${JSON.stringify(possibleIVs)}`);
+            } else {
+              /* Did not receive CP, need to compute CP instead */
+              const cpmIndex = Math.round((level - 1) * 2);
+              const computedCP = Math.max(10, Math.floor((baseAtk + aIV/1) * Math.sqrt(baseDef + dIV/1) * Math.sqrt(baseSta + sIV/1) * cpm[cpmIndex] * cpm[cpmIndex] / 10));
+              $("#outputBox").text(`${pokemon} CP: ${computedCP}`);
+            }
+          } else if (cp/1>=10) {
+            /* TODO: Reverse formula to solve for level rather than brute force looping to find level*/
             var foundCP = false;
             for (var i=0; i<cpm.length; i++) {
               var computedCP = Math.max(10, Math.floor((baseAtk + aIV/1) * Math.sqrt(baseDef + dIV/1) * Math.sqrt(baseSta + sIV/1) * cpm[i] * cpm[i] / 10));
               if (computedCP == cp) {
-                var computedLevel = i*2 + 1;
+                var computedLevel = i/2 + 1;
                 $("#outputBox").text(`${pokemon} Level: ${computedLevel}`);
                 foundCP = true;
                 break;
-              } else if (computedCP > cp) {
-                console.log("Already overshot target CP("+cp+") with computedCP("+computedCP+"), exiting loop");
+              } else if (computedCP/1 > cp/1) {
+                console.log("calcCP: Already overshot target CP("+cp+") with computedCP("+computedCP+"), exiting loop");
                 $("#outputBox").text("Unable to find correct level, please check your inputs and try again");
+                if (perfTiming) {stopTiming(T0, "calcCP");}
+                
                 return;
               }
-              console.log("computedCP: "+computedCP+" != cp"+cp);
             }
             if (foundCP == false) {
               $("#outputBox").text("Unable to find correct level, please check your inputs and try again");
@@ -464,7 +497,7 @@
           }
         } else {
           console.log("calcCP: Missing one or more required inputs for "+pokemon+": aIV: "+aIV+", dIV: "+dIV+", sIV: "+sIV+", level: "+level+", cp: "+cp);
-          $("#outputBox").text("Please enter any two of IVs, level, and CP to continue");
+          $("#outputBox").html("<b>Please enter any two of IVs, level, and CP to continue</b><br/><i>If IVs are unknown, HP will help narrow down possibile calcualted IVs</i>");
         } 
       }
 
@@ -504,8 +537,11 @@
         document.getElementById('timing_outputs').innerHTML += functionName + ": Execution took " + (endTime - startTime).toFixed(1) + "ms<br>";
       }
     </script>
-    <div style="overflow-x:auto;" id="timing_outputs"></div><br />
-
+    <br/><br/><br/>
+    <div style="overflow-x:auto;">
+      <p style="color: var(--tableHeaderText);font-size:0.8em">© 2023 PvP IVs | <a href="https://pvpivs.com/privacy">Privacy Policy</a> | <a href="https://pvpivs.com/contact">Contact Us</a></p>
+      <p style="color: var(--tableHeaderText);font-size:0.6em">Pokémon and Pokémon GO are copyright of The Pokémon Company, Niantic, Inc., and Nintendo.<br/>All trademarked images and names are property of their respective owners, and any such material is used on this site for educational purposes only.<br/>PvP IVs has no affiliation with The Pokémon Company, Niantic, Inc., or Nintendo.</p>
+    </div><p style="overflow-x:auto;" id="timing_outputs"></p>
   </section>
 </body>
 
