@@ -54,17 +54,21 @@
   color: var(--text);
 }
 
-.light-theme {
+/* Check contrast for Accessibility https://dequeuniversity.com/color-contrast */
+
+.light-theme, .light {
   --primary: var(--gold700);
   --secondary: var(--red900);
   --Background: var(--lg200);
-  --goodResult: var(--green600); /*old: green*/
-  --okResult: var(--yellow700); /*old: orange*/
-  --badResult: var(--orange500); /*old: red*/
+  --goodResult: var(--green600);
+  --okResult: var(--yellow700);
+  --badResult: var(--orange500);
+  --resultText: var(--darkgrey);
   --navBackground: var(--lg500);
   --navActive: var(--yellow700);
-  --navActiveText: var(--white100);
+  --navActiveText: var(--dg12dp);
   --navHover: var(--green800);
+  --navHoverText: var(--black100);
   --text: var(--black100);
   --darkModeSlider: var(--secondary);
   --darkModeSliderBg: var(--dg16dp);
@@ -77,17 +81,19 @@
   --textBoxBg: var(--lg100);
 }
 
-.dark-theme {
+.dark-theme, .dark {
   --primary: var(--gold200);
   --secondary: var(--red200);
   --Background: var(--darkgrey);
-  --goodResult: var(--green300); /*old: green*/
-  --okResult: var(--yellow200); /*old: orange*/
-  --badResult: var(--orange200); /*old: red*/
+  --goodResult: var(--green300);
+  --okResult: var(--yellow200);
+  --badResult: var(--orange200);
+  --resultText: var(--dg12dp);
   --navBackground: var(--dg04dp);
   --navActive: var(--primary);
   --navActiveText: var(--black100);
   --navHover: var(--green800);
+  --navHoverText: var(--black100);
   --text: var(--white100);
   --darkModeSlider: var(--dg16dp);
   --darkModeSliderBg: var(--secondary);

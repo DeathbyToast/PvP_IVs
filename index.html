@@ -21,7 +21,7 @@
     <title>PvP IVs - Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
-    <link rel=icon href=/includes/favicon.png>
+    <link rel=icon href=https://pvpivs.com/includes/favicon.png>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
@@ -111,6 +111,7 @@
             <a href="/" class="active">Rankings (Single)</a>
             <a href="/leagueRanks.html">Rankings (League)</a>
             <a href="/searchStr.html">Search Strings</a>
+            <a href="/calculator.html">Calculator</a>
           </div>
         </li>
         <li class="dropdown left">
@@ -953,7 +954,7 @@
             v1 !== '' && v2 !== '' && !isNaN(v1.replace("%", "")) && !isNaN(v2.replace("%", "")) ? v1.replace("%", "") - v2.replace("%", "") : v1.toString().localeCompare(v2)
             )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
         
-        /*do the work...*/
+        /*sort the table by the column the user clicked on*/
         document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
             const table = th.closest('table');
             Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
@@ -1797,6 +1798,9 @@
       
       function stardust(startlvl, endlvl, totaldust, shdw) {
         /* Returns calculated stardust power-up costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier*/
+        var T0;
+        if (perfTiming) {T0 = performance.now();}
+
         while (startlvl < endlvl) {
           switch (startlvl) {
             case 1:
@@ -1885,6 +1889,7 @@
         if (totaldust > 1000) {
           totaldust = Math.round(totaldust/1000) + "K";
         }
+        if (perfTiming) {stopTiming(T0, "stardust");}
         return totaldust;
       }
       
