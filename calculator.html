@@ -322,7 +322,6 @@
         } else {
           console.log("calcCP: Still waiting for pokemon input, read: "+pokemon);
         }
-        //calcInputLevel();
       }
 
       function calcCP(pokemon) {
@@ -336,7 +335,7 @@
         const cp = $("#cp").val();
         const hp = $("#hp").val();
 
-        //console.log("calcCP: Received "+pokemon+" inputs: aIV: "+aIV+", dIV: "+dIV+", sIV: "+sIV+", level: "+level+", cp: "+cp+", hp: "+hp);
+        /*console.log("calcCP: Received "+pokemon+" inputs: aIV: "+aIV+", dIV: "+dIV+", sIV: "+sIV+", level: "+level+", cp: "+cp+", hp: "+hp);*/
         
         if ((aIV && sIV && dIV && (level || cp)) || (level && cp)) {
           const monInfo = pokeListObj[pokemon].split(',');
@@ -368,7 +367,7 @@
                   }
                 }
               }
-              //console.log("Found possible IVs: "+JSON.stringify(possibleIVs));
+              /*console.log("Found possible IVs: "+JSON.stringify(possibleIVs));*/
               $("#outputBox").text(`${pokemon} Possible IVs: ${JSON.stringify(possibleIVs)}`);
             } else {
               /* Did not receive CP, need to compute CP instead */
