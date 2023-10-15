@@ -160,7 +160,7 @@
       }
       .monTable tr:nth-child(even) {background-color: var(--tableRowEven);}
       .monTable tr:nth-child(odd) {background-color: var(--tableRowOdd);}
-      .monTable tr:hover {background-color: var(--navHover), color: var(--navHoverText)}
+      .monTable tr:hover {background-color: var(--navHover); color: var(--navHoverText)}
       
       /* CSS for debug Search Builder Buttons */
       #getDetails, #reload {
@@ -1035,7 +1035,9 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
-          //URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-0_9_12_false_true"; 
+          //URL = "mon=Conkeldurr&r=10&cp=1500&col_GL=11101111101111111";
+          URL = "mon=Conkeldurr&r=3&cp=All&col_LL=11101111001111111&col_GL=11101111001111111&col_UL=11101111001111111&col_ML=11101111101111111";
+          URL = "mon=Conkeldurr&r=3&cp=All&col_LL=11101111001111111&col_UL=11101111001111111"; 
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -1200,19 +1202,19 @@
                 break;
               case "col_LL":
                 colVis[0] = values[i].split("=")[1];
-                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_GL":
                 colVis[1] = values[i].split("=")[1];
-                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_UL":
                 colVis[2] = values[i].split("=")[1];
-                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_ML":
                 colVis[3] = values[i].split("=")[1];
-                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
             }
           }
@@ -1238,6 +1240,21 @@
             console.log("checkURL: Detected modified Advanced options, opening Collapsible");
             advCollapsible(); 
           }
+
+          if (colVis.length > 0 && colVis.length !== league.length) {
+            /* Need to align colVis to selected leagues */
+            console.log("Detected colVis.length:"+colVis.length+" !== "+league.length+":league.length, colVis:"+JSON.stringify(colVis)+", league:"+JSON.stringify(league));
+            if (league.length == 1) {
+              for (var i=0; i<colVis.length; i++) {
+                if (colVis[i] == null) {
+                  /* Remove extra blank index(es) from colVis array */
+                  colVis.splice(i,1);
+                }
+              }
+            }
+            console.log("Updated colVis to: "+JSON.stringify(colVis));
+          }
+
           if (perfTiming) {stopTiming(T0, "checkURL");}
           return;
         }
@@ -1295,7 +1312,7 @@
             //console.log("main: detected existing DataTables, calling resetMonState()");
             resetMonState();
             mon = undefined;
-            //console.log("main: calling clearHideOldDataTable()");
+            //console.log("mfain: calling clearHideOldDataTable()");
             clearHideOldDataTable();
             /*ensure we clear the prior output between runs*/
             document.getElementById("tradeOutput").innerHTML = "";
@@ -1361,7 +1378,7 @@
           }
 
           /* Create a DataTable from the mon ranks object */
-          //console.log("main: Calling gDT("+ranks[l].numRanks, ", "+keys.length+", "+l+")");
+          console.log("main: Calling gDT("+ranks[l].numRanks, ", "+keys.length+", "+l+")");
           generateDataTable(ranks[l], keys, l);
           console.log("main: Finished gDT, userIVs now:("+JSON.stringify(userIVs));
         }
@@ -1965,26 +1982,27 @@
             initComplete: function () {
               /* Show/hide columns per any URL user preferences */
               var colsChanged = false;
-              //console.log("before loop colVis["+l+"]:"+JSON.stringify(colVis[l]));
+              console.log("initComplete: before loop colVis:"+JSON.stringify(colVis));
+              console.log("initComplete: before loop colVis["+l+"]:"+JSON.stringify(colVis[l]));
               var currColVis = this.api().columns().visible();
-              //console.log("before loop currColVis:"+JSON.stringify(currColVis.toArray()));
+              console.log("initComplete: before loop currColVis:"+JSON.stringify(currColVis.toArray()));
               for (var i=0; colVis[l]!==undefined && i<colVis[l].length; i++) {
                 if (i==DT_XL) {
                   /* If XL candy is used, need to unhide this column */
                   if ((nonZeroXL === true) || (colVis[l][i] == "1" && currColVis[1] === false)) {
                     this.api().columns(DT_XL).visible(true);
-                    //console.log('Updated Column '+ i +' visibility to true');
+                    console.log('Updated Column '+ i +' visibility to true');
                     colsChanged = true;
                     continue;
                   }
                 }
                 if (colVis[l][i] == "1" && currColVis[i] === false) {
                   this.api().columns(i).visible(true);
-                  //console.log('Updated Column '+ i +' visibility to true');
+                  console.log('Updated Column '+ i +' visibility to true');
                   colsChanged = true;
                 } else if (colVis[l][i] == "0" && currColVis[i] === true){
                   this.api().columns(i).visible(false);
-                  //console.log('Updated Column '+ i +' visibility to false');
+                  console.log('Updated Column '+ i +' visibility to false');
                   colsChanged = true;
                 }
               }
