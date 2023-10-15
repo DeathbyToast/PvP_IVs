@@ -316,7 +316,7 @@
 
       function main() {
         let pokemon = document.getElementById("pokeList")?.text?.label;
-        if (!pokemon) pokemon = document.getElementById("pokeList")?.value
+        if (!pokemon) pokemon = document.getElementById("pokeList")?.value;
         if (pokemon && pokeListObj[pokemon]) {
           calcCP(pokemon);
         } else {
@@ -410,7 +410,7 @@
         const sIV = parseInt(document.getElementById('levelStaminaIV').value, 10);
         const inputCP = parseInt(document.getElementById('combatPowerInput').value, 10);
         let pokemon = document.getElementById("pokeList")?.text?.label;
-        if (!pokemon) pokemon = document.getElementById("pokeList")?.value
+        if (!pokemon) pokemon = document.getElementById("pokeList")?.value;
         let attack = 0;
         let defense = 0;
         let stamina = 0;
