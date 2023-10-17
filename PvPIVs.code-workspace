@@ -1,11 +1,4 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../PvP_IVs_minifed"
-		}
-	],
+	"folders": [],
 	"settings": {}
 }
