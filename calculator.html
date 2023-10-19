@@ -352,7 +352,7 @@
                 for (var d=15; d>=0; d--) {
                   for (var s=15; s>=0; s--) {
                     const computedCP = Math.max(10, Math.floor((baseAtk + a/1) * Math.sqrt(baseDef + d/1) * Math.sqrt(baseSta + s/1) * cpm[cpmIndex] * cpm[cpmIndex] / 10));
-                    const computedHP = Math.floor((baseSta + s/1)*cpm[cpmIndex]);
+                    const computedHP = Math.max(10, Math.floor((baseSta + s/1)*cpm[cpmIndex]));
                     if (cp/1 == computedCP/1) {
                       if (hp/1>=10) {
                         if (hp/1 == computedHP/1) {

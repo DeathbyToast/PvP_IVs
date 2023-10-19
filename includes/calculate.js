@@ -43,7 +43,7 @@ function calculate(baseatk, basedef, basesta, floor, minLvl, maxLvl, invalid, le
 			  
 			  var aSt = (baseatk + atk)*cpm[level];
     		  var dSt = (basedef + def)*cpm[level];
-    		  var sSt = Math.floor((basesta + sta)*cpm[level]);
+    		  var sSt = Math.max(10, Math.floor((basesta + sta)*cpm[level]));
     		  var statProd = Math.round(aSt * dSt * sSt);
     		  /* update maxStats if necessary */
     		  if ((maxAtk.value < aSt) || ((maxAtk.sp < statProd) && (maxAtk.value <= aSt))) {
