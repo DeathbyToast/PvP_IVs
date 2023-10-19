@@ -356,7 +356,6 @@
             <th>AtkHP Prod</th>
             <th>CMP Stat Avg</th>
             <th>AADSS SP</th>
-            <th>AADDS SP</th>
             <th>Custom SP</th>
             <th>Hidden</th>
           </tr>
@@ -385,7 +384,6 @@
             <th>AtkHP Prod</th>
             <th>CMP Stat Avg</th>
             <th>AADSS SP</th>
-            <th>AADDS SP</th>
             <th>Custom SP</th>
             <th>Hidden</th>
           </tr>
@@ -414,7 +412,6 @@
             <th>AtkHP Prod</th>
             <th>CMP Stat Avg</th>
             <th>AADSS SP</th>
-            <th>AADDS SP</th>
             <th>Custom SP</th>
             <th>Hidden</th>
           </tr>
@@ -443,7 +440,6 @@
             <th>AtkHP Prod</th>
             <th>CMP Stat Avg</th>
             <th>AADSS SP</th>
-            <th>AADDS SP</th>
             <th>Custom SP</th>
             <th>Hidden</th>
           </tr>
@@ -1039,9 +1035,7 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
-          //URL = "mon=Conkeldurr&r=10&cp=1500&col_GL=11101111101111111";
-          //URL = "mon=Conkeldurr&r=3&cp=All&col_LL=11101111001111111&col_GL=11101111001111111&col_UL=11101111001111111&col_ML=11101111101111111";
-          //URL = "mon=Conkeldurr&r=3&cp=All&col_LL=11101111001111111&col_UL=11101111001111111"; 
+          //URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-0_9_12_false_true"; 
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -1100,25 +1094,26 @@
                 checkSetAllLeagueOptions(values[i].split("=")[1]);
                 break;
               case "f":
-                $("#floor").val() = values[i].split("=")[1];
+                $("#floor select").val(values[i].split("=")[1]);
                 ivMod = true;
                 break;
               case "min":
-                $("#minLvl").val() = values[i].split("=")[1];
+                $("#minLvl select").val(values[i].split("=")[1]);
                 mnlMod = true;
                 break;
               case "max":
-                $("#maxLvl").val() = values[i].split("=")[1];
+                $("#maxLvl select").val(values[i].split("=")[1]);
                 break;
               case "dec":
-                $("#dec").val() = values[i].split("=")[1];
+                $("#dec select").val(values[i].split("=")[1]);
                 break;
               case "fel":
-                $("#familyEvoLeague").val() = values[i].split("=")[1];
+                $("#familyEvoLeague select").val(values[i].split("=")[1]);
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
                 if ($("#familyEvoLeague").val() === "") {
                   console.error("checkURL: Unknown cp value detected, defaulting to Master League");
-                  $("#familyEvoLeague").val() = "ML";
+                  $("#familyEvoLeague select").val("ML");
+
                 }
                 break;
               case "IVs":
@@ -1206,19 +1201,19 @@
                 break;
               case "col_LL":
                 colVis[0] = values[i].split("=")[1];
-                console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_GL":
                 colVis[1] = values[i].split("=")[1];
-                console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_UL":
                 colVis[2] = values[i].split("=")[1];
-                console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_ML":
                 colVis[3] = values[i].split("=")[1];
-                console.log("checkURL: set colVis="+JSON.stringify(colVis));
+                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
             }
           }
@@ -1244,21 +1239,6 @@
             console.log("checkURL: Detected modified Advanced options, opening Collapsible");
             advCollapsible(); 
           }
-
-          if (colVis.length > 0 && colVis.length !== league.length) {
-            /* Need to align colVis to selected leagues */
-            console.log("Detected colVis.length:"+colVis.length+" !== "+league.length+":league.length, colVis:"+JSON.stringify(colVis)+", league:"+JSON.stringify(league));
-            if (league.length == 1) {
-              for (var i=0; i<colVis.length; i++) {
-                if (colVis[i] == null) {
-                  /* Remove extra blank index(es) from colVis array */
-                  colVis.splice(i,1);
-                }
-              }
-            }
-            console.log("Updated colVis to: "+JSON.stringify(colVis));
-          }
-
           if (perfTiming) {stopTiming(T0, "checkURL");}
           return;
         }
@@ -1316,7 +1296,7 @@
             //console.log("main: detected existing DataTables, calling resetMonState()");
             resetMonState();
             mon = undefined;
-            //console.log("mfain: calling clearHideOldDataTable()");
+            //console.log("main: calling clearHideOldDataTable()");
             clearHideOldDataTable();
             /*ensure we clear the prior output between runs*/
             document.getElementById("tradeOutput").innerHTML = "";
@@ -1382,7 +1362,7 @@
           }
 
           /* Create a DataTable from the mon ranks object */
-          console.log("main: Calling gDT("+ranks[l].numRanks, ", "+keys.length+", "+l+")");
+          //console.log("main: Calling gDT("+ranks[l].numRanks, ", "+keys.length+", "+l+")");
           generateDataTable(ranks[l], keys, l);
           console.log("main: Finished gDT, userIVs now:("+JSON.stringify(userIVs));
         }
@@ -1449,9 +1429,9 @@
             /* Check if User has Saved Setting for minLvl before we reset */
             if (localStorage.minLvl === undefined) {
               /* User has no preference for us to load, reset to default */
-              $("#minLvl").val() = 1;
+              $("#minLvl select").val(1);
             } else {
-              $("#minLvl").val() = localStorage.minLvl;
+              $("#minLvl select").val(localStorage.minLvl);
               console.log("resetMonState: Successfully reset Min Level to User's Preference of "+localStorage.minLvl);
             }
           }
@@ -1465,9 +1445,9 @@
             /* Check if User has Saved Setting for floor before we reset */
             if (localStorage.floor === undefined) {
               /* User has no preference for us to load, reset to default */
-              $("#floor").val() = 0;
+              $("#floor select").val(0);
             } else {
-              $("#floor").val() = localStorage.floor;
+              $("#floor select").val(localStorage.minLvl);
               console.log("resetMonState: Successfully reset Min Level to User's Preference of "+localStorage.floor);
             }
           }
@@ -1494,10 +1474,10 @@
             console.log("Detected Shadow Legendary:" +pokeName);
             /*set min IVs to 6 and min Level to 8*/
             if (minLvl/1 > 8) {
-              $("#minLvl").val() = 8;
+              $("#minLvl select").val(8);
               mnlMod = true;
             }
-            $("#floor").val() = 6;
+            $("#floor select").val(6);
             ivMod = true;
             if (perfTiming) {stopTiming(T0, "adjustFloors");}
             return;
@@ -1508,10 +1488,10 @@
           console.log("Detected box reward mon:" +pokeName);
           /*set min IVs to 1 and min Level to 15*/
           if (minLvl/1 < 15) {
-            $("#minLvl").val() = 15;
+            $("#minLvl select").val(15);
             mnlMod = true;
           }
-          $("#floor").val() = 1;
+          $("#floor select").val(1);
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1521,10 +1501,10 @@
           console.log("Detected Raid+Trade mon:" +pokeName);
           /*set min IVs to 1 and min Level to 20*/
           if (minLvl/1 < 20) {
-            $("#minLvl").val() = 20;
+            $("#minLvl select").val(20);
             mnlMod = true;
           }
-          $("#floor").val() = 1;
+          $("#floor select").val(1);
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1534,10 +1514,10 @@
           console.log("Detected Mythical mon:" +pokeName);
           /*set min IVs to 10 and min Level to 15*/
           if (minLvl/1 < 15) {
-            $("#minLvl").val() = 15;
+            $("#minLvl select").val(15);
             mnlMod = true;
           }
-          $("#floor").val() = 10;
+          $("#floor select").val(10);
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1547,10 +1527,10 @@
           console.log("Detected Raid no Trade mon:" +pokeName);
           /*set min IVs to 10 and min Level to 20*/
           if (minLvl/1 < 20) {
-            $("#minLvl").val() = 20;
+            $("#minLvl select").val(20);
             mnlMod = true;
           }
-          $("#floor").val() = 10;
+          $("#floor select").val(10);
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1875,11 +1855,10 @@
               //console.log("leagueRanks[keys[i]][j].battle.A/leagueRanks.maxAtk.value"+leagueRanks[keys[i]][j].battle.A/leagueRanks.maxAtk.value);
               var adjCMP = ((leagueRanks[keys[i]][j].IVs.cmp/100)+9)/10;
               //console.log("leagueRanks[keys[i]][j].IVs.cmp"+leagueRanks[keys[i]][j].IVs.cmp+", adjCMP: "+adjCMP); 
-              var doubleAtkHPstatProd = numOut((leagueRanks[keys[i]][j].battle.A * leagueRanks[keys[i]][j].battle.A * leagueRanks[keys[i]][j].battle.D * leagueRanks[keys[i]][j].battle.S * leagueRanks[keys[i]][j].battle.S)/5000,0); currentRow.push(doubleAtkHPstatProd); /*19: AADSS Product*/
-              var doubleAtkDefstatProd = numOut((leagueRanks[keys[i]][j].battle.A * leagueRanks[keys[i]][j].battle.A * leagueRanks[keys[i]][j].battle.D * leagueRanks[keys[i]][j].battle.D * leagueRanks[keys[i]][j].battle.S)/5000,0); currentRow.push(doubleAtkDefstatProd); /*20: AADDS Product*/
+              var doubleAtkHPstatProd = numOut((leagueRanks[keys[i]][j].battle.A * leagueRanks[keys[i]][j].battle.A * leagueRanks[keys[i]][j].battle.D * leagueRanks[keys[i]][j].battle.S * leagueRanks[keys[i]][j].battle.S)/5000,0); currentRow.push(doubleAtkHPstatProd); /*19: CMP-Stat Product*/
               var customPcntProdProd = numOut(10000*
                 (adjCMP * Math.pow((leagueRanks[keys[i]][j].battle.A/leagueRanks.maxAtk.value),3) * (Math.pow((leagueRanks[keys[i]][j].battle.D/leagueRanks.maxDef.value),2) * Math.pow(leagueRanks[keys[i]][j].battle.S/leagueRanks.maxHP.value,3))/2)
-                ,dec); currentRow.push(customPcntProdProd); /*21: CMP-Stat Product*/
+                ,dec); currentRow.push(customPcntProdProd); /*20: CMP-Stat Product*/
               currentRow.push(hiddenSortRank); /* hidden IV sort column */
               
               tableData.push(currentRow);
@@ -1931,8 +1910,7 @@
               { "name": "AtkHP Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 17, "visible": false},
               { "name": "cmpStat Prod", "searchBuilderTitle": "Attack * HP Product", "targets": 18, "visible": false},
               { "name": "aadss Stat Prod", "searchBuilderTitle": "2xA*D*2xHP", "targets": 19, "visible": false},
-              { "name": "aadds Stat Prod", "searchBuilderTitle": "2xA*2xD*HP", "targets": 20, "visible": false},
-              { "name": "custom Stat Prod", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 21, "visible": false},
+              { "name": "custom Stat Prod", "searchBuilderTitle": "2xA*D*2xHP pctns prod", "targets": 20, "visible": false},
               { "targets": hiddenRowIndex, "type": "hidden", "searchable": false, "visible": false, className: 'noVis'}
             ],
             createdRow: (row, data, dtRowIndex) => {
@@ -1988,27 +1966,26 @@
             initComplete: function () {
               /* Show/hide columns per any URL user preferences */
               var colsChanged = false;
-              console.log("initComplete: before loop colVis:"+JSON.stringify(colVis));
-              console.log("initComplete: before loop colVis["+l+"]:"+JSON.stringify(colVis[l]));
+              //console.log("before loop colVis["+l+"]:"+JSON.stringify(colVis[l]));
               var currColVis = this.api().columns().visible();
-              console.log("initComplete: before loop currColVis:"+JSON.stringify(currColVis.toArray()));
+              //console.log("before loop currColVis:"+JSON.stringify(currColVis.toArray()));
               for (var i=0; colVis[l]!==undefined && i<colVis[l].length; i++) {
                 if (i==DT_XL) {
                   /* If XL candy is used, need to unhide this column */
                   if ((nonZeroXL === true) || (colVis[l][i] == "1" && currColVis[1] === false)) {
                     this.api().columns(DT_XL).visible(true);
-                    console.log('Updated Column '+ i +' visibility to true');
+                    //console.log('Updated Column '+ i +' visibility to true');
                     colsChanged = true;
                     continue;
                   }
                 }
                 if (colVis[l][i] == "1" && currColVis[i] === false) {
                   this.api().columns(i).visible(true);
-                  console.log('Updated Column '+ i +' visibility to true');
+                  //console.log('Updated Column '+ i +' visibility to true');
                   colsChanged = true;
                 } else if (colVis[l][i] == "0" && currColVis[i] === true){
                   this.api().columns(i).visible(false);
-                  console.log('Updated Column '+ i +' visibility to false');
+                  //console.log('Updated Column '+ i +' visibility to false');
                   colsChanged = true;
                 }
               }
