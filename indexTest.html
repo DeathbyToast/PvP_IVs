@@ -1094,25 +1094,26 @@
                 checkSetAllLeagueOptions(values[i].split("=")[1]);
                 break;
               case "f":
-                $("#floor").val() = values[i].split("=")[1];
+                $("#floor select").val(values[i].split("=")[1]);
                 ivMod = true;
                 break;
               case "min":
-                $("#minLvl").val() = values[i].split("=")[1];
+                $("#minLvl select").val(values[i].split("=")[1]);
                 mnlMod = true;
                 break;
               case "max":
-                $("#maxLvl").val() = values[i].split("=")[1];
+                $("#maxLvl select").val(values[i].split("=")[1]);
                 break;
               case "dec":
-                $("#dec").val() = values[i].split("=")[1];
+                $("#dec select").val(values[i].split("=")[1]);
                 break;
               case "fel":
-                $("#familyEvoLeague").val() = values[i].split("=")[1];
+                $("#familyEvoLeague select").val(values[i].split("=")[1]);
                 /* Catch incorrect CP values being passed in, default to Master League (false) */
                 if ($("#familyEvoLeague").val() === "") {
                   console.error("checkURL: Unknown cp value detected, defaulting to Master League");
-                  $("#familyEvoLeague").val() = "ML";
+                  $("#familyEvoLeague select").val("ML");
+
                 }
                 break;
               case "IVs":
@@ -1428,9 +1429,10 @@
             /* Check if User has Saved Setting for minLvl before we reset */
             if (localStorage.minLvl === undefined) {
               /* User has no preference for us to load, reset to default */
-              $("#minLvl").val() = 1;
+              $("#minLvl select").val(1);
+
             } else {
-              $("#minLvl").val() = localStorage.minLvl;
+              $("#minLvl select").val(localStorage.minLvl);
               console.log("resetMonState: Successfully reset Min Level to User's Preference of "+localStorage.minLvl);
             }
           }
@@ -1444,9 +1446,10 @@
             /* Check if User has Saved Setting for floor before we reset */
             if (localStorage.floor === undefined) {
               /* User has no preference for us to load, reset to default */
-              $("#floor").val() = 0;
+              $("#floor select").val(0);
+
             } else {
-              $("#floor").val() = localStorage.floor;
+              $("#floor select").val(localStorage.minLvl);
               console.log("resetMonState: Successfully reset Min Level to User's Preference of "+localStorage.floor);
             }
           }
@@ -1473,10 +1476,10 @@
             console.log("Detected Shadow Legendary:" +pokeName);
             /*set min IVs to 6 and min Level to 8*/
             if (minLvl/1 > 8) {
-              $("#minLvl").val() = 8;
+              $("#minLvl select").val(8);
               mnlMod = true;
             }
-            $("#floor").val() = 6;
+            $("#floor select").val(6);
             ivMod = true;
             if (perfTiming) {stopTiming(T0, "adjustFloors");}
             return;
@@ -1487,10 +1490,10 @@
           console.log("Detected box reward mon:" +pokeName);
           /*set min IVs to 1 and min Level to 15*/
           if (minLvl/1 < 15) {
-            $("#minLvl").val() = 15;
+            $("#minLvl select").val(15);
             mnlMod = true;
           }
-          $("#floor").val() = 1;
+          $("#floor select").val(1);
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1500,10 +1503,10 @@
           console.log("Detected Raid+Trade mon:" +pokeName);
           /*set min IVs to 1 and min Level to 20*/
           if (minLvl/1 < 20) {
-            $("#minLvl").val() = 20;
+            $("#minLvl select").val(20);
             mnlMod = true;
           }
-          $("#floor").val() = 1;
+          $("#floor select").val(1);
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1513,10 +1516,10 @@
           console.log("Detected Mythical mon:" +pokeName);
           /*set min IVs to 10 and min Level to 15*/
           if (minLvl/1 < 15) {
-            $("#minLvl").val() = 15;
+            $("#minLvl select").val(15);
             mnlMod = true;
           }
-          $("#floor").val() = 10;
+          $("#floor select").val(10);
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
@@ -1526,10 +1529,10 @@
           console.log("Detected Raid no Trade mon:" +pokeName);
           /*set min IVs to 10 and min Level to 20*/
           if (minLvl/1 < 20) {
-            $("#minLvl").val() = 20;
+            $("#minLvl select").val(20);
             mnlMod = true;
           }
-          $("#floor").val() = 10;
+          $("#floor select").val(10);
           ivMod = true;
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
