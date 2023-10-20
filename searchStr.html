@@ -193,8 +193,8 @@
     }
   
     function checkURI() {
-      var checkURIT0,checkURIT1;
-      if (perfTiming) {checkURIT0 = performance.now();}
+      var T0;
+      if (perfTiming) {T0 = performance.now();}
       var URL = window.location.href.split("?")[1],i,j;
       /*URL = "mon=Poliwrath&cp=1500&r=f_f_10_f_f&";*/
       
@@ -382,13 +382,11 @@
         /* Exit if we don't have a valid input.value (mon) yet */
         if (typeof input.value === 'undefined' || input.value === null || typeof pokeListObj[input.value] === 'undefined') {
           console.log("checkURI: No Pokémon detected, awaiting user input (input.value==='"+input.value+"')");
-          if (perfTiming) {checkURIT1 = performance.now();
-          console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
+          if (perfTiming) {stopTiming(T0, "checkURI");}
           return;
         }
         
-        if (perfTiming) {checkURIT1 = performance.now();
-        console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
+        if (perfTiming) {stopTiming(T0, "checkURI");}
         console.log("checkURI: calling buildSearchString with input.value:"+input.value+" and true");
         buildSearchString(input.value, true);
         return;
@@ -396,16 +394,15 @@
       else
       {
         console.log("checkURI: No inputs detected, awaiting user input");
-        if (perfTiming) {checkURIT1 = performance.now();
-        console.log("checkURI: Execution took "+(checkURIT1-checkURIT0).toFixed(1)+"ms");}
+        if (perfTiming) {stopTiming(T0, "checkURI");}
         return;
       }
     }
     
     function main(mon) {
       
-      var mainT0, mainT1,i;
-      if (perfTiming) {mainT0 = performance.now();}
+      var T0,i;
+      if (perfTiming) {T0 = performance.now();}
       
       /* Save state of mon as we override it later on */
       var newMon = (mon) ? true : false;
@@ -445,8 +442,7 @@
         
         /* Ensure we update the URL before returning */
         updateURI(false,0);
-        if (perfTiming) {mainT1 = performance.now();
-        console.log("main: Execution took "+(mainT1-mainT0).toFixed(1)+"ms");}
+        if (perfTiming) {stopTiming(T0, "main");}
         return;
       }
       
@@ -473,21 +469,19 @@
         document.getElementById('RaidOverrideDiv').style.display = "none";
         document.getElementById('targetLbl').style.display = "none";
         document.getElementById('asDiv').style.display = "none";
-        if (perfTiming) {mainT1 = performance.now();
-        console.log("main: Execution took "+(mainT1-mainT0).toFixed(1)+"ms");}
+        if (perfTiming) {stopTiming(T0, "main");}
         return;
       }
       /* We have a valid mon, hide the 'getting started' help text and build Search String*/
       document.getElementById('getStarted').style.display = "none";
-      if (perfTiming) {mainT1 = performance.now();
-      console.log("main: Execution took "+(mainT1-mainT0).toFixed(1)+"ms");}
+      if (perfTiming) {stopTiming(T0, "main");}
       buildSearchString(mon, newMon);
     }
     
     function buildSearchString(mon, newMon) {
       
-      var buildSearchStringT0, buildSearchStringT1,i,j;
-      if (perfTiming) {buildSearchStringT0 = performance.now();}
+      var T0,i,j;
+      if (perfTiming) {T0 = performance.now();}
       
       var league = document.getElementById('league').value;
       var maxLvl = document.getElementById('maxLvl').value;
@@ -796,8 +790,7 @@
       /* update the URL with search parameters */
       updateURI(mon,evoVals.length);
       
-      if (perfTiming) {buildSearchStringT1 = performance.now();
-      console.log("buildSearchString: Execution took "+(buildSearchStringT1-buildSearchStringT0).toFixed(1)+"ms");}
+      if (perfTiming) {stopTiming(T0, "buildSearchString");}
       return true;
     }
     
@@ -907,8 +900,8 @@
     }
     
     function findAllZeros() {
-      var findAllZerosT0, findAllZerosT1;
-      if (true) {findAllZerosT0 = performance.now();}
+      var T0;
+      if (true) {T0 = performance.now();}
       
       var output = document.getElementById('output');
       var lang = document.getElementById('lang').value.split(',');
@@ -927,18 +920,13 @@
         output.value = output.value.replace(/hp/gi,      lang[2]);
       }
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
-      
-      if (perfTiming) {
-        findAllZerosT1 = performance.now();
-        console.log("findAllZeros: Execution took "+(findAllZerosT1-findAllZerosT0).toFixed(1)+"ms");
-      }
-      
+      if (perfTiming) {stopTiming(T0, "findAllZeros");}
       return;
     }
     
     function getRanks(evoVals, maxLvl) {
-      var getRanksT0, getRanksT1;
-      if (perfTiming) {getRanksT0 = performance.now();}
+      var T0;
+      if (perfTiming) {T0 = performance.now();}
       /*console.log("getRanks: Received evoVals:"+JSON.stringify(evoVals)+", maxLvl:"+maxLvl);*/
       
       var message = "String ", numRanks = 0, rKeys, i, j, l, leagueLim;
@@ -1010,16 +998,14 @@
       message += " up to PvP Level "+pvpLvls+".";
       
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
-      if (perfTiming) {getRanksT1 = performance.now();
-      console.log("getRanks: Execution took "+(getRanksT1-getRanksT0).toFixed(1)+"ms");}
-      
+      if (perfTiming) {stopTiming(T0, "getRanks");}
       return finalRanks;
     }
     
     /* Given valid family stats in evoVals, outputs a Search String for the user */
     function outputStr(evoVals, output, maxLvl) {
-      var outputStrT0, outputStrT1;
-      if (perfTiming) {outputStrT0 = performance.now();}
+      var T0;
+      if (perfTiming) {T0 = performance.now();}
   
       /* create our rank object to compute cps/hps from for output string */
       const mergedRanks = getRanks(evoVals, maxLvl);
@@ -1219,16 +1205,14 @@
           excessOut = (excessOut.length>2000) ? excessOut.substring(cut) : 0;
         }
       }
-      
-      if (perfTiming) {outputStrT1 = performance.now();
-      console.log("outputStr: Execution took "+(outputStrT1-outputStrT0).toFixed(1)+"ms");}
+      if (perfTiming) {stopTiming(T0, "outputStr");}
       return output;
     }
     
     /* Given custom IVs customIVs, outputs a Search String for the user */
     function outputCustomIVsStr(customIVs, baseAtk, baseDef, baseSta, finalEvoAtk, finalEvoDef, finalEvoSta, league, output, maxLvl, dexNum, monName) {
-      var outputCustomIVsStrT0, outputCustomIVsStrT1;
-      if (perfTiming) {outputCustomIVsStrT0 = performance.now();}
+      var T0;
+      if (perfTiming) {T0 = performance.now();}
       
       /*console.log("outputCustomIVsStr: Received customIVs: "+JSON.stringify(customIVs)+", baseAtk: "+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", finalEvoAtk:"+finalEvoAtk+", finalEvoDef:"+finalEvoDef+", finalEvoSta:"+finalEvoSta+", league:"+league+", output:"+output+", maxLvl:"+maxLvl+", dexNum:"+dexNum+", monName:"+monName);/*
   
@@ -1383,8 +1367,7 @@
       document.getElementById('RaidOverrideDiv').style.display = (league === "Raid") ? "inline-block" : "none";
       document.getElementById('asDiv').style.display = "none";
       
-      if (perfTiming) {outputCustomIVsStrT1 = performance.now();
-      console.log("outputCustomIVsStrT0: Execution took "+(outputCustomIVsStrT1-outputCustomIVsStrT0).toFixed(1)+"ms");}
+      if (perfTiming) {stopTiming(T0, "outputCustomIVsStr");}
       return output;
     }
     
@@ -1421,8 +1404,8 @@
     }
     
     function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, atkBkts, defBkts, staBkts, output, id) {
-      var outputCPsHPsBucketsT0, outputCPsHPsBucketsT1;
-      if (perfTiming) {outputCPsHPsBucketsT0 = performance.now();}
+      var T0;
+      if (perfTiming) {T0 = performance.now();}
       
       var emptyBuf = "";
       var trash = document.getElementById('trash').checked;
@@ -1532,15 +1515,13 @@
         output.value = output.value.replace(/psychic/gi, lang[10]);
         output.value = output.value.replace(/fire/gi,    lang[11]);
       }
-      
-      if (perfTiming) {outputCPsHPsBucketsT1 = performance.now();
-      console.log("outputCPsHPsBuckets: Execution took "+(outputCPsHPsBucketsT1-outputCPsHPsBucketsT0).toFixed(1)+"ms");}
+      if (perfTiming) {stopTiming(T0, "outputCPsHPsBuckets");}
       return true;
     }
     
     function trashFlip(cps, maxCP, attr) {
-      var trashFlipT0, trashFlipT1;
-      if (perfTiming) {trashFlipT0 = performance.now();}
+      var T0;
+      if (perfTiming) {T0 = performance.now();}
       var i=10;
       if (attr) {i=0;}
       if (cps instanceof Set) {
@@ -1551,14 +1532,12 @@
     				cps.add(i);
     		  }
         }
-        if (perfTiming) {trashFlipT1 = performance.now();
-        console.log("trashFlip: Execution took "+(trashFlipT1-trashFlipT0).toFixed(1)+"ms");}
+        if (perfTiming) {stopTiming(T0, "trashFlip");}
         return cps;
       } else {
         console.error("trashFlip: received cps as "+typeof cps+" instead of expected set");
         document.getElementById('errorBox').innerHTML = "ERROR: Please try again. If this persists, please send us your Search's URL via <a href='https://discord.gg/UD4Temq'>Discord!</a>";
-        if (perfTiming) {trashFlipT1 = performance.now();
-        console.log("trashFlip: Execution took "+(trashFlipT1-trashFlipT0).toFixed(1)+"ms");}
+        if (perfTiming) {stopTiming(T0, "trashFlip");}
         return false;
       }
     }
@@ -1575,8 +1554,8 @@
     
     /* Only accepts a SORTED array of numbers to output */
     function get_matching_string(a, t) {
-      var get_matching_stringT0, get_matching_stringT1;
-      if (perfTiming) {get_matching_stringT0 = performance.now();}
+      var T0;
+      if (perfTiming) {T0 = performance.now();}
       var list = '', last = -1;
       
     	for( var i = 0; i < a.length; i++ ) {
@@ -1595,19 +1574,16 @@
     			last = a[i];
     		}
     	}
-    	
-    	if (perfTiming) {get_matching_stringT1 = performance.now();
-      console.log("get_matching_string: Execution took "+(get_matching_stringT1-get_matching_stringT0).toFixed(1)+"ms");}
+    	if (perfTiming) {stopTiming(T0, "get_matching_string");}
     	return list.substr(1);
     }
     
     function autocopy(e) {
-      var autocopyT0, autocopyT1;
-      if (perfTiming) {autocopyT0 = performance.now();}
+      var T0;
+      if (perfTiming) {T0 = performance.now();}
     	e.select();
     	document.execCommand('copy');
-    	if (perfTiming) {autocopyT1 = performance.now();
-      console.log("autocopy: Execution took "+(autocopyT1-autocopyT0).toFixed(1)+"ms");}
+    	if (perfTiming) {stopTiming(T0, "autocopy");}
       return true;
     }
 
@@ -1660,6 +1636,14 @@
         }
         if (perfTiming) {stopTiming(T0, "setUserPreference");}
         main();
+      }
+
+      function stopTiming(startTime, functionName) {
+        var endTime = performance.now();
+        console.log(functionName+": Execution took "+(endTime-startTime).toFixed(1)+"ms");
+        var docOut = functionName+": Execution took "+(endTime-startTime).toFixed(1)+"ms<br>";
+        if (functionName === "main") {docOut = "<b>"+docOut+"</b>";}
+        document.getElementById("timing_outputs").innerHTML += docOut;
       }
     </script>
     <label>Language:<select id="lang" oninput="main()">
@@ -1780,8 +1764,10 @@
       <br />
       <div style="overflow-x:auto;">
         <p style="color: var(--tableHeaderText);font-size:0.8em">© 2023 PvP IVs | <a href="https://pvpivs.com/privacy">Privacy Policy</a> | <a href="https://pvpivs.com/contact">Contact Us</a></p>
-        <p style="color: var(--tableDividers);font-size:0.6em">Pokémon and Pokémon GO are copyright of The Pokémon Company, Niantic, Inc., and Nintendo.<br/>All trademarked images and names are property of their respective owners, and any such material is used on this site for educational purposes only.<br/>PvP IVs has no affiliation with The Pokémon Company, Niantic, Inc., or Nintendo.</p>
-      </div><br /><br /><br /><br />
+        <p style="color: var(--tableHeaderText);font-size:0.6em">Pokémon and Pokémon GO are copyright of The Pokémon Company, Niantic, Inc., and Nintendo.<br/>All trademarked images and names are property of their respective owners, and any such material is used on this site for educational purposes only.<br/>PvP IVs has no affiliation with The Pokémon Company, Niantic, Inc., or Nintendo.</p>
+      </div>
+      <p style="overflow-x:auto;" id="timing_outputs"></p>
+      <br /><br /><br /><br />
     </section>
   </body>
 </html>
