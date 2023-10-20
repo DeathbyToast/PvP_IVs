@@ -197,6 +197,8 @@
       if (perfTiming) {T0 = performance.now();}
       var URL = window.location.href.split("?")[1],i,j;
       /*URL = "mon=Poliwrath&cp=1500&r=f_f_10_f_f&";*/
+      //URL = "mon=Carbink&cp=1500&r=35_f_f";
+      URL = "mon=Carbink&cp=All&r=207-35-10-10_f_f";
       
       if (URL)
       {
@@ -969,6 +971,7 @@
               else if (leagueArray[l] === "1500") {leagueLim = evoVals[i][7]/1;}
               else if (leagueArray[l] === "2500") {leagueLim = evoVals[i][8]/1;}
               else {leagueLim = evoVals[i][9]/1;} /* Master League */
+              console.log("Set leagueLim="+leagueLim+" from leagueArray["+l+"]:"+leagueArray[l]);
               
               console.log("getRanks: calculated "+evoVals[i][4]+" for "+leagueArray[l]+" with evoVals["+i+"][0]:"+evoVals[i][0]);
               newRanks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), document.getElementById('floor').value, 0, maxLvl, false, leagueArray[l], evoVals[i][4]);
@@ -1111,6 +1114,7 @@
         		  if (sta/1==15) {hpBkt=4;} else {hpBkt=Math.ceil(sta/5);}
               
               /* bucket CPs and HPs into appraisal ratings for more accurrate matching */
+              /* TODO: maxCP is getting set incorrectly to lowest league limit only in All Leagues, preventing higher CPs from being output */
               switch (mergedRanks[rKeys[i]][j].IVs.star) {
                 case "0*":
                   cps[0].add(cp);
@@ -1457,8 +1461,11 @@
           }
           
           /* output CPs */
+          console.log("Set cps["+i+"] is: "+printSetArray(cps[i]));
           cps[i] = Array.from(cps[i]);
+          console.log("To unsorted array cps["+i+"] as: "+cps[i]);
           cps[i].sort((a, b) => a - b);
+          console.log("Sorted cps["+i+"] as: "+cps[i]);
           /* Add attribute appraisals between CP/HP groupings for improved accuracy */
           output.value += '&!'+i+'*' + groupAttr(atkBkts[i], lang[12]);
           /* Need to intersperce &!i* between search strings, but not trash strings */
