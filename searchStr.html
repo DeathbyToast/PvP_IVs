@@ -1180,13 +1180,6 @@
         document.getElementById("feedbackBox").innerHTML += "<p><i>WARNING: Your search string finds only Weather Boosted IVs and "+finalMonName+" needs to be powered up beyond Level 30 for "+leagueName+" but your string only finds Level "+searchLvlName+". Instead, consider including Weather Boosted levels to not miss out on "+baseMonName+" with potentially good PvP IVs!</i></p>";
         /* TODO: Have self-referential link with WB IVs in message */
       }
-      
-      /* TODO: Why is this All League only?? */
-      /* get actual maxCP and maxHP using spread syntax */
-      if ((document.getElementById('league').value === "All") && (document.getElementById('trash').checked)) {
-        maxCP.fill(Math.max(...maxCP));
-        maxHP.fill(Math.max(...maxHP));
-      }
         
       /* output the CPs and HPs */
       outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, aIV, dIV, sIV, output, evoVals[0][0]);
@@ -1449,10 +1442,12 @@
           if (!trash) {output.value += '&!'+i+'*';}
           output.value += groupAttr(staBkts[i], lang[2]);
           if (!trash) {output.value += '&!'+i+'*';}
-          output.value += "," + get_matching_string(cps[i], lang[1]);
+          output.value += ',' + get_matching_string(cps[i], lang[1]);
           
           if (!trash) {
             output.value += '&!'+i+'*';
+          } else {
+            output.value += ',' + lang[1] + (maxCP[i] + 1) + "-";
           }
           
           /* skip empty hps */
@@ -1460,6 +1455,9 @@
             hps[i] = Array.from(hps[i]);
             hps[i].sort((a, b) => a - b);
             output.value += ',' + get_matching_string(hps[i], lang[2]);
+            if (trash) {
+              output.value += ',' + lang[2] + (maxHP[i] + 1) + '-';
+            }
           }
         } else if (!trash) { /* skip empty appraisal sets in search string */
           emptyBuf += '&!'+i+'*';
