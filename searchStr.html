@@ -88,7 +88,7 @@
       <option value="1500" selected>Great League</option>
     	<option value="2500">Ultra League</option>
     	<option value="ML">Master League</option>
-  		<!--option value="All">All Leagues</option--></select>
+  		<option value="All">All Leagues</option></select>
   	</label><br />
     <label id="getStarted"><i>Please first select an evolution family above, then boxes to select limits will appear...</i><br /></label>
     <div id="targetDiv" hidden><label id="targetLbl" for="target" style="display: none;">Find:</label><select id="target" oninput="main()"></select><div id="asDiv">&nbsp;As: </div></div>
@@ -209,7 +209,7 @@
           switch (values[i].split("=")[0]) {
             case "mon":
               input.value = values[i].split("=")[1];
-              /* Conditional for All Zero mode */
+              /* Conditional for allZero mode */
               if (!(input.value)) {
                 document.getElementById('allZero').checked = true;
               } else { /* Ensure input shows in awesomplete box */
@@ -885,7 +885,7 @@
       /* Update Page Title with User's Search */
       var newTitle;
       if (!mon) {
-        newTitle = "PvP IVs - All Zero 0% IV Search String";
+        newTitle = "PvP IVs - Zero 0% IV Search String";
       } else {
         newTitle = "PvP IVs - "+mon+" "+leagueName+" Search String";
       }
@@ -929,20 +929,20 @@
       if (perfTiming) {T0 = performance.now();}
       /*console.log("getRanks: Received evoVals:"+JSON.stringify(evoVals)+", maxLvl:"+maxLvl);*/
       
-      var message = "String ", numRanks = 0, rKeys, i, j, l, leagueLim;
-      var newRanks = {}, finalRanks = {};
+      var message = "String ", outRanks = 0, rKeys, e, i, j, l, leagueLim, leagueRanks, numLeagueRanks, leagueArray;
+      var searchRanks = {};
       var league = document.getElementById('league').value;
       var searchLvls = document.getElementById('searchLvl').options[document.getElementById('searchLvl').selectedIndex].text;
       var pvpLvls = document.getElementById('maxLvl').options[document.getElementById('maxLvl').selectedIndex].text.split(":")[0];
 
-      for (i=0; i<evoVals.length; i++) {
-        if (evoVals[i][0]){
-          console.log("getRanks: Loop #"+i+": evoVals["+i+"]:"+JSON.stringify(evoVals[i]));
+      for (e=0; e<evoVals.length; e++) {
+        if (evoVals[e][0]){
+          console.log("getRanks: Loop #"+e+": evoVals["+e+"]:"+JSON.stringify(evoVals[e]));
         }
         
-        if (i===0) {/* base mon */
+        if (e == 0) {/* base mon */
           if (document.getElementById('trash').checked) {
-            message += "trashes Level "+searchLvls+" "+evoVals[i][4]+" except ";
+            message += "trashes Level "+searchLvls+" "+evoVals[e][4]+" except ";
             if (document.getElementById('excludeHundo').checked) {message += "perfect IV (15/15/15) and ";}
             if (document.getElementById('excludeZero').checked) {message += "zero IV (0/0/0) and ";}
             if (document.getElementById('excludeXXL').checked) {message += "XXL and ";}
@@ -951,41 +951,49 @@
             if (document.getElementById('excludeXS').checked) {message += "XS and ";}
             if (document.getElementById('excludeTags').checked) {message += "Tagged and ";}
             if (document.getElementById('excludeFavs').checked) {message += "Favorited and ";}
-          } else {message += "finds Level "+searchLvls+" "+evoVals[i][4]+" as ";}
+          } else {message += "finds Level "+searchLvls+" "+evoVals[e][4]+" as ";}
         }
-        else {/* all evos */
-        
-          var leagueArray;
-        
+        else {/* evos */
           if (league === "All") {
             /* Add all formats to league, loop through all */
             leagueArray = ["500", "1500", "2500", "ML"].slice();
           } else {leagueArray = [league];} /* convert to array for loop */
           
           for (l=0; l<leagueArray.length; l++) {
-            if (evoVals[i][0]) {
-              /* Must be done inside loop to work for All leagues case */
-              if (leagueArray[l] === "500") {leagueLim = evoVals[i][6]/1;}
-              else if (leagueArray[l] === "1500") {leagueLim = evoVals[i][7]/1;}
-              else if (leagueArray[l] === "2500") {leagueLim = evoVals[i][8]/1;}
-              else {leagueLim = evoVals[i][9]/1;} /* Master League */
+            if (evoVals[e][0]) {
+              /* Loop over for All Leagues, only runs once for single League strings */
+              if (leagueArray[l] === "500") {leagueLim = evoVals[e][6]/1;}
+              else if (leagueArray[l] === "1500") {leagueLim = evoVals[e][7]/1;}
+              else if (leagueArray[l] === "2500") {leagueLim = evoVals[e][8]/1;}
+              else {leagueLim = evoVals[e][9]/1;} /* Master League */
               
-              /*console.log("getRanks: calculated "+evoVals[i][4]+" for "+leagueArray[l]+" with evoVals["+i+"][0]:"+evoVals[i][0]);*/
-              newRanks = calculate(parseInt(evoVals[i][1]), parseInt(evoVals[i][2]), parseInt(evoVals[i][3]), document.getElementById('floor').value, 0, maxLvl, false, leagueArray[l], evoVals[i][4]);
-              rKeys = Object.keys(newRanks);
-              for (j=leagueLim/1; j<rKeys.length; j++) {delete newRanks[rKeys[j]];}
-              finalRanks = {...finalRanks, ...newRanks};
-            
-              /* Update the message with what we just calculated */
-              if (numRanks>0 && leagueLim>0) {message += ", and ";}
-              if (leagueArray[l] === "500" && leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Little";}
-              else if (leagueArray[l] === "1500" && leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Great";}
-              else if (leagueArray[l] === "2500" && leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Ultra";}
-              else if (leagueLim>0) {message += "Top "+leagueLim+" "+evoVals[i][4]+ " for Master";}
-              numRanks += leagueLim/1;
+              if (leagueLim/1 > 0) {
+                /* Only process for leagues which user wants more than 0 ranks for */
+                leagueRanks = calculate(parseInt(evoVals[e][1]), parseInt(evoVals[e][2]), parseInt(evoVals[e][3]), document.getElementById('floor').value, 0, maxLvl, false, leagueArray[l], evoVals[e][4]);
+                rKeys = Object.keys(leagueRanks);
+                for (numLeagueRanks=0,i=0; numLeagueRanks<leagueLim/1; i++) {
+                  /* Ensure we iterate through ties as well */
+                  for (j=0; j<leagueRanks[rKeys[i]].length && numLeagueRanks<leagueLim/1; j++) {
+                    if (!searchRanks[rKeys[i]]) {searchRanks[rKeys[i]] = [];}
+                    searchRanks[rKeys[i]][j] =  leagueRanks[rKeys[i]][j];
+                    numLeagueRanks++;
+                  }
+                }
+                /*if (rKeys.length > 0) {console.log("getRanks: searchRanks updated to: "+JSON.stringify(searchRanks)+" for leagueLim:"+leagueLim+", leagueArray["+l+"]:"+leagueArray[l]);}*/
+              
+                /* Update the message with what we just calculated */
+                /* TODO: Get rid of outRanks? */
+                if (outRanks>0) {message += ", and ";}
+                if (leagueArray[l] === "500") {message += "Top "+leagueLim+" "+evoVals[e][4]+ " for Little";}
+                else if (leagueArray[l] === "1500") {message += "Top "+leagueLim+" "+evoVals[e][4]+ " for Great";}
+                else if (leagueArray[l] === "2500") {message += "Top "+leagueLim+" "+evoVals[e][4]+ " for Ultra";}
+                else {message += "Top "+leagueLim+" "+evoVals[e][4]+ " for Master";}
+                outRanks += leagueLim/1;
+              }
             }
-            else {console.log("getRanks: default: skipping i="+i+": "+JSON.stringify(evoVals[i])+"...");}
+            /*else {console.log("getRanks: default: skipping e="+e+": "+JSON.stringify(evoVals[e])+"...");}*/
           }
+          /*console.log("getRanks: searchRanks finalized as: "+JSON.stringify(searchRanks));*/
         }
       }
       
@@ -999,7 +1007,7 @@
       
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       if (perfTiming) {stopTiming(T0, "getRanks");}
-      return finalRanks;
+      return searchRanks;
     }
     
     /* Given valid family stats in evoVals, outputs a Search String for the user */
@@ -1007,13 +1015,12 @@
       var T0;
       if (perfTiming) {T0 = performance.now();}
   
-      /* create our rank object to compute cps/hps from for output string */
+      /* create our single (merged) rank object (from All Leagues) to compute cps/hps from for output string */
       const mergedRanks = getRanks(evoVals, maxLvl);
   
-      var rKeys = Object.keys(mergedRanks), lookupLvl;
       output.value = ''; /* ensure old output is cleared */
       var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
-      var i, actualRank=1, j, k, limit = rKeys.length;
+      var i, actualRank, j, k;
       cps[0] = new Set();
       hps[0] = new Set();
       aIV[0] = new Set();
@@ -1046,9 +1053,12 @@
       var hasWeatherBoostedLvl = false;
         
       /* generate all the cps and hps for matching */
-      /* for ranks 1 to user cutoff, up to maxSearchLvl/CP limit */
+      /* for first rank to the end of mergedRanks  */
+      /* which contains user set cutoffs by league */
+      /* up to maxSearchLvl/CP bounds set by user  */
+      var rKeys = Object.keys(mergedRanks), lookupLvl;
+      var limit = Object.values(mergedRanks).flat().length;
       for (i=0,actualRank=1; actualRank/1 <= limit/1; i++) {
-        
         for (j=0; j<mergedRanks[rKeys[i]].length; j++) {
           
           var atk = mergedRanks[rKeys[i]][j].IVs.A;
@@ -1098,7 +1108,6 @@
             for(k=maxSearchLvl; k<searchLvl.length; k++) {
               lookupLvl = (searchLvl[k]-1)*2;
               var cp = Math.max(10, Math.floor((evoVals[0][1]/1 + atk) * Math.sqrt(evoVals[0][2]/1 + def) * Math.sqrt(evoVals[0][3]/1 + sta) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
-              /*console.log("outputStr: Generated cp("+cp+") at lookupLvl("+lookupLvl+"), searchLvl["+k+"]:"+searchLvl[k]);*/
               
               /* generate hps for more accurate search string matching */
               var hp = Math.max(10, Math.floor((evoVals[0][3]/1 + sta) * cpm[lookupLvl]));
@@ -1110,6 +1119,7 @@
         		  if (sta/1==15) {hpBkt=4;} else {hpBkt=Math.ceil(sta/5);}
               
               /* bucket CPs and HPs into appraisal ratings for more accurrate matching */
+              /* TODO: maxCP is getting set incorrectly to lowest league limit only in All Leagues, preventing higher CPs from being output */
               switch (mergedRanks[rKeys[i]][j].IVs.star) {
                 case "0*":
                   cps[0].add(cp);
@@ -1395,10 +1405,28 @@
       }
       return "," + checkStr;
     }
+
+    function printSetArray(setArray) {
+      /* Debug function to print out set array objects */
+      var out = "";
+      /*console.log("printSetArray: Received:"+new Array(...setArray).join(' ')+", typeof:"+typeof setArray+", setArray.isArray():"+Array.isArray(setArray)+", setArray.length:"+setArray.length);*/
+      var testVar = new Array(...setArray).join(' ');
+      /*console.log("printSetArray: testVar:"+new Array(...testVar).join(' ')+", typeof:"+typeof testVar+", testVar.isArray():"+Array.isArray(testVar)+", testVar.length:"+testVar.length);*/
+      if (testVar.length < 25) {
+        /*console.log("testVar is no longer an array, returning");*/
+        return testVar;
+      }
+      for (var i=0; i<setArray.length; i++) {
+        var arrayOut = new Array(...setArray[i]).join(' ');
+        out += JSON.stringify(arrayOut);
+      }
+      return out;
+    }
     
     function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, atkBkts, defBkts, staBkts, output, id) {
       var T0;
       if (perfTiming) {T0 = performance.now();}
+      /*console.log("outputCPsHPsBuckets: Received cps:"+printSetArray(cps));console.log("outputCPsHPsBuckets: Received maxCP:"+printSetArray(maxCP));console.log("outputCPsHPsBuckets: Received atkBkts:"+printSetArray(atkBkts));console.log("outputCPsHPsBuckets: Received output:"+JSON.stringify(output)+", id:"+id);*/
       
       var emptyBuf = "";
       var trash = document.getElementById('trash').checked;
