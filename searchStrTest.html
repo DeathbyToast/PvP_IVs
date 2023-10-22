@@ -1022,13 +1022,12 @@
       var T0;
       if (perfTiming) {T0 = performance.now();}
   
-      /* create our rank object to compute cps/hps from for output string */
+      /* create our single (merged) rank object (from All Leagues) to compute cps/hps from for output string */
       const mergedRanks = getRanks(evoVals, maxLvl);
   
-      var rKeys = Object.keys(mergedRanks), lookupLvl;
       output.value = ''; /* ensure old output is cleared */
       var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
-      var i, actualRank=1, j, k, limit = rKeys.length;
+      var i, actualRank, j, k;
       cps[0] = new Set();
       hps[0] = new Set();
       aIV[0] = new Set();
@@ -1061,9 +1060,12 @@
       var hasWeatherBoostedLvl = false;
         
       /* generate all the cps and hps for matching */
-      /* for ranks 1 to user cutoff, up to maxSearchLvl/CP limit */
+      /* for first rank to the end of mergedRanks  */
+      /* which contains user set cutoffs by league */
+      /* up to maxSearchLvl/CP bounds set by user  */
+      var rKeys = Object.keys(mergedRanks), lookupLvl;
+      var limit = Object.values(mergedRanks).flat().length;
       for (i=0,actualRank=1; actualRank/1 <= limit/1; i++) {
-        
         for (j=0; j<mergedRanks[rKeys[i]].length; j++) {
           
           var atk = mergedRanks[rKeys[i]][j].IVs.A;
