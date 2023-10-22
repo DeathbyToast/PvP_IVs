@@ -197,9 +197,6 @@
       if (perfTiming) {T0 = performance.now();}
       var URL = window.location.href.split("?")[1],i,j;
       /*URL = "mon=Poliwrath&cp=1500&r=f_f_10_f_f&";*/
-      //URL = "mon=Carbink&cp=1500&r=35_f_f";
-      //URL = "mon=Carbink&cp=All&r=207-35-10-10_f_f";
-      //URL = "mon=Carbink&cp=All&r=5-5-10-10_f_f";
       
       if (URL)
       {
@@ -978,15 +975,13 @@
                 console.log("getRanks: calculated "+leagueRanks.numRanks+" "+evoVals[e][4]+" ranks for "+leagueArray[l]+" with evoVals["+e+"][0]:"+evoVals[e][0]);
                 for (numLeagueRanks=0,i=0; numLeagueRanks<leagueLim/1; i++) {
                   /* Ensure we iterate through ties as well */
-                  //console.log("Entering j loop with i="+i+", j="+j+", numLeagueRanks("+numLeagueRanks+")<("+leagueLim/1+")leagueLim/1");
                   for (j=0; j<leagueRanks[rKeys[i]].length && numLeagueRanks<leagueLim/1; j++) {
                     if (!searchRanks[rKeys[i]]) {searchRanks[rKeys[i]] = [];}
                     searchRanks[rKeys[i]][j] =  leagueRanks[rKeys[i]][j];
                     numLeagueRanks++;
-                    //console.log("Added rank #"+numLeagueRanks+", rKeys[i]:"+rKeys[i]);
                   }
                 }
-                //if (rKeys.length > 0) {console.log("getRanks: searchRanks updated to: "+JSON.stringify(searchRanks)+" for leagueLim:"+leagueLim+", leagueArray["+l+"]:"+leagueArray[l]);}
+                /*if (rKeys.length > 0) {console.log("getRanks: searchRanks updated to: "+JSON.stringify(searchRanks)+" for leagueLim:"+leagueLim+", leagueArray["+l+"]:"+leagueArray[l]);}*/
               
                 /* Update the message with what we just calculated */
                 /* TODO: Get rid of outRanks? */
@@ -1000,7 +995,7 @@
             }
             else {console.log("getRanks: default: skipping e="+e+": "+JSON.stringify(evoVals[e])+"...");}
           }
-          //console.log("getRanks: searchRanks finalized as: "+JSON.stringify(searchRanks));
+          /*console.log("getRanks: searchRanks finalized as: "+JSON.stringify(searchRanks));*/
         }
       }
       
@@ -1104,7 +1099,7 @@
                   if (mergedRanks[rKeys[i]][j].IVs.A/1 < 4 || mergedRanks[rKeys[i]][j].IVs.D/1 < 4 || mergedRanks[rKeys[i]][j].IVs.S/1 < 4)
                   {
                     hasZeroOneTwoThreeIVs = true;
-                    //console.log("outputStr: One or more IVs below WB (4) of "+mergedRanks[rKeys[i]][j].IVs.A+"/"+mergedRanks[rKeys[i]][j].IVs.D+"/"+mergedRanks[rKeys[i]][j].IVs.S+", hasZeroOneTwoThreeIVs now:"+hasZeroOneTwoThreeIVs);
+                    console.log("outputStr: One or more IVs below WB (4) of "+mergedRanks[rKeys[i]][j].IVs.A+"/"+mergedRanks[rKeys[i]][j].IVs.D+"/"+mergedRanks[rKeys[i]][j].IVs.S+", hasZeroOneTwoThreeIVs now:"+hasZeroOneTwoThreeIVs);
                   }
                 }
                 break;
@@ -1115,11 +1110,9 @@
             for(k=maxSearchLvl; k<searchLvl.length; k++) {
               lookupLvl = (searchLvl[k]-1)*2;
               var cp = Math.max(10, Math.floor((evoVals[0][1]/1 + atk) * Math.sqrt(evoVals[0][2]/1 + def) * Math.sqrt(evoVals[0][3]/1 + sta) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
-              //console.log("outputStr: Generated cp("+cp+") at lookupLvl("+lookupLvl+"), searchLvl["+k+"]:"+searchLvl[k]);
               
               /* generate hps for more accurate search string matching */
               var hp = Math.max(10, Math.floor((evoVals[0][3]/1 + sta) * cpm[lookupLvl]));
-              //console.log("outputStr: Generated hp("+hp+") at lookupLvl("+lookupLvl+"), searchLvl["+k+"]:"+searchLvl[k]);
               
               /* generate IV buckets for more accurate search string matching */
         		  /* 0 is 0IV, 1 is 1-5IV, 2 is 6-10IV, 3 is 11-14IV, 4 is 15IV */
@@ -1416,12 +1409,13 @@
     }
 
     function printSetArray(setArray) {
+      /* Debug function to print out set array objects */
       var out = "";
-      //console.log("printSetArray: Received:"+new Array(...setArray).join(' ')+", typeof:"+typeof setArray+", setArray.isArray():"+Array.isArray(setArray)+", setArray.length:"+setArray.length);
+      /*console.log("printSetArray: Received:"+new Array(...setArray).join(' ')+", typeof:"+typeof setArray+", setArray.isArray():"+Array.isArray(setArray)+", setArray.length:"+setArray.length);*/
       var testVar = new Array(...setArray).join(' ');
-      //console.log("printSetArray: testVar:"+new Array(...testVar).join(' ')+", typeof:"+typeof testVar+", testVar.isArray():"+Array.isArray(testVar)+", testVar.length:"+testVar.length);
+      /*console.log("printSetArray: testVar:"+new Array(...testVar).join(' ')+", typeof:"+typeof testVar+", testVar.isArray():"+Array.isArray(testVar)+", testVar.length:"+testVar.length);*/
       if (testVar.length < 25) {
-        //console.log("testVar is short, returning");
+        /*console.log("testVar is no longer an array, returning");*/
         return testVar;
       }
       for (var i=0; i<setArray.length; i++) {
