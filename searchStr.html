@@ -1020,37 +1020,42 @@
       const mergedRanks = getRanks(evoVals, maxBattleLvl);
   
       output.value = ''; /* ensure old output is cleared */
-      var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
+      var cps = [], hps = [], cpHpPairs = [], aIV = [], dIV = [], sIV = [];
       var i, actualRank, j, k;
       cps[0] = new Set();
       hps[0] = new Set();
+      cpHpPairs[0] = new Set();
       aIV[0] = new Set();
       dIV[0] = new Set();
       sIV[0] = new Set();
       cps[1] = new Set();
       hps[1] = new Set();
+      cpHpPairs[1] = new Set();
       aIV[1] = new Set();
       dIV[1] = new Set();
       sIV[1] = new Set();
       cps[2] = new Set();
       hps[2] = new Set();
+      cpHpPairs[2] = new Set();
       aIV[2] = new Set();
       dIV[2] = new Set();
       sIV[2] = new Set();
       cps[3] = new Set();
       hps[3] = new Set();
+      cpHpPairs[3] = new Set();
       aIV[3] = new Set();
       dIV[3] = new Set();
       sIV[3] = new Set();
       cps[4] = new Set();
       hps[4] = new Set();
+      cpHpPairs[4] = new Set();
       aIV[4] = new Set();
       dIV[4] = new Set();
       sIV[4] = new Set();
       var maxCP = new Array(5).fill(0), maxHP = new Array(5).fill(0);
       var slMin = document.getElementById('minSearchLvl').value/1;
       var slMax = document.getElementById('maxSearchLvl').value/1;
-      var searchIVs = [];
+      var searchIVs = new Set();
       var hasZeroOneTwoThreeIVs = false;
       var hasWeatherBoostedLvl = false;
         
@@ -1066,7 +1071,7 @@
           var atk = mergedRanks[rKeys[i]][j].IVs.A;
           var def = mergedRanks[rKeys[i]][j].IVs.D;
           var sta = mergedRanks[rKeys[i]][j].IVs.S;
-          searchIVs.push([atk,def,sta]);
+          searchIVs.add(atk+","+def+","+sta);
           var atkBkt = -1, defBkt = -1, hpBkt = -1;
 
           /* Check if we should notify user to include Weather Boosted IVs */
@@ -1081,8 +1086,7 @@
             }
           }
           
-          /* Generate CPs and HPs to search for up to maxSearchLvl cutoff */
-          console.log("outputStr: Entering k loop, searching from maxSearchLvl("+maxSearchLvl+") to slMax("+slMax+")");
+          /* Generate CPs and HPs to search for up to slMax cutoff */
           for(k=slMin; k<slMax; k++) {
             lookupLvl = (k-1)*2;
             var cp = Math.max(10, Math.floor((evoVals[0][1]/1 + atk) * Math.sqrt(evoVals[0][2]/1 + def) * Math.sqrt(evoVals[0][3]/1 + sta) * cpm[lookupLvl] * cpm[lookupLvl] / 10));
@@ -1099,6 +1103,7 @@
               case "0*":
                 cps[0].add(cp);
                 hps[0].add(hp);
+                cpHpPairs[0].add(cp+","+hp);
                 aIV[0].add(atkBkt);
                 dIV[0].add(defBkt);
                 sIV[0].add(hpBkt);
@@ -1108,6 +1113,7 @@
               case "1*":
                 cps[1].add(cp);
                 hps[1].add(hp);
+                cpHpPairs[1].add(cp+","+hp);
                 aIV[1].add(atkBkt);
                 dIV[1].add(defBkt);
                 sIV[1].add(hpBkt);
@@ -1117,6 +1123,7 @@
               case "2*":
                 cps[2].add(cp);
                 hps[2].add(hp);
+                cpHpPairs[2].add(cp+","+hp);
                 aIV[2].add(atkBkt);
                 dIV[2].add(defBkt);
                 sIV[2].add(hpBkt);
@@ -1126,6 +1133,7 @@
               case "3*":
                 cps[3].add(cp);
                 hps[3].add(hp);
+                cpHpPairs[3].add(cp+","+hp);
                 aIV[3].add(atkBkt);
                 dIV[3].add(defBkt);
                 sIV[3].add(hpBkt);
@@ -1135,6 +1143,7 @@
               case "4*":
                 cps[4].add(cp);
                 hps[4].add(hp);
+                cpHpPairs[4].add(cp+","+hp);
                 aIV[4].add(atkBkt);
                 dIV[4].add(defBkt);
                 sIV[4].add(hpBkt);
@@ -1170,7 +1179,7 @@
       var origOut = output.value;
 
       /* Calculate and show False Postive Rate to user */
-      falsePositiveRate(evoVals[0][1]/1, evoVals[0][2]/1, evoVals[0][3]/1, slMin, slMax, searchIVs, cps.slice(), hps.slice(), aIV, dIV, sIV);
+      falsePositiveRate(evoVals[0][1]/1, evoVals[0][2]/1, evoVals[0][3]/1, slMin, slMax, searchIVs, cpHpPairs.slice(), aIV, dIV, sIV);
       
       if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
         let excessOut = output.value.substring(0); /* ensure we don't mutilate actual output */
@@ -1189,27 +1198,26 @@
       return output;
     }
 
-    function falsePositiveRate(baseAtk, baseDef, baseSta, minSearchLvl, maxSearchLvl, searchIVs, cps, hps, atkBkts, defBkts, staBkts) {
+    function falsePositiveRate(baseAtk, baseDef, baseSta, minSearchLvl, maxSearchLvl, searchIVs, cpHpPairs, atkBkts, defBkts, staBkts) {
+      /* TODO: Speed up this function, or at least allow user to disable it */
       var T0, possibleIVs = new Set();
       if (perfTiming) {T0 = performance.now();}
-      /*console.log("falsePositiveRate: received baseAtk:"+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", maxSearchLvl:"+maxSearchLvl+", searchIVs:"+searchIVs+", cps:"+cps+", hps:"+hps+", atkBkts:"+atkBkts+", defBkts:"+defBkts+", staBkts:"+staBkts);*/
+      /*console.log("falsePositiveRate: received baseAtk:"+baseAtk+", baseDef:"+baseDef+", baseSta:"+baseSta+", minSearchLvl:"+minSearchLvl+", maxSearchLvl:"+maxSearchLvl+", searchIVs:"+searchIVs+", cpHpPairs:"+cpHpPairs+", atkBkts:"+atkBkts+", defBkts:"+defBkts+", staBkts:"+staBkts);*/
 
-      /* Convert cps and hps set arrays to sorted arrays */
+      /* Convert cpHpPairs set arrays to sorted arrays */
       for (var star=0; star<=4; star++) {
-        /* skip empty cps+hps sets */
-        if (cps[star].size > 0 && hps[star].size > 0) {
-          /* Convert each to sorted arrays to loop through */
-          cps[star] = Array.from(cps[star]);
-          cps[star].sort((a, b) => a - b);
-          hps[star] = Array.from(hps[star]);
-          hps[star].sort((a, b) => a - b);
+        /* skip empty cpHpPairs sets */
+        if (cpHpPairs[star].size > 0) {
+          /* Convert to sorted arrays to loop through */
+          cpHpPairs[star] = Array.from(cpHpPairs[star]);
+          cpHpPairs[star].sort((a, b) => a - b);
 
-          /* Calculate all possibleIVs for these cps+hps */
-          for (var i=0; i<cps[star].length; i++) {
+          /* Calculate all possibleIVs for these cpHpPairs */
+          for (var i=0; i<cpHpPairs[star].length; i++) {
             for (var a=15; a>=0; a--) {
               for (var d=15; d>=0; d--) {
                 for (var s=15; s>=0; s--) {
-                  for (var level=minSearchLvl; level<maxSearchLvl; level++) {
+                  for (var level=minSearchLvl; level<=maxSearchLvl; level++) {
                     /* Ensure we stay within our appraisal (star) grouping */
                     /* 0*:0-22 | 1*:23-29 | 2*:30-36 | 3*:37-44 | 4*:45 */
                     var IVsum = a/1 + d/1 + s/1;
@@ -1219,12 +1227,15 @@
                      || (star==1 && IVsum < 30 && IVsum >= 23)/* 1* */
                      || (star==0 && IVsum < 23 && IVsum >= 0))/* 0* */
                     {
-                      /*console.log("Found a valid IVsum("+IVsum+") for star("+star+"), computing CP and HP");*/
                       const cpmIndex = Math.round((level - 1) * 2);
                       const computedCP = Math.max(10, Math.floor((baseAtk + a/1) * Math.sqrt(baseDef + d/1) * Math.sqrt(baseSta + s/1) * cpm[cpmIndex] * cpm[cpmIndex] / 10));
                       const computedHP = Math.max(10, Math.floor((baseSta + s/1)*cpm[cpmIndex]));
                       /* If this is a matching CP, HP, and Appraisal (star*) save as possible IV */
-                      if ((cps[star][i]/1 == computedCP/1) && (hps[star][i]/1 == computedHP/1)) {possibleIVs.add(a+","+d+","+s);}
+                      const [searchCP, searchHP] = cpHpPairs[star][i].split(",");
+                      if ((searchCP/1 == computedCP/1) && (searchHP/1 == computedHP/1)) {
+                        possibleIVs.add(a+","+d+","+s);
+                        /*console.log("Found a match for searchCP:"+searchCP+", and searchHP:"+searchHP+", added "+a+","+d+","+s+" to possibleIVs");*/
+                      }
                     }
                   }
                 }
@@ -1234,12 +1245,24 @@
         }
       }
       /* Summarize output */
-      var sIvLen = searchIVs.length;
+      var sIvSize = searchIVs.size;
       var pIvSize = possibleIVs.size;
-      var fpRate = Math.floor((sIvLen/pIvSize)*100);
-      var message = "This string has a "+fpRate+"% match success rate to find "+sIvLen+" target IVs out of "+pIvSize+" possible matched IVs";
-      document.getElementById('outputSummaryBox').innerHTML += "<p>"+message+".</p>";
-      console.log("falsePositiveRate: "+message);      
+      var fpRate = Math.floor((sIvSize/pIvSize)*100);
+      /* Output all IV sets for user feedback */
+      searchIVs = Array.from(searchIVs);
+      searchIVs.sort((a, b) => a - b);
+      possibleIVs = Array.from(possibleIVs);
+      possibleIVs.sort((a, b) => a - b);
+      if (fpRate/1 > 100) {console.error("Cannot have more target IVs("+sIvSize+") than possible IVs("+pIvSize+"), fpRate is over 100% ("+fpRate+"%)");}
+      var message = "This string has a "+fpRate+"% match success rate to find "+sIvSize+" target IVs out of "+pIvSize+" possible matched IVs.<br/>";
+      if (fpRate/1 < 10) {
+        if (document.getElementById('league').value == "All") {
+          message += "<p>To improve match accuracy, consider switching off of 'All Leagues' to individual League searches, and/or increasing your minimum Search Level</p>";
+        }
+        message += "<p>To improve match accuracy, consider increasing your minimum Search Level</p>";
+      }
+      message += "<p>Target IVs: "+JSON.stringify(searchIVs)+"</p><p>Possible Matched IVs: "+JSON.stringify(possibleIVs)+"</p>";
+      document.getElementById('outputSummaryBox').innerHTML += message;
 
       if (perfTiming) {stopTiming(T0, "falsePositiveRate");}
       return;
