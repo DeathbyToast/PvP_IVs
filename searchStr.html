@@ -1196,7 +1196,7 @@
       var origOut = output.value;
 
       /* Calculate and show False Postive Rate to user */
-      falsePositiveRate(evoVals[0][1]/1, evoVals[0][2]/1, evoVals[0][3]/1, slMin, slMax, searchIVs, cpHpPairs.slice(), aIV, dIV, sIV);
+      //falsePositiveRate(evoVals[0][1]/1, evoVals[0][2]/1, evoVals[0][3]/1, slMin, slMax, searchIVs, cpHpPairs.slice(), aIV, dIV, sIV);
       
       if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
         let excessOut = output.value.substring(0); /* ensure we don't mutilate actual output */
@@ -1587,12 +1587,12 @@
       }
       
       /* Ensure additional regional search terms are translated as needed*/
-      if (LANGUAGE !== "en") {output.value = doTranslations(output.value);}
+      if (lang[LANGUAGE] !== "en") {output.value = doTranslations(output.value, lang);}
       if (perfTiming) {stopTiming(T0, "outputCPsHPsBuckets");}
       return true;
     }
 
-    function doTranslations(string) {
+    function doTranslations(string, lang) {
       var T0;
       if (perfTiming) {T0 = performance.now();}
 
