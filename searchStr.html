@@ -167,6 +167,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
     <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
     <script>
+    /* Constants for translations */
+    const LANGUAGE = 0;     /* Language*/
+    const LANG_CP = 1;      /* CPstring*/
+    const LANG_HP = 2;      /* HPstring*/
+    const LANG_ATK = 3;     /* Attack  */
+    const LANG_DEF = 4;     /* Defense */
+    const LANG_FAV = 5;     /* Favorite*/
+    const LANG_MEGA = 6;    /* Mega    */
+    const LANG_EGG = 7;     /* EggsOnly*/
+    const LANG_BUG = 8;     /* Bug     */
+    const LANG_DARK = 9;    /* Dark    */
+    const LANG_DRAGON = 10; /* Dragon  */
+    const LANG_ELECTRIC=11; /* Electric*/
+    const LANG_FAIRY = 12;  /* Fairy   */
+    const LANG_FIGHTING=13; /* Fighting*/
+    const LANG_FIRE = 14;   /* Fire    */
+    const LANG_FLYING = 15; /* Flying  */
+    const LANG_GRASS = 16;  /* Grass   */
+    const LANG_GROUND = 17; /* Ground  */
+    const LANG_ICE = 18;    /* Ice     */
+    const LANG_NORMAL = 19; /* Normal  */
+    const LANG_POISON = 20; /* Poison  */
+    const LANG_PSYCHIC =21; /* Psychic */
+    const LANG_ROCK = 22;   /* Rock    */
+    const LANG_STEEL = 23;  /* Steel   */
+    const LANG_WATER = 24;  /* Water   */
     var perfTiming = false; /* used for timing execution */
     
     var input = document.getElementById("pokeList");
@@ -912,18 +938,9 @@
       var lang = document.getElementById('lang').value.split(',');
       var message = "This string ignores PvP rankings, and only finds 0% IV (0/0/0) mon.<br />For PvP rankings please uncheck 'Find ALL 0% mon' (below)";
       
-      output.value = "0attack&0defense&0hp";
-      
-      /* Ensure additional regional search terms are translated as needed*/
-      if (lang[0] !== "en")
-      {
-        /* lang : CPstr,  HPstr,  Mega,   Alola,  eggsonly, Galar,  Ground, Steel,  Grass,  Psychic, Fire,     attack,   defense, Favorite */
-        /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11], lang[12], lang[13], lang[14]*/
-        /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
-        output.value = output.value.replace(/attack/gi,  lang[12]);
-        output.value = output.value.replace(/defense/gi, lang[13]);
-        output.value = output.value.replace(/hp/gi,      lang[2]);
-      }
+      /* Ensure search terms are translated as needed*/
+      output.value = "0"+lang[LANG_ATK]+"&0"+lang[LANG_DEF]+"&0"+lang[LANG_HP];
+
       document.getElementById('outputSummaryBox').innerHTML = "<p>"+message+"</p>";
       if (perfTiming) {stopTiming(T0, "findAllZeros");}
       return;
@@ -1520,28 +1537,28 @@
           cps[i] = Array.from(cps[i]);
           cps[i].sort((a, b) => a - b);
           /* Add attribute appraisals between CP/HP groupings for improved accuracy */
-          output.value += '&!'+i+'*' + groupAttr(atkBkts[i], lang[12]);
+          output.value += '&!'+i+'*' + groupAttr(atkBkts[i], lang[LANG_ATK]);
           /* Need to intersperce &!i* between search strings, but not trash strings */
           if (!trash) {output.value += '&!'+i+'*';}
-          output.value += groupAttr(defBkts[i], lang[13]);
+          output.value += groupAttr(defBkts[i], lang[LANG_DEF]);
           if (!trash) {output.value += '&!'+i+'*';}
-          output.value += groupAttr(staBkts[i], lang[2]);
+          output.value += groupAttr(staBkts[i], lang[LANG_HP]);
           if (!trash) {output.value += '&!'+i+'*';}
-          output.value += ',' + get_matching_string(cps[i], lang[1]);
+          output.value += ',' + get_matching_string(cps[i], lang[LANG_CP]);
           
           if (!trash) {
             output.value += '&!'+i+'*';
           } else {
-            output.value += ',' + lang[1] + (maxCP[i] + 1) + "-";
+            output.value += ',' + lang[LANG_CP] + (maxCP[i] + 1) + "-";
           }
           
           /* skip empty hps */
           if (hps[i].size > 0) {
             hps[i] = Array.from(hps[i]);
             hps[i].sort((a, b) => a - b);
-            output.value += ',' + get_matching_string(hps[i], lang[2]);
+            output.value += ',' + get_matching_string(hps[i], lang[LANG_HP]);
             if (trash) {
-              output.value += ',' + lang[2] + (maxHP[i] + 1) + '-';
+              output.value += ',' + lang[LANG_HP] + (maxHP[i] + 1) + '-';
             }
           }
         } else if (!trash) { /* skip empty appraisal sets in search string */
@@ -1560,22 +1577,9 @@
         if (document.getElementById('excludeXL').checked === true) {output.value += '&!XL';}
         if (document.getElementById('excludeXS').checked === true) {output.value += '&!XS';}
         if (document.getElementById('excludeTags').checked === true) {output.value += '&!#';}
-        if (document.getElementById('excludeZero').checked) {output.value += '&1-4Attack,1-4Defense,1-4Hp';
-          /* Ensure regional search terms are translated if needed*/
-          if (lang[0] !== "en")
-          {
-            output.value = output.value.replace(/attack/gi,  lang[12]);
-            output.value = output.value.replace(/defense/gi, lang[13]);
-            output.value = output.value.replace(/hp/gi,      lang[2]);
-          }
-        }
-        if (document.getElementById('excludeFavs').checked) {output.value += '&!Favorite';
-          /* Ensure regional search terms are translated if needed*/
-          if (lang[0] !== "en")
-          {
-            output.value = output.value.replace(/Favorite/gi,  lang[14]);
-          }
-        }
+        /* Ensure search terms are translated if needed*/
+        if (document.getElementById('excludeZero').checked) {output.value += '&1-4'+lang[LANG_ATK]+',1-4'+lang[LANG_DEF]+',1-4'+lang[LANG_HP];}
+        if (document.getElementById('excludeFavs').checked) {output.value += '&!'+lang[LANG_FAV];}
       } else { /* If not a trash string */
         if (cps[4].size > 0) { /* Check if we search for hundos */
           output.value += ',4*'; /* Ensure hundos are searched for */
@@ -1583,23 +1587,37 @@
       }
       
       /* Ensure additional regional search terms are translated as needed*/
-      if (lang[0] !== "en")
-      {
-        /* lang : CPstr,  HPstr,  Mega,   Alola,  eggsonly, Galar,  Ground, Steel,  Grass,  Psychic, Fire,     attack,   defense, Favorite */
-        /* lang : lang[1],lang[2],lang[3],lang[4],lang[5],  lang[6],lang[7],lang[8],lang[9],lang[10],lang[11], lang[12], lang[13], lang[14]*/
-        /* Wormadam Grass/Ground/Steel, Lucario eggsonly/!mega, Darmanitan Galar/Fire/Psychic, Rattata Alola */
-        output.value = output.value.replace(/mega/gi,    lang[3]);
-        output.value = output.value.replace(/alola/gi,   lang[4]);
-        output.value = output.value.replace(/eggsonly/gi,lang[5]);
-        output.value = output.value.replace(/galar/gi,   lang[6]);
-        output.value = output.value.replace(/ground/gi,  lang[7]);
-        output.value = output.value.replace(/steel/gi,   lang[8]);
-        output.value = output.value.replace(/grass/gi,   lang[9]);
-        output.value = output.value.replace(/psychic/gi, lang[10]);
-        output.value = output.value.replace(/fire/gi,    lang[11]);
-      }
+      if (LANGUAGE !== "en") {output.value = doTranslations(output.value);}
       if (perfTiming) {stopTiming(T0, "outputCPsHPsBuckets");}
       return true;
+    }
+
+    function doTranslations(string) {
+      var T0;
+      if (perfTiming) {T0 = performance.now();}
+
+      string = string.replace(/mega/gi,    lang[LANG_MEGA]);
+      string = string.replace(/eggsonly/gi,lang[LANG_EGG]);
+      string = string.replace(/bug/gi,     lang[LANG_BUG]);
+      string = string.replace(/dark/gi,    lang[LANG_DARK]);
+      string = string.replace(/dragon/gi,  lang[LANG_DRAGON]);
+      string = string.replace(/electric/gi,lang[LANG_ELECTRIC]);
+      string = string.replace(/fairy/gi,   lang[LANG_FAIRY]);
+      string = string.replace(/fighting/gi,lang[LANG_FIGHTING]);
+      string = string.replace(/fire/gi,    lang[LANG_FIRE]);
+      string = string.replace(/flying/gi,  lang[LANG_FLYING]);
+      string = string.replace(/grass/gi,   lang[LANG_GRASS]);
+      string = string.replace(/ground/gi,  lang[LANG_GROUND]);
+      string = string.replace(/ice/gi,     lang[LANG_ICE]);
+      string = string.replace(/normal/gi,  lang[LANG_NORMAL]);
+      string = string.replace(/poison/gi,  lang[LANG_POISON]);
+      string = string.replace(/psychic/gi, lang[LANG_PSYCHIC]);
+      string = string.replace(/rock/gi,    lang[LANG_ROCK]);
+      string = string.replace(/steel/gi,   lang[LANG_STEEL]);
+      string = string.replace(/water/gi,   lang[LANG_WATER]);
+      
+      if (perfTiming) {stopTiming(T0, "doTranslations");}
+      return string;
     }
     
     function trashFlip(cps, maxCP, attr) {
@@ -1806,20 +1824,20 @@
     </select></div><br/>
     <label>Language:<select id="lang" oninput="main()">
       <!--Translated with help from https://leidwesen.github.io/PhraseTranslator/-->
-      <option value="pt-br,pc,ps,mega,alola,apenasovos,galar,terrestre,a&#xe7;o,planta,ps&#xed;quico,fogo,ataque,defesa,favorito">Brazilian Portuguese</option>
-      <option value="zh,cp,hp,超級,阿羅拉,只限蛋,伽勒爾,地面,鋼,草,超能力,火,攻擊,防禦,我的最愛">Chinese Traditional</option>
-      <option selected value="en,cp,hp,mega,alola,eggsonly,galar,ground,steel,grass,psychic,fire,attack,defense,favorite">English</option>
-      <option value="fr,pc,pv,m&#xE9;ga,alola,oeufseulement,galar,sol,acier,plante,psy,feu,attaque,d&#xE9;fense,favoris">French</option>
-  		<option value="de,wp,kp,mega,alola,nurauseiern,galar,boden,stahl,pflanze,psycho,feuer,angriffs-wert,verteidigungs-wert,favorit">German</option>
-      <option value="hi,cp,hp,मेगा,अलोला,सफ़ अंडे,गलार,ाउंड,टल,ास,साइकक,फ़ायर,अटैक,डफ़ेंस,पसंदीदा">Hindi</option>
-      <option value="id,cp,hp,mega,alola,khusustelur,galar,tanah,logam,daun,psychic,api,serangan,pertahanan,favorit">Indonesian</option>
-      <option value="it,pl,punti salute,mega,alola,solouovo,galar,terra,acciaio,erba,psico,fuoco,attacco,difesa,preferiti">Italian</option>
-      <option value="ja,cp,hp,メガ,アローラ,たまごのみ,ガラル,じめん,はがね,くさ,エスパー,ほのお,こうげき,ぼうぎょ,お気に入り">Japanese</option>
-      <option value="ko,cp,hp,메가,알로라,알,가라르,땅,강철,풀,에스퍼,불꽃,공격,방어,즐겨찾기">Korean</option>
-      <option value="ru,БС,ОЖ,&#1084;&#1077;&#1075;&#1072;,Алола,толькояйца,Галар,Земля,Сталь,Трава,Психо,Огонь,Атака,Защита,Избранные">Russian</option>
-  		<option value="es,pc,puntos de salud,mega,alola,huevosolo,galar,tierra,acero,planta,ps&#xed;quico,fuego,ataque,defensa,favoritos">Spanish</option>
-      <option value="th,cp,hp,เมกา,อโลลา,รางเบบี้,กาลาร,ดิน,โลหะ,หญา,พลังจิต,ไฟ,โจมตี,ปองกัน,รายการโปรด">Thai</option>
-      <option value="tr,dg,sp,mega,alola,sadeceyumurta,galar,yer,çelik,bitki,psişik,ateş,sald&#305;r&#305;,savunma,favori">Turkish</option>
+      <option value="pt-br,pc,ps,ataque,defesa,favorito,mega,apenasovos,inseto,sombrio,dragão,elétrico,fada,lutador,fogo,voador,planta,terrestre,gelo,normal,venenoso,psíquico,pedra,aço,água">Brazilian Portuguese</option>
+      <option value="zh,cp,hp,攻擊,防禦,我的最愛,超級,只限蛋,蟲,惡,龍,電,妖精,格鬥,火,飛行,草,地面,冰,一般,毒,超能力,岩石,鋼,水">Chinese Traditional</option>
+      <option selected value="en,cp,hp,attack,defense,favorite,mega,eggsonly,bug,dark,dragon,electric,fairy,fighting,fire,flying,grass,ground,ice,normal,poison,psychic,rock,steel,water">English</option>
+      <option value="fr,pc,pv,attaque,défense,favoris,méga,oeufseulement,insecte,ténèbres,dragon,électrik,fée,combat,feu,vol,plante,sol,glace,normal,poison,psy,roche,acier,eau">French</option>
+  		<option value="de,wp,kp,angriffs-wert,verteidigungs-wert,favorit,mega,nurauseiern,käfer,unlicht,drache,elektro,fee,kampf,feuer,flug,pflanze,boden,eis,normal,gift,psycho,gestein,stahl,wasser">German</option>
+      <option value="hi,cp,hp,अटैक,डफ़ेंस,पसंदीदा,मेगा,सफ़ अंडे,बग,डाक,डैगन,इलटक,फ़ेर,फ़ाइटंग,फ़ायर,़लाइंग,ास,ाउंड,आइस,नॉमल,पॉइज़न,साइकक,रॉक,टल,वॉटर">Hindi</option>
+      <option value="id,cp,hp,serangan,pertahanan,favorit,mega,khusustelur,serangga,kegelapan,naga,listrik,peri,petarung,api,terbang,daun,tanah,es,normal,racun,psychic,bebatuan,logam,air">Indonesian</option>
+      <option value="it,pl,punti salute,attacco,difesa,preferiti,mega,solouovo,coleottero,buio,drago,elettro,folletto,lotta,fuoco,volante,erba,terra,ghiaccio,normale,veleno,psico,roccia,acciaio,acqua">Italian</option>
+      <option value="ja,cp,hp,こうげき,ぼうぎょ,お気に入り,メガ,たまごのみ,むし,あく,ドラゴン,でんき,フェアリー,かくとう,ほのお,ひこう,くさ,じめん,こおり,ノーマル,どく,エスパー,いわ,はがね,みず">Japanese</option>
+      <option value="ko,cp,hp,공격,방어,즐겨찾기,메가,알,벌레,악,드래곤,전기,페어리,격투,불꽃,비행,풀,땅,얼음,노말,독,에스퍼,바위,강철,물">Korean</option>
+      <option value="ru,БС,ож,атака,защита,избранные,мега,толькояйца,насекомое,темнота,дракон,электро,фея,сражение,огонь,летающий,трава,земля,лёд,обычный,яд,психо,камень,сталь,вода">Russian</option>
+  		<option value="es,pc,puntos de salud,ataque,defensa,favoritos,mega,huevosolo,bicho,siniestro,dragón,eléctrico,hada,lucha,fuego,volador,planta,tierra,hielo,normal,veneno,psíquico,roca,acero,agua">Spanish</option>
+      <option value="th,cp,hp,โจมตี,ปองกัน,รายการโปรด,เมกา,รางเบบี้,แมลง,ความมืด,มังกร,ไฟฟา,แฟรี่,ตอสู,ไฟ,บิน,หญา,ดิน,น้ำแข็ง,ปกติ,พิษ,พลังจิต,หิน,โลหะ,น้ำ">Thai</option>
+      <option value="tr,dg,sp,sald&#305;r&#305;,savunma,favori,mega,sadeceyumurta,böcek,karanl&#305;k,ejderha,elektrik,peri,dövüşçü,ateş,uçan,bitki,yer,buz,normal,zehir,psişik,kaya,çelik,su">Turkish</option>
     </select>
     </label><br />
     <label><input id="trash" type="checkbox" oninput="main()">Trash String</label><br />
