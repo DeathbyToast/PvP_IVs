@@ -184,15 +184,19 @@
     const LANG_FIGHTING=13; /* Fighting*/
     const LANG_FIRE = 14;   /* Fire    */
     const LANG_FLYING = 15; /* Flying  */
-    const LANG_GRASS = 16;  /* Grass   */
-    const LANG_GROUND = 17; /* Ground  */
-    const LANG_ICE = 18;    /* Ice     */
-    const LANG_NORMAL = 19; /* Normal  */
-    const LANG_POISON = 20; /* Poison  */
-    const LANG_PSYCHIC =21; /* Psychic */
-    const LANG_ROCK = 22;   /* Rock    */
-    const LANG_STEEL = 23;  /* Steel   */
-    const LANG_WATER = 24;  /* Water   */
+    const LANG_GHOST = 16;  /* Ghost   */
+    const LANG_GRASS = 17;  /* Grass   */
+    const LANG_GROUND = 18; /* Ground  */
+    const LANG_ICE = 19;    /* Ice     */
+    const LANG_NORMAL = 20; /* Normal  */
+    const LANG_POISON = 21; /* Poison  */
+    const LANG_PSYCHIC =22; /* Psychic */
+    const LANG_ROCK = 23;   /* Rock    */
+    const LANG_STEEL = 24;  /* Steel   */
+    const LANG_WATER = 25;  /* Water   */
+    const LANG_COSTUME = 26;/* Costume */
+    const LANG_FEMALE = 27; /* Female  */
+    const LANG_MALE = 28;   /* Male    */
     var perfTiming = false; /* used for timing execution */
     
     var input = document.getElementById("pokeList");
@@ -1598,7 +1602,8 @@
 
       string = string.replace(/mega/gi,    lang[LANG_MEGA]);
       string = string.replace(/eggsonly/gi,lang[LANG_EGG]);
-      string = string.replace(/bug/gi,     lang[LANG_BUG]);
+      /* Bug not currently used to differentiate between any mon */
+      /* string = string.replace(/bug/gi,     lang[LANG_BUG]);   */
       string = string.replace(/dark/gi,    lang[LANG_DARK]);
       string = string.replace(/dragon/gi,  lang[LANG_DRAGON]);
       string = string.replace(/electric/gi,lang[LANG_ELECTRIC]);
@@ -1606,6 +1611,7 @@
       string = string.replace(/fighting/gi,lang[LANG_FIGHTING]);
       string = string.replace(/fire/gi,    lang[LANG_FIRE]);
       string = string.replace(/flying/gi,  lang[LANG_FLYING]);
+      string = string.replace(/ghost/gi,   lang[LANG_GHOST]);
       string = string.replace(/grass/gi,   lang[LANG_GRASS]);
       string = string.replace(/ground/gi,  lang[LANG_GROUND]);
       string = string.replace(/ice/gi,     lang[LANG_ICE]);
@@ -1615,6 +1621,9 @@
       string = string.replace(/rock/gi,    lang[LANG_ROCK]);
       string = string.replace(/steel/gi,   lang[LANG_STEEL]);
       string = string.replace(/water/gi,   lang[LANG_WATER]);
+      string = string.replace(/costume/gi, lang[LANG_COSTUME]);
+      string = string.replace(/female/gi,  lang[LANG_FEMALE]);
+      string = string.replace(/male/gi,    lang[LANG_MALE]);
       
       if (perfTiming) {stopTiming(T0, "doTranslations");}
       return string;
@@ -1824,20 +1833,20 @@
     </select></div><br/>
     <label>Language:<select id="lang" oninput="main()">
       <!--Translated with help from https://leidwesen.github.io/PhraseTranslator/-->
-      <option value="pt-br,pc,ps,ataque,defesa,favorito,mega,apenasovos,inseto,sombrio,dragão,elétrico,fada,lutador,fogo,voador,planta,terrestre,gelo,normal,venenoso,psíquico,pedra,aço,água">Brazilian Portuguese</option>
-      <option value="zh,cp,hp,攻擊,防禦,我的最愛,超級,只限蛋,蟲,惡,龍,電,妖精,格鬥,火,飛行,草,地面,冰,一般,毒,超能力,岩石,鋼,水">Chinese Traditional</option>
-      <option selected value="en,cp,hp,attack,defense,favorite,mega,eggsonly,bug,dark,dragon,electric,fairy,fighting,fire,flying,grass,ground,ice,normal,poison,psychic,rock,steel,water">English</option>
-      <option value="fr,pc,pv,attaque,défense,favoris,méga,oeufseulement,insecte,ténèbres,dragon,électrik,fée,combat,feu,vol,plante,sol,glace,normal,poison,psy,roche,acier,eau">French</option>
-  		<option value="de,wp,kp,angriffs-wert,verteidigungs-wert,favorit,mega,nurauseiern,käfer,unlicht,drache,elektro,fee,kampf,feuer,flug,pflanze,boden,eis,normal,gift,psycho,gestein,stahl,wasser">German</option>
-      <option value="hi,cp,hp,अटैक,डफ़ेंस,पसंदीदा,मेगा,सफ़ अंडे,बग,डाक,डैगन,इलटक,फ़ेर,फ़ाइटंग,फ़ायर,़लाइंग,ास,ाउंड,आइस,नॉमल,पॉइज़न,साइकक,रॉक,टल,वॉटर">Hindi</option>
-      <option value="id,cp,hp,serangan,pertahanan,favorit,mega,khusustelur,serangga,kegelapan,naga,listrik,peri,petarung,api,terbang,daun,tanah,es,normal,racun,psychic,bebatuan,logam,air">Indonesian</option>
-      <option value="it,pl,punti salute,attacco,difesa,preferiti,mega,solouovo,coleottero,buio,drago,elettro,folletto,lotta,fuoco,volante,erba,terra,ghiaccio,normale,veleno,psico,roccia,acciaio,acqua">Italian</option>
-      <option value="ja,cp,hp,こうげき,ぼうぎょ,お気に入り,メガ,たまごのみ,むし,あく,ドラゴン,でんき,フェアリー,かくとう,ほのお,ひこう,くさ,じめん,こおり,ノーマル,どく,エスパー,いわ,はがね,みず">Japanese</option>
-      <option value="ko,cp,hp,공격,방어,즐겨찾기,메가,알,벌레,악,드래곤,전기,페어리,격투,불꽃,비행,풀,땅,얼음,노말,독,에스퍼,바위,강철,물">Korean</option>
-      <option value="ru,БС,ож,атака,защита,избранные,мега,толькояйца,насекомое,темнота,дракон,электро,фея,сражение,огонь,летающий,трава,земля,лёд,обычный,яд,психо,камень,сталь,вода">Russian</option>
-  		<option value="es,pc,puntos de salud,ataque,defensa,favoritos,mega,huevosolo,bicho,siniestro,dragón,eléctrico,hada,lucha,fuego,volador,planta,tierra,hielo,normal,veneno,psíquico,roca,acero,agua">Spanish</option>
-      <option value="th,cp,hp,โจมตี,ปองกัน,รายการโปรด,เมกา,รางเบบี้,แมลง,ความมืด,มังกร,ไฟฟา,แฟรี่,ตอสู,ไฟ,บิน,หญา,ดิน,น้ำแข็ง,ปกติ,พิษ,พลังจิต,หิน,โลหะ,น้ำ">Thai</option>
-      <option value="tr,dg,sp,sald&#305;r&#305;,savunma,favori,mega,sadeceyumurta,böcek,karanl&#305;k,ejderha,elektrik,peri,dövüşçü,ateş,uçan,bitki,yer,buz,normal,zehir,psişik,kaya,çelik,su">Turkish</option>
+      <option value="pt-br,pc,ps,ataque,defesa,favorito,mega,apenasovos,inseto,sombrio,dragão,elétrico,fada,lutador,fogo,voador,fantasma,planta,terrestre,gelo,normal,venenoso,psíquico,pedra,aço,água,traje,fêmea,macho">Brazilian Portuguese</option>
+      <option value="zh,cp,hp,攻擊,防禦,我的最愛,超級,只限蛋,蟲,惡,龍,電,妖精,格鬥,火,飛行,幽靈,草,地面,冰,一般,毒,超能力,岩石,鋼,水,特殊,雌性,雄性">Chinese Traditional</option>
+      <option selected value="en,cp,hp,attack,defense,favorite,mega,eggsonly,bug,dark,dragon,electric,fairy,fighting,fire,flying,ghost,grass,ground,ice,normal,poison,psychic,rock,steel,water,costume,female,male">English</option>
+      <option value="fr,pc,pv,attaque,défense,favoris,méga,oeufseulement,insecte,ténèbres,dragon,électrik,fée,combat,feu,vol,spectre,plante,sol,glace,normal,poison,psy,roche,acier,eau,costume,femelle,mâle">French</option>
+  		<option value="de,wp,kp,angriffs-wert,verteidigungs-wert,favorit,mega,nurauseiern,käfer,unlicht,drache,elektro,fee,kampf,feuer,flug,geist,pflanze,boden,eis,normal,gift,psycho,gestein,stahl,wasser,kostümiert,weiblich,männlich">German</option>
+      <option value="hi,cp,hp,अटैक,डफ़ेंस,पसंदीदा,मेगा,सफ़ अंडे,बग,डाक,डैगन,इलटक,फ़ेर,फ़ाइटंग,फ़ायर,़लाइंग,घोट,ास,ाउंड,आइस,नॉमल,पॉइज़न,साइकक,रॉक,टल,वॉटर,कॉट्यूम,फ़ीमेल,मेल">Hindi</option>
+      <option value="id,cp,hp,serangan,pertahanan,favorit,mega,khusustelur,serangga,kegelapan,naga,listrik,peri,petarung,api,terbang,hantu,daun,tanah,es,normal,racun,psychic,bebatuan,logam,air,kostum,betina,jantan">Indonesian</option>
+      <option value="it,pl,punti salute,attacco,difesa,preferiti,mega,solouovo,coleottero,buio,drago,elettro,folletto,lotta,fuoco,volante,spettro,erba,terra,ghiaccio,normale,veleno,psico,roccia,acciaio,acqua,costume,femmina,maschio">Italian</option>
+      <option value="ja,cp,hp,こうげき,ぼうぎょ,お気に入り,メガ,たまごのみ,むし,あく,ドラゴン,でんき,フェアリー,かくとう,ほのお,ひこう,ゴースト,くさ,じめん,こおり,ノーマル,どく,エスパー,いわ,はがね,みず,とくべつ,めす,おす">Japanese</option>
+      <option value="ko,cp,hp,공격,방어,즐겨찾기,메가,알,벌레,악,드래곤,전기,페어리,격투,불꽃,비행,고스트,풀,땅,얼음,노말,독,에스퍼,바위,강철,물,특별,암컷,수컷">Korean</option>
+      <option value="ru,БС,ож,атака,защита,избранные,мега,толькояйца,насекомое,темнота,дракон,электро,фея,сражение,огонь,летающий,привидение,трава,земля,лёд,обычный,яд,психо,камень,сталь,вода,костюмы,женские,мужские">Russian</option>
+  		<option value="es,pc,puntos de salud,ataque,defensa,favoritos,mega,huevosolo,bicho,siniestro,dragón,eléctrico,hada,lucha,fuego,volador,fantasma,planta,tierra,hielo,normal,veneno,psíquico,roca,acero,agua,disfraz,hembra,macho">Spanish</option>
+      <option value="th,cp,hp,โจมตี,ปองกัน,รายการโปรด,เมกา,รางเบบี้,แมลง,ความมืด,มังกร,ไฟฟา,แฟรี่,ตอสู,ไฟ,บิน,ผี,หญา,ดิน,น้ำแข็ง,ปกติ,พิษ,พลังจิต,หิน,โลหะ,น้ำ,เครื่องแตงกาย,ตัวเมีย,ตัวผู">Thai</option>
+      <option value="tr,dg,sp,sald&#305;r&#305;,savunma,favori,mega,sadeceyumurta,böcek,karanl&#305;k,ejderha,elektrik,peri,dövüşçü,ateş,uçan,hayalet,bitki,yer,buz,normal,zehir,psişik,kaya,çelik,su,kostüm,dişi,erkek">Turkish</option>
     </select>
     </label><br />
     <label><input id="trash" type="checkbox" oninput="main()">Trash String</label><br />
