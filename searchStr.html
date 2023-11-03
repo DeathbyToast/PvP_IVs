@@ -1872,18 +1872,6 @@
       document.getElementById("timing_outputs").innerHTML += docOut;
     }
 
-    function collapsible(divID, arrowID) {
-      if(document.getElementById(divID).style.display == "block") {
-        document.getElementById(divID).style.display = "none";
-        document.getElementById(arrowID).classList.remove("up");
-        document.getElementById(arrowID).classList.add("down");
-      } else {
-        document.getElementById(divID).style.display = "block";
-        document.getElementById(arrowID).classList.remove("down");
-        document.getElementById(arrowID).classList.add("up");
-      }
-    }
-
     </script>
     <div><p id="searchLvlLbl">Set your Search Levels (Lowest-Highest):</p>
     <label id="minSearchLvlLbl"></label><select title="What Level CPs/HPs to Search at/above?" id="minSearchLvl" oninput="main()">
