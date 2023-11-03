@@ -13,7 +13,8 @@
     <link rel="canonical" href="https://pvpivs.com/" />
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
-    <link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/darkLightThemes.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/collapsible.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
@@ -26,10 +27,10 @@
     <link rel="preload" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" as="style">
     <link rel="preload" href="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
-    <title>PvP IVs - Rankings</title>
+    <title>PvP IVs - Rankings (Beta)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
-    <link rel=icon href=https://pvpivs.com/includes/favicon.png>
+    <link rel=icon href="https://pvpivs.com/includes/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/searchbuilder/1.5.0/css/searchBuilder.dataTables.min.css">
@@ -195,8 +196,7 @@
     <script>window.ramp=window.ramp ||{}; window.ramp.que=window.ramp.que || []; </script> <script async src="//cdn.intergient.com/1025030/74482/ramp_config.js"></script> <script>window._pwGA4PageviewId=''.concat(Date.now()); window.dataLayer=window.dataLayer || []; window.gtag=window.gtag || function (){dataLayer.push(arguments);}; gtag('js', new Date()); gtag('config', 'G-JD7R9RWFZL',{'send_page_view': false}); gtag( 'event', 'ramp_js',{'send_to': 'G-JD7R9RWFZL', 'pageview_id': window._pwGA4PageviewId}); </script>
     <!-- End Playwire Head -->
   </head>
-  <body class="dark-theme">
-    <!-- TODO_Someday: Change footer to just use 'dark' and 'light' instead of with '-theme'-->
+  <body>
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TDF58VB"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -229,7 +229,7 @@
             </div>
           </label>
         </li>
-        <li class="dropdown active right">
+        <li class="dropdown right">
           <a href="javascript:void(0)" class="dropbtn">About</a>
           <div class="dropdown-content">
             <a href="/about.html">About PvP IVs</a>
@@ -237,6 +237,9 @@
             <a href="/privacy.html">Privacy Policy</a>
             <a href="/cookies.html">Cookie Policy</a>
           </div>
+        </li>
+        <li class="flat right">
+          <a href="/contribute.html">Contribute</a>
         </li>
       </ul>
     </header>
@@ -447,7 +450,8 @@
       </table>
       <div style="overflow-x:auto;" id="tradeOutput"></div>
       <!-- Load various scripts for PvPIVs, Awesomplete, and DataTables -->
-      <script src="https://pvpivs.com/includes/footer.js"></script>
+      <script src="https://pvpivs.com/includes/darkLightThemes.js"></script>
+      <script src="https://pvpivs.com/includes/collapsible.js"></script>
       <script src="https://pvpivs.com/includes/calculate.js"></script>
       <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
@@ -643,6 +647,8 @@
         $("#inputTable").on("click", ".circle.minus", function(event){
           stopDuplicateEvents(event);
           removeInputTableRow();
+          if ($("#cge").is(":checked")) {displayPvPokeEvoGroup();}
+          if ($("#dti").is(":checked")) {updateTradePcnts();}
           updateURL();
         });
         $("#inputTable").on("change", "tr", function(event){
@@ -1035,7 +1041,9 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
-          //URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-0_9_12_false_true"; 
+          //URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-0_9_12_false_true";
+          /* TODO: How is 13/13/13 efficient when 13/12/12 outclasses it? */
+          //URL = "mon=Carbink&r=50&cp=1500&adv=10000&col_GL=11101111100011111&IVs=15_13_15-4_13_13-13_13_13-15_15_15-6_15_8-14_15_13-5_7_10-13_12_12-6_7_10-4_15_9-15_14_15-14_15_14-13_15_13-13_13_13-10_13_15-11_10_13-9_14_15-7_12_15-8_5_15-7_7_11-5_10_15-7_5_11-6_11_11-5_13_13-6_6_12-5_15_9-6_7_9-5_10_8-9_7_15-9_15_15-7_9_8-13_9_15-5_6_10-15_14_15-12_13_9-15_9_15-13_13_11"
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -1237,7 +1245,7 @@
           /* Ensure we open Advanced if user URL has any Advanced settings enabled */
           if (settings !== "00000" || $("#minLvl").val() > 1 || $("#maxLvl").val() !== "51" || $("#dec").val() > 1 || $("#familyEvoLeague").val() !== "mirror") {
             console.log("checkURL: Detected modified Advanced options, opening Collapsible");
-            advCollapsible(); 
+            collapsible("advCollapsible","advArrow"); 
           }
           if (perfTiming) {stopTiming(T0, "checkURL");}
           return;
@@ -1690,7 +1698,7 @@
         //console.log("updateURL:: link generated as:"+link);
         
         /* Update title and description to improve SEO for chosen mon */
-        var newTitle = mon+" PvP IVs - "+selectedLeagueName+" Rankings";
+        var newTitle = mon+" PvP IVs - "+selectedLeagueName+" Rankings (Beta)";
         document.title = newTitle.replace(/_/g, " "); /* replace all underscores ('_') with spaces */
         window.history.pushState(null, newTitle, link);
         var newDescrp = mon+" PvP IVs lookup tool for Pokémon Go™ to help compare your "+mon+"'s PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified "+mon+"! Did you catch the very best?";
@@ -3208,7 +3216,7 @@
         <option value="10">10: Raid / Hatch</option>
         <option value="12">12: Lucky Trade</option>
       </select></label><br />
-      <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
+      <h3>Advanced:<button id="advButton" onclick="collapsible('advCollapsible','advArrow')" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
       <div id=advCollapsible hidden>
       <label>Min Level:<select title="What Level Floor to Search?" id="minLvl">
         <option value="1">1: Wild Caught</option>
