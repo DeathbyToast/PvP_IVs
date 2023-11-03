@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US">
-
+<html lang="en-US" class="dark">
 <head>
   <!-- GA4 Tag -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LQY2YVNT21"></script><script>window.dataLayer=window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date()); gtag('config', 'G-LQY2YVNT21');</script>
@@ -12,10 +11,10 @@
     })(window,document,'script','dataLayer','GTM-TDF58VB');</script>
   <!-- End Google Tag Manager -->
   <meta charset="UTF-8">
-  <link rel="canonical" href="https://pvpivs.com/" />
+  <link rel="canonical" href="https://pvpivs.com/calculator.html" />
   <!-- Include pre-loads to reduce/optimize page load time-->
   <link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
-  <link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
+  <link rel="preload" href="https://pvpivs.com/includes/darkLightThemes.js" as="script">
   <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
@@ -25,7 +24,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description"
     content="PvP IVs CP, Level, and IV Calculator for Pok&eacute;mon Go&trade; to help you understand more about the Pok&eacute;mon you just caught. Finds CPs, Level, or even IVs for any Pok&eacute;mon you've caught, traded, raided, or hatched! Did you catch the very best?" />
-  <link rel=icon href=https://pvpivs.com/includes/favicon.png>
+    <link rel="icon" 
+    type="image/png" 
+    href="https://pvpivs.com/includes/favicon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
   <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
   <style>
@@ -48,14 +49,14 @@
   <!-- End Playwire Head -->
 </head>
 
-<body class="dark-theme">
+<body>
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TDF58VB" height="0" width="0"
       style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   <header>
     <ul class="header">
-      <li class="dropdown active left">
+      <li class="dropdown left">
         <a href="javascript:void(0)" class="dropbtn active">PvP IVs</a>
         <div class="dropdown-content">
           <a href="/">Rankings (Single)</a>
@@ -74,18 +75,18 @@
       </li>
       <li class="flat right">
         <label class="theme-toggle-switch">
-          <img id="theme-toggle-icon" src="https://pvpivs.com/includes/dark_mode_icon_white-fill.png" alt="Dark Mode"
-            width="22" height="22">
+          <img id="theme-toggle-icon" src="https://pvpivs.com/includes/dark_mode_icon_white-fill.png" alt="Dark Mode" width="22" height="22">
           <div>
             <input id="theme-toggle" type="checkbox" />
             <span class="slider round"></span>
           </div>
         </label>
       </li>
-      <li class="dropdown active right">
-        <a href="javascript:void(0)" class="dropbtn">About</a>
-        <div class="dropdown-content">
+      <li class="dropdown right">
+        <a href="javascript:void(0)" class="dropburger"><div class="container"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></a>
+        <div class="dropdown-content dropdown-content-right">
           <a href="/about.html">About PvP IVs</a>
+          <a href="/contribute.html">Contribute</a>
           <a href="/contact.html">Contact Us</a>
           <a href="/privacy.html">Privacy Policy</a>
           <a href="/cookies.html">Cookie Policy</a>
@@ -279,8 +280,7 @@
       continue...</i></span>
     <br />
 
-    <!-- Footer Code Below -->
-    <script src="https://pvpivs.com/includes/footer.js"></script>
+    <script async defer src="https://pvpivs.com/includes/darkLightThemes.js"></script>
     <script src="https://pvpivs.com/includes/calculate.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
     <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
