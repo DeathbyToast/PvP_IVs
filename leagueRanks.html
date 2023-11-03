@@ -13,7 +13,7 @@
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/darkLightThemes.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/collapsiblejs" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/collapsible.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
     <title>PvP IVs - League Rankings</title>
@@ -159,7 +159,7 @@
           <option value="54">54 (SPECULATIVE)</option>
           <option value="55">55 (SPECULATIVE)</option>
         </select></label><br />
-      <h3>Advanced:<button id="advButton" onclick="advCollapsible()" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
+      <h3>Advanced:<button id="advButton" onclick="collapsible('advCollapsible','advArrow')" style="background-color:transparent; border:none; width:33px; height:33px;"><i id="advArrow" class="arrow down"></i></button></h3>
       <div id=advCollapsible hidden>
         <label>Include Mega Evolutions:<input id="mega" type="checkbox"></label><br />
         <label>Include Entire Pokedex:<input id="all" type="checkbox"></label><br />
@@ -631,27 +631,27 @@
             case "all":
               document.getElementById('all').checked = values[i].split("=")[1] == "true" ? true : false;
               validParams = true;
-              advCollapsible();
+              collapsible("advCollapsible","advArrow");
               break;
             case "mega":
               document.getElementById('mega').checked = values[i].split("=")[1] == "true" ? true : false;
               validParams = true;
-              advCollapsible();
+              collapsible("advCollapsible","advArrow");
               break;
             case "buckets":
               document.getElementById('buckets').checked = values[i].split("=")[1] == "true" ? true : false;
               validParams = true;
-              advCollapsible();
+              collapsible("advCollapsible","advArrow");
               break;
             case "limit":
               document.getElementById('limit').value = values[i].split("=")[1];
               validParams = true;
-              advCollapsible();
+              collapsible("advCollapsible","advArrow");
               break;
             case "impossible":
               document.getElementById('impossible').checked = values[i].split("=")[1] == "true" ? true : false;
               validParams = true;
-              advCollapsible();
+              collapsible("advCollapsible","advArrow");
               break;
             case "t": /* Enable performance timing output in console for debugging */
               perfTiming = values[i].split("=")[1];
