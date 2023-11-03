@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-US" class="dark">
   <head>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -12,13 +12,16 @@
     <link rel="canonical" href="https://pvpivs.com/leagueRanks.html" />
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
-    <link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/darkLightThemes.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/collapsiblejs" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
     <title>PvP IVs - League Rankings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs lookup tool for Pok&eacute;mon Go&trade; to help compare your Pok&eacute;mon's PvP IVs to ideal PvP IVs. Finds PvP IVs for any wild-caught, weather boosted, traded, raided, hatched, and even purified Pok&eacute;mon! Did you catch the very best?"/>
-    <link rel=icon href=/includes/favicon.png>
+    <link rel="icon" 
+      type="image/png" 
+      href="https://pvpivs.com/includes/favicon.png">
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <style>
       #myProgress {
@@ -46,14 +49,14 @@
     <script>window.ramp=window.ramp ||{}; window.ramp.que=window.ramp.que || []; </script> <script async src="//cdn.intergient.com/1025030/74482/ramp_config.js"></script> <script>window._pwGA4PageviewId=''.concat(Date.now()); window.dataLayer=window.dataLayer || []; window.gtag=window.gtag || function (){dataLayer.push(arguments);}; gtag('js', new Date()); gtag('config', 'G-JD7R9RWFZL',{'send_page_view': false}); gtag( 'event', 'ramp_js',{'send_to': 'G-JD7R9RWFZL', 'pageview_id': window._pwGA4PageviewId}); </script>
     <!-- End Playwire Head -->
   </head>
-  <body class="light-theme" onload="checkURI()">
+  <body onload="checkURI()">
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TDF58VB"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   <header>
     <ul class="header">
-      <li class="dropdown active left">
+      <li class="dropdown left">
         <a href="javascript:void(0)" class="dropbtn active">PvP IVs</a>
         <div class="dropdown-content">
           <a href="/">Rankings (Single)</a>
@@ -79,10 +82,11 @@
           </div>
         </label>
       </li>
-      <li class="dropdown active right">
-        <a href="javascript:void(0)" class="dropbtn">About</a>
-        <div class="dropdown-content">
+      <li class="dropdown right">
+        <a href="javascript:void(0)" class="dropburger"><div class="container"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></a>
+        <div class="dropdown-content dropdown-content-right">
           <a href="/about.html">About PvP IVs</a>
+          <a href="/contribute.html">Contribute</a>
           <a href="/contact.html">Contact Us</a>
           <a href="/privacy.html">Privacy Policy</a>
           <a href="/cookies.html">Cookie Policy</a>
@@ -90,7 +94,7 @@
       </li>
     </ul>
   </header>
-    <br />
+  <br />
     <section>
       <label>League:<select id="league">
         <option value="500" label="Little Leagues">Little Leagues</option>
@@ -173,8 +177,8 @@
     <div id="myBar">0%</div>
     </div>
     
-    <!-- Footer Code Below -->
-    <script src="https://pvpivs.com/includes/footer.js"></script>
+    <script async defer src="https://pvpivs.com/includes/darkLightThemes.js"></script>
+    <script async defer src="https://pvpivs.com/includes/collapsible.js"></script>
     <script src="https://pvpivs.com/includes/calculate.js"></script>
     <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
         
