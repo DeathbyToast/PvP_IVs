@@ -110,7 +110,7 @@
 .theme-toggle-switch {
   height:47px;
   width: 55px;
-  padding-right: 10px;
+  padding: 5px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -284,10 +284,8 @@ textarea, select, input {
   }
 
   .dropburger {
-    display: inline-block;
-    color: var(--text);
-    text-align: center;
-    padding: 6.5px 25px;
+    display: block;
+    padding: 11px 25px;
     text-decoration: none;
   }
 
