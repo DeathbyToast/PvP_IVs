@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -12,12 +12,16 @@
     <!-- Include pre-loads to reduce/optimize page load time-->
     <link rel="preload" href="https://pvpivs.com/includes/style.css" as="style">
     <link rel="preload" href="https://pvpivs.com/includes/buildTypeTable.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/footer.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/darkLightThemes.js" as="script">
+    <link rel="preload" href="https://pvpivs.com/includes/typeChartStyling.css" as="style">
+    <link rel="preload" href="https://pvpivs.com/includes/typeColors.css" as="style">
     <title>PvP IVs - Type Chart</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Pokemon Go Type Chart Generator, built to help Trainers study and master Resistances, Weaknesses, SE, and NVE matchups for both single and dual-type Pokemon."/>
-    <link rel=icon href=/includes/favicon.png>
+    <link rel="icon" 
+      type="image/png" 
+      href="https://pvpivs.com/includes/favicon.png">
     <link rel="stylesheet" href="https://pvpivs.com/includes/typeChartStyling.css">
     <link rel="stylesheet" href="https://pvpivs.com/includes/style.css">
     <link rel="stylesheet" href="https://pvpivs.com/includes/typeColors.css">
@@ -30,7 +34,7 @@
     <script>window.ramp=window.ramp ||{}; window.ramp.que=window.ramp.que || []; </script> <script async src="//cdn.intergient.com/1025030/74482/ramp_config.js"></script> <script>window._pwGA4PageviewId=''.concat(Date.now()); window.dataLayer=window.dataLayer || []; window.gtag=window.gtag || function (){dataLayer.push(arguments);}; gtag('js', new Date()); gtag('config', 'G-JD7R9RWFZL',{'send_page_view': false}); gtag( 'event', 'ramp_js',{'send_to': 'G-JD7R9RWFZL', 'pageview_id': window._pwGA4PageviewId}); </script>
     <!-- End Playwire Head -->
   </head>
-  <body class="light-theme">
+  <body>
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TDF58VB"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -47,7 +51,7 @@
             <a href="/calculator.html">Calculator</a>
           </div>
         </li>
-        <li class="dropdown active left">
+        <li class="dropdown left">
           <a href="javascript:void(0)" class="dropbtn active">Typing</a>
           <div class="dropdown-content">
             <a href="/typeLookup.html" class="active">Chart</a>
@@ -63,10 +67,11 @@
             </div>
           </label>
         </li>
-        <li class="dropdown active right">
-          <a href="javascript:void(0)" class="dropbtn">About</a>
-          <div class="dropdown-content">
+        <li class="dropdown right">
+          <a href="javascript:void(0)" class="dropburger"><div class="container"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></a>
+          <div class="dropdown-content dropdown-content-right">
             <a href="/about.html">About PvP IVs</a>
+            <a href="/contribute.html">Contribute</a>
             <a href="/contact.html">Contact Us</a>
             <a href="/privacy.html">Privacy Policy</a>
             <a href="/cookies.html">Cookie Policy</a>
@@ -74,7 +79,6 @@
         </li>
       </ul>
     </header>
-  
   <div id="container">
     <div id="body">
       <select id="type">
@@ -127,8 +131,7 @@
       </div><br /><br /><br /><br />
 	  </div>
 	</div>
-  <!-- Footer Code Below -->
-  <script src="https://pvpivs.com/includes/footer.js"></script>
+  <script async defer src="https://pvpivs.com/includes/darkLightThemes.js"></script>
   <script>
   /*Default to loading a table*/
   $(document).ready(function(){outputHTML();});
