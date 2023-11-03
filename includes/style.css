@@ -283,17 +283,20 @@ textarea, select, input {
     overflow-y: scroll;
   }
 
-  /* Hamburger Menu Icon W3Schools CSS */
-  .container {
+  .dropburger {
     display: inline-block;
-    cursor: pointer;
-    padding: 6px;
+    color: var(--text);
+    text-align: center;
+    padding: 6.5px 25px;
+    text-decoration: none;
   }
+
+  /* Hamburger Menu Icon W3Schools CSS */
+  .container {padding: 0px 0px 0px 0px;}
   .bar {
     width: 22px;
     height: 3px;
     background-color: var(--tableHeaderText);
-    margin: 6px;
   }
 
 /* Special CSS for tiny mobile screens */
