@@ -292,10 +292,13 @@ textarea, select, input {
   }
 
   /* Hamburger Menu Icon W3Schools CSS */
-  .container {padding: 0px 0px 0px 0px;}
+  .container {
+    padding: 0px 0px 0px 0px;
+  }
   .bar {
     width: 22px;
     height: 3px;
+    margin: 6px;
     background-color: var(--tableHeaderText);
   }
 
