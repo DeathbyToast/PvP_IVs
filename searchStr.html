@@ -324,7 +324,7 @@
             case "cp":
               document.getElementById('league').value = values[i].split("=")[1];
               break;
-              
+
             case "trash":
               var settings = (''+values[i].split("=")[1]);
               if (settings[0]==="1") {
@@ -353,6 +353,9 @@
               document.getElementById('customIVs').checked = settings[0]==="1" ? true : false;
               document.getElementById('allZero').checked = settings[1]==="1" ? true : false;
               document.getElementById('noBadEvos').checked = settings[2]==="1" ? true : false;
+              document.getElementById('fpRate').checked = settings[3]==="1" ? true : false;
+              
+              break;
               break;
               
             case "l":
@@ -883,6 +886,7 @@
       advancedBinary = document.getElementById('customIVs').checked ? "1" : "0";
       advancedBinary += document.getElementById('allZero').checked ? "1" : "0";
       advancedBinary += document.getElementById('noBadEvos').checked ? "1" : "0";
+      advancedBinary += document.getElementById('fpRate').checked ? "1" : "0";
       
       return [trashBinary, advancedBinary, rStr];
     }
@@ -900,7 +904,7 @@
       
       /* Add any non-default values to uri */
       if (document.getElementById('trash').checked && trashBinary != "111000000") {uri +="&trash="+trashBinary;}
-      if (advancedBinary != "001") {uri +="&adv="+advancedBinary;}
+      if (advancedBinary != "0011") {uri +="&adv="+advancedBinary;}
       if (document.getElementById('customIVs').checked) {uri += "&IVentry="+document.getElementById('IVentry').value;}
       if (document.getElementById('maxBattleLvl').value != "51") {uri += "&m="+document.getElementById('maxBattleLvl').value;}
       if (document.getElementById('minSearchLvl').value != 1) {uri += "&slMin="+document.getElementById('minSearchLvl').value;}
@@ -1207,7 +1211,9 @@
       var origOut = output.value;
 
       /* Calculate and show False Postive Rate to user */
-      falsePositiveRate(evoVals[0][1]/1, evoVals[0][2]/1, evoVals[0][3]/1, slMin, slMax, targetIVs, cpHpPairs.slice(), aIV, dIV, sIV);
+      if (document.getElementById('fpRate').checked == true) {
+        falsePositiveRate(evoVals[0][1]/1, evoVals[0][2]/1, evoVals[0][3]/1, slMin, slMax, targetIVs, cpHpPairs.slice(), aIV, dIV, sIV);
+      }
       
       if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
         let excessOut = output.value.substring(0); /* ensure we don't mutilate actual output */
@@ -1812,7 +1818,7 @@
     function saveCurrentSettings() {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        setUserPreference("lang,floor,maxBattleLvl,minSearchLvl,maxSearchLvl,trash,excludeHundo,excludeXXL,excludeXXS,excludeXL,excludeXS,excludeTags,excludeZero,excludeFavs,allZero,customIVs,noBadEvos");
+        setUserPreference("lang,floor,maxBattleLvl,minSearchLvl,maxSearchLvl,trash,excludeHundo,excludeXXL,excludeXXS,excludeXL,excludeXS,excludeTags,excludeZero,excludeFavs,allZero,customIVs,noBadEvos,fpRate");
         if (perfTiming) {stopTiming(T0, "saveCurrentSettings");}
         main();
       }
@@ -1962,6 +1968,7 @@
       <option value="tr,dg,sp,sald&#305;r&#305;,savunma,favori,mega,sadeceyumurta,böcek,karanl&#305;k,ejderha,elektrik,peri,dövüşçü,ateş,uçan,hayalet,bitki,yer,buz,normal,zehir,psişik,kaya,çelik,su,kostüm,dişi,erkek">Turkish</option>
     </select>
     </label><br />
+    <label><input id="fpRate" type="checkbox" oninput="main()" checked>Show False Positive Rate</label><br />
     <label><input id="trash" type="checkbox" oninput="main()">Trash String</label><br />
     <div id="trashAdv" style="display: none;"><br /><b>Exclude from Trash String:</b><br />
       <label>IVs:&nbsp;&nbsp;<input id="excludeHundo" type="checkbox" checked oninput="main()"> 15-15-15</label>&nbsp;&nbsp;&nbsp;<label><input id="excludeZero" type="checkbox" checked oninput="main()"> 0-0-0</label><br />
