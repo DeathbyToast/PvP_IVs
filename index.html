@@ -290,6 +290,7 @@
         document.getElementById("IVinputShow").style.display = "inline-block";
         document.getElementById("ivInput").style.display = "none";
         document.getElementById("IVinputHide").style.display = "none";
+        document.getElementById("ivBox").checked = false;
       }
       
       function readIVs() {
@@ -500,7 +501,7 @@
         var evos = pokeListObj[mon].split(',').slice(4, pokeListObj[mon].split(',').length);
         console.log("evos:"+JSON.stringify(evos));
         var evoLen = evos.length;
-        var settings = (document.getElementById('mlCP').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0") + (document.getElementById("bulk").checked ? "1":"0");
+        var settings = (document.getElementById('mlCP').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0") + (document.getElementById("bulk").checked ? "1":"0") + (document.getElementById("ivBox").checked ? "1":"0");
         
         /* If family evos are checked and mirror selected, mirror selected league for family evos */
         if (document.getElementById("family").checked && evoLeague === "mirror") {
@@ -830,6 +831,10 @@
         if (perfTiming) {T0 = performance.now();}
         else {document.getElementById('timing_outputs').innerHTML = "";}
         
+        if (document.getElementById("ivBox").checked == true) {
+          showIVinput();
+        }
+        
         if (mon) { /* This is a new input */
           /*console.log("New mon detected, resetting monState, mon:"+mon);*/
           resetMonState();
@@ -912,8 +917,8 @@
         if (document.getElementById('floor').value > 0) {uri += "&f="+document.getElementById('floor').value;}
         if (document.getElementById('minLvl').value > 1) {uri += "&min="+document.getElementById('minLvl').value;}
         if (document.getElementById('maxLvl').value!== "51") {uri += "&max="+document.getElementById('maxLvl').value;}
-        var settings = (document.getElementById('mlCP').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0") + (document.getElementById("bulk").checked ? "1":"0");
-        if (settings !== "0000000") {
+        var settings = (document.getElementById('mlCP').checked ? "1":"0") + (document.getElementById("cmp").checked ? "1":"0") + (document.getElementById("cge").checked ? "1":"0") + (document.getElementById("family").checked ? "1":"0") + (document.getElementById("dti").checked ? "1":"0") + (document.getElementById("dust").checked ? "1":"0") + (document.getElementById("bulk").checked ? "1":"0") + (document.getElementById("ivBox").checked ? "1":"0");
+        if (settings !== "00000000") {
           /*console.log("906: About to make '&set'="+settings);*/
           uri += "&set="+settings;}
         if (document.getElementById('cmpLim').value !== "100") {uri += "&cmpLim="+document.getElementById('cmpLim').value;}
@@ -1082,7 +1087,7 @@
       function saveCurrentSettings() {
         var T0;
         if (perfTiming) {T0 = performance.now();}
-        setUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP");
+        setUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP,ivBox");
         if (perfTiming) {stopTiming(T0, "saveCurrentSettings");}
         main();
       }
@@ -1212,7 +1217,7 @@
         if (perfTiming) {T0 = performance.now();}
         
         /* Read returning user's settings */
-        checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP");
+        checkUserPreference("limit,league,floor,minLvl,maxLvl,cmp,cge,family,familyEvoLeague,dti,dust,bulk,dec,mlCP,ivBox");
         
         if (!URL) {
           /* Not in test mode, parse URL for user inputs*/
@@ -1334,6 +1339,7 @@
                 document.getElementById('dti').checked = settings[4] === "1" ? true : false;
                 document.getElementById('dust').checked = settings[5] === "1" ? true : false;
                 document.getElementById('bulk').checked = settings[6] === "1" ? true : false;
+                document.getElementById('ivBox').checked = settings[7] === "1" ? true : false;
                 break;
             }
           }
@@ -2217,6 +2223,7 @@
       <label>Show Stardust Power-Up Costs:<input id="dust" type="checkbox" oninput="setUserPreference('dust')"></label><br />
       <label>Show Bulk Product:<input id="bulk" type="checkbox" oninput="setUserPreference('bulk')"></label><br />
       <label>Show Min Level CP (Raid/Hatch):<input id="mlCP" type="checkbox" oninput="setUserPreference('mlCP')"></label><br />
+      <label>Show IV Input Textbox:<input id="ivBox" type="checkbox" oninput="setUserPreference('ivBox')"></label><br />
       <label>Remember My Settings:<input id="save" type="checkbox" oninput="saveCurrentSettings()"></label><br />
       <button id="resetButton" type="resetSettings" onclick="localStorage.clear();location.reload();">Reset All Saved Settings to Defaults</button>
       </div><br />
