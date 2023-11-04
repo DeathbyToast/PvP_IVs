@@ -56,7 +56,7 @@
 
 /* Check contrast for Accessibility https://dequeuniversity.com/color-contrast */
 
-.light-theme, .light {
+.light {
   --primary: var(--gold700);
   --secondary: var(--red900);
   --Background: var(--lg200);
@@ -81,7 +81,7 @@
   --textBoxBg: var(--lg100);
 }
 
-.dark-theme, .dark {
+.dark {
   --primary: var(--gold200);
   --secondary: var(--red200);
   --Background: var(--darkgrey);
@@ -106,49 +106,6 @@
   --textBoxBg: var(--dg24dp);
 }
 
-/* dark mode toggle switch stuff */
-.theme-toggle-switch {
-  height:47px;
-  width: 55px;
-  padding: 5px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.theme-toggle-switch div {
-  position: relative;
-  display: block;
-  background: var(--darkModeSlider);
-  width: 30px;
-  border-radius: 50px;
-  padding: 0 5px;
-  box-sizing: border-box;
-  cursor: pointer;
-}
-
-.flipped-icon {
-  transform: scaleX(-1);
-  background: transparent;
-}
-
-.theme-toggle-switch input {
-  display: none;
-}
-
-.slider {
-  background-color: var(--darkModeSliderBg);
-  transition: 0.4s;
-  border-radius: 34px;
-  height: 12px;
-  width: 12px;
-  display: inline-block;
-  position: relative;
-}
-
-input:checked + .slider {
-  transform: translateX(8px);
-}
 /* awesomplete CSS overrides for dark mode */
 /* https://github.com/LeaVerou/awesomplete/blob/gh-pages/awesomplete.css */
 .awesomplete > ul > li:hover {
@@ -197,6 +154,16 @@ img {
 
 textarea, select, input {
   background: var(--textBoxBg);
+}
+
+/* theme toggle stuff */
+.theme-toggle-div {
+  height:47px;
+  width: 55px;
+  padding: 5px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 #theme-toggle-icon {

@@ -1,26 +1,29 @@
 /* Dark/Light Mode Theme Toggle Code*/
-document.getElementById('theme-toggle').addEventListener('change', () => {toggleTheme();});
+document.getElementById('theme-toggle-icon').addEventListener('click', () => {toggleTheme();});
 
-/* https://kevdees.com/adding-dark-mode-toggle-to-your-website/ */
 function toggleTheme() {
-  document.querySelector('html').classList.toggle("dark");
-  document.querySelector('html').classList.toggle("light");
-  document.getElementById("theme-toggle-icon").classList.toggle("flipped-icon");
-  
-  localStorage.setItem(
-    "colorTheme",
-    document.body.classList.contains("dark") ? "dark" : "light"
-    );
+  /* Check which icon we have and swap to the other icon */
+  if (document.documentElement.classList.contains("dark")) {
+    /* In dark theme, set up transition to light theme */
+    document.getElementById("theme-toggle-icon").src = "https://pvpivs.com/includes/moon.svg";
+    document.getElementById("theme-toggle-icon").ariaLabel = "Change to dark theme";
+    document.getElementById("theme-toggle-icon").alt = "Moon icon";
+    localStorage.setItem("colorTheme","light");
+  } else {
+    /* In light theme, set up transition to dark theme */
+    document.getElementById("theme-toggle-icon").src = "https://pvpivs.com/includes/sun.svg";
+    document.getElementById("theme-toggle-icon").ariaLabel = "Change to light theme";
+    document.getElementById("theme-toggle-icon").alt = "Sun icon";
+    localStorage.setItem("colorTheme","dark");
+  }
+  /* Finally toggle dark/light class on HTML tag to switch themes */
+  document.documentElement.classList.toggle("dark");
+  document.documentElement.classList.toggle("light");
 }
 
-/* Initialize the theme */
-if (localStorage.getItem("colorTheme") === "dark") {
-  document.getElementById("theme-toggle").checked = true;
+/* Theme defaults to dark, but set to light if user prefers */
+if ((localStorage.getItem("colorTheme") === "light")
+ || (localStorage.getItem("colorTheme") !== "dark" && window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches)) { 
+  /* If user prefers light theme, toggleTheme from default dark theme */
   toggleTheme();
-} else if (
-    localStorage.getItem("colorTheme") !== "light" &&
-    window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-) {
-    toggleTheme();
 }

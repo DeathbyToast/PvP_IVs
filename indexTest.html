@@ -221,13 +221,9 @@
           </div>
         </li>
         <li class="flat right">
-          <label class="theme-toggle-switch">
-            <img id="theme-toggle-icon" src="https://pvpivs.com/includes/dark_mode_icon_white-fill.png" alt="Dark Mode" width="22" height="22">
-            <div>
-              <input id="theme-toggle" type="checkbox" />
-              <span class="slider round"></span>
-            </div>
-          </label>
+          <div class="theme-toggle-div">
+            <img id="theme-toggle-icon" src="https://pvpivs.com/includes/sun.svg" aria-label="Change to light theme" alt="Sun icon" width="22" height="22">
+          </div>
         </li>
         <li class="dropdown right">
           <a href="javascript:void(0)" class="dropburger"><div class="container"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></a>
@@ -508,7 +504,7 @@
         perfTiming = true; /* used for timing execution */
         mnlMod = false; /*track if min Lvl was adjusted*/
         ivMod = false; /*track if IV floor was adjusted*/
-        userIVs = [];//new Array(1).fill(0).map(() => new Array(9).fill(0));
+        userIVs = [];
         userIVs[0] = [  
           document.getElementById("aIV[0]").value,   /* 0:attack IV  */
           document.getElementById("dIV[0]").value,   /* 1:defense IV */
@@ -544,7 +540,7 @@
           /*https://github.com/LeaVerou/awesomplete/issues/16438#issuecomment-195921708*/
           Awesomplete.$.bind(input, {
             "awesomplete-selectcomplete": function(evt) {
-              //console.log("$doc.ready():: User Selected "+evt.text.label+", passing to main and exiting Awesomplete");
+              /*console.log("$doc.ready():: User Selected "+evt.text.label+", passing to main and exiting Awesomplete");*/
               if (evt.text.label.indexOf("_SPECULATIVE") > -1)
               {
                 document.getElementById("megaNote").innerHTML = "<p><i>Please note these base stats are speculative and subject to change!</i></p>";
@@ -555,7 +551,7 @@
                 document.getElementById("megaNote").innerHTML = ""; /* Clear the previous notes if any */
               }
               inputMon = evt.text.label;
-              //console.log("$doc.ready():: Awesomplete: calling main("+evt.text.label+")");
+              /*console.log("$doc.ready():: Awesomplete: calling main("+evt.text.label+")");*/
               main(evt.text.label);
             }
           });
@@ -590,7 +586,6 @@
         /* BEGIN: Initializations for all user input select events */
         $("#league").on("change", function(event) {
           stopDuplicateEvents(event);
-          //console.log("Received onChange request for league!");
           var currentLeague = $("#league").val();
           clearHideOldDataTable();
           /* Ensure we reset pageLen when swapping from All Leagues to specific League */
@@ -766,7 +761,6 @@
           if (invalidIVs === false) {
             if (oldUserIVs[UIV_AIV] && oldUserIVs[UIV_DIV] && oldUserIVs[UIV_SIV]) {
               /* oldUserIVs were valid, need to be removed from this league's DataTable */
-              //console.log("770: findAddDataTableRow: Calling pinUnpinRow("+tableIDs[l]+", "+(oldUserIVs[UIV_RANK][l]-1)+", 0, false, true)...");
               if ($("#effIV").is(":checked")) {
                 /* If oldUserIVs are inefficient, skip unpin */
                 const dt = $(tableIDs[l]).DataTable();
@@ -821,13 +815,11 @@
                 /* Check if this row will be purified or was purified */
                 if (pure == true || userIVs[rowNum][UIV_PURE] == true) {
                   /* This will be OR was a purified row */
-                  //console.log("findAddDataTableRow: calling managePurified("+pure, tableIDs[l], i, rowNum+")");
                   if (managePurified(pure, tableIDs[l], i, rowNum) == false) {
                     document.getElementById("feedbackBox").innerHTML += "<i>Removed purified "+userIVs[rowNum][UIV_AIV]+"/"+userIVs[rowNum][UIV_DIV]+"/"+userIVs[rowNum][UIV_DIV]+" from "+leagueName[l]+" table, over CP Limit.</i><br />";
                   }
                 } else if (sha == true || userIVs[rowNum][UIV_SHDW] == true) {
                   /* This will be shadow OR was a shadow row */
-                  //console.log("findAddDataTableRow: calling manageShadows("+sha, tableIDs[l], i, rowNum+")");
                   manageShadows(sha, tableIDs[l], i, rowNum);
                 }
                 foundNewRow = true;
@@ -849,7 +841,7 @@
         var T0,pvpAtk,pvpDef, monInfo, level;
         if (perfTiming) {T0 = performance.now();}
 
-        //console.log("manageShadows: received apply:"+apply+", tableID:"+tableID+", dtRowNum:"+dtRowNum);
+        /*console.log("manageShadows: received apply:"+apply+", tableID:"+tableID+", dtRowNum:"+dtRowNum);*/
         const dt = $(tableID).DataTable();
         const rowData = dt.rows().data()[uIVrowNum];
         console.log("rowData: "+JSON.stringify(rowData));
@@ -919,7 +911,7 @@
           $(dt.cell(dtRowNum,DT_DUST).node()).css({"background-color": "", "color": ""});
         }
         
-        //console.log("managePurified: Calculated Purified XL:"+XL+", dust:"+dust);
+        /*console.log("managePurified: Calculated Purified XL:"+XL+", dust:"+dust);*/
         
         if (perfTiming) {stopTiming(T0, "managePurified");}
         return;
@@ -987,7 +979,7 @@
         
         buttonArray[l] = [{extend: 'colvis',postfixButtons: [ 'colvisRestore' ],columns: ':not(.noVis)'}];
         if (windowSize/1 > 767) {
-          //console.log("sizeDataTableElements: Detected screen size > 767px, setting desktop mode");
+          /*console.log("sizeDataTableElements: Detected screen size > 767px, setting desktop mode");*/
           /* Default DataTable elements for tablet / desktop screens */
           domWidth[l] = 'lti<"br">p<"br">B<"br"><"br"><"br">Q';
           infoText[l] = "Rank _START_-_END_ "+leagueName[l]+" "+mon+" (_TOTAL_ total)";
@@ -995,17 +987,16 @@
           pageType[l] = "full_numbers";
           /* Button array is fine as defined above for desktop */
         } else {
-          //console.log("sizeDataTableElements: Detected screen size < 767px, setting mobile mode");
+          /*console.log("sizeDataTableElements: Detected screen size < 767px, setting mobile mode");*/
           /* Condensed DataTable elements for smaller mobile screens */
           domWidth[l] = 'ltipB';
-          //var leagueAcronym = leagueName[l].split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'');
           const leagueAcronym = tableIDs[l].split("_")[1];
           infoText[l] = "#_START_-_END_ of _TOTAL_ "+leagueAcronym+" "+mon;
           infoFilteredText[l] = "(from _MAX_)";
           pageType[l] = "full";
           buttonArray[l].push("searchBuilder");
         }
-        //console.log("sizeDataTableElements: l="+l+", set domWidth='"+domWidth+"', infoText='"+infoText+"', infoFilteredText='"+infoFilteredText+"', pageType='"+pageType+"'");
+        /*console.log("sizeDataTableElements: l="+l+", set domWidth='"+domWidth+"', infoText='"+infoText+"', infoFilteredText='"+infoFilteredText+"', pageType='"+pageType+"'");*/
         /* Return true to indicate table needs to implement new layouts */
         if (perfTiming) {stopTiming(T0, "sizeDataTableElements");}
         return true;
@@ -1039,9 +1030,9 @@
           /* GamePress IV Deep Dive legacy URLs, MUST MAINTAIN SUPPORT! */
           /* Carbink "Premium Bulk" https://gamepress.gg/pokemongo/carbink-pvp-iv-deep-dive */
           /* URL = "mon=Carbink&r=23&cp=1500&set=0000001&mA=81.38&mD=247.67&mHP=128&dec=2"; */
-          //URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-0_9_12_false_true";
+          /*URL = "mon=Blastoise&r=5&cp=All&col_UL=11101111100011111&IVs=15_15_15_true_false-0_9_12_false_true";*/
           /* TODO: How is 13/13/13 efficient when 13/12/12 outclasses it? */
-          //URL = "mon=Carbink&r=50&cp=1500&adv=10000&col_GL=11101111100011111&IVs=15_13_15-4_13_13-13_13_13-15_15_15-6_15_8-14_15_13-5_7_10-13_12_12-6_7_10-4_15_9-15_14_15-14_15_14-13_15_13-13_13_13-10_13_15-11_10_13-9_14_15-7_12_15-8_5_15-7_7_11-5_10_15-7_5_11-6_11_11-5_13_13-6_6_12-5_15_9-6_7_9-5_10_8-9_7_15-9_15_15-7_9_8-13_9_15-5_6_10-15_14_15-12_13_9-15_9_15-13_13_11"
+          /*URL = "mon=Carbink&r=50&cp=1500&adv=10000&col_GL=11101111100011111&IVs=15_13_15-4_13_13-13_13_13-15_15_15-6_15_8-14_15_13-5_7_10-13_12_12-6_7_10-4_15_9-15_14_15-14_15_14-13_15_13-13_13_13-10_13_15-11_10_13-9_14_15-7_12_15-8_5_15-7_7_11-5_10_15-7_5_11-6_11_11-5_13_13-6_6_12-5_15_9-6_7_9-5_10_8-9_7_15-9_15_15-7_9_8-13_9_15-5_6_10-15_14_15-12_13_9-15_9_15-13_13_11"*/
         } else {
           /* Enable unit testing */
           console.log("checkURL: URL passed in as:"+URL);
@@ -1057,10 +1048,10 @@
             if (perfTiming) {stopTiming(T0, "checkURL");}
             return false;
           }
-          //console.log("checkURL: Read URL as: "+URL);
+          /*console.log("checkURL: Read URL as: "+URL);*/
           var values = URL.split("&");
           var settings;
-          //console.log("checkURL: Values: "+JSON.stringify(values));
+          /*console.log("checkURL: Values: "+JSON.stringify(values));*/
           for (var i=0; i<values.length; i++)
           {
             switch (values[i].split("=")[0]) {
@@ -1074,7 +1065,7 @@
               case "r":
                 pageLen = values[i].split("=")[1]/1;
                 originalPL = values[i].split("=")[1]/1;
-                //console.log("checkURL: received r="+values[i].split("=")[1]+", set pageLen to: "+pageLen);
+                /*console.log("checkURL: received r="+values[i].split("=")[1]+", set pageLen to: "+pageLen);*/
                 /* Search for where to insert pageLen to lenMenu  */
                 for (var j=0; j<lenMenu[0].length; j++) {
                   if (pageLen/1 < 0 || lenMenu[0][j]/1 == pageLen/1) {
@@ -1207,19 +1198,15 @@
                 break;
               case "col_LL":
                 colVis[0] = values[i].split("=")[1];
-                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_GL":
                 colVis[1] = values[i].split("=")[1];
-                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_UL":
                 colVis[2] = values[i].split("=")[1];
-                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
               case "col_ML":
                 colVis[3] = values[i].split("=")[1];
-                //console.log("checkURL: set colVis="+JSON.stringify(colVis));
                 break;
             }
           }
@@ -1237,7 +1224,7 @@
             sbSearch = '{ "criteria": [ '+strA+''+strD+''+strHP+''+strBP+'], "logic": '+sbLogic+' }';
             /* Remove trailing comma (,) after criteria before logic and convert to JSON */
             sbSearch = $.parseJSON(sbSearch.replace('] }, ], "logic":','] } ], "logic":'));
-            //console.log("Built sbSearch as:'"+JSON.stringify(sbSearch)+"'");
+            /*console.log("Built sbSearch as:'"+JSON.stringify(sbSearch)+"'");*/
           }
           
           /* Ensure we open Advanced if user URL has any Advanced settings enabled */
@@ -1290,7 +1277,7 @@
         /* Ensure we clear feedback between table runs */
         document.getElementById("feedbackBox").innerHTML = "";
         
-        //console.log("main: monInput:"+JSON.stringify(monInput)+", mon:"+JSON.stringify(mon));
+        /*console.log("main: monInput:"+JSON.stringify(monInput)+", mon:"+JSON.stringify(mon));*/
 
         /* Check if we need to reset mon state */
         if (monInput) {
@@ -1299,10 +1286,9 @@
            || $.fn.DataTable.isDataTable("#monTable_GL")
            || $.fn.DataTable.isDataTable("#monTable_UL")
            || $.fn.DataTable.isDataTable("#monTable_ML")) {
-            //console.log("main: detected existing DataTables, calling resetMonState()");
+            /*console.log("main: detected existing DataTables, calling resetMonState()");*/
             resetMonState();
             mon = undefined;
-            //console.log("main: calling clearHideOldDataTable()");
             clearHideOldDataTable();
             /*ensure we clear the prior output between runs*/
             document.getElementById("tradeOutput").innerHTML = "";
@@ -1315,13 +1301,13 @@
         /* Awesomeplete sends "undefined" when it did not find a valid input */
         if (mon === undefined) { /* Determine if we have a valid, previously selected mon we can use */
           if ((pokeListObj[input.value]) || (pokeListObj[inputMon]) || (pokeListObj[monInput])) {
-            //console.log("main: Found a valid input.value of:"+JSON.stringify(input.value));
+            /*console.log("main: Found a valid input.value of:"+JSON.stringify(input.value));*/
             /* Correct for autocomplete input being cleared accidentally */
             if ((!(pokeListObj[input.value])) && (pokeListObj[inputMon])) {
               input.value = inputMon;
             }
             mon = input.value;
-            //console.log("main: set mon="+mon);
+            /*console.log("main: set mon="+mon);*/
           }
         }
         
@@ -1368,7 +1354,7 @@
           }
 
           /* Create a DataTable from the mon ranks object */
-          //console.log("main: Calling gDT("+ranks[l].numRanks, ", "+keys.length+", "+l+")");
+          /*console.log("main: Calling gDT("+ranks[l].numRanks, ", "+keys.length+", "+l+")");*/
           generateDataTable(ranks[l], keys, l);
           console.log("main: Finished gDT, userIVs now:("+JSON.stringify(userIVs));
         }
@@ -1412,7 +1398,7 @@
           tr.parentNode.parentNode.removeChild(tr.parentNode);
         }
         console.log("Old userIVs before splice: "+JSON.stringify(userIVs));
-        userIVs = []; //.splice(0, userIVs.length);
+        userIVs = [];
         console.log("userIVs after splice: "+JSON.stringify(userIVs));
 
         /* Re-insert a default IV (-/15/15) row, update DOM and userIVs */
@@ -1648,7 +1634,7 @@
           link += "&adv="+adv;
         }
 
-        //console.log("Checking tableIDs: "+JSON.stringify(tableIDs)+", .length:"+tableIDs.length);
+        /*console.log("Checking tableIDs: "+JSON.stringify(tableIDs)+", .length:"+tableIDs.length);*/
         for (var i=0; i<tableIDs.length; i++) {
           if ($.fn.DataTable.isDataTable(tableIDs[i])) {
             var col = "";
@@ -1659,7 +1645,7 @@
               col += Number(visCols[j]);
             }
             const leagueAcronym = tableIDs[i].split("_")[1];
-            //console.log("visible columns for "+leagueAcronym+", "+tableIDs[i]+" are: "+col+" or "+visCols);
+            /*console.log("visible columns for "+leagueAcronym+", "+tableIDs[i]+" are: "+col+" or "+visCols);*/
             if ((leagueAcronym !== "ML" && col !== "11101111000011111") || (leagueAcronym === "ML" && col !== "11101111100011111")) {
               link += "&col_"+leagueAcronym+"="+col;
             }
@@ -1676,14 +1662,14 @@
               if (i > 0) {IVs += "-";} else {IVs = "";}
               IVs += userIVs[i][UIV_AIV] + "_" + userIVs[i][UIV_DIV] + "_" + userIVs[i][UIV_SIV];
               if (userIVs[i][UIV_SHDW] === true || userIVs[i][UIV_PURE] === true) {
-                //console.log("Detected at least one true between pure("+userIVs[i][UIV_PURE]+") and shdw("+userIVs[i][UIV_SHDW]+")");
+                /*console.log("Detected at least one true between pure("+userIVs[i][UIV_PURE]+") and shdw("+userIVs[i][UIV_SHDW]+")");*/
                 /* If at least one is true, need to add to URL */
                 if (userIVs[i][UIV_PURE] === false) {
-                  //console.log("Just adding shdw to URL because pure("+userIVs[i][UIV_PURE]+") and shdw("+userIVs[i][UIV_SHDW]+")");
+                  /*console.log("Just adding shdw to URL because pure("+userIVs[i][UIV_PURE]+") and shdw("+userIVs[i][UIV_SHDW]+")");*/
                   /* If purified is false, URL is simple */
                   IVs += "_" + userIVs[i][UIV_SHDW];
                 } else {
-                  //console.log("Adding both to URL because pure("+userIVs[i][UIV_PURE]+") and shdw("+userIVs[i][UIV_SHDW]+")");
+                  /*console.log("Adding both to URL because pure("+userIVs[i][UIV_PURE]+") and shdw("+userIVs[i][UIV_SHDW]+")");*/
                   /* Otherwise need to include both shdw and pure */
                   IVs += "_" + userIVs[i][UIV_SHDW] + "_" + userIVs[i][UIV_PURE];
                 }
@@ -1693,7 +1679,7 @@
           link += "&IVs="+IVs;
         }
         link = encodeURI(link);
-        //console.log("updateURL:: link generated as:"+link);
+        /*console.log("updateURL:: link generated as:"+link);*/
         
         /* Update title and description to improve SEO for chosen mon */
         var newTitle = mon+" PvP IVs - "+selectedLeagueName+" Rankings (Beta)";
@@ -1732,7 +1718,7 @@
           tr.parentNode.parentNode.removeChild(tr.parentNode);
         }
         /* clear the value arrays */
-        userIVs = [];//.splice(0, userIVs.length);
+        userIVs = [];
         
         for (var j=0; j<ivStr.length; j++)
         {
@@ -1754,7 +1740,7 @@
         var T0,T1,T2,T3,T4,T5,T6,candyTime=0;
         if (perfTiming) {T0 = performance.now();}
 
-        //console.log("gDT: Received leagueRanks.numRanks:"+leagueRanks.numRanks+", leagueName["+l+"]:"+leagueName[l]+", keys.length:"+keys.length+", tableIDs["+l+"]:"+tableIDs[l]);
+        /*console.log("gDT: Received leagueRanks.numRanks:"+leagueRanks.numRanks+", leagueName["+l+"]:"+leagueName[l]+", keys.length:"+keys.length+", tableIDs["+l+"]:"+tableIDs[l]);*/
         var tableData = [];
         var currentRow = [];
         var nonZeroXL = false; /* track visibility of XL candy column */
@@ -1799,7 +1785,7 @@
                         /* Set hiddenSortRank to ensure rows pin to top */
                         hiddenSortRank = u-leagueRanks.numRanks;
                         userIVs[u][UIV_HIDDEN_SORT_RANK] = hiddenSortRank;
-                        //console.log("hiddenSortRank set to: "+hiddenSortRank+" for "+userIVsclone[k][UIV_AIV]+"/"+userIVsclone[k][UIV_DIV]+"/"+userIVsclone[k][UIV_SIV]);
+                        /*console.log("hiddenSortRank set to: "+hiddenSortRank+" for "+userIVsclone[k][UIV_AIV]+"/"+userIVsclone[k][UIV_DIV]+"/"+userIVsclone[k][UIV_SIV]);*/
                         if (leagueRanks[keys[i]][j].eff == false) {
                           document.getElementById("feedbackBox").innerHTML += "<i>Removed inefficient IVs "+leagueRanks[keys[i]][j].IVs.A+"/"+leagueRanks[keys[i]][j].IVs.D+"/"+leagueRanks[keys[i]][j].IVs.S+" from "+leagueName[l]+" table.</i><br />";
                         }
@@ -1857,10 +1843,10 @@
               var atkHPprod = numOut(numOut(leagueRanks[keys[i]][j].battle.A,dec) * leagueRanks[keys[i]][j].battle.S, dec); currentRow.push(atkHPprod); /*17: Attack-HP Product*/
               var adjStatProdPerf = numOut((numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec)) - 90)*10,dec); /* Make this 0-100% instead of 90-100% */
               var cmpStatavg = numOut((leagueRanks[keys[i]][j].IVs.cmp/1 + adjStatProdPerf/1 + adjStatProdPerf/1)/3,dec); currentRow.push(cmpStatavg); /*18: CMP-Stat Product*/
-              //console.log("Computed cmpStatavg: "+currentRow[18]+" from adjStatProdPerf: "+adjStatProdPerf+" (orig SP:"+numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec))+") and cmp:"+leagueRanks[keys[i]][j].IVs.cmp)
-              //console.log("leagueRanks[keys[i]][j].battle.A/leagueRanks.maxAtk.value"+leagueRanks[keys[i]][j].battle.A/leagueRanks.maxAtk.value);
+              /*console.log("Computed cmpStatavg: "+currentRow[18]+" from adjStatProdPerf: "+adjStatProdPerf+" (orig SP:"+numOut((100*keys[i].split(".")[0])/maxStatProd,Math.max(2,dec))+") and cmp:"+leagueRanks[keys[i]][j].IVs.cmp)*/
+              /*console.log("leagueRanks[keys[i]][j].battle.A/leagueRanks.maxAtk.value"+leagueRanks[keys[i]][j].battle.A/leagueRanks.maxAtk.value);*/
               var adjCMP = ((leagueRanks[keys[i]][j].IVs.cmp/100)+9)/10;
-              //console.log("leagueRanks[keys[i]][j].IVs.cmp"+leagueRanks[keys[i]][j].IVs.cmp+", adjCMP: "+adjCMP); 
+              /*console.log("leagueRanks[keys[i]][j].IVs.cmp"+leagueRanks[keys[i]][j].IVs.cmp+", adjCMP: "+adjCMP);*/
               var doubleAtkHPstatProd = numOut((leagueRanks[keys[i]][j].battle.A * leagueRanks[keys[i]][j].battle.A * leagueRanks[keys[i]][j].battle.D * leagueRanks[keys[i]][j].battle.S * leagueRanks[keys[i]][j].battle.S)/5000,0); currentRow.push(doubleAtkHPstatProd); /*19: CMP-Stat Product*/
               var customPcntProdProd = numOut(10000*
                 (adjCMP * Math.pow((leagueRanks[keys[i]][j].battle.A/leagueRanks.maxAtk.value),3) * (Math.pow((leagueRanks[keys[i]][j].battle.D/leagueRanks.maxDef.value),2) * Math.pow(leagueRanks[keys[i]][j].battle.S/leagueRanks.maxHP.value,3))/2)
@@ -1889,7 +1875,7 @@
         colVisLock = true;
         var priorSearchBuilderDetails;
         
-        //console.log("Building "+tableIDs[l]+" DataTable with l="+l+", domWidth[l]:"+domWidth[l]+", infoText[l]:"+infoText[l]+",infoFilteredText[l]:"+infoFilteredText[l]);
+        /*console.log("Building "+tableIDs[l]+" DataTable with l="+l+", domWidth[l]:"+domWidth[l]+", infoText[l]:"+infoText[l]+",infoFilteredText[l]:"+infoFilteredText[l]);*/
         const leagueAcronym = tableIDs[l].split("_")[1];
         /*Build table with generated tableData*/
         const dt = new DataTable(tableIDs[l], {
@@ -1931,12 +1917,12 @@
                 }
 
                 /* Determine if this row is shadow or purified */
-                //console.log("gDT: createdRow: Searching for data[DT_AIV]:"+data[DT_AIV]+", data[DT_DIV]:"+data[DT_DIV]+", data[DT_SIV]:"+data[DT_SIV]);
+                /*console.log("gDT: createdRow: Searching for data[DT_AIV]:"+data[DT_AIV]+", data[DT_DIV]:"+data[DT_DIV]+", data[DT_SIV]:"+data[DT_SIV]);*/
                 for (var uivIndex=0; uivIndex<userIVs.length; uivIndex++) {
                   if (data[DT_AIV] == userIVs[uivIndex][UIV_AIV] && data[DT_DIV] == userIVs[uivIndex][UIV_DIV] && data[DT_SIV] == userIVs[uivIndex][UIV_SIV]) {
-                    //console.log("gDT: createdRow: "+data[DT_AIV]+" == "+userIVs[uivIndex][UIV_AIV]+" && "+data[DT_DIV]+" == "+userIVs[uivIndex][UIV_DIV]+" && "+data[DT_SIV]+" == "+userIVs[uivIndex][UIV_SIV]+", userIVs[uivIndex][UIV_SHDW]:"+userIVs[uivIndex][UIV_SHDW]+", userIVs[uivIndex][UIV_PURE]:"+userIVs[uivIndex][UIV_PURE]);
+                    /*console.log("gDT: createdRow: "+data[DT_AIV]+" == "+userIVs[uivIndex][UIV_AIV]+" && "+data[DT_DIV]+" == "+userIVs[uivIndex][UIV_DIV]+" && "+data[DT_SIV]+" == "+userIVs[uivIndex][UIV_SIV]+", userIVs[uivIndex][UIV_SHDW]:"+userIVs[uivIndex][UIV_SHDW]+", userIVs[uivIndex][UIV_PURE]:"+userIVs[uivIndex][UIV_PURE]);*/
                     if (userIVs[uivIndex][UIV_SHDW] == true) {
-                      //console.log("gDT: createdRow: calling manageShadows("+userIVs[uivIndex][UIV_SHDW], tableIDs[l], dtRowIndex, uivIndex+")");
+                      /*console.log("gDT: createdRow: calling manageShadows("+userIVs[uivIndex][UIV_SHDW], tableIDs[l], dtRowIndex, uivIndex+")");*/
                       manageShadows(userIVs[uivIndex][UIV_SHDW], tableIDs[l], dtRowIndex, uivIndex);
                     } else if (userIVs[uivIndex][UIV_PURE] == true) {
                       console.log("gDT: createdRow: calling managePurified("+userIVs[uivIndex][UIV_PURE], tableIDs[l], dtRowIndex, uivIndex+")");
@@ -1960,9 +1946,9 @@
               setTimeout(function() {
                 var updatedSearchBuilderDetails = api.searchBuilder.getDetails();
                 if (JSON.stringify(priorSearchBuilderDetails) !== JSON.stringify(updatedSearchBuilderDetails)) {
-                  //console.log("drawCallback: got pSBD: "+JSON.stringify(priorSearchBuilderDetails));
+                  /*console.log("drawCallback: got pSBD: "+JSON.stringify(priorSearchBuilderDetails));*/
                   priorSearchBuilderDetails = processSearchBuilderDetails(updatedSearchBuilderDetails, priorSearchBuilderDetails);
-                  //console.log("drawCallback: set pSBD: "+JSON.stringify(priorSearchBuilderDetails));
+                  /*console.log("drawCallback: set pSBD: "+JSON.stringify(priorSearchBuilderDetails));*/
                   updateURL();
                 } else {
                 console.log("drawCallback: Search Builder state did not change!");
@@ -1972,35 +1958,35 @@
             initComplete: function () {
               /* Show/hide columns per any URL user preferences */
               var colsChanged = false;
-              //console.log("before loop colVis["+l+"]:"+JSON.stringify(colVis[l]));
+              /*console.log("before loop colVis["+l+"]:"+JSON.stringify(colVis[l]));*/
               var currColVis = this.api().columns().visible();
-              //console.log("before loop currColVis:"+JSON.stringify(currColVis.toArray()));
+              /*console.log("before loop currColVis:"+JSON.stringify(currColVis.toArray()));*/
               for (var i=0; colVis[l]!==undefined && i<colVis[l].length; i++) {
                 if (i==DT_XL) {
                   /* If XL candy is used, need to unhide this column */
                   if ((nonZeroXL === true) || (colVis[l][i] == "1" && currColVis[1] === false)) {
                     this.api().columns(DT_XL).visible(true);
-                    //console.log('Updated Column '+ i +' visibility to true');
+                    /*console.log('Updated Column '+ i +' visibility to true');*/
                     colsChanged = true;
                     continue;
                   }
                 }
                 if (colVis[l][i] == "1" && currColVis[i] === false) {
                   this.api().columns(i).visible(true);
-                  //console.log('Updated Column '+ i +' visibility to true');
+                  /*console.log('Updated Column '+ i +' visibility to true');*/
                   colsChanged = true;
                 } else if (colVis[l][i] == "0" && currColVis[i] === true){
                   this.api().columns(i).visible(false);
-                  //console.log('Updated Column '+ i +' visibility to false');
+                  /*console.log('Updated Column '+ i +' visibility to false');*/
                   colsChanged = true;
                 }
               }
               if (colsChanged === false) {
-                //console.log("colsChanged is still false after loop, checking nonZeroXL for XL col visibility...");
+                /*console.log("colsChanged is still false after loop, checking nonZeroXL for XL col visibility...");*/
                 /* Double check XL candy column visibility */
                 if (nonZeroXL === true && this.api().columns(DT_XL).visible()[0] === false) {
                   this.api().columns(DT_XL).visible(true);
-                  //console.log('Outside loop: Updated Column '+ DT_XL +' visibility to true');
+                  /*console.log('Outside loop: Updated Column '+ DT_XL +' visibility to true');*/
                   colsChanged = true;
                 }
               }
@@ -2041,10 +2027,10 @@
 
         /* Timing gate after generating table */
         if (perfTiming) {T5 = performance.now();}
-        //console.log("Finished building "+tableIDs[l]+" DataTable");
+        /*console.log("Finished building "+tableIDs[l]+" DataTable");*/
 
         /*if (sbSearch) {
-          //console.log("Rebuilding searchBuilder search with: "+JSON.stringify(sbSearch));
+          console.log("Rebuilding searchBuilder search with: "+JSON.stringify(sbSearch));
           dt.searchBuilder.rebuild(sbSearch);
         }*/
 
@@ -2068,9 +2054,7 @@
           if (colVisLock === false && $.fn.dataTable.isDataTable(tableIDs[l])) {
             console.log("Column#"+column+" has changed to "+ (state ? "visible" : "hidden"));   
             updateURL();
-          } else {
-            //console.log("Supressing column-visibility.dt onChange event for Column#"+column+" in tableIDs["+l+"]: "+tableIDs[l]);
-          }
+          } /*else {console.log("Supressing column-visibility.dt onChange event for Column#"+column+" in tableIDs["+l+"]: "+tableIDs[l]);}*/
         } );
 
         /* Enable user click to add IVs to compare */
@@ -2097,9 +2081,9 @@
           var newIndex = userIVs.length-1;
           for (var t=0; t<tableIDs.length; t++) {
             var rowNum = userIVs[newIndex][UIV_RANK][t]-1;
-            //console.log(tableIDs[l]+" onClick: rowNum is now: "+rowNum+" for "+tableIDs[t]);
+            /*console.log(tableIDs[l]+" onClick: rowNum is now: "+rowNum+" for "+tableIDs[t]);*/
             /* Highlight and pin this row in each DataTable */
-            //console.log(tableIDs[l]+" onClick: Calling pinUnpinRow("+tableIDs[t]+", "+rowNum+", "+hiddenSortVal+", true)...");
+            /*console.log(tableIDs[l]+" onClick: Calling pinUnpinRow("+tableIDs[t]+", "+rowNum+", "+hiddenSortVal+", true)...");*/
             pinUnpinRow(tableIDs[t], rowNum, hiddenSortVal, true);
           }
         });
@@ -2138,7 +2122,7 @@
           
           /* Check if we already processed this Filter last time so we only process changes to Filters */
           if ($.isEmptyObject(oldSBD) === false && JSON.stringify(newSBD.criteria[i]) === JSON.stringify(oldSBD.criteria[i])) {
-            //console.log("Skipping processing newSBD:"+JSON.stringify(newSBD.criteria[i])+" as it is identical to oldSBD:"+JSON.stringify(oldSBD.criteria[i]));
+            /*console.log("Skipping processing newSBD:"+JSON.stringify(newSBD.criteria[i])+" as it is identical to oldSBD:"+JSON.stringify(oldSBD.criteria[i]));*/
             continue;
           }
 
@@ -2149,87 +2133,87 @@
             case "Rank":
               sbVals[DT_RANK] = newSBD.criteria[i].value;
               sbConds[DT_RANK] = newSBD.criteria[i].condition;
-              //console.log("Found Rank: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_RANK]="+sbVals[DT_RANK]+", sbConds[DT_RANK]="+sbConds[DT_RANK]);
+              /*console.log("Found Rank: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_RANK]="+sbVals[DT_RANK]+", sbConds[DT_RANK]="+sbConds[DT_RANK]);*/
               break;
             case "Level":
               sbVals[DT_LVL] = newSBD.criteria[i].value;
               sbConds[DT_LVL] = newSBD.criteria[i].condition;
-              //console.log("Found Level: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_LVL]="+sbVals[DT_LVL]+", sbConds[DT_LVL]="+sbConds[DT_LVL]);
+              /*console.log("Found Level: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_LVL]="+sbVals[DT_LVL]+", sbConds[DT_LVL]="+sbConds[DT_LVL]);*/
               break;
             case "CP":
               sbVals[DT_CP] = newSBD.criteria[i].value;
               sbConds[DT_CP] = newSBD.criteria[i].condition;
-              //console.log("Found CP: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_CP]="+sbVals[DT_CP]+", sbConds[DT_CP]="+sbConds[DT_CP]);
+              /*console.log("Found CP: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_CP]="+sbVals[DT_CP]+", sbConds[DT_CP]="+sbConds[DT_CP]);*/
               break;
             case "Minimum Level CP":
               sbVals[DT_ML_CMP] = newSBD.criteria[i].value;
               sbConds[DT_ML_CMP] = newSBD.criteria[i].condition;
-              //console.log("Found Minimum Level CP: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_ML_CMP]="+sbVals[DT_ML_CMP]+", sbConds[DT_ML_CMP]="+sbConds[DT_ML_CMP]);
+              /*console.log("Found Minimum Level CP: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_ML_CMP]="+sbVals[DT_ML_CMP]+", sbConds[DT_ML_CMP]="+sbConds[DT_ML_CMP]);*/
               break;
             case "Attack IV":
               sbVals[DT_AIV] = newSBD.criteria[i].value;
               sbConds[DT_AIV] = newSBD.criteria[i].condition;
-              //console.log("Found Attack IV: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_AIV]="+sbVals[DT_AIV]+", sbConds[DT_AIV]="+sbConds[DT_AIV]);
+              /*console.log("Found Attack IV: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_AIV]="+sbVals[DT_AIV]+", sbConds[DT_AIV]="+sbConds[DT_AIV]);*/
               break;
             case "Defense IV":
               sbVals[DT_DIV] = newSBD.criteria[i].value;
               sbConds[DT_DIV] = newSBD.criteria[i].condition;
-              //console.log("Found Defense IV: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_DIV]="+sbVals[DT_DIV]+", sbConds[DT_DIV]="+sbConds[DT_DIV]);
+              /*console.log("Found Defense IV: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_DIV]="+sbVals[DT_DIV]+", sbConds[DT_DIV]="+sbConds[DT_DIV]);*/
               break;
             case "Stamina  IV":
               sbVals[DT_SIV] = newSBD.criteria[i].value;
               sbConds[DT_SIV] = newSBD.criteria[i].condition;
-              //console.log("Found Stamina  IV: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_SIV]="+sbVals[DT_SIV]+", sbConds[DT_SIV]="+sbConds[DT_SIV]);
+              /*console.log("Found Stamina  IV: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_SIV]="+sbVals[DT_SIV]+", sbConds[DT_SIV]="+sbConds[DT_SIV]);*/
               break;
             case "Stat Prod Perfection (%)":
               sbVals[DT_PERF] = newSBD.criteria[i].value;
               sbConds[DT_PERF] = newSBD.criteria[i].condition;
-              //console.log("Found Stat Prod Perfection (%): "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PERF]="+sbVals[DT_PERF]+", sbConds[DT_PERF]="+sbConds[DT_PERF]);
+              /*console.log("Found Stat Prod Perfection (%): "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PERF]="+sbVals[DT_PERF]+", sbConds[DT_PERF]="+sbConds[DT_PERF]);*/
               break;
             case "XL Candy Cost":
               sbVals[DT_XL] = newSBD.criteria[i].value;
               sbConds[DT_XL] = newSBD.criteria[i].condition;
-              //console.log("Found XL Candy Cost: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_XL]="+sbVals[DT_XL]+", sbConds[DT_XL]="+sbConds[DT_XL]);
+              /*console.log("Found XL Candy Cost: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_XL]="+sbVals[DT_XL]+", sbConds[DT_XL]="+sbConds[DT_XL]);*/
               break;
             case "Stardust Cost":
               sbVals[DT_DUST] = newSBD.criteria[i].value;
               sbConds[DT_DUST] = newSBD.criteria[i].condition;
-              //console.log("Found Stardust Cost: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_DUST]="+sbVals[DT_DUST]+", sbConds[DT_DUST]="+sbConds[DT_DUST]);
+              /*console.log("Found Stardust Cost: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_DUST]="+sbVals[DT_DUST]+", sbConds[DT_DUST]="+sbConds[DT_DUST]);*/
               break;
             case "CMP vs. Rank1 (W/L/T)":
               sbVals[DT_R1_CMP] = newSBD.criteria[i].value;
               sbConds[DT_R1_CMP] = newSBD.criteria[i].condition;
-              //console.log("Found CMP vs. Rank1 (W/L/T): "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_R1_CMP]="+sbVals[DT_R1_CMP]+", sbConds[DT_R1_CMP]="+sbConds[DT_R1_CMP]);
+              /*console.log("Found CMP vs. Rank1 (W/L/T): "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_R1_CMP]="+sbVals[DT_R1_CMP]+", sbConds[DT_R1_CMP]="+sbConds[DT_R1_CMP]);*/
               break;
             case "CMP vs. All (Win %)":
               sbVals[DT_ALL_CMP] = newSBD.criteria[i].value;
               sbConds[DT_ALL_CMP] = newSBD.criteria[i].condition;
-              //console.log("Found CMP vs. All (Win %): "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_ALL_CMP]="+sbVals[DT_ALL_CMP]+", sbConds[DT_ALL_CMP]="+sbConds[DT_ALL_CMP]);
+              /*console.log("Found CMP vs. All (Win %): "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_ALL_CMP]="+sbVals[DT_ALL_CMP]+", sbConds[DT_ALL_CMP]="+sbConds[DT_ALL_CMP]);*/
               break;
             case "Attack Stat":
               sbVals[DT_PVP_ATK] = newSBD.criteria[i].value;
               sbConds[DT_PVP_ATK] = newSBD.criteria[i].condition;
-              //console.log("Found Attack Stat: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PVP_ATK]="+sbVals[DT_PVP_ATK]+", sbConds[DT_PVP_ATK]="+sbConds[DT_PVP_ATK]);
+              /*console.log("Found Attack Stat: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PVP_ATK]="+sbVals[DT_PVP_ATK]+", sbConds[DT_PVP_ATK]="+sbConds[DT_PVP_ATK]);*/
               break;
             case "Defense Stat":
               sbVals[DT_PVP_DEF] = newSBD.criteria[i].value;
               sbConds[DT_PVP_DEF] = newSBD.criteria[i].condition;
-              //console.log("Found Defense Stat: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PVP_DEF]="+sbVals[DT_PVP_DEF]+", sbConds[DT_PVP_DEF]="+sbConds[DT_PVP_DEF]);
+              /*console.log("Found Defense Stat: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PVP_DEF]="+sbVals[DT_PVP_DEF]+", sbConds[DT_PVP_DEF]="+sbConds[DT_PVP_DEF]);*/
               break;
             case "HP Stat":
               sbVals[DT_PVP_HP] = newSBD.criteria[i].value;
               sbConds[DT_PVP_HP] = newSBD.criteria[i].condition;
-              //console.log("Found HP Stat: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PVP_HP]="+sbVals[DT_PVP_HP]+", sbConds[DT_PVP_HP]="+sbConds[DT_PVP_HP]);
+              /*console.log("Found HP Stat: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_PVP_HP]="+sbVals[DT_PVP_HP]+", sbConds[DT_PVP_HP]="+sbConds[DT_PVP_HP]);*/
               break;
             case "Stat Product":
               sbVals[DT_STAT_PROD] = newSBD.criteria[i].value;
               sbConds[DT_STAT_PROD] = newSBD.criteria[i].condition;
-              //console.log("Found Stat Product: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_STAT_PROD]="+sbVals[DT_STAT_PROD]+", sbConds[DT_STAT_PROD]="+sbConds[DT_STAT_PROD]);
+              /*console.log("Found Stat Product: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_STAT_PROD]="+sbVals[DT_STAT_PROD]+", sbConds[DT_STAT_PROD]="+sbConds[DT_STAT_PROD]);*/
               break;
             case "Bulk Product":
               sbVals[DT_BULK_PROD] = newSBD.criteria[i].value;
               sbConds[DT_BULK_PROD] = newSBD.criteria[i].condition;
-              //console.log("Found Bulk Product: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_BULK_PROD]="+sbVals[DT_BULK_PROD]+", sbConds[DT_BULK_PROD]="+sbConds[DT_BULK_PROD]);
+              /*console.log("Found Bulk Product: "+JSON.stringify(newSBD.criteria[i])+", updated sbVals[DT_BULK_PROD]="+sbVals[DT_BULK_PROD]+", sbConds[DT_BULK_PROD]="+sbConds[DT_BULK_PROD]);*/
               break;
             default:
               console.error("Did not recognize newSBD.criteria["+i+"]: "+JSON.stringify(newSBD.criteria[i]));
@@ -2246,13 +2230,13 @@
         var T0;
         if (perfTiming) {T0 = performance.now();}
 
-        //console.log("addToCompare: received rank:"+rank+", level:"+level+", statProd:"+statProd+", hiddenSortRank:"+hiddenSortRank);
+        /*console.log("addToCompare: received rank:"+rank+", level:"+level+", statProd:"+statProd+", hiddenSortRank:"+hiddenSortRank);*/
         
         /* Account for mlCP column being hidden or not */
         var offset = 3;
         const dt = $(tableID).DataTable();
         if (dt.column(DT_ML_CMP).visible() === true) {offset+=1;}
-        //console.log("addToCompare: offset computed as: "+offset+", because mlCPheader is visible ?="+dt.column(DT_ML_CMP).visible());
+        /*console.log("addToCompare: offset computed as: "+offset+", because mlCPheader is visible ?="+dt.column(DT_ML_CMP).visible());*/
 
         /* Get the IVs we're trying to add */
         var row = window.event.target.parentNode;
@@ -2269,12 +2253,10 @@
             break;
           }
         }
-
-        //console.log("addToCompare: uniqueIVs:"+uniqueIVs);
         
         if (uniqueIVs) {
           newInputTableRow(atk, def, sta, false, false, rank, level, statProd, hiddenSortRank);
-          //console.log("addToCompare: after newInputTableRow:"+JSON.stringify(userIVs));
+          /*console.log("addToCompare: after newInputTableRow:"+JSON.stringify(userIVs));*/
         } else {
           console.log(atk+"/"+def+"/"+sta+" already exists in comparison IVs, not adding to compare");
           if (document.getElementById("feedbackBox").innerHTML.includes(atk+"/"+def+"/"+sta+" already exists in comparison IVs")) {
@@ -2931,7 +2913,7 @@
             }
           }
         }
-        //console.log("newInputTableRow: updated rankArray:"+JSON.stringify(rankArray)+", spArray:"+JSON.stringify(spArray)+", lvlArray:"+JSON.stringify(lvlArray));
+        /*console.log("newInputTableRow: updated rankArray:"+JSON.stringify(rankArray)+", spArray:"+JSON.stringify(spArray)+", lvlArray:"+JSON.stringify(lvlArray));*/
         
         /* Determine if we need to add a new row, */
         /* Or overwrite existing default last row */
@@ -2953,7 +2935,7 @@
           /* This is a default row, insert default values */
           userIVs.push([atk,def,sta,sha,pure,rankArray,spArray,lvlArray,hiddenSortRank]);
         }
-        //console.log("newInputTableRow: Setting inputTable DOM row["+newRowDOMoffset+"] to : "+atk+"/"+def+"/"+sta+", "+sha);
+        /*console.log("newInputTableRow: Setting inputTable DOM row["+newRowDOMoffset+"] to : "+atk+"/"+def+"/"+sta+", "+sha);*/
         setInputTableRow(newRowDOMoffset, atk, def, sta, sha, pure);
         console.log("newInputTableRow: All done, userIVs now: "+JSON.stringify(userIVs));
         document.getElementById("feedbackBox").innerHTML = "";
@@ -3006,14 +2988,14 @@
           if (removeHighlight) {
             /* Remove CSS highlighting for this row */
             var classList = table.row(rowNum).nodes().to$().attr("class").split(/\s+/);
-            //console.log("pinUnpinRow:"+tableID+": Attempting to remove all highlight Classes from row: "+rowNum+", classList is: "+JSON.stringify(table.row(rowNum).nodes().to$().attr("class").split(/\s+/)));
+            /*console.log("pinUnpinRow:"+tableID+": Attempting to remove all highlight Classes from row: "+rowNum+", classList is: "+JSON.stringify(table.row(rowNum).nodes().to$().attr("class").split(/\s+/)));*/
             for (var i=0; i<classList.length; i++) {
               /* Loop through and remove one by one to ensure all are removed successfully */
               if (classList[i] == "good" || classList[i] == "ok" || classList[i] == "rubbish") {
                 table.row(rowNum).nodes().to$().removeClass(classList[i]);
               }
             }
-            //console.log("pinUnpinRow:"+tableID+": removed all highlights from row: "+rowNum+", classList now: "+JSON.stringify(table.row(rowNum).nodes().to$().attr("class").split(/\s+/)));
+            /*console.log("pinUnpinRow:"+tableID+": removed all highlights from row: "+rowNum+", classList now: "+JSON.stringify(table.row(rowNum).nodes().to$().attr("class").split(/\s+/)));*/
           }
         }
         /* Redraw DataTable to show new pins and highlights */
@@ -3044,7 +3026,7 @@
         if (perfTiming) {T0 = performance.now();}
 
         var rowNum;
-        //console.log("removeInputTableRow: starting timing, userIVs:"+JSON.stringify(userIVs));
+        /*console.log("removeInputTableRow: starting timing, userIVs:"+JSON.stringify(userIVs));*/
         /* Prevent user from deleting the first and only row */
         if (userIVs.length === 1) {
           if (document.getElementById("aIV[0]").value == "") {
@@ -3054,7 +3036,7 @@
             if (perfTiming) {stopTiming(T0, "removeInputTableRow");}
             return;
           } else {
-            //console.log("removeInputTableRow: userIVs[0] before removal loop: "+JSON.stringify(userIVs[0]));
+            /*console.log("removeInputTableRow: userIVs[0] before removal loop: "+JSON.stringify(userIVs[0]));*/
             rowNum = 0;
             /* Loop through all DataTables to remove this user IV row */
             for (var l=0; l<leagueName.length; l++) {
@@ -3071,10 +3053,10 @@
               }
             }
             /* Reset this row's state back to defaults (-/15/15) */
-            //console.log("removeInputTableRow: Resetting first row back to default values (-/15/15), leagueName.length:"+leagueName.length);
+            /*console.log("removeInputTableRow: Resetting first row back to default values (-/15/15), leagueName.length:"+leagueName.length);*/
             userIVs[0] = ["", 15, 15, false, false, [], [], [], 0];
             setInputTableRow(rowNum, "", 15, 15, false, false);
-            //console.log("removeInputTableRow: all done, userIVs:"+JSON.stringify(userIVs));
+            /*console.log("removeInputTableRow: all done, userIVs:"+JSON.stringify(userIVs));*/
             if (perfTiming) {stopTiming(T0, "removeInputTableRow");}
             return;
           }
@@ -3134,7 +3116,7 @@
           for (var i=0; i<userIVs.length; i++)
           {
             if (i>=rowNum) {
-              //console.log("removeInputTableRow: Fixing offset for i:"+i);
+              /*console.log("removeInputTableRow: Fixing offset for i:"+i);*/
               document.getElementById("aIV["+i+"]").id = "aIV["+(i-1)+"]";
               document.getElementById("dIV["+i+"]").id = "dIV["+(i-1)+"]";
               document.getElementById("sIV["+i+"]").id = "sIV["+(i-1)+"]";
@@ -3142,9 +3124,9 @@
               document.getElementById("pure["+i+"]").id = "pure["+(i-1)+"]";
             }
           }
-          //console.log("removeInputTableRow: userIVs before splices: "+JSON.stringify(userIVs));
+          /*console.log("removeInputTableRow: userIVs before splices: "+JSON.stringify(userIVs));*/
           userIVs.splice(rowNum, 1);
-          //console.log("removeInputTableRow: userIVs after splices: "+JSON.stringify(userIVs));
+          /*console.log("removeInputTableRow: userIVs after splices: "+JSON.stringify(userIVs));*/
           tr.parentNode.removeChild(tr);
         }
 
