@@ -1,0 +1,61 @@
+name: GitHub Actions Diff
+run-name: Regularly Scheduled GitHub Actions 🚀 Diff Workflow
+on:
+  push:
+  schedule:
+    - cron: '39 9 * * *'
+    - cron: '39 9 * * *'
+jobs:
+  Check-for-diffs-ads-txt:
+    runs-on: ubuntu-latest
+    outputs:
+      diffOut: ${{ steps.diff-adstxt-files.outputs.DIFF_OUT }}
+    steps:
+      - run: echo "🎉 The job was automatically triggered by scheduled cron event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 Attempting to diff url contents"
+      - name: Diff
+        #continue-on-error: true
+        id: diff-adstxt-files
+        # https://trstringer.com/github-actions-multiline-strings/
+        run: |
+          DIFF_OUT=$(cat << EOF
+          `diff --suppress-common-lines <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/test_ads.txt))`
+          EOF
+          )
+          echo "DIFF_OUT<<EOF" >> $GITHUB_OUTPUT
+          echo "$DIFF_OUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          diff --suppress-common-lines <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/test_ads.txt))
+      - run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
+      - run: echo "🍏 This job's status is ${{ job.status }}." #due to continue-on-error=true."
+  Update-ads-txt-after-failed-diff:
+    if: failure()
+    needs: Check-for-diffs-ads-txt
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - run: echo "The diff failed, differences are below."
+      - run: echo "${{needs.Check-for-diffs-ads-txt.outputs.diffOut}}"
+      - run: echo "Proceeding to replace test_ads.txt..."
+      # https://stackoverflow.com/a/58393457
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get Updated ads.txt file via curl
+        run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > test_ads.txt
+      - name: Commit test_ads.txt using git commit
+        run: |
+          git config --global user.name 'DeathbyToast'
+          git config --global user.email 'alex.gronbach@gmail.com'
+          git add test_ads.txt
+          git commit -m "Automated test_ads.txt update"
+          git push origin
+      - name: Create PR using gh pr create
+        run: gh pr create --title "Automated test_ads.txt update" --body "Ensuring test_ads.txt is up to date" --base "gh-pages" --head "gh-pages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
