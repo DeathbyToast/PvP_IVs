@@ -18,15 +18,18 @@ jobs:
         #continue-on-error: true
         id: diff-adstxt-files
         # https://trstringer.com/github-actions-multiline-strings/
+        # Replace ads.txt with test_ads.txt on both diff calls below to get this step to fail
+        # `diff --suppress-common-lines <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/test_ads.txt))`
+        # diff --suppress-common-lines <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/test_ads.txt))
         run: |
           DIFF_OUT=$(cat << EOF
-          `diff --suppress-common-lines <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/test_ads.txt))`
+          `diff --suppress-common-lines <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))`
           EOF
           )
           echo "DIFF_OUT<<EOF" >> $GITHUB_OUTPUT
           echo "$DIFF_OUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          diff --suppress-common-lines <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/test_ads.txt))
+          diff --suppress-common-lines <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))
       - run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
       - run: echo "🍏 This job's status is ${{ job.status }}." #due to continue-on-error=true."
   Update-ads-txt-after-failed-diff:
@@ -44,7 +47,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: gh-pages
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          #repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Get Updated ads.txt file via curl
         run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > test_ads.txt
       - name: Commit test_ads.txt using git commit
