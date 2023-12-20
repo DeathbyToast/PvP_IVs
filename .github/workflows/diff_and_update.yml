@@ -39,23 +39,23 @@ jobs:
     steps:
       - run: echo "The diff failed, differences are below."
       - run: echo "${{needs.Check-for-diffs-ads-txt.outputs.diffOut}}"
-      - run: echo "Proceeding to replace ads.txt..."
+      #- run: echo "Proceeding to replace ads.txt..."
       # https://stackoverflow.com/a/58393457
-      - uses: actions/checkout@v3
-        with:
-          ref: gh-pages
+      #- uses: actions/checkout@v3
+      #  with:
+      #    ref: gh-pages
           #repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get Updated ads.txt file via curl
-        run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
-      - name: Commit ads.txt using git commit
-        run: |
-          git config --global user.name 'DeathbyToast'
-          git config --global user.email 'alex.gronbach@gmail.com'
-          git add ads.txt
-          git commit -m "Automated ads.txt update"
-          git push origin
-      - name: Create PR using gh pr create
-        run: gh pr create --title "Automated ads.txt update" --body "Ensuring ads.txt is up to date" --base "gh-pages" --head "gh-pages"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #- name: Get Updated ads.txt file via curl
+      #  run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
+      #- name: Commit ads.txt using git commit
+      #  run: |
+      #    git config --global user.name 'DeathbyToast'
+      #    git config --global user.email 'alex.gronbach@gmail.com'
+      #    git add ads.txt
+      #    git commit -m "Automated ads.txt update"
+      #    git push origin
+      #- name: Create PR using gh pr create
+      #  run: gh pr create --title "Automated ads.txt update" --body "Ensuring ads.txt is up to date" --base "gh-pages" --head "gh-pages"
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
