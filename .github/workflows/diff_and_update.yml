@@ -3,6 +3,7 @@ run-name: Regularly Scheduled GitHub Actions 🚀 Diff Workflow
 on:
   push:
   schedule:
+    #Run at :39 9AM every day of every month
     - cron: '39 9 * * *'
     - cron: '39 9 * * *'
 jobs:
