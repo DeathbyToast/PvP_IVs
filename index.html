@@ -334,7 +334,7 @@
         var floor = document.getElementById('floor');
         
         if (shadowLegend.includes(pokeName) && shdw.indexOf(true) > -1) {
-          console.log("Detected Shadow Legendary:" +pokeName);
+          console.log("adjustFloors: Detected Shadow Legendary:" +pokeName);
           /*set min IVs to 10 and min Level to 20*/
           if (minLvl.value/1 > 8) {
             minLvl.value = 8;
@@ -347,7 +347,7 @@
         }
         
         if (boxRewrd.includes(pokeName)) {
-          console.log("Detected box reward mon:" +pokeName);
+          console.log("adjustFloors: Detected box reward mon:" +pokeName);
           /*set min IVs to 1 and min Level to 15*/
           if (minLvl.value/1 < 15) {
             minLvl.value = 15;
@@ -360,7 +360,7 @@
         }
         
         if (raidOnly.includes(pokeName)) {
-          console.log("Detected Raid+Trade mon:" +pokeName);
+          console.log("adjustFloors: Detected Raid+Trade mon:" +pokeName);
           /*set min IVs to 1 and min Level to 20*/
           if (minLvl.value/1 < 20) {
             minLvl.value = 20;
@@ -368,12 +368,13 @@
           }
           floor.value = 1;
           ivMod = true;
+          console.log("adjustFloors: Adjusted floors for Detected Raid+Trade mon:" +pokeName+", mnlMod="+mnlMod+", ivMod="+ivMod);
           if (perfTiming) {stopTiming(T0, "adjustFloors");}
           return;
         }
         
         if (boxMyth.includes(pokeName)) {
-          console.log("Detected Mythical mon:" +pokeName);
+          console.log("adjustFloors: Detected Mythical mon:" +pokeName);
           /*set min IVs to 10 and min Level to 15*/
           if (minLvl.value/1 < 15) {
             minLvl.value = 15;
@@ -386,7 +387,7 @@
         }
         
         if (raidMyth.includes(pokeName)) {
-          console.log("Detected Raid no Trade mon:" +pokeName);
+          console.log("adjustFloors: Detected Raid no Trade mon:" +pokeName);
           /*set min IVs to 10 and min Level to 20*/
           if (minLvl.value/1 < 20) {
             minLvl.value = 20;
@@ -440,31 +441,33 @@
         mA = 0; mD = 0; mHP = 0; filterMod = false; lastLeague = undefined;
         
         /*reset Min Level if we adjusted it previously*/
-        if (mnlMod) {
-          if ((minLvl.value === 8) || (minLvl.value === 15) || (minLvl.value === 20)) {
+        if (mnlMod==true) {
+          if ((minLvl.value == 8) || (minLvl.value == 15) || (minLvl.value == 20)) {
             /* Check if User has Saved Setting for minLvl before we reset */
-            if (localStorage.minLvl === undefined) {
+            if (localStorage.minLvl == undefined) {
               /* User has no preference for us to load, reset to default */
               minLvl.value = 1;
+              console.log("resetMonState: Reset minLvl to default: "+minLvl.value);
             } else {
-              document.getElementById("minLvl").value = localStorage.minLvl;
-              console.log("Successfully reset Min Level to User's Preference of "+localStorage.minLvl);
+              minLvl.value = localStorage.minLvl;
+              console.log("resetMonState: Reset minLvl to User's Preference: "+localStorage.minLvl);
             }
-          }
+          } else {console.log("resetMonState: No update needed, minLvl.value is not 8,15, or 20. User changed to: "+minLvl.value);}
           mnlMod = false;
         }
         /*reset IV Floor if we adjusted it previously*/
-        if (ivMod) {
-          if ((floor.value === 1) || (floor.value === 6) || (floor.value === 10)) {
+        if (ivMod==true) {
+          if ((floor.value == 1) || (floor.value == 6) || (floor.value == 10)) {
             /* Check if User has Saved Setting for floor before we reset */
-            if (localStorage.floor === undefined) {
+            if (localStorage.floor == undefined) {
               /* User has no preference for us to load, reset to default */
               floor.value = 0;
+              console.log("resetMonState: Reset IV floor to default: "+floor.value);
             } else {
-              document.getElementById("floor").value = localStorage.floor;
-              console.log("Successfully reset Min Level to User's Preference of "+localStorage.floor);
+              floor.value = localStorage.floor;
+              console.log("resetMonState: Reset IV Floor to User's Preference: "+localStorage.floor);
             }
-          }
+          } else {console.log("resetMonState: No update needed, floor.value is not 1,6, or 10. User changed to: "+floor.value);}
           ivMod = false;
         }
         if (perfTiming) {stopTiming(T0, "resetMonState");}
@@ -836,7 +839,7 @@
         }
         
         if (mon) { /* This is a new input */
-          /*console.log("New mon detected, resetting monState, mon:"+mon);*/
+          console.log("main: New mon detected, resetting monState, mon:"+mon);
           resetMonState();
           adjustFloors(mon);
         }
@@ -872,7 +875,7 @@
         /*Ensure we get the info we need to continue*/
         if (monInfo === "")
         {
-          console.error("Cannot find monInfo, returning");
+          console.error("main: Cannot find monInfo, returning");
           document.getElementById('instructionsBox').innerHTML = "<p><i>ERROR: Cannot find monInfo, please try again.<br>If this issue persists, please <a href='https://discord.gg/UD4Temq'>contact us on Discord</i></p>";
           if (perfTiming) {stopTiming(T0, "main");}
           return false;
@@ -892,7 +895,7 @@
           /*nothing to output, print Error and exit*/
           document.getElementById('instructionsBox').innerHTML = "<p><i>No eligible "+leagueName+" IVs found!<br>Please check the Min Level in Advanced and try again</i></p><br />";
           document.getElementById('feedbackBox').innerHTML = "";
-          console.log("No ranks generated!");
+          console.log("main: No ranks generated!");
           if (perfTiming) {stopTiming(T0, "main");}
           return false;
         }
