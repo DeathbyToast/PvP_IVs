@@ -16,7 +16,6 @@ jobs:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 Attempting to diff url contents"
       - name: Diff
-        #continue-on-error: true
         id: diff-adstxt-files
         # https://trstringer.com/github-actions-multiline-strings/
         run: |
@@ -29,14 +28,14 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
           diff --suppress-common-lines <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))
       - run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
-      - run: echo "🍏 This job's status is ${{ job.status }}." #due to continue-on-error=true."
+      - run: echo "🍏 This job's status is ${{ job.status }}."
   Update-ads-txt-after-failed-diff:
     if: failure()
     needs: Check-for-diffs-ads-txt
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
+    #permissions:
+      #contents: write
+      #pull-requests: write
     steps:
       - run: echo "The diff failed, differences are below."
       - run: echo "${{needs.Check-for-diffs-ads-txt.outputs.diffOut}}"
