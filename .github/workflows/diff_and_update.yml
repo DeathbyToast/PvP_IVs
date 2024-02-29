@@ -5,7 +5,7 @@ on:
   schedule:
     #Run at :39 9AM every day of every month
     - cron: '39 9 * * *'
-    - cron: '39 9 * * *'
+
 jobs:
   Check-for-diffs-ads-txt:
     runs-on: ubuntu-latest
