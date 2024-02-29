@@ -20,13 +20,13 @@ jobs:
         # https://trstringer.com/github-actions-multiline-strings/
         run: |
           DIFF_OUT=$(cat << EOF
-          `diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads_test.txt))`
+          `diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))`
           EOF
           )
           echo "DIFF_OUT<<EOF" >> $GITHUB_OUTPUT
           echo "$DIFF_OUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads_test.txt))
+          diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))
       - run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
       - run: echo "🍏 This job's status is ${{ job.status }}."
   Update-ads-txt-after-failed-diff:
