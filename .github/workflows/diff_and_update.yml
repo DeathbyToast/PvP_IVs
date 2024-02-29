@@ -1,3 +1,8 @@
+# If this diff fails, update ads.txt on GitHub by going to
+# https://config.playwire.com/dyn_ads/1025030/74482/ads.txt
+# Copying the contents of that file and pasting (ctrl+v) to
+# preserve the newline at the end of the file successfully.
+
 name: GitHub Actions Diff
 run-name: Regularly Scheduled GitHub Actions 🚀 Diff Workflow
 on:
