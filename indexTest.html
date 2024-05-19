@@ -2713,8 +2713,7 @@
       
       function stardust(startlvl, endlvl, shdw, pure) {
         /* Returns calculated stardust power-up costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier*/
-        var T0, dust = 0;
-        if (perfTiming) {T0 = performance.now();}
+        var dust = 0;
 
         if (pure && startlvl/1 < 25) {
           /* Purification sets lvl to 25 */
@@ -2775,7 +2774,6 @@
         if (dust > 1000) {
           dust = Math.round(dust/100) / 10 + "K";
         }
-        if (perfTiming) {stopTiming(T0, "stardust");}
         return dust;
       }
 
