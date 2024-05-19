@@ -18,6 +18,7 @@ jobs:
       - name: Diff
         id: diff-adstxt-files
         # https://trstringer.com/github-actions-multiline-strings/
+        # TO MANUALLY UPDATE FILE, VISIT PLAYWIRE URL BELOW AND CTRL+C, THEN CTRL+V INTO ads.txt
         run: |
           DIFF_OUT=$(cat << EOF
           `diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))`
@@ -46,6 +47,7 @@ jobs:
       #    ref: gh-pages
           #repo-token: ${{ secrets.GITHUB_TOKEN }}
       #- name: Get Updated ads.txt file via curl
+      # TO MANUALLY UPDATE FILE, VISIT PLAYWIRE URL BELOW AND CTRL+C, THEN CTRL+V INTO ads.txt
       #  run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
       #- name: Commit ads.txt using git commit
       #  run: |
