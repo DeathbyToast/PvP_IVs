@@ -727,7 +727,7 @@
                   html+="<td>"+candy+"</td>";
                   if (!nonZeroXL && candy > 0) {nonZeroXL = true;} /*XL*/
                 }
-                if (document.getElementById("dust").checked) {html+= "<td>"+stardust(minLvl/1, ranks[keys[i]][j].L/1, 0, false)+"</td>";} /*Stardust*/
+                if (document.getElementById("dust").checked) {html+= "<td>"+stardust(minLvl/1, ranks[keys[i]][j].L/1, false)+"</td>";} /*Stardust*/
                 if (document.getElementById("cmp").checked) {
                   html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
                   html+="<td>"+ranks[keys[i]][j].IVs.cmp+"%"+"</td>"; /*CMP Wins*/
@@ -1696,7 +1696,7 @@
                 html+=shdw ? "<td style='color:purple'>" : "<td>";html+=XLcandy(ranks[keys[i]][j].L/1 - 40, shdw)+"</td>";
               }
               if (document.getElementById("dust").checked) {
-                html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, 0,shdw)+"</td>";
+                html+= shdw ? "<td style='color:purple'>" : "<td>";html+=stardust(document.getElementById('minLvl').value/1, ranks[keys[i]][j].L/1, shdw)+"</td>";
               }
               if (!evo && document.getElementById("cmp").checked) {
                 html+="<td>"+ranks[keys[i]][j].IVs.R1+"</td>"; /*R1 CMP*/
@@ -1806,9 +1806,9 @@
         }
       }
       
-      function stardust(startlvl, endlvl, totaldust, shdw) {
+      function stardust(startlvl, endlvl, shdw) {
         /* Returns calculated stardust power-up costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier*/
-        var T0;
+        var T0, dust = 0;
         if (perfTiming) {T0 = performance.now();}
         
         const levelCosts = [
@@ -1844,23 +1844,23 @@
           /* Collapse power up costs instead of going through full levelCosts ranges */
           if (currentLevelRange.min == startlvl && currentLevelRange.max < endlvl) {
             /* Increment by four half-level power ups */
-            totaldust += 4 * currentLevelRange.cost;
+            dust += 4 * currentLevelRange.cost;
             startlvl += 2; /* (4 * 0.5) */ 
           } else {
             /* Increment by one half-level power up */
-            totaldust += currentLevelRange.cost;
+            dust += currentLevelRange.cost;
             startlvl += 0.5; 
           }
         }
         /* Adjust for shadow power up penalty */
         if (shdw) {
-          totaldust = totaldust*1.2;
+          dust = dust*1.2;
         }
-        if (totaldust > 1000) {
-          totaldust = Math.round(totaldust/100) / 10 + "K";
+        if (dust > 1000) {
+          dust = Math.round(dust/100) / 10 + "K";
         }
         if (perfTiming) {stopTiming(T0, "stardust");}
-        return totaldust;
+        return dust;
       }
       
       function validTyroEvo(aIV, dIV, sIV, evo) {
