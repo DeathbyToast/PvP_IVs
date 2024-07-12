@@ -1,9 +1,9 @@
-var boxRewrd = ["Articuno","Zapdos","Moltres","Lugia","Ho_Oh","Regirock","Regice","Registeel","Latias","Latios","Kyogre","Groudon","Rayquaza","Regigigas","Cresselia","Nihilego","Buzzwole","Pheromosa","Xurkitree","Guzzlord"];
+var boxRewrd = ["Articuno","Zapdos","Moltres","Lugia","Ho_Oh","Regirock","Regice","Registeel","Latias","Latios","Kyogre","Groudon","Rayquaza","Regigigas","Cresselia","Nihilego","Buzzwole","Pheromosa","Xurkitree","Guzzlord","Blacephalon","Celesteela","Kartana","Stakataka"];
 /*Raikou, Entei, and Suicune wild spawned at Johto Fest 2022, Uxie,Mesprit,Azelf are wild-spawning legendaries and Meltan,Melmetal are wild-spawning mythicals*/
 var raidOnly = ["Dialga","Palkia","Heatran","Giratina_Altered","Cobalion","Terrakion","Virizion","Tornadus_Incarnate","Tornadus_Therian","Thundurus_Incarnate","Thundurus_Therian","Reshiram","Zekrom","Landorus_Incarnate","Landorus_Therian","Kyurem","Kyurem_Black","Kyurem_White","Xerneas","Yveltal","Zygarde_Ten_Percent","Zygarde_Fifty_Percent","Zygarde_Complete","Type_Null","Silvally","Tapu_Koko","Tapu_Lele","Tapu_Bulu","Tapu_Fini","Cosmog","Cosmoem","Solgaleo","Lunala","Necrozma","Necrozma_Dusk_Mane","Necrozma_Dawn_Wings","Ultra_Necrozma","Zacian_Hero_of_Many_Battles","Zacian_Crowned_Sword","Zamazenta_Hero_of_Many_Battles","Zamazenta_Crowned_Sword","Eternatus","Kubfu","Urshifu","Regieleki","Regidrago","Glastrier","Spectrier","Calyrex","Ice_Rider_Calyrex","Shadow_Rider_Calyrex","Enamorus","Enamorus_Therian","Ting_Lu","Chien_Pao","Wo_Chien","Chi_Yu","Koraidon","Miraidon"];
 var boxMyth = ["Mew","Celebi","Jirachi","Phione","Manaphy","Shaymin_Land","Shaymin_Sky","Arceus","Victini","Keldeo","Meloetta_Aria","Meloetta_Pirouette","Diancie","Mega_Diancie","Hoopa_Confined","Hoopa_Unbound","Volcanion","Magearna","Marshadow","Zeraora","Zarude"];
 var raidMyth = ["Deoxys","Deoxys_Attack","Deoxys_Defense","Deoxys_Speed","Darkrai","Genesect"];
-var shadowLegend = ["Articuno","Zapdos","Moltres","Mewtwo","Raikou","Entei","Suicune","Lugia","Ho_Oh"];
+var shadowLegend = ["Articuno","Zapdos","Moltres","Mewtwo","Raikou","Entei","Suicune","Lugia","Ho_Oh","Latias","Latios","Kyogre","Groudon"];
 
 /* Stats pulled from Game Master file and https://docs.google.com/spreadsheets/d/1QDk6pGO6hbh3GrdeJp_0bx-xVMiG0zYAfpWZUV7ZaME/edit#gid=1585833322 */
 var pokeListObj = {
