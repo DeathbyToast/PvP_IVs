@@ -2713,7 +2713,8 @@
       
       function stardust(startlvl, endlvl, shdw, pure) {
         /* Returns calculated stardust power-up costs based on https://bulbapedia.bulbagarden.net/wiki/Power_Up#CP_multiplier*/
-        var totaldust = 0;
+        var dust = 0;
+
         if (pure && startlvl/1 < 25) {
           /* Purification sets lvl to 25 */
           startlvl = 25;
@@ -2722,99 +2723,60 @@
             return false;
           }
         }
+        
+        const levelCosts = [
+        { min: 1, max: 2.5,   cost: 200 },   /* Level 1-2.5   */
+        { min: 3, max: 4.5,   cost: 400 },   /* Level 3-4.5   */
+        { min: 5, max: 6.5,   cost: 600 },   /* Level 5-6.5   */
+        { min: 7, max: 8.5,   cost: 800 },   /* Level 7-8.5   */
+        { min: 9, max: 10.5,  cost: 1000 },  /* Level 9-10.5  */
+        { min: 11, max: 12.5, cost: 1300 },  /* Level 11-12.5 */
+        { min: 13, max: 14.5, cost: 1600 },  /* Level 13-14.5 */
+        { min: 15, max: 16.5, cost: 1900 },  /* Level 15-16.5 */
+        { min: 17, max: 18.5, cost: 2200 },  /* Level 17-18.5 */
+        { min: 19, max: 20.5, cost: 2500 },  /* Level 19-20.5 */
+        { min: 21, max: 22.5, cost: 3000 },  /* Level 21-22.5 */
+        { min: 23, max: 24.5, cost: 3500 },  /* Level 23-24.5 */
+        { min: 25, max: 26.5, cost: 4000 },  /* Level 25-26.5 */
+        { min: 27, max: 28.5, cost: 4500 },  /* Level 27-28.5 */
+        { min: 29, max: 30.5, cost: 5000 },  /* Level 29-30.5 */
+        { min: 31, max: 32.5, cost: 6000 },  /* Level 31-32.5 */
+        { min: 33, max: 34.5, cost: 7000 },  /* Level 33-34.5 */
+        { min: 35, max: 36.5, cost: 8000 },  /* Level 35-36.5 */
+        { min: 37, max: 38.5, cost: 9000 },  /* Level 37-38.5 */
+        { min: 39, max: 40.5, cost: 10000 }, /* Level 39-40.5 */
+        { min: 41, max: 42.5, cost: 11000 }, /* Level 41-42.5 */
+        { min: 43, max: 44.5, cost: 12000 }, /* Level 43-44.5 */
+        { min: 45, max: 46.5, cost: 13000 }, /* Level 45-46.5 */
+        { min: 47, max: 48.5, cost: 14000 }, /* Level 47-48.5 */
+        { min: 49, max: 49.5, cost: 15000 }, /* Level 49-49.5 */
+        ]
+
         while (startlvl < endlvl) {
-          switch (startlvl) {
-            case 1:
-            case 2:
-              startlvl+=1;totaldust+=400;break;
-            case 3:
-            case 4:
-              startlvl+=1;totaldust+=800;break;
-            case 5:
-            case 6:
-              startlvl+=1;totaldust+=1200;break;
-            case 7:
-            case 8:
-              startlvl+=1;totaldust+=1600;break;
-            case 9:
-            case 10:
-              startlvl+=1;totaldust+=2000;break;
-            case 11:
-            case 12:
-              startlvl+=1;totaldust+=2600;break;
-            case 13:
-            case 14:
-              startlvl+=1;totaldust+=3200;break;
-            case 15:
-            case 16:
-              startlvl+=1;totaldust+=3800;break;
-            case 17:
-            case 18:
-              startlvl+=1;totaldust+=4400;break;
-            case 19:
-            case 20:
-              startlvl+=1;totaldust+=5000;break;
-            case 21:
-            case 22:
-              startlvl+=1;totaldust+=6000;break;
-            case 23:
-            case 24:
-              startlvl+=1;totaldust+=7000;break;
-            case 25:
-            case 26:
-              startlvl+=1;totaldust+=8000;break;
-            case 27:
-            case 28:
-              startlvl+=1;totaldust+=9000;break;
-            case 29:
-            case 30:
-              startlvl+=1;totaldust+=10000;break;
-            case 31:
-            case 32:
-              startlvl+=1;totaldust+=12000;break;
-            case 33:
-            case 34:
-              startlvl+=1;totaldust+=14000;break;
-            case 35:
-            case 36:
-              startlvl+=1;totaldust+=16000;break;
-            case 37:
-            case 38:
-              startlvl+=1;totaldust+=18000;break;
-            case 39:
-            case 40:
-              startlvl+=1;totaldust+=20000;break;
-            case 41:
-            case 42:
-              startlvl+=1;totaldust+=22000;break;
-            case 43:
-            case 44:
-              startlvl+=1;totaldust+=24000;break;
-            case 45:
-            case 46:
-              startlvl+=1;totaldust+=26000;break;
-            case 47:
-            case 48:
-              startlvl+=1;totaldust+=28000;break;
-            case 49:
-              startlvl+=1;totaldust+=30000;break;
-            case 50:
-            case 51:
-              startlvl+=1;break;
+          const currentLevelRange = levelCosts.find(range => startlvl >= range.min && startlvl <= range.max);
+          /* Collapse power up costs instead of going through full levelCosts ranges */
+          if (currentLevelRange.min == startlvl && currentLevelRange.max < endlvl) {
+            /* Increment by four half-level power ups */
+            dust += 4 * currentLevelRange.cost;
+            startlvl += 2; /* (4 * 0.5) */ 
+          } else {
+            /* Increment by one half-level power up */
+            dust += currentLevelRange.cost;
+            startlvl += 0.5; 
           }
         }
-        /* Adjust for shadow power up penalty */
+        /* Adjust for shadow penalty and purify savings */
         if (shdw === true) {
-          totaldust = totaldust*1.2;
+          dust = dust*1.2;
         } else if (pure === true) {
-          totaldust = totaldust*0.9;
+          dust = dust*0.9;
         }
-        if (totaldust > 1000) {
-          totaldust = Math.round(totaldust/1000) + "K";
+        if (dust > 1000) {
+          dust = Math.round(dust/100) / 10 + "K";
         }
-        return totaldust;
+        return dust;
       }
-      
+
       function validTyroEvo(aIV, dIV, sIV, evo) {
         var T0;
         if (perfTiming) {T0 = performance.now();}
@@ -3319,9 +3281,9 @@
       <button id="getDetails">Export Search Builder JSON</button><br />
       <button id="reload">Reload Search Builder JSON</button><br />
       </div><br />
-      <div style="overflow-x:auto;">
-        <p style="color: var(--tableHeaderText);font-size:0.8em">© 2023 PvP IVs | <a href="https://pvpivs.com/privacy">Privacy Policy</a> | <a href="https://pvpivs.com/contact">Contact Us</a></p>
-        <p style="color: var(--tableHeaderText);font-size:0.6em">Pokémon and Pokémon GO are copyright of The Pokémon Company, Niantic, Inc., and Nintendo.<br/>All trademarked images and names are property of their respective owners, and any such material is used on this site for educational purposes only.<br/>PvP IVs has no affiliation with The Pokémon Company, Niantic, Inc., or Nintendo.</p>
+      <div style="overflow-x:auto; max-width:474px; margin-left:auto; margin-right:auto;">
+        <p style="color:var(--tableHeaderText); font-size:0.8em">© 2024 PvP IVs | <a href="https://pvpivs.com/privacy">Privacy Policy</a> | <a href="https://pvpivs.com/contact">Contact Us</a></p>
+        <p style="color:var(--tableDividers); font-size:0.6em">Pokémon and Pokémon GO are copyright of The Pokémon Company, Niantic, Inc., and Nintendo. All trademarked images and names are property of their respective owners, and any such material is used on this site for educational purposes only. PvP IVs has no affiliation with The Pokémon Company, Niantic, Inc., or Nintendo.</p>
       </div><p style="overflow-x:auto;" id="timing_outputs"></p>
       <br /><br /><br /><br />
     </section>
