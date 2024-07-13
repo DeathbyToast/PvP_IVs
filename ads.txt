@@ -1,4 +1,4 @@
-# Playwire Ads.txt file v8.3
+# Playwire Ads.txt file v8.4
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -96,7 +96,6 @@ pubmatic.com, 160295, RESELLER, 5d62403b186f2ace
 xandr.com, 14082, RESELLER
 rubiconproject.com, 23876, RESELLER, 0bfd66d529a55807
 sharethrough.com, 5926d422, RESELLER, d53b998a7bd4ecd2
-openx.com, 537140488, RESELLER, 6a698e2ec38604c6
 indexexchange.com, 194590, RESELLER, 50b1c356f2c5c8fc
 sonobi.com, 4a289cdd79, RESELLER, d1a215d9eb5aee9e
 video.unrulymedia.com, 335119963, RESELLER
@@ -105,12 +104,11 @@ loopme.com, 11362, RESELLER, 6c8d5f95897a5a3b
 yieldmo.com, 2754490424016969782, RESELLER
 media.net, 8CUQ6928Q, RESELLER
 onetag.com, 69f48c2160c8113, RESELLER
-freewheel.tv, 1590601, RESELLER
-freewheel.tv, 1590606, RESELLER
 33across.com, 0010b00002Xbn7QAAR, RESELLER, bbea06d9c4d2853c
 smartadserver.com, 4284, RESELLER
 themediagrid.com, 4DQHAP, RESELLER, 35d5010d7789b49d
 amxrtb.com, 105199691, RESELLER
+lijit.com, 405318, RESELLER, fafdf38b16bf6b2b
 
 #Rubicon
 rubiconproject.com, 12556, DIRECT, 0bfd66d529a55807
@@ -129,8 +127,6 @@ sonobi.com, e4464446ab, DIRECT, d1a215d9eb5aee9e
 sonobi.com, 8dc2f48f6c, DIRECT, d1a215d9eb5aee9e
 sonobi.com, 2da7a08406, DIRECT, d1a215d9eb5aee9e
 sonobi.com, 0f403b451d, DIRECT, d1a215d9eb5aee9e
-freewheel.tv, 1605137, RESELLER
-freewheel.tv, 1605175, RESELLER
 
 #TripleLift
 triplelift.com, 6644, DIRECT, 6c33edb13117fd86
