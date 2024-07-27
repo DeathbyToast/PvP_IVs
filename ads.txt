@@ -1,4 +1,4 @@
-# Playwire Ads.txt file v8.4
+# Playwire Ads.txt file v8.5
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -141,6 +141,9 @@ triplelift.com, 8916-EB, DIRECT, 6c33edb13117fd86
 triplelift.com, 13434, DIRECT, 6c33edb13117fd86
 triplelift.com, 13434-EB, DIRECT, 6c33edb13117fd86
 triplelift.com, 13598, DIRECT, 6c33edb13117fd86
+
+#TrustX
+trustx.org, 6163, DIRECT, 1d2c8a747a749d25
 
 #Undertone
 undertone.com, 3628, DIRECT
