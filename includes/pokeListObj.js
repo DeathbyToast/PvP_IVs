@@ -1,7 +1,7 @@
 var boxRewrd = ["Articuno","Zapdos","Moltres","Lugia","Ho_Oh","Regirock","Regice","Registeel","Latias","Latios","Kyogre","Groudon","Rayquaza","Regigigas","Cresselia","Nihilego","Buzzwole","Pheromosa","Xurkitree","Guzzlord","Blacephalon","Celesteela","Kartana","Stakataka"];
 /*Raikou, Entei, and Suicune wild spawned at Johto Fest 2022, Uxie,Mesprit,Azelf are wild-spawning legendaries and Meltan,Melmetal are wild-spawning mythicals*/
-var raidOnly = ["Dialga","Palkia","Heatran","Giratina_Altered","Cobalion","Terrakion","Virizion","Tornadus_Incarnate","Tornadus_Therian","Thundurus_Incarnate","Thundurus_Therian","Reshiram","Zekrom","Landorus_Incarnate","Landorus_Therian","Kyurem","Kyurem_Black","Kyurem_White","Xerneas","Yveltal","Zygarde_Ten_Percent","Zygarde_Fifty_Percent","Zygarde_Complete","Type_Null","Silvally","Tapu_Koko","Tapu_Lele","Tapu_Bulu","Tapu_Fini","Cosmog","Cosmoem","Solgaleo","Lunala","Necrozma","Necrozma_Dusk_Mane","Necrozma_Dawn_Wings","Ultra_Necrozma","Zacian_Hero_of_Many_Battles","Zacian_Crowned_Sword","Zamazenta_Hero_of_Many_Battles","Zamazenta_Crowned_Sword","Eternatus","Kubfu","Urshifu","Regieleki","Regidrago","Glastrier","Spectrier","Calyrex","Ice_Rider_Calyrex","Shadow_Rider_Calyrex","Enamorus","Enamorus_Therian","Ting_Lu","Chien_Pao","Wo_Chien","Chi_Yu","Koraidon","Miraidon"];
-var boxMyth = ["Mew","Celebi","Jirachi","Phione","Manaphy","Shaymin_Land","Shaymin_Sky","Arceus","Victini","Keldeo","Meloetta_Aria","Meloetta_Pirouette","Diancie","Mega_Diancie","Hoopa_Confined","Hoopa_Unbound","Volcanion","Magearna","Marshadow","Zeraora","Zarude"];
+var raidOnly = ["Dialga","Palkia","Heatran","Giratina_Altered","Cobalion","Terrakion","Virizion","Tornadus_Incarnate","Tornadus_Therian","Thundurus_Incarnate","Thundurus_Therian","Reshiram","Zekrom","Landorus_Incarnate","Landorus_Therian","Kyurem","Kyurem_Black","Kyurem_White","Xerneas","Yveltal","Zygarde_Ten_Percent","Zygarde_Fifty_Percent","Zygarde_Complete","Type_Null","Silvally","Tapu_Koko","Tapu_Lele","Tapu_Bulu","Tapu_Fini","Cosmog","Cosmoem","Solgaleo","Lunala","Necrozma","Necrozma_Dusk_Mane","Necrozma_Dawn_Wings","Ultra_Necrozma","Zacian_Hero_of_Many_Battles","Zacian_Crowned_Sword","Zamazenta_Hero_of_Many_Battles","Zamazenta_Crowned_Sword","Eternatus","Kubfu","Urshifu","Regieleki","Regidrago","Glastrier","Spectrier","Calyrex","Ice_Rider_Calyrex","Shadow_Rider_Calyrex","Enamorus","Enamorus_Therian","Ting_Lu","Chien_Pao","Wo_Chien","Chi_Yu","Koraidon","Miraidon,Terapagos_Normal_SPECULATIVE,Terapagos_Terastal_SPECULATIVE,Terapagos_Stellar_SPECULATIVE"];
+var boxMyth = ["Mew","Celebi","Jirachi","Phione","Manaphy","Shaymin_Land","Shaymin_Sky","Arceus","Victini","Keldeo","Meloetta_Aria","Meloetta_Pirouette","Diancie","Mega_Diancie","Hoopa_Confined","Hoopa_Unbound","Volcanion","Magearna","Marshadow","Zeraora","Zarude,Pecharunt_SPECULATIVE"];
 var raidMyth = ["Deoxys","Deoxys_Attack","Deoxys_Defense","Deoxys_Speed","Darkrai","Genesect"];
 var shadowLegend = ["Articuno","Zapdos","Moltres","Mewtwo","Raikou","Entei","Suicune","Lugia","Ho_Oh","Latias","Latios","Kyogre","Groudon","Regigigas","Regirock","Regice","Registeel"];
 /* https://bulbapedia.bulbagarden.net/wiki/Giovanni_(GO)/Pok%C3%A9mon_change_history */
@@ -993,9 +993,9 @@ var pokeListObj = {
     "Rolycoly": "837b,73,91,102,Carkol,Coalossal",
     "Carkol": "838,114,157,190,Rolycoly,Coalossal",
     "Coalossal": "839,146,198,242,Rolycoly,Carkol",
-    "Applin": "840b,71,116,120,Flapple,Appletun",
-    "Flapple": "841,214,144,172,Applin,Appletun",
-    "Appletun": "842,214,144,172,Applin,Flapple",
+    "Applin": "840b,71,116,120,Flapple,Appletun,Dipplin_SPECULATIVE,Hydrapple_SPECULATIVE",
+    "Flapple": "841,214,144,172,Applin,Appletun,Dipplin_SPECULATIVE,Hydrapple_SPECULATIVE",
+    "Appletun": "842,214,144,172,Applin,Flapple,Dipplin_SPECULATIVE,Hydrapple_SPECULATIVE",
     "Silicobra": "843b,103,123,141,Sandaconda",
     "Sandaconda": "844,202,207,176,Silicobra",
     "Cramorant": "845b,173,163,172",
@@ -1038,7 +1038,7 @@ var pokeListObj = {
     "Arctozolt": "881b,190,166,207",
     "Dracovish": "882b,175,185,207",
     "Arctovish": "883b,171,185,207",
-    "Duraludon": "884b,239,185,172",
+    "Duraludon": "884b,239,185,172,Archaludon_SPECULATIVE",
     "Dreepy": "885b,117,61,99,Drakloak,Dragapult",
     "Drakloak": "886,163,105,169,Dreepy,Dragapult",
     "Dragapult": "887,266,170,204,Dreepy,Drakloak",
@@ -1166,12 +1166,29 @@ var pokeListObj = {
     "Gholdengo":"1000,252,190,202,Gimmighoul_Roaming,Gimmighoul_Chest",
     "Wo_Chien":"1001b,186,242,198",
     "Chien_Pao":"1002b,261,167,190",
-    "Ting_Lu":"1003b,193,210,321",
+    "Ting_Lu":"1003b,194,203,321",
     "Chi_Yu":"1004b,269,221,146",
     "Roaring_Moon_SPECULATIVE":"1005b,254,178,213",
     "Iron_Valiant":"1006b,279,171,179",
     "Koraidon":"1007b,263,223,205",
     "Miraidon":"1008b,263,223,205",
     "Walking_Wake":"1009b,256,188,223",
-    "Iron_Leaves":"1010b,259,213,207"
+    "Iron_Leaves":"1010b,259,213,207",
+    "Dipplin_SPECULATIVE": "1011,173,184,190,Dipplin_SPECULATIVE,Hydrapple_SPECULATIVE,Applin,Flapple,Appletun",
+    "Poltchageist_SPECULATIVE": "1012b,134,96,120,Sinistcha_SPECULATIVE",
+    "Sinistcha_SPECULATIVE": "1013,225,191,174,Poltchageist_SPECULATIVE",
+    "Okidogi_SPECULATIVE": "1014b,241,210,204",
+    "Munkidori_SPECULATIVE": "1015b,261,172,204",
+    "Fezandipiti_SPECULATIVE": "1016b,185,228,204",
+    "Ogerpon_SPECULATIVE": "1017b,241,196,190",
+    "Archaludon_SPECULATIVE": "1018,250,215,207,Duraludon",
+    "Hydrapple_SPECULATIVE": "1019,216,186,235,Dipplin_SPECULATIVE,Applin,Flapple,Appletun",
+    "Gouging_Fire_SPECULATIVE": "1020b,225,228,233",
+    "Raging_Bolt_SPECULATIVE": "1021b,235,165,245",
+    "Iron_Boulder_SPECULATIVE": "1022b,249,214,207",
+    "Iron_Crown_SPECULATIVE": "1023b,243,220,207",
+    "Terapagos_Normal_SPECULATIVE": "1024b,126,165,207,Terapagos_Terastal_SPECULATIVE,Terapagos_Stellar_SPECULATIVE",
+    "Terapagos_Terastal_SPECULATIVE": "1024,212,224,216,Terapagos_Stellar_SPECULATIVE,Terapagos_Normal_SPECULATIVE",
+    "Terapagos_Stellar_SPECULATIVE": "1024,236,204,300,Terapagos_Terastal_SPECULATIVE,Terapagos_Normal_SPECULATIVE",
+    "Pecharunt_SPECULATIVE": "1025,181,273,204"
 };
