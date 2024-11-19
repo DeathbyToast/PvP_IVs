@@ -289,7 +289,7 @@ var pokeListObj = {
     "Swinub": "220b,90,69,137,Piloswine,Mamoswine",
     "Piloswine": "221,181,138,225,Swinub,Mamoswine",
     "Corsola": "222b&water,118,156,146",
-    "Corsola_Galarian": "222b&!water,118,156,146,Cursola",
+    "Corsola_Galarian": "222b&!water,116,182,155,Cursola",
     "Remoraid": "223b,127,69,111,Octillery",
     "Octillery": "224,197,141,181,Remoraid",
     "Delibird": "225b,128,90,128",
