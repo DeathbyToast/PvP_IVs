@@ -1,4 +1,4 @@
-# Playwire Ads.txt file v8.5
+# Playwire Ads.txt file v9.2
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -59,6 +59,17 @@ indexexchange.com, 186266, DIRECT, 50b1c356f2c5c8fc
 indexexchange.com, 193336, DIRECT, 50b1c356f2c5c8fc
 indexexchange.com, 191685, DIRECT, 50b1c356f2c5c8fc
 indexexchange.com, 186779, DIRECT, 50b1c356f2c5c8fc
+indexexchange.com, 209857, DIRECT, 50b1c356f2c5c8fc
+
+#Inmobi
+inmobi.com, 6801ebe3b36d4afba25f67b2d0e9d9ed, DIRECT, 83e75a7ae333ca9d
+
+#Kulture
+dxkulture.com,12005,DIRECT
+zetaglobal.net, 790, DIRECT
+rubiconproject.com, 26094, DIRECT, 0bfd66d529a55807
+video.unrulymedia.com, 946176315, RESELLER
+pubmatic.com,164751,RESELLER,5d62403b186f2ace
 
 #MediaGrid
 themediagrid.com, 5A8D1U, DIRECT, 35d5010d7789b49d
@@ -78,9 +89,7 @@ contextweb.com, 560921, RESELLER, 89ff185a4c4e857c
 video.unrulymedia.com, 3832544212, DIRECT
 
 #OpenX
-openx.com, 537149074, DIRECT, 6a698e2ec38604c6
 openx.com, 537145215, DIRECT, 6a698e2ec38604c6
-openx.com, 539195821, DIRECT, 6a698e2ec38604c6
 openx.com, 542511403, DIRECT, 6a698e2ec38604c6
 openx.com, 543969731, DIRECT, 6a698e2ec38604c6
 openx.com, 540099026, DIRECT, 6a698e2ec38604c6
@@ -92,6 +101,7 @@ pubmatic.com, 159344, DIRECT, 5d62403b186f2ace
 
 #RiseCodes
 risecodes.com, 6280c6f1899612000123320b, RESELLER
+risecodes.com, 66fac9081efdb80001a3dc64, RESELLER
 pubmatic.com, 160295, RESELLER, 5d62403b186f2ace
 xandr.com, 14082, RESELLER
 rubiconproject.com, 23876, RESELLER, 0bfd66d529a55807
@@ -115,13 +125,20 @@ pubmatic.com, 156557, RESELLER, 5d62403b186f2ace
 rubiconproject.com, 18694, RESELLER, 0bfd66d529a55807
 openx.com, 540274407, RESELLER, 6a698e2ec38604c6
 video.unrulymedia.com, 266978658, RESELLER
+smartadserver.com, 5247, DIRECT, 060d053dcf45cbf3
+sharethrough.com, 5247, DIRECT, d53b998a7bd4ecd2
 
 #Sonobi
-sonobi.com, 049d257a5d, DIRECT, d1a215d9eb5aee9e
-sonobi.com, e4464446ab, DIRECT, d1a215d9eb5aee9e
-sonobi.com, 8dc2f48f6c, DIRECT, d1a215d9eb5aee9e
 sonobi.com, 2da7a08406, DIRECT, d1a215d9eb5aee9e
-sonobi.com, 0f403b451d, DIRECT, d1a215d9eb5aee9e
+
+#Sovrn
+lijit.com, 230297, DIRECT, fafdf38b16bf6b2b
+
+#Teads
+teads.tv, 16934, DIRECT, 15a9c44f6d26cbe1
+
+#TradeDesk
+playwire.com, 1, DIRECT
 
 #TripleLift
 triplelift.com, 6644, DIRECT, 6c33edb13117fd86
@@ -136,6 +153,7 @@ triplelift.com, 8916-EB, DIRECT, 6c33edb13117fd86
 triplelift.com, 13434, DIRECT, 6c33edb13117fd86
 triplelift.com, 13434-EB, DIRECT, 6c33edb13117fd86
 triplelift.com, 13598, DIRECT, 6c33edb13117fd86
+triplelift.com, 4703, DIRECT, 6c33edb13117fd86
 
 #TrustX
 trustx.org, 6163, DIRECT, 1d2c8a747a749d25
@@ -146,6 +164,24 @@ openx.com, 537153564, RESELLER, 6a698e2ec38604c6
 rubiconproject.com, 22412, RESELLER, 0bfd66d529a55807
 pubmatic.com, 160318, RESELLER, 5d62403b186f2ace
 
+#Vidazoo
+vidazoo.com, 66f94ed86cb7baf371858cad, DIRECT, b6ada874b4d7d0b2  
+video.unrulymedia.com, 2743945877, RESELLER  
+themediagrid.com, 3aw9jb, RESELLER, 35d5010d7789b49d  
+rubiconproject.com, 17130, RESELLER, 0bfd66d529a55807  
+appnexus.com, 2794, RESELLER, f5ab79cb980f11d1  
+openx.com, 541017750, RESELLER, 6a698e2ec38604c6  
+pubmatic.com, 159988, RESELLER, 5d62403b186f2ace  
+lijit.com, 222372, RESELLER, fafdf38b16bf6b2b  
+
+#Wunderkind
+wunderkind.co, 7202, DIRECT
+criteo.com, B-068503, DIRECT, 9fac4a4a87c2a44f
+themediagrid.com, N71MIF, DIRECT, 35d5010d7789b49d
+pubmatic.com, 156512, RESELLER, 5d62403b186f2ace
+indexexchange.com, 183753, RESELLER, 50b1c356f2c5c8fc
+rubiconproject.com, 20986, RESELLER, 0bfd66d529a55807
+
 #Yieldmo
 yieldmo.com, 2990721854664024411, DIRECT
 rubiconproject.com, 17070, RESELLER, 0bfd66d529a55807
@@ -154,7 +190,7 @@ contextweb.com, 561118, RESELLER, 89ff185a4c4e857c
 
 #33Across
 33across.com, 0014000001YrMoYAAV, DIRECT, bbea06d9c4d2853c
-appnexus.com, 10239, RESELLER, f5ab79cb980f11d1 #33Across
+appnexus.com, 10239, RESELLER, f5ab79cb980f11d1
 conversantmedia.com, 100141, RESELLER, 03113cd04947736d
 video.unrulymedia.com, 2439829435, RESELLER
 pubmatic.com, 156423, RESELLER, 5d62403b186f2ace
