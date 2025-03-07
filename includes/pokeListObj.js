@@ -1048,7 +1048,7 @@ var pokeListObj = {
     "Zamazenta_Crowned_Sword": "889b&steel,250,292,192",
     "Eternatus": "890b,278,192,268",
     "Kubfu": "891b,170,112,155,Urshifu",
-    "Urshifu": "892,231,162,205,Kubfu",
+    "Urshifu": "892,254,177,225,Kubfu",
     "Zarude": "893b,242,215,233",
     "Regieleki": "894b,250,125,190",
     "Regidrago": "895b,202,101,400",
