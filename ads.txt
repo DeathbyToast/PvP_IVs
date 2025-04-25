@@ -1,4 +1,4 @@
-# Playwire Ads.txt file v9.7
+# Playwire Ads.txt file v9.9
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -66,6 +66,7 @@ themediagrid.com, 6QY7B4, DIRECT, 35d5010d7789b49d
 themediagrid.com, KA3Q45, DIRECT, 35d5010d7789b49d
 
 #Media.net
+media.net, 8CUIBM874, DIRECT
 media.net, 8CUP47128, DIRECT
 media.net, 8CU11059L, DIRECT
 
@@ -94,23 +95,24 @@ pubmatic.com, 158326, DIRECT, 5d62403b186f2ace
 pubmatic.com, 159344, DIRECT, 5d62403b186f2ace
 
 #RiseCodes
-risecodes.com, 6280c6f1899612000123320b, RESELLER
-risecodes.com, 66fac9081efdb80001a3dc64, RESELLER
-pubmatic.com, 160295, RESELLER, 5d62403b186f2ace
-xandr.com, 14082, RESELLER
-rubiconproject.com, 23876, RESELLER, 0bfd66d529a55807
+risecodes.com, 6280c6f1899612000123320b, DIRECT
+risecodes.com, 66fac9081efdb80001a3dc64, DIRECT
 sharethrough.com, 5926d422, RESELLER, d53b998a7bd4ecd2
-indexexchange.com, 194590, RESELLER, 50b1c356f2c5c8fc
+pubmatic.com, 160295, RESELLER, 5d62403b186f2ace
+rubiconproject.com, 23876, RESELLER, 0bfd66d529a55807
+xandr.com, 14082, RESELLER
+media.net, 8CUQ6928Q, RESELLER
 video.unrulymedia.com, 335119963, RESELLER
 loopme.com, 11362, RESELLER, 6c8d5f95897a5a3b
+smaato.com, 1100057444, RESELLER, 07bcf65f187117b4
 yieldmo.com, 2754490424016969782, RESELLER
-media.net, 8CUQ6928Q, RESELLER
+lijit.com, 405318, RESELLER, fafdf38b16bf6b2b
 onetag.com, 69f48c2160c8113, RESELLER
-themediagrid.com, HW1PGR, RESELLER, 35d5010d7789b49d
 
 #Rubicon
 rubiconproject.com, 12556, DIRECT, 0bfd66d529a55807
 rubiconproject.com, 18110, DIRECT, 0bfd66d529a55807
+rubiconproject.com, 27232, DIRECT, 0bfd66d529a55807 #flex
 
 #Sharethrough
 sharethrough.com, 5b0da9d4, DIRECT, d53b998a7bd4ecd2
@@ -158,14 +160,14 @@ trustx.org, 6163, DIRECT, 1d2c8a747a749d25
 undertone.com, 3628, DIRECT
 
 #Vidazoo
-vidazoo.com, 66f94ed86cb7baf371858cad, DIRECT, b6ada874b4d7d0b2  
-video.unrulymedia.com, 2743945877, RESELLER  
-themediagrid.com, 3aw9jb, RESELLER, 35d5010d7789b49d  
-rubiconproject.com, 17130, RESELLER, 0bfd66d529a55807  
-appnexus.com, 2794, RESELLER, f5ab79cb980f11d1  
-openx.com, 541017750, RESELLER, 6a698e2ec38604c6  
-pubmatic.com, 159988, RESELLER, 5d62403b186f2ace  
-lijit.com, 222372, RESELLER, fafdf38b16bf6b2b  
+vidazoo.com, 66f94ed86cb7baf371858cad, DIRECT, b6ada874b4d7d0b2
+video.unrulymedia.com, 2743945877, RESELLER
+themediagrid.com, 3aw9jb, RESELLER, 35d5010d7789b49d
+rubiconproject.com, 17130, RESELLER, 0bfd66d529a55807
+appnexus.com, 2794, RESELLER, f5ab79cb980f11d1
+openx.com, 541017750, RESELLER, 6a698e2ec38604c6
+pubmatic.com, 159988, RESELLER, 5d62403b186f2ace
+lijit.com, 222372, RESELLER, fafdf38b16bf6b2b
 
 #Wunderkind
 wunderkind.co, 7202, DIRECT
@@ -177,6 +179,10 @@ rubiconproject.com, 20986, RESELLER, 0bfd66d529a55807
 
 #Yieldmo
 yieldmo.com, 2990721854664024411, DIRECT
+
+#SHE
+pmc.com, 1243186, DIRECT, 8dd52f825890bb44
+rubiconproject.com, 10278, RESELLER, 0bfd66d529a55807
 
 
 
