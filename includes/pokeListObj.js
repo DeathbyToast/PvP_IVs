@@ -995,7 +995,7 @@ var pokeListObj = {
     "Coalossal": "839,146,198,242,Rolycoly,Carkol",
     "Applin": "840b,71,116,120,Flapple,Appletun,Dipplin_SPECULATIVE,Hydrapple_SPECULATIVE",
     "Flapple": "841,214,144,172,Applin,Appletun,Dipplin_SPECULATIVE,Hydrapple_SPECULATIVE",
-    "Appletun": "842,214,144,172,Applin,Flapple,Dipplin_SPECULATIVE,Hydrapple_SPECULATIVE",
+    "Appletun": "842,178,146,242,Applin,Flapple,Dipplin_SPECULATIVE,Hydrapple_SPECULATIVE",
     "Silicobra": "843b,103,123,141,Sandaconda",
     "Sandaconda": "844,202,207,176,Silicobra",
     "Cramorant": "845b,173,163,172",
