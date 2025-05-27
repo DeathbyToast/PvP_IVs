@@ -1,4 +1,4 @@
-# Playwire Ads.txt file v9.9
+# Playwire Ads.txt file v10.0
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -34,6 +34,9 @@ appnexus.com,1356,DIRECT,f5ab79cb980f11d1
 #Appnexus
 appnexus.com, 7140, DIRECT, f5ab79cb980f11d1
 xandr.com, 13080, DIRECT
+
+#Blis
+blis.com, 1223, DIRECT, 61453ae19a4b73f4
 
 #Conversant
 conversantmedia.com, 40510, DIRECT, 03113cd04947736d
