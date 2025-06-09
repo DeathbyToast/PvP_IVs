@@ -86,13 +86,6 @@ openx.com, 543969731, DIRECT, 6a698e2ec38604c6
 openx.com, 540099026, DIRECT, 6a698e2ec38604c6
 openx.com, 539872073, DIRECT, 6a698e2ec38604c6
 
-#Ozone
-the-ozone-project.com, OZONEPLA0001, DIRECT
-openx.com, 540731760, RESELLER, 6a698e2ec38604c6
-pubmatic.com, 160557, RESELLER, 5d62403b186f2ace
-indexexchange.com, 206233, RESELLER, 50b1c356f2c5c8fc
-appnexus.com, 9979, RESELLER, f5ab79cb980f11d1
-
 #Pubmatic
 pubmatic.com, 158326, DIRECT, 5d62403b186f2ace
 pubmatic.com, 159344, DIRECT, 5d62403b186f2ace
@@ -107,9 +100,9 @@ xandr.com, 14082, RESELLER
 media.net, 8CUQ6928Q, RESELLER
 video.unrulymedia.com, 335119963, RESELLER
 loopme.com, 11362, RESELLER, 6c8d5f95897a5a3b
-smaato.com, 1100057444, RESELLER, 07bcf65f187117b4
-yieldmo.com, 2754490424016969782, RESELLER
 lijit.com, 405318, RESELLER, fafdf38b16bf6b2b
+yieldmo.com, 2754490424016969782, RESELLER
+gumgum.com, 16112, RESELLER, ffdef49475d318a9
 onetag.com, 69f48c2160c8113, RESELLER
 
 #Rubicon
