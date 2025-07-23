@@ -1,4 +1,3 @@
-WWWWWEEEEEEEEEEEEEE
 playwire.com,1025030,DIRECT
 
 managerdomain=playwire.com
@@ -196,4 +195,3 @@ yieldmo.com, 2990721854664024411, DIRECT
 #SHE
 pmc.com, 1243186, DIRECT, 8dd52f825890bb44
 rubiconproject.com, 10278, RESELLER, 0bfd66d529a55807
-
