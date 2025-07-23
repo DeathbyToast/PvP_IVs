@@ -1,4 +1,9 @@
-# Playwire Ads.txt file v10.0
+playwire.com,1025030,DIRECT
+
+managerdomain=playwire.com
+ownerdomain=pvpivs.com
+
+# Playwire Ads.txt file v10.1
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -37,6 +42,7 @@ xandr.com, 13080, DIRECT
 
 #Blis
 blis.com, 1223, DIRECT, 61453ae19a4b73f4
+rubiconproject.com, 16928, RESELLER, 0bfd66d529a55807
 
 #Conversant
 conversantmedia.com, 40510, DIRECT, 03113cd04947736d
@@ -62,6 +68,9 @@ indexexchange.com, 209857, DIRECT, 50b1c356f2c5c8fc
 
 #Inmobi
 inmobi.com, 6801ebe3b36d4afba25f67b2d0e9d9ed, DIRECT, 83e75a7ae333ca9d
+
+#Kulture
+dxkulture.com, 12005, DIRECT
 
 #MediaGrid
 themediagrid.com, 5A8D1U, DIRECT, 35d5010d7789b49d
@@ -118,6 +127,13 @@ openx.com, 540274407, RESELLER, 6a698e2ec38604c6
 video.unrulymedia.com, 266978658, RESELLER
 smartadserver.com, 5247, DIRECT, 060d053dcf45cbf3
 sharethrough.com, 5247, DIRECT, d53b998a7bd4ecd2
+
+#SmileWanted
+smilewanted.com, 5700, DIRECT
+pubmatic.com, 158810, RESELLER, 5d62403b186f2ace
+rubiconproject.com, 19814, RESELLER, 0bfd66d529a55807
+openx.com, 557083110, RESELLER, 6a698e2ec38604c6
+appnexus.com, 10040, RESELLER, f5ab79cb980f11d1
 
 #Sonobi
 sonobi.com, 2da7a08406, DIRECT, d1a215d9eb5aee9e
@@ -180,9 +196,3 @@ yieldmo.com, 2990721854664024411, DIRECT
 pmc.com, 1243186, DIRECT, 8dd52f825890bb44
 rubiconproject.com, 10278, RESELLER, 0bfd66d529a55807
 
-
-
-playwire.com,1025030,DIRECT
-
-managerdomain=playwire.com
-ownerdomain=pvpivs.com
