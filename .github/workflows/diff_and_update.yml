@@ -12,40 +12,24 @@ jobs:
     outputs:
       diffOut: ${{ steps.diff-adstxt-files.outputs.DIFF_OUT }}
     steps:
-      - run: echo "🎉 The job was automatically triggered by scheduled cron event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 Attempting to diff url contents"
       - name: Check for ads.txt differences
         id: diff-adstxt-files
-        # https://trstringer.com/github-actions-multiline-strings/
         # TO MANUALLY UPDATE FILE, VISIT PLAYWIRE URL BELOW AND CTRL+C, THEN CTRL+V INTO ads.txt
-        # Backup of old code:
-        # DIFF_OUT=$(cat << EOF
-        #  `diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))`
-        #  EOF
-        #  )
-        #  echo "DIFF_OUT<<EOF" >> $GITHUB_OUTPUT
-        #  echo "$DIFF_OUT" >> $GITHUB_OUTPUT
-        #  echo "EOF" >> $GITHUB_OUTPUT
-        #  diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))
-        #- run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
-        #- run: echo "🍏 This job's status is ${{ job.status }}."
-        # use curl's silent flag (-s) to suppress progress meters.
+        # use curl's quiet mode (-q) to return only an exit code
+        # Use curl with sS to show error codes and run in silent mode, supressing progress bars
         # use diff with --ignore-trailing-space and --strip-trailing-cr for more robust comparison.
         # The '|| true' prevents the step from failing if a diff is found.
         run: |
-          DIFF_CONTENT=$(diff --ignore-trailing-space --strip-trailing-cr \
-            <(curl -s https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) \
-            <(curl -s https://pvpivs.com/ads.txt) || true)
-
-          if [[ -n "$DIFF_CONTENT" ]]; then
-            echo "Differences found in ads.txt."
-            echo "diff_detected=true" >> $GITHUB_OUTPUT
-            echo "Diff output:"
-            echo "$DIFF_CONTENT"
+          if ! diff -q --ignore-blank-lines --ignore-trailing-space --strip-trailing-cr \
+            <(curl -sS --fail https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) \
+            <(curl -sS --fail https://pvpivs.com/ads.txt); then
+            echo "✅ Files are different. An update is required."
+            echo "diff_found=true" >> "$GITHUB_OUTPUT"
           else
-            echo "No differences found in ads.txt. Files are in sync."
-            echo "diff_detected=false" >> $GITHUB_OUTPUT
+            echo "👍 Files are identical. No update needed."
+            echo "diff_found=false" >> "$GITHUB_OUTPUT"
           fi
       - run: echo "🍏 This job's status is ${{ job.status }}."
   Update-ads-txt-after-failed-diff:
