@@ -25,13 +25,11 @@ jobs:
           if ! diff -q --ignore-blank-lines --ignore-trailing-space --strip-trailing-cr \
             <(curl -sS --fail https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) \
             <(curl -sS --fail https://pvpivs.com/ads.txt); then
-            diff_found=true;
             echo "✅ Files are different. An update is required."
-            echo diff_found >> "$GITHUB_OUTPUT"
+            echo "diff_found=true" >> "$GITHUB_OUTPUT"
           else
-            diff_found=false
             echo "👍 Files are identical. No update needed."
-            echo diff_found >> "$GITHUB_OUTPUT"
+            echo "diff_found=false" >> "$GITHUB_OUTPUT"
           fi
       - run: echo "🍏 This job's status is ${{ job.status }}."
   Update-ads-txt-after-failed-diff:
