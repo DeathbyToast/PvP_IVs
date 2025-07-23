@@ -33,7 +33,7 @@ jobs:
           fi
       - run: echo "🍏 This job's status is ${{ job.status }}."
   Update-ads-txt-after-failed-diff:
-    if: needs.Check-for-diffs-ads-txt.outputs.diff_detected == 'true'
+    if: needs.Check-for-diffs-ads-txt.outputs.diff_found == 'true'
     needs: Check-for-diffs-ads-txt
     runs-on: ubuntu-latest
     permissions:
