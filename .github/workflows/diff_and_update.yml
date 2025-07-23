@@ -15,49 +15,68 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by scheduled cron event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 Attempting to diff url contents"
-      - name: Diff
+      - name: Check for ads.txt differences
         id: diff-adstxt-files
         # https://trstringer.com/github-actions-multiline-strings/
         # TO MANUALLY UPDATE FILE, VISIT PLAYWIRE URL BELOW AND CTRL+C, THEN CTRL+V INTO ads.txt
+        # Backup of old code:
+        # DIFF_OUT=$(cat << EOF
+        #  `diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))`
+        #  EOF
+        #  )
+        #  echo "DIFF_OUT<<EOF" >> $GITHUB_OUTPUT
+        #  echo "$DIFF_OUT" >> $GITHUB_OUTPUT
+        #  echo "EOF" >> $GITHUB_OUTPUT
+        #  diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))
+        #- run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
+        #- run: echo "🍏 This job's status is ${{ job.status }}."
+        # use curl's silent flag (-s) to suppress progress meters.
+        # use diff with --ignore-trailing-space and --strip-trailing-cr for more robust comparison.
+        # The '|| true' prevents the step from failing if a diff is found.
         run: |
-          DIFF_OUT=$(cat << EOF
-          `diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))`
-          EOF
-          )
-          echo "DIFF_OUT<<EOF" >> $GITHUB_OUTPUT
-          echo "$DIFF_OUT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          diff --ignore-all-space <(sed 's/\r//g' <(curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt)) <(sed 's/\r//g' <(curl https://pvpivs.com/ads.txt))
-      - run: echo "💡 Diff completed, diff outcome is ${{ steps.diff-adstxt-files.outcome }}."
+          DIFF_CONTENT=$(diff --ignore-trailing-space --strip-trailing-cr \
+            <(curl -s https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) \
+            <(curl -s https://pvpivs.com/ads.txt) || true)
+
+          if [[ -n "$DIFF_CONTENT" ]]; then
+            echo "Differences found in ads.txt."
+            echo "diff_detected=true" >> $GITHUB_OUTPUT
+            echo "Diff output:"
+            echo "$DIFF_CONTENT"
+          else
+            echo "No differences found in ads.txt. Files are in sync."
+            echo "diff_detected=false" >> $GITHUB_OUTPUT
+          fi
       - run: echo "🍏 This job's status is ${{ job.status }}."
   Update-ads-txt-after-failed-diff:
-    if: failure()
+    if: needs.Check-for-diffs-ads-txt.outputs.diff_detected == 'true'
     needs: Check-for-diffs-ads-txt
     runs-on: ubuntu-latest
-    #permissions:
-      #contents: write
-      #pull-requests: write
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
-      - run: echo "The diff failed, differences are below."
-      - run: echo "${{needs.Check-for-diffs-ads-txt.outputs.diffOut}}"
-      #- run: echo "Proceeding to replace ads.txt..."
-      # https://stackoverflow.com/a/58393457
-      #- uses: actions/checkout@v3
-      #  with:
-      #    ref: gh-pages
-          #repo-token: ${{ secrets.GITHUB_TOKEN }}
-      #- name: Get Updated ads.txt file via curl
-      # TO MANUALLY UPDATE FILE, VISIT PLAYWIRE URL BELOW AND CTRL+C, THEN CTRL+V INTO ads.txt
-      #  run: curl https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
-      #- name: Commit ads.txt using git commit
-      #  run: |
-      #    git config --global user.name 'DeathbyToast'
-      #    git config --global user.email 'alex.gronbach@gmail.com'
-      #    git add ads.txt
-      #    git commit -m "Automated ads.txt update"
-      #    git push origin
-      #- name: Create PR using gh pr create
-      #  run: gh pr create --title "Automated ads.txt update" --body "Ensuring ads.txt is up to date" --base "gh-pages" --head "gh-pages"
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Update ads.txt
+        run: |
+          echo "Updating ads.txt from Playwire..."
+          curl -s https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          # Check if there are changes to commit
+          if ! git diff --quiet ads.txt; then
+            git add ads.txt
+            git commit -m "Automated ads.txt update"
+            git push
+            echo "ads.txt updated and pushed to gh-pages."
+          else
+            echo "No changes to commit."
+          fi
       - run: echo "🍏 This job's status is ${{ job.status }}."
