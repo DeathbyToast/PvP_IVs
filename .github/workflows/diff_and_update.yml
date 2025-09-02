@@ -32,7 +32,7 @@ jobs:
             echo "current_version=true" >> "$GITHUB_OUTPUT"
           fi
       - run: echo "🍏 Is our file version current ?= ${{ steps.diff-adstxt-files.outputs.current_version }}."
-  Update-ads-txt-after-failed-diff:
+Update-ads-txt-after-failed-diff:
     if: needs.Check-for-diffs-ads-txt.outputs.diffOut != 'true'
     needs: Check-for-diffs-ads-txt
     runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Checkout repository
+      - name: Checkout gh-pages branch
         uses: actions/checkout@v4
         with:
           ref: gh-pages
@@ -48,19 +48,20 @@ jobs:
       - name: Update ads.txt
         run: |
           echo "Updating ads.txt from Playwire..."
-          curl -s https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
+          curl -sS https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
 
-      - name: Commit and Push changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          # Check if there are changes to commit
-          if ! git diff --quiet ads.txt; then
-            git add ads.txt
-            git commit -m "Automated ads.txt update"
-            git push
-            echo "ads.txt updated and pushed to gh-pages."
-          else
-            echo "No changes to commit."
-          fi
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          # The GITHUB_TOKEN is automatically provided by GitHub
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Automated ads.txt update"
+          title: "Automated ads.txt update"
+          body: |
+            The ads.txt file is out of date. This PR brings it up to date with the latest version from Playwire.
+            
+            Please review and merge.
+          branch: "update-adstxt"
+          base: "gh-pages"
+
       - run: echo "🍏 This job's status is ${{ job.status }}."
