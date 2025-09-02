@@ -3,7 +3,7 @@ playwire.com,1025030,DIRECT
 managerdomain=playwire.com
 ownerdomain=pvpivs.com
 
-# Playwire Ads.txt file v10.2
+# Playwire Ads.txt file v10.2433473
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
