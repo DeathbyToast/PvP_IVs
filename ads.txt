@@ -3,7 +3,7 @@ playwire.com,1025030,DIRECT
 managerdomain=playwire.com
 ownerdomain=pvpivs.com
 
-# Playwire Ads.txt file v10.2433473
+# Playwire Ads.txt file v10.2
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -179,3 +179,5 @@ yieldmo.com, 2990721854664024411, DIRECT
 #SHE
 pmc.com, 1243186, DIRECT, 8dd52f825890bb44
 rubiconproject.com, 10278, RESELLER, 0bfd66d529a55807
+
+
