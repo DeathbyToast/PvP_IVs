@@ -10,7 +10,7 @@ jobs:
   Check-for-diffs-ads-txt:
     runs-on: ubuntu-latest
     outputs:
-      diffOut: ${{ steps.diff-adstxt-files.outputs.DIFF_OUT }}
+      diffOut: ${{ steps.diff-adstxt-files.outputs.current_version }}
     steps:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 Attempting to diff url contents"
