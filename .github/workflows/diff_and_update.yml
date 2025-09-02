@@ -31,9 +31,9 @@ jobs:
             echo "✅ Files are identical. No update needed."
             echo "current_version=true" >> "$GITHUB_OUTPUT"
           fi
-      - run: echo "🍏 Is our file version current ?= ${{ steps.diff-adstxt-files.outputs.current_version }}"."
+      - run: echo "🍏 Is our file version current ?= ${{ steps.diff-adstxt-files.outputs.current_version }}."
   Update-ads-txt-after-failed-diff:
-    if: needs.Check-for-diffs-ads-txt.outputs.current_version != 'true'
+    if: needs.Check-for-diffs-ads-txt.outputs.diffOut != 'true'
     needs: Check-for-diffs-ads-txt
     runs-on: ubuntu-latest
     permissions:
