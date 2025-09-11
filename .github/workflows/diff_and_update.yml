@@ -1,0 +1,67 @@
+name: GitHub Actions Diff
+run-name: Regularly Scheduled GitHub Actions 🚀 Diff Workflow
+on:
+  push:
+  schedule:
+    #Run at :39 9AM every day of every month
+    - cron: '38 14 * * *'
+
+jobs:
+  Check-for-diffs-ads-txt:
+    runs-on: ubuntu-latest
+    outputs:
+      diffOut: ${{ steps.diff-adstxt-files.outputs.current_version }}
+    steps:
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 Attempting to diff url contents"
+      - name: Check for ads.txt differences
+        id: diff-adstxt-files
+        # TO MANUALLY UPDATE FILE, VISIT PLAYWIRE URL BELOW AND CTRL+C, THEN CTRL+V INTO ads.txt
+        # use curl's quiet mode (-q) to return only an exit code
+        # Use curl with sS to show error codes and run in silent mode, supressing progress bars
+        # use diff with --ignore-trailing-space and --strip-trailing-cr for more robust comparison.
+        # The '|| true' prevents the step from failing if a diff is found.
+        run: |
+          if ! diff -q --ignore-blank-lines --ignore-trailing-space --strip-trailing-cr \
+            <(curl -sS --fail https://config.playwire.com/dyn_ads/1025030/74482/ads.txt) \
+            <(curl -sS --fail https://pvpivs.com/ads.txt); then
+            echo "❌ Files are different, update required!"
+            echo "current_version=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "✅ Files are identical. No update needed."
+            echo "current_version=true" >> "$GITHUB_OUTPUT"
+          fi
+      - run: echo "🍏 Is our file version current ?= ${{ steps.diff-adstxt-files.outputs.current_version }}."
+  Update-ads-txt-after-failed-diff:
+    if: needs.Check-for-diffs-ads-txt.outputs.diffOut != 'true'
+    needs: Check-for-diffs-ads-txt
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Update ads.txt
+        run: |
+          echo "Updating ads.txt from Playwire..."
+          curl -sS https://config.playwire.com/dyn_ads/1025030/74482/ads.txt > ads.txt
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          # The GITHUB_TOKEN is automatically provided by GitHub
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Automated ads.txt update"
+          title: "Automated ads.txt update"
+          body: |
+            The ads.txt file is out of date. This PR brings it up to date with the latest version from Playwire.
+            
+            Please review and merge.
+          branch: "update-adstxt"
+          base: "gh-pages"
+
+      - run: echo "🍏 This job's status is ${{ job.status }}."
