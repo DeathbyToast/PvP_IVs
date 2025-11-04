@@ -3,7 +3,7 @@ playwire.com,1025030,DIRECT
 managerdomain=playwire.com
 ownerdomain=pvpivs.com
 
-# Playwire Ads.txt file v10.3
+# Playwire Ads.txt file v10.4
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -158,6 +158,8 @@ trustx.org, 6163, DIRECT, 1d2c8a747a749d25
 
 #Vidazoo
 vidazoo.com, 66f94ed86cb7baf371858cad, DIRECT, b6ada874b4d7d0b2
+rubiconproject.com, 17130, RESELLER, 0bfd66d529a55807
+openx.com, 541017750, RESELLER, 6a698e2ec38604c6
 
 #Wunderkind
 wunderkind.co, 7202, DIRECT
