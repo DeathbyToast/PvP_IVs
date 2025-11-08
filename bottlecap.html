@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-US" class="dark">
   <head>
-    <meta charset="UTF-R">
+    <meta charset="UTF-8">
     <title>PvP IVs - Bottle Cap Analyzer</title>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LQY2YVNT21"></script><script>window.dataLayer=window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date()); gtag('config', 'G-LQY2YVNT21');</script>
@@ -17,7 +17,7 @@
     <link rel="preload" href="https://pvpivs.com/includes/calculate.js" as="script">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" as="script">
-    <link rel="preload" href="https://pvpivs.com/includes/pokeListObj.js" as="script">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PvP IVs Bottle Cap Analyzer for Pokémon Go. Find the best Pokémon to use a Silver or Gold Bottle Cap on for PvP."/>
     <link rel="icon" type="image/png" href="https://pvpivs.com/includes/favicon.png">
@@ -66,6 +66,9 @@
         margin-top: 0;
         border-bottom: 2px solid var(--navActive);
         padding-bottom: 5px;
+      }
+      #results h4 {
+        margin-bottom: 5px;
       }
       #results .best-rank {
         color: var(--goodResult);
@@ -123,23 +126,15 @@
     
     <section id="analyzerBox">
       <h2>Bottle Cap Analyzer</h2>
-      <p>Find the best IVs for a Pokémon by simulating a Silver or Gold Bottle Cap.</p>
+      <p>Find the best IVs for a Pokémon by simulating Silver and Gold Bottle Caps.</p>
       
       <div>
-        <label for="capMode">1. Bottle Cap Mode:</label>
-        <select id="capMode">
-          <option value="silver" selected>Silver Bottle Cap</option>
-          <option value="gold">Gold Bottle Cap</option>
-        </select>
-      </div>
-      
-      <div>
-        <label for="pokeList">2. Pokémon:</label>
+        <label for="pokeList">1. Pokémon:</label>
         <input id="pokeList" onfocus="this.value=''" placeholder="e.g. Snorlax"/>
       </div>
 
       <div>
-        <label>3. Current IVs (Floor):</label>
+        <label>2. Current IVs (Floor):</label>
         <input type="number" id="floorA" value="2" min="0" max="15" title="Current Attack IV">
         /
         <input type="number" id="floorD" value="5" min="0" max="15" title="Current Defense IV">
@@ -148,7 +143,7 @@
       </div>
       
       <div>
-        <button id="goButton" onclick="analyzeBottleCaps()">4. Analyze</button>
+        <button id="goButton" onclick="analyzeBottleCaps()">3. Analyze</button>
       </div>
       
       <div id="feedback" style="margin-top: 15px;"></div>
@@ -159,26 +154,31 @@
     <script async defer src="https://pvpivs.com/includes/darkLightThemes.js"></script>
     <script src="https://pvpivs.com/includes/calculate.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
-    <script src="https://pvpivs.com/includes/pokeListObj.js"></script>
+    
+    <script>
+      var v = "14"; // This version is from your live site
+      document.write('<script src="https://pvpivs.com/includes/pokeListObj-' + v + '.js"><\/script>');
+    </script>
     
     <script>
       var inputMon = ""; // Store selected Pokémon
-      
-      // Initialize Awesomplete
-      (function() {
-        var input = document.getElementById("pokeList");
-        var monNames = Object.keys(pokeListObj);
-        if (monNames.length < 1000) {
-          console.error("pokeListObj not loaded!");
-          document.getElementById('feedback').innerHTML = "<p><i>ERROR: Failed to load Pokémon list. Please refresh.</i></p>";
-        } else {
+      var input = document.getElementById("pokeList");
+      var monNames = []; // Will be populated after pokeListObj loads
+    
+      // We must wait for pokeListObj to load, as it's now dynamic
+      function initializeAwesomplete() {
+        // Check if pokeListObj has loaded
+        if (typeof pokeListObj !== 'undefined' && Object.keys(pokeListObj).length > 1000) {
+          monNames = Object.keys(pokeListObj);
           new Awesomplete(input, {list: monNames});
+          
           Awesomplete.$.bind(input, {
             "awesomplete-selectcomplete": function(evt) {
               inputMon = evt.text.label;
             }
           });
-          // Also handle manual input
+
+          // Also handle manual input verification
           input.addEventListener('input', function() {
             if (monNames.includes(this.value)) {
               inputMon = this.value;
@@ -186,19 +186,27 @@
               inputMon = ""; // Clear if not a valid mon
             }
           });
-        }
-      })();
 
+        } else if (document.getElementById('feedback').innerHTML.indexOf('ERROR') === -1) {
+          // pokeListObj not ready, try again
+          setTimeout(initializeAwesomplete, 100);
+        }
+      }
+      
+      // Start the checker
+      initializeAwesomplete();
+    
       /**
        * Main analysis function
+       * (BUG FIX 2: This function is now defined correctly
+       * because the script no longer halts on the pokeListObj error)
        */
-      async function analyzeBottleCaps() {
+      function analyzeBottleCaps() {
         // Clear previous results
-        document.getElementById('feedback').innerHTML = "<i>Calculating...</i>";
+        document.getElementById('feedback').innerHTML = "<i>Calculating... (This may take a moment)</i>";
         document.getElementById('results').innerHTML = "";
         
         // --- 1. Get User Inputs ---
-        let capMode = document.getElementById('capMode').value;
         let floorA = parseInt(document.getElementById('floorA').value);
         let floorD = parseInt(document.getElementById('floorD').value);
         let floorS = parseInt(document.getElementById('floorS').value);
@@ -208,8 +216,8 @@
           return;
         }
         
-        if (isNaN(floorA) || isNaN(floorD) || isNaN(floorS)) {
-          document.getElementById('feedback').innerHTML = "<p style='color: var(--badResult);'>Please enter valid current IVs.</p>";
+        if (isNaN(floorA) || isNaN(floorD) || isNaN(floorS) || floorA < 0 || floorA > 15 || floorD < 0 || floorD > 15 || floorS < 0 || floorS > 15) {
+          document.getElementById('feedback').innerHTML = "<p style='color: var(--badResult);'>Please enter valid current IVs (0-15).</p>";
           return;
         }
         
@@ -228,93 +236,117 @@
         let resultsHTML = "";
 
         // --- 2. Loop through each league ---
-        for (let league of leagues) {
-          // Get the full ranking data for this Pokémon and league
-          // We use floor 0 to get all 4096 combos
-          let ranks = calculate(bAtk, bDef, bSta, 0, 1, 51, false, league.cp, inputMon);
-          let keys = Object.keys(ranks); // keys are "StatProd.Lvl.A.D.S"
-          
-          let bestLeagueRank = 4097;
-          let bestLeagueIVs = "";
-          let bestLeagueKey = "";
-          let originalRank = 4097;
+        // We run this in a setTimeout to allow the "Calculating..." message to render
+        setTimeout(function() {
+          for (let league of leagues) {
+            // Get the full ranking data for this Pokémon and league
+            // We use floor 0 to get all 4096 combos
+            let ranks = calculate(bAtk, bDef, bSta, 0, 1, 51, false, league.cp, inputMon);
+            let keys = Object.keys(ranks); // keys are "StatProd.Lvl.A.D.S"
+            let totalRanks = ranks.numRanks;
 
-          // Find the original rank
-          let originalIVSuffix = `.${floorA}.${floorD}.${floorS}`;
-          let originalKey = keys.find(k => k.endsWith(originalIVSuffix));
-          if (originalKey) {
-            originalRank = ranks[originalKey][0];
-          }
+            // Find the original rank
+            let originalRank = 4097;
+            let originalIVSuffix = `.${floorA}.${floorD}.${floorS}`;
+            let originalKey = keys.find(k => k.endsWith(originalIVSuffix));
+            if (originalKey) {
+              originalRank = ranks[originalKey][0];
+            }
 
-          // --- 3. Find Combos to Test ---
-          let combosToTest = new Set();
-          
-          if (capMode === "gold") {
-            // Gold Cap is easy, just test 15/15/15
-            combosToTest.add("15.15.15");
-          } else {
-            // Silver Cap logic
-            // Add the original IVs as the baseline
-            combosToTest.add(`${floorA}.${floorD}.${floorS}`);
+            resultsHTML += `<div class="league-result"><h3>${league.name} (${league.cp} CP)</h3>`;
+            resultsHTML += `<p class="original-rank">Original Rank (${floorA}/${floorD}/${floorS}): <b>#${originalRank}</b> / ${totalRanks}</p>`;
             
-            // 1. Attack Capped (from floorA+1 to 15)
-            for (let a = floorA + 1; a <= 15; a++) {
-              combosToTest.add(`${a}.${floorD}.${floorS}`);
-            }
-            // 2. Defense Capped (from floorD+1 to 15)
-            for (let d = floorD + 1; d <= 15; d++) {
-              combosToTest.add(`${floorA}.${d}.${floorS}`);
-            }
-            // 3. Stamina Capped (from floorS+1 to 15)
-            for (let s = floorS + 1; s <= 15; s++) {
-              combosToTest.add(`${floorA}.${floorD}.${s}`);
-            }
-          }
+            // --- 3. Silver Cap Analysis ---
+            let bestSilverRank = originalRank;
+            let bestSilverIVs = `${floorA}/${floorD}/${floorS}`;
+            let bestSilverKey = originalKey;
 
-          // --- 4. Test all combos and find the best ---
-          for (let combo of combosToTest) {
-            let ivSuffix = "." + combo; // e.g., ".2.15.7"
-            
-            // Find the key in the ranks object
-            let rankKey = keys.find(k => k.endsWith(ivSuffix));
-            
-            if (rankKey) {
-              let rankData = ranks[rankKey]; // [rank, Atk, Def, HP, %Perf, ...]
-              let currentRank = rankData[0];
-              
-              if (currentRank < bestLeagueRank) {
-                bestLeagueRank = currentRank;
-                bestLeagueIVs = combo.replace(/\./g, '/'); // "2/15/7"
-                bestLeagueKey = rankKey; // "StatProd.Lvl.A.D.S"
+            // Test Silver A (from floorA UP TO 15)
+            for (let a = floorA; a <= 15; a++) {
+              let key = keys.find(k => k.endsWith(`.${a}.${floorD}.${floorS}`));
+              if (key && ranks[key][0] < bestSilverRank) {
+                bestSilverRank = ranks[key][0];
+                bestSilverIVs = `${a}/${floorD}/${floorS}`;
+                bestSilverKey = key;
               }
             }
-          }
-          
-          // --- 5. Format Output for this League ---
-          resultsHTML += `<div class="league-result"><h3>${league.name} (${league.cp} CP)</h3>`;
-          
-          if (bestLeagueRank <= 4096 && bestLeagueKey) {
-            let rankData = ranks[bestLeagueKey];
-            let keyParts = bestLeagueKey.split('.');
-            let level = keyParts[1];
-            let totalRanks = ranks.numRanks;
+            // Test Silver D (from floorD UP TO 15)
+            for (let d = floorD; d <= 15; d++) {
+              let key = keys.find(k => k.endsWith(`.${floorA}.${d}.${floorS}`));
+              if (key && ranks[key][0] < bestSilverRank) {
+                bestSilverRank = ranks[key][0];
+                bestSilverIVs = `${floorA}/${d}/${floorS}`;
+                bestSilverKey = key;
+              }
+            }
+            // Test Silver S (from floorS UP TO 15)
+            for (let s = floorS; s <= 15; s++) {
+              let key = keys.find(k => k.endsWith(`.${floorA}.${floorD}.${s}`));
+              if (key && ranks[key][0] < bestSilverRank) {
+                bestSilverRank = ranks[key][0];
+                bestSilverIVs = `${floorA}/${floorD}/${s}`;
+                bestSilverKey = key;
+              }
+            }
             
-            resultsHTML += `
-              <p>Best Rank: <b class="best-rank">#${bestLeagueRank}</b> / ${totalRanks}</p>
-              <p>IVs: <b>${bestLeagueIVs}</b> (Lvl ${level})</p>
-              <p>Stats: ${rankData[1].toFixed(2)} Atk / ${rankData[2].toFixed(2)} Def / ${rankData[3]} HP</p>
-              <p class="original-rank">Original Rank (with ${floorA}/${floorD}/${floorS}): #${originalRank}</p>
-            `;
-          } else {
-            // This happens if the Pokémon (e.g., base IVs) is too strong for the league
-            resultsHTML += `<p>No valid rank found. Pokémon may be too high CP for this league.</p>`;
-          }
-          resultsHTML += `</div>`;
-        }
+            // --- 4. Gold Cap Analysis ---
+            // (Finds the best rank by incrementing *any/all* IVs from their floor)
+            let bestGoldRank = bestSilverRank; // Gold must be at least as good as Silver
+            let bestGoldIVs = bestSilverIVs;
+            let bestGoldKey = bestSilverKey;
+            
+            for (let a = floorA; a <= 15; a++) {
+              for (let d = floorD; d <= 15; d++) {
+                for (let s = floorS; s <= 15; s++) {
+                  // This covers all combos: A/D/S, A/D, A/S, D/S, A, D, S, and original
+                  let key = keys.find(k => k.endsWith(`.${a}.${d}.${s}`));
+                  if (key && ranks[key][0] < bestGoldRank) {
+                    bestGoldRank = ranks[key][0];
+                    bestGoldIVs = `${a}/${d}/${s}`;
+                    bestGoldKey = key;
+                  }
+                }
+              }
+            }
+            
+            // --- 5. Format Output ---
+            
+            // Silver
+            resultsHTML += `<h4>Best Silver Cap Result:</h4>`;
+            if (bestSilverKey) {
+              let rankData = ranks[bestSilverKey];
+              let level = bestSilverKey.split('.')[1];
+              resultsHTML += `
+                <p>Rank: <b class="best-rank">#${bestSilverRank}</b> / ${totalRanks}</p>
+                <p>IVs: <b>${bestSilverIVs}</b> (Lvl ${level})</p>
+                <p>Stats: ${rankData[1].toFixed(2)} Atk / ${rankData[2].toFixed(2)} Def / ${rankData[3]} HP</p>
+              `;
+            } else {
+              resultsHTML += `<p>No valid rank found (Pokémon may be too high CP for this league).</p>`;
+            }
 
-        // --- 6. Show Results ---
-        document.getElementById('feedback').innerHTML = ""; // Clear "Calculating..."
-        document.getElementById('results').innerHTML = resultsHTML;
+            // Gold
+            resultsHTML += `<h4>Best Gold Cap Result:</h4>`;
+            if (bestGoldKey) {
+              let rankData = ranks[bestGoldKey];
+              let level = bestGoldKey.split('.')[1];
+              resultsHTML += `
+                <p>Rank: <b class="best-rank">#${bestGoldRank}</b> / ${totalRanks}</p>
+                <p>IVs: <b>${bestGoldIVs}</b> (Lvl ${level})</p>
+                <p>Stats: ${rankData[1].toFixed(2)} Atk / ${rankData[2].toFixed(2)} Def / ${rankData[3]} HP</p>
+              `;
+            } else {
+              resultsHTML += `<p>No valid rank found (Pokémon may be too high CP for this league).</p>`;
+            }
+
+            resultsHTML += `</div>`;
+          }
+
+          // --- 6. Show Results ---
+          document.getElementById('feedback').innerHTML = ""; // Clear "Calculating..."
+          document.getElementById('results').innerHTML = resultsHTML;
+        
+        }, 50); // 50ms timeout to allow UI to update
       }
       
     </script>
