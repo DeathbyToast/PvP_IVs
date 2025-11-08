@@ -71,7 +71,6 @@ dxkulture.com, 12005, DIRECT
 
 #MediaGrid
 themediagrid.com, 5A8D1U, DIRECT, 35d5010d7789b49d
-themediagrid.com, 6QY7B4, DIRECT, 35d5010d7789b49d
 themediagrid.com, KA3Q45, DIRECT, 35d5010d7789b49d
 
 #Media.net
@@ -106,9 +105,9 @@ media.net, 8CUQ6928Q, RESELLER
 video.unrulymedia.com, 335119963, RESELLER
 loopme.com, 11362, RESELLER, 6c8d5f95897a5a3b
 lijit.com, 405318, RESELLER, fafdf38b16bf6b2b
-yieldmo.com, 2754490424016969782, RESELLER
 gumgum.com, 16112, RESELLER, ffdef49475d318a9
 onetag.com, 69f48c2160c8113, RESELLER
+triplelift.com, 12465, RESELLER, 6c33edb13117fd86
 
 #Rubicon
 rubiconproject.com, 12556, DIRECT, 0bfd66d529a55807
