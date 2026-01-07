@@ -3,7 +3,7 @@ playwire.com,1025030,DIRECT
 managerdomain=playwire.com
 ownerdomain=pvpivs.com
 
-# Playwire Ads.txt file v10.4
+# Playwire Ads.txt file v10.6
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -123,6 +123,10 @@ video.unrulymedia.com, 266978658, RESELLER
 smartadserver.com, 5247, DIRECT, 060d053dcf45cbf3
 sharethrough.com, 5247, DIRECT, d53b998a7bd4ecd2
 
+#SHE
+pmc.com, 1243186, DIRECT, 8dd52f825890bb44
+rubiconproject.com, 10278, RESELLER, 0bfd66d529a55807
+
 #Sonobi
 sonobi.com, 2da7a08406, DIRECT, d1a215d9eb5aee9e
 sonobi.com, 0f403b451d, DIRECT, d1a215d9eb5aee9e
@@ -167,10 +171,10 @@ pubmatic.com, 156512, RESELLER, 5d62403b186f2ace
 indexexchange.com, 183753, RESELLER, 50b1c356f2c5c8fc
 rubiconproject.com, 20986, RESELLER, 0bfd66d529a55807
 
+#Yahoo
+yahoo.com, 100031, DIRECT, e1a5b5b6e3255540
+
 #Yieldmo
 yieldmo.com, 2990721854664024411, DIRECT
-
-#SHE
-pmc.com, 1243186, DIRECT, 8dd52f825890bb44
 
 
