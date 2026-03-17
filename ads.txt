@@ -3,7 +3,7 @@ playwire.com,1025030,DIRECT
 managerdomain=playwire.com
 ownerdomain=pvpivs.com
 
-# Playwire Ads.txt file v10.6
+# Playwire Ads.txt file v10.7
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -114,12 +114,16 @@ rubiconproject.com, 12556, DIRECT, 0bfd66d529a55807
 rubiconproject.com, 18110, DIRECT, 0bfd66d529a55807
 rubiconproject.com, 27232, DIRECT, 0bfd66d529a55807 #flex
 
+#SeedTag
+seedtag.com, 68c05523d5bc140007b6b8d6, DIRECT
+xandr.com, 4009, DIRECT, f5ab79cb980f11d1
+smartadserver.com, 3050, DIRECT
+rubiconproject.com, 17280, DIRECT, 0bfd66d529a55807
+
 #Sharethrough
 sharethrough.com, 5b0da9d4, DIRECT, d53b998a7bd4ecd2
-pubmatic.com, 156557, RESELLER, 5d62403b186f2ace
-rubiconproject.com, 18694, RESELLER, 0bfd66d529a55807
-openx.com, 540274407, RESELLER, 6a698e2ec38604c6
-video.unrulymedia.com, 266978658, RESELLER
+smartadserver.com, 4080, DIRECT, 060d053dcf45cbf3
+sharethrough.com, 4080, DIRECT, d53b998a7bd4ecd2
 smartadserver.com, 5247, DIRECT, 060d053dcf45cbf3
 sharethrough.com, 5247, DIRECT, d53b998a7bd4ecd2
 
