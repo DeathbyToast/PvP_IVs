@@ -3,7 +3,7 @@ playwire.com,1025030,DIRECT
 managerdomain=playwire.com
 ownerdomain=pvpivs.com
 
-# Playwire Ads.txt file v10.7
+# Playwire Ads.txt file v10.9
 contact=sales@playwire.com
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -74,6 +74,7 @@ themediagrid.com, 5A8D1U, DIRECT, 35d5010d7789b49d
 themediagrid.com, KA3Q45, DIRECT, 35d5010d7789b49d
 
 #Media.net
+media.net, 8CUDQA374, DIRECT
 media.net, 8CUIBM874, DIRECT
 media.net, 8CUP47128, DIRECT
 media.net, 8CU11059L, DIRECT
@@ -83,6 +84,12 @@ nativo.com, 5722, DIRECT, 59521ca7cc5e9fee
 
 #Nexxen
 video.unrulymedia.com, 3832544212, DIRECT
+
+#Ogury
+ogury.com, 77858990-0b64-4485-b9e2-0a660eac712d, DIRECT
+
+#OneTag
+onetag.com, 9677fda2f71f0c0, DIRECT
 
 #OpenX
 openx.com, 537145215, DIRECT, 6a698e2ec38604c6
@@ -129,7 +136,6 @@ sharethrough.com, 5247, DIRECT, d53b998a7bd4ecd2
 
 #SHE
 pmc.com, 1243186, DIRECT, 8dd52f825890bb44
-rubiconproject.com, 10278, RESELLER, 0bfd66d529a55807
 
 #Sonobi
 sonobi.com, 2da7a08406, DIRECT, d1a215d9eb5aee9e
@@ -170,7 +176,8 @@ openx.com, 541017750, RESELLER, 6a698e2ec38604c6
 
 #Wunderkind
 wunderkind.co, 7202, DIRECT
-themediagrid.com, N71MIF, DIRECT, 35d5010d7789b49d
+aps.amazon.com, e5a6f2d1-7642-4cc5-a917-96dbe8c3ed8f, RESELLER
+themediagrid.com, N71MIF, DIRECT, 9fac4a4a87c2a44f
 pubmatic.com, 156512, RESELLER, 5d62403b186f2ace
 indexexchange.com, 183753, RESELLER, 50b1c356f2c5c8fc
 rubiconproject.com, 20986, RESELLER, 0bfd66d529a55807
