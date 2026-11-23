@@ -514,6 +514,20 @@
       buildSearchString(mon, newMon);
     }
     
+    function validSearchLevels() {
+      var min = document.getElementById('minSearchLvl').value;
+      var max = document.getElementById('maxSearchLvl').value;
+      if (!min || !max || min/1 > max/1) {
+        document.getElementById('errorBox').innerHTML = "<p>ERROR: Select a valid search level range with the lowest level no higher than the highest level.</p>";
+        document.getElementById('output').value = "";
+        document.getElementById('outputSummaryBox').innerHTML = "";
+        document.getElementById('overflowArea').innerHTML = "";
+        document.getElementById('feedbackBox').innerHTML = "";
+        return false;
+      }
+      return true;
+    }
+    
     function buildSearchString(mon, newMon) {
       
       var T0,i,j;
@@ -667,6 +681,7 @@
         finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
         finalEvoDef = evoVals[2]?.[2] ? evoVals[2][2] : evoVals[0][2];
         finalEvoSta = evoVals[2]?.[3] ? evoVals[2][3] : evoVals[0][3];
+        if (!validSearchLevels()) {return false;}
         outputCustomIVsStr(customIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, maxBattleLvl, evoVals[0][0], evoVals[0][4]);
         
         /* Ensure we update the URL before returning */
@@ -743,6 +758,7 @@
         finalEvoAtk = evoVals[2]?.[1] ? evoVals[2][1] : evoVals[0][1];
         finalEvoDef = evoVals[2]?.[2] ? evoVals[2][2] : evoVals[0][2];
         finalEvoSta = evoVals[2]?.[3] ? evoVals[2][3] : evoVals[0][3];
+        if (!validSearchLevels()) {return false;}
         outputCustomIVsStr(raidIVs, evoVals[0][1], evoVals[0][2], evoVals[0][3], finalEvoAtk, finalEvoDef, finalEvoSta, league, output, maxBattleLvl, evoVals[0][0], evoVals[0][4]);
         
         /* Ensure we update the URL before returning */
@@ -822,6 +838,7 @@
       }
       
       /* output the user's request! */
+      if (!validSearchLevels()) {return false;}
       outputStr(evoVals, output, maxBattleLvl);
       
       /* update the URL with search parameters */
