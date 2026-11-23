@@ -1207,7 +1207,7 @@
       }
         
       /* output the CPs and HPs */
-      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, aIV, dIV, sIV, output, evoVals[0][0]);
+      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, aIV, dIV, sIV, output, evoVals[0][0], targetIVs);
       var origOut = output.value;
 
       /* Calculate and show False Postive Rate to user */
@@ -1341,6 +1341,9 @@
       console.log("cpHpPairs[2]:"+JSON.stringify(cpHpPairs[2]));
       console.log("cpHpPairs[3]:"+JSON.stringify(cpHpPairs[3]));
       console.log("cpHpPairs[4]:"+JSON.stringify(cpHpPairs[4]));*/
+      if (!document.getElementById('trash').checked && !targetIVs.has("0,0,0")) {
+        possibleIVs.delete("0,0,0");
+      }
       /* Summarize output */
       var tIvSize = targetIVs.size;
       var pIvSize = possibleIVs.size;
@@ -1422,6 +1425,7 @@
       message += JSON.stringify(customIVs);
       var cps = [], hps = [], aIV = [], dIV = [], sIV = [];
       var i, k, lookupLvl;
+      var targetIVs = new Set();
       
       cps[0] = new Set();
       hps[0] = new Set();
@@ -1459,6 +1463,7 @@
         var atk = customIVs[i][0];
         var def = customIVs[i][1];
         var sta = customIVs[i][2];
+        targetIVs.add((atk/1)+","+(def/1)+","+(sta/1));
         var atkBkt = -1, defBkt = -1, hpBkt = -1;
         
         for (k=slMin; k<slMax; k++) {lookupLvl = (k-1)*2;
@@ -1540,7 +1545,7 @@
       }
         
       /* output the CPs and HPs */
-      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, aIV, dIV, sIV, output, dexNum);
+      outputCPsHPsBuckets(cps.slice(), maxCP, hps.slice(), maxHP, aIV, dIV, sIV, output, dexNum, targetIVs);
       var origOut = output.value;
       
       if (origOut.length > 2000) { /* Check and split output length into <2000 char chunks at commas for iOS users */
@@ -1618,7 +1623,7 @@
       return out;
     }
     
-    function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, atkBkts, defBkts, staBkts, output, id) {
+    function outputCPsHPsBuckets(cps, maxCP, hps, maxHP, atkBkts, defBkts, staBkts, output, id, targetIVs) {
       var T0;
       if (perfTiming) {T0 = performance.now();}
       /*console.log("outputCPsHPsBuckets: Received cps:"+cps+", maxCP:"+maxCP+", atkBkts:"+atkBkts+", output:"+output+", id:"+id);
@@ -1705,6 +1710,11 @@
       } else { /* If not a trash string */
         if (cps[4].size > 0) { /* Check if we search for hundos */
           output.value += ',4*'; /* Ensure hundos are searched for */
+        } else if (!targetIVs.has("15,15,15")) {
+          output.value += '&!4*';
+        }
+        if (!targetIVs.has("0,0,0") && atkBkts[0].has(0) && defBkts[0].has(0) && staBkts[0].has(0)) {
+          output.value += '&1-'+lang[LANG_ATK]+',1-'+lang[LANG_DEF]+',1-'+lang[LANG_HP];
         }
       }
       
