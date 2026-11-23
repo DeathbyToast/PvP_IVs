@@ -1319,7 +1319,7 @@
                   IVsByStar[star].splice(j,1);
                   /*console.log("Found searchCP("+searchCP+")&("+searchHP+")searchHP at L"+level+", added "+atkIV+","+defIV+","+staIV+" to possibleIVs, and removed from IVsByStar["+star+"], length now:"+IVsByStar[star].length);*/
                   if (star/1 == 4 && atkIV/1 == 15 && defIV/1 == 15 && staIV/1 == 15) {
-                    console.log("Clearing remaining 4* CP+HP pairs as we have already found and removed 15-15-15 from IVsByStar["+star+"]");
+                    /* console.log("Clear any remaining 4* CP+HP pairs as we have already determined that we need to exlude 15-15-15 from IVsByStar["+star+"]"); */
                     cpHpPairs[star] = {};
                   } else {
                     /* Mark this CP+HP set as found */
